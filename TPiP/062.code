@@ -1,0 +1,5 @@
+#---------- re_show.py----------#
+import re
+def re_show(pat, s):
+    print re.compile(pat, re.M).sub("{\g<0>}", s.rstrip()),'\n'
+

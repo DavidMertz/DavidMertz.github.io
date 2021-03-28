@@ -1,0 +1,23 @@
+#---------- send_email.py----------#
+#!/usr/bin/env python
+import smtplib
+from sys import argv, stdin
+from os import getenv
+host = getenv('HOST', 'localhost')
+if len(argv) >= 2:
+    to_ = argv[1]
+else:
+    to_ = raw_input('To: ').strip()
+if len(argv) >=3:
+    subject = argv[2]
+    body = stdin.read()
+else:
+    subject = stdin.readline()
+    body = subject + stdin.read()
+from_ = "%s@%s" % (getenv('USER', 'user'), host)
+mess = '''From: %s\nTo: %s\n\n%s' % (to_, from_, body)
+server = smtp.SMTP(host)
+server.login
+server.sendmail(from_, to_, mess)
+server.quit()
+

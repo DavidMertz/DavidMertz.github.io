@@ -1,0 +1,11 @@
+#---------- Debugging CGI script in Python----------#
+import sys
+sys.stderr = sys.stdout
+def main():
+    import cgi
+    # ...do the actual work of the CGI...
+    # perhaps ending with:
+    print template % script_dictionary
+print "Content-type: text/html\n\n"
+main()
+

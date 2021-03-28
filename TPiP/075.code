@@ -1,0 +1,9 @@
+#---------- Glob-style subpatterns----------#
+*      Match everything that follows (non-greedy).
+?      Match any single character.
+[set]  Match one character from a set.  A set generally
+       follows the same rules as a regular expression
+       character class.  It may include zero or more ranges
+       and zero or more enumerated characters.
+[!set] Match any one character that is not in the set.
+

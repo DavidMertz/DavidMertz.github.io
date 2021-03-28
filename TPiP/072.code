@@ -1,0 +1,28 @@
+#---------- logical_lines.py----------#
+# Determine the logical lines in a file that might have
+# continuation characters.  'logical_lines()' returns a
+# list.  The self-test prints the logical lines as
+# physical lines (for all specified files and options).
+
+import re
+
+def logical_lines(s, continuation='\\', strip_trailing_space=0):
+    c = continuation
+    if strip_trailing_space:
+        s = re.sub(r'(?m)(%s)(\s+)$'%[c], r'\1', s)
+    pat_log = r'(?sm)^.*?$(?<!%s)'%[c]  # e.g. (?sm)^.*?$(?<!\\)
+    return [t.replace(c+'\n','') for t in re.findall(pat_log, s)]
+
+if __name__ == '__main__':
+    import sys
+    files, strip, contin = ([], 0, '\\')
+    for arg in sys.argv[1:]:
+        if arg[:-1] == '--continue=': contin = arg[-1]
+        elif arg[:-1] == '-c': contin = arg[-1]
+        elif arg in ('--string','-s'): strip = 1
+        else: files.append(arg)
+    if not files: files.append(sys.stdin)
+    for file in files:
+        s = open(sys.argv[1]).read()
+        print '\n'.join(logical_lines(s, contin, strip))
+

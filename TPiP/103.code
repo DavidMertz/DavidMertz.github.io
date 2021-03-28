@@ -1,0 +1,20 @@
+#---------- Creating end states for subgraphs----------#
+from statemachine import StateMachine
+from BigGraph import *
+
+def subgraph_end(cargo): print "Leaving subgraph..."
+foo = subgraph_end
+bar = subgraph_end
+
+def spam_return(cargo): return spam, None
+baz = spam_return
+
+if __name__=='__main__':
+    m = StateMachine()
+    m.add_state(foo, end_state=1)
+    m.add_state(bar, end_state=1)
+    m.add_state(baz)
+    map(m.add_state, [spam, eggs, bacon])
+    m.set_start(spam)
+    m.run(None)
+

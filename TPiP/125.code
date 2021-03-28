@@ -1,0 +1,3 @@
+#---------- Word example----------#
+tup = ('spam', Word, 'spam')
+

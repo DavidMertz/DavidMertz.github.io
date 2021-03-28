@@ -1,0 +1,10 @@
+#---------- XML document with special nodes----------#
+<?xml version="1.0" ?>
+<!DOCTYPE root SYSTEM "sometype.dtd">
+<root>
+<!-- This is a comment -->
+This is text data inside the &lt;root&gt; element
+<![CDATA[Embedded (not well-formed) XML:
+         <this><that> >>string<< </that>]]>
+</root>
+

@@ -1,0 +1,20 @@
+#---------- location_parse.py----------#
+#!/usr/bin/env python
+def location_parse(netloc):
+    "Return tuple (user, passwd, host, port) for netloc"
+    if '@' not in netloc:
+        netloc = ':@' + netloc
+    login, net = netloc.split('@')
+    if ':' not in login:
+        login += ':'
+    user, passwd = login.split(':')
+    if ':' not in net:
+        net += ':'
+    host, port = net.split(':')
+    return (user, passwd, host, port)
+
+#-- specify network location on command-line
+if __name__=='__main__':
+    import sys
+    print location_parse(sys.argv[1])
+

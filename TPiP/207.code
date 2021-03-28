@@ -1,0 +1,7 @@
+#---------- Call back to .handle_data()----------#
+class EntityData(HTMLParser.HTMLParser):
+    def handle_entityref(self, name):
+        import htmlentitydefs
+        self.handle_data(htmlentitydefs.entitydefs[name])
+    [...other methods...]
+

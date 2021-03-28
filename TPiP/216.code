@@ -1,0 +1,6 @@
+#---------- Order info XML document----------#
+<item partNum="123-XQ">
+  <USPrice>21.95</USPrice>
+  <shipDate>2002-11-26</shipDate>
+</item>
+

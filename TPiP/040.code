@@ -1,0 +1,136 @@
+#---------- fields_stats.py----------#
+# Perform calculations on one or more of the
+# fields in a structured text database.
+
+import operator
+from types import *
+from xreadlines import xreadlines # req 2.1, but is much faster...
+                                  # could use .readline() meth < 2.1
+#-- Symbolic Constants
+DELIMITED = 1
+FLATFILE = 2
+
+#-- Some sample "statistical" func (in functional programming style)
+nillFunc = lambda lst: None
+toFloat = lambda lst: map(float, lst)
+avg_lst = lambda lst: reduce(operator.add, toFloat(lst))/len(lst)
+sum_lst = lambda lst: reduce(operator.add, toFloat(lst))
+max_lst = lambda lst: reduce(max, toFloat(lst))
+
+class FieldStats:
+    """Gather statistics about structured text database fields
+
+    text_db may be either string (incl. Unicode) or file-like object
+    style may be in (DELIMITED, FLATFILE)
+    delimiter specifies the field separator in DELIMITED style text_db
+    column_positions lists all field positions for FLATFILE style,
+                     using one-based indexing (first column is 1).
+               E.g.: (1, 7, 40) would take fields one, two, three
+                     from columns 1, 7, 40 respectively.
+    field_funcs is a dictionary with column positions as keys,
+                and functions on lists as values.
+         E.g.:  {1:avg_lst, 4:sum_lst, 5:max_lst} would specify the
+                average of column one, the sum of column 4, and the
+                max of column 5.  All other cols--incl 2,3, >=6--
+                are ignored.
+
+    """
+    def __init__(self,
+                 text_db='',
+                 style=DELIMITED,
+                 delimiter=',',
+                 column_positions=(1,),
+                 field_funcs={} ):
+        self.text_db = text_db
+        self.style = style
+        self.delimiter = delimiter
+        self.column_positions = column_positions
+        self.field_funcs = field_funcs
+
+    def calc(self):
+        """Calculate the column statistics
+        """
+        #-- 1st, create a list of lists for data (incl. unused flds)
+        used_cols = self.field_funcs.keys()
+        used_cols.sort()
+        # one-based column naming: column[0] is always unused
+        columns = []
+        for n in range(1+used_cols[-1]):
+            # hint: '[[]]*num' creates refs to same list
+            columns.append([])
+
+        #-- 2nd, fill lists used for calculated fields
+                # might use a string directly for text_db
+        if type(self.text_db) in (StringType,UnicodeType):
+            for line in self.text_db.split('\n'):
+                fields = self.splitter(line)
+                for col in used_cols:
+                    field = fields[col-1]   # zero-based index
+                    columns[col].append(field)
+        else:   # Something file-like for text_db
+            for line in xreadlines(self.text_db):
+                fields = self.splitter(line)
+                for col in used_cols:
+                    field = fields[col-1]   # zero-based index
+                    columns[col].append(field)
+
+        #-- 3rd, apply the field funcs to column lists
+        results = [None] * (1+used_cols[-1])
+        for col in used_cols:
+            results[col] = \
+                 apply(self.field_funcs[col],(columns[col],))
+
+        #-- Finally, return the result list
+        return results
+
+    def splitter(self, line):
+        """Split a line into fields according to curr inst specs"""
+        if self.style == DELIMITED:
+            return line.split(self.delimiter)
+        elif self.style == FLATFILE:
+            fields = []
+            # Adjust offsets to Python zero-based indexing,
+            # and also add final position after the line
+            num_positions = len(self.column_positions)
+            offsets = [(pos-1) for pos in self.column_positions]
+            offsets.append(len(line))
+            for pos in range(num_positions):
+                start = offsets[pos]
+                end = offsets[pos+1]
+                fields.append(line[start:end])
+            return fields
+        else:
+            raise ValueError, \
+                  "Text database must be DELIMITED or FLATFILE"
+
+#-- Test data
+# First Name, Last Name, Salary, Years Seniority, Department
+delim = '''
+Kevin,Smith,50000,5,Media Relations
+Tom,Woo,30000,7,Accounting
+Sally,Jones,62000,10,Management
+'''.strip()     # no leading/trailing newlines
+
+# Comment     First     Last      Salary    Years  Dept
+flat = '''
+tech note     Kevin     Smith     50000     5      Media Relations
+more filler   Tom       Woo       30000     7      Accounting
+yet more...   Sally     Jones     62000     10     Management
+'''.strip()     # no leading/trailing newlines
+
+#-- Run self-test code
+if __name__ == '__main__':
+    getdelim = FieldStats(delim, field_funcs={3:avg_lst,4:max_lst})
+    print 'Delimited Calculations:'
+    results = getdelim.calc()
+    print '  Average salary -', results[3]
+    print '  Max years worked -', results[4]
+
+    getflat = FieldStats(flat, field_funcs={3:avg_lst,4:max_lst},
+                               style=FLATFILE,
+                               column_positions=(15,25,35,45,52))
+    print 'Flat Calculations:'
+    results = getflat.calc()
+    print '  Average salary -', results[3]
+    print '  Max years worked -', results[4]
+

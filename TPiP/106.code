@@ -1,0 +1,8 @@
+#---------- typical tabnanny utility usage----------#
+% /sw/lib/python2.2/tabnanny.py SCRIPTS/
+SCRIPTS/cmdline.py 165 '\treturn 1\r\n'
+'SCRIPTS/HTMLParser_stack.py': Token Error: ('EOF in
+                                multi-line string', (3, 7))
+SCRIPTS/outputters.py 18 '\tself.writer=writer\r\n'
+SCRIPTS/txt2bookU.py 148 '\ttry:\n'
+

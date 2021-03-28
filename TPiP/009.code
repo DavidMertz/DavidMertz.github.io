@@ -1,0 +1,9 @@
+#---------- Multiple line transformations----------#
+from string import upper, join, split
+def flip(s):
+    a = list(s)
+    a.reverse()
+    return join(a,'')
+normalize = lambda s: join(split(s),' ')
+cap_flip_norms = map(upper, map(flip, map(normalize, lines)))
+

@@ -1,0 +1,5 @@
+#---------- Equivalent AllNotIn and AllInSet tuples----------#
+from mx.TextTools import AllNotIn, AllInSet, invset
+tup1 = ('xyz', AllNotIn, 'XYZxyz')
+tup2 = ('xyz', AllInSet, invset('xyzXYZ'))
+

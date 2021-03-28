@@ -1,0 +1,8 @@
+#---------- While loop with break token stream----------#
+# ...define the lexer rules, etc...
+while 1:
+    t = lex.token()
+    if t is None:   # No more input
+        break
+    # ...do something with each token...
+

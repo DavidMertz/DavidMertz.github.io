@@ -1,0 +1,6 @@
+#---------- stray_punct successes and failures----------#
+-- spam      # matches "--"
+& spam       # fails at "AllInSet" since '&' advanced head
+#@$ %% spam  # matches "#@$"
+**spam       # fails (whitespace isn't encountered before 's')
+

@@ -1,0 +1,6 @@
+#---------- Format code flags----------#
+0  Pad to length with leading zeros
+-  Align the value to the left within its length
+_  (space) Pad to length with leading spaces
++  Explicitly indicate the sign of positive values
+

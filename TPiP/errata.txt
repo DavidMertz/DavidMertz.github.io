@@ -1,0 +1,128 @@
+ERRATA
+-------------------------------------------------------------------
+
+p.xvi -- Halfway down:
+
+    severeral --> several 
+
+p.6 -- 2nd line S.B.:
+
+    short_regvals = filter(both(shortline, isRegDBVal), lines)
+
+p.24 -- Final three lines of interactive shell S.B.:
+
+    >>> ldn = LogDictNew()
+    >>> ldn['this'] = 'that'
+    Set: this->that
+
+p.36 -- Definition of AutoFillingDict should contain:
+
+    def __getitem__(self, key):
+        return self.data.get(key, '')
+
+p.36 -- Definition of ClosureDict should contain:
+
+    def __getitem__(self, key):
+        return self.data.get(key, '%('+key+')s')
+
+p.60 -- 2nd function explained should be:
+
+    filecmp.dircmp.report_full_closure()
+
+p.77 -- First and second line:
+
+    os.mkdirs -> os.makedirs
+
+p.145 -- 2nd example in swapcase(), should read:
+
+    >>> "mary HAD a little lamb!".swapcase()
+    'MARY had A LITTLE LAMB!'
+
+p.162 -- 2nd paragraph, 2nd sentence should read:
+
+    Unlike uu, quopri adds no content headers to encoded data; ...
+
+p.202 -- Last sentence should read:
+
+    Does it do better than SlicedZPickleIndexer (the best variant
+    included in both speed and space)?
+
+p.213 -- Third line should read:
+ 
+    >>> re_show(r'th[^s]*s', s2)
+
+p.219 -- 1st paragraph, 2nd sentence should read:
+
+    These are similar to regular grouped subexpressions, ...
+
+p.262 -- Last complete paragraph, second sentence, should read:
+
+    ...since the latter can form a subsequence of the former."
+
+p.271 -- Code sample near bottom, second to last line should be:
+
+    map(splitnames, useful(parts(txt,'\n['))) )
+
+p.273 -- The .add_state() method should read:
+
+    def add_state(self, handler, end_state=0):
+        self.handlers.append(handler)
+        if end_state:
+            self.endStates.append(handler)
+
+p.313 -- mx.TextTools.prefix, first sentence should read:
+
+    ...that matches the start of s.
+
+p.364 -- Second listing of 'email.Utils.formataddr' should be 
+         'email.Utils.formatdate'
+
+p.385 -- First paragraph under HTMLParser.HTMLParser()
+
+    ...is fairly useful... --> ...is fairly useless...
+
+p.392 -- First sentence in urlparse should read:
+
+    The module urlparse supports just one...
+ 
+p.426 -- 1st full paragraph, 1st sentence should read:
+
+    Each argument to the print statement...
+
+p.426 -- last sentence of same paragraph:
+
+    String interpolation is also performed...
+
+p.448 -- in 'def hypotenuse':
+
+    'a,b = ab[:]' --> 'a,b = ab'
+
+p.448 -- 3/4 down:
+
+    "substitue" should read "substitute"
+
+p.482 -- 2nd sentence should read:
+
+    Complexities one often sees are:
+
+Back cover:
+
+    Book URL incorrectly listed as http://gnosis.cx/TpiP/ in the
+    main text (but correct at lower right).  A redirect mitigates 
+    the error.
+
+
+------------------------------------------------------------------------
+Thanks to:
+
+    Glenn R Williams <gloonie@earthlink.net>
+    Bill Scherer <Bill.Scherer@verizonwireless.com>
+    Greg Lee <glee@pharsight.com>
+    John Hazen <john@hazen.net>
+    Bob Kimble <bob@iplicity.com>
+    Gary Duncan <gmduncan@netspace.net.au>
+    Tim Churches <tchur@optushome.com.au>
+    Andrew Purshottam <andy@andypurshottam.com>
+    Nils Barth <nils_barth@post.harvard.edu>
+    John W. Warren, CAA <John.Warren@caa.army.mil>
+    Chen Levy <gnosis.cx@chenlevy.com>

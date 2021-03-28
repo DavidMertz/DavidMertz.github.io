@@ -1,0 +1,11 @@
+#---------- ndiff.py report----------#
+% ./ndiff.py chap4.txt chap4.txt~ | grep '^[+-]'
+-: chap4.txt
++: chap4.txt~
++     against patterns.
+-     against patterns.  The required similarity is configurable.
+-
+-     >>> users = ['j.smith', 't.smith', 'p.smyth', 'a.simpson']
+-     >>> maxhits = 10
+-     >>> login = 'a.smith'
+

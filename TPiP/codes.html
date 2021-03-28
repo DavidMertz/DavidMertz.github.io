@@ -1,0 +1,294 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"> 
+<head> 
+  <meta name="author" content="David Mertz"/> 
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8"/> 
+  <title>Text Processing in Python (code samples)</title></head> 
+ 
+<body link="#0000ee" vlink="#551a8b" alink="#0000ee" background="MarbleBack.jpg"> 
+ 
+<table border="0" cellspacing="2" cellpadding="2" width="100%"> 
+<tbody> 
+  <tr valign="top"> 
+    <td valign="top" width="50"> 
+      <img src="hugo.gif" alt="Hugo"/> 
+    </td> 
+    <td align="center" valign="top"> 
+      <h1><cite>Text Processing in Python</cite></h1> 
+      <p><b>by <a href="mailto:mertz@gnosis.cx">David Mertz</a></b> -- 
+        published by 
+        <a href="http://www.aw.com/catalog/academic/product/1,4096,0321112547,00.html"> 
+        <b>Addison Wesley</b></a></p> 
+      <hr width="100%"/> 
+      <a href="http://gnosis.cx/publish/index.html"> 
+          <b>Other publications</b> by David Mertz </a> &nbsp;---&nbsp; 
+      <a href="index.html"> 
+          <b>Back to</b> <cite>Text Processing in Python</cite></a> 
+    </td> 
+  </tr> 
+</tbody> 
+</table> 
+ 
+<p><code>Mon 07-18-2003</code></p> 
+ 
+<p>The below code samples are all of those that appear in the book, 
+linked using the same description that appears in the text.  These are 
+suitable for downloading individually; only some of them are useful 
+standalone scripts, however.</p> 
+ 
+<ul> 
+<li><a href="001.code">Imperative style line selection</a></li> 
+<li><a href="002.code">Functional style line selection</a></li> 
+<li><a href="003.code">INSTALL.LOG sample data file</a></li> 
+<li><a href="004.code">Boolean "predicative" functions on lines</a></li> 
+<li><a href="005.code">Functional style predicates</a></li> 
+<li><a href="006.code">Select lines that fill predicate</a></li> 
+<li><a href="007.code">Find the RegDB lines</a></li> 
+<li><a href="008.code">Filter on two line predicates</a></li> 
+<li><a href="009.code">Multiple line transformations</a></li> 
+<li><a href="010.code">combinatorial.py</a></li> 
+<li><a href="011.code">Some examples using higher-order functions</a></li> 
+<li><a href="012.code">Limit nesting depth of map()/filter()</a></li> 
+<li><a href="013.code">Simple Boolean algebra of values</a></li> 
+<li><a href="014.code">Boolean algebra of return values</a></li> 
+<li><a href="015.code">Boolean algebra of composed functions</a></li> 
+<li><a href="016.code">Use of a compositional Boolean function</a></li> 
+<li><a href="017.code">C++ signature-based polymorphism</a></li> 
+<li><a href="018.code">Python "signature-based" polymorphism</a></li> 
+<li><a href="019.code">Python capability-based polymorphism</a></li> 
+<li><a href="020.code">Checking what numbers can do</a></li> 
+<li><a href="021.code">cachedlinelist.py</a></li> 
+<li><a href="022.code">randline.py</a></li> 
+<li><a href="023.code">Piping random lines to application</a></li> 
+<li><a href="024.code">Standard exceptions</a></li> 
+<li><a href="025.code">operator2.py</a></li> 
+<li><a href="026.code">Typical usage of sys.stderr and sys.stdout</a></li> 
+<li><a href="027.code">Typical usage of sys.stdin</a></li> 
+<li><a href="028.code">Naive overloading of argument</a></li> 
+<li><a href="029.code">"Quacks like a duck" overloading of argument</a></li> 
+<li><a href="030.code">Examples of 'cat' utility</a></li> 
+<li><a href="031.code">cat.py</a></li> 
+<li><a href="032.code">Modifying files in place with [fileinput]</a></li> 
+<li><a href="033.code">Formatting codes for struct module</a></li> 
+<li><a href="034.code">Use of time.clock() for benchmarking</a></li> 
+<li><a href="035.code">pprint2.py</a></li> 
+<li><a href="036.code">Round-tripping with pprint</a></li> 
+<li><a href="037.code">Custom Repr class</a></li> 
+<li><a href="038.code">schwartzian_sort.py</a></li> 
+<li><a href="039.code">reformat_para.py</a></li> 
+<li><a href="040.code">fields_stats.py</a></li> 
+<li><a href="041.code">wc.py</a></li> 
+<li><a href="042.code">encode_binary.py</a></li> 
+<li><a href="043.code">histogram.py</a></li> 
+<li><a href="044.code">read_backwards.py</a></li> 
+<li><a href="045.code">Self test of read_backwards()</a></li> 
+<li><a href="046.code">equivalent expression</a></li> 
+<li><a href="047.code">list_capwords.py</a></li> 
+<li><a href="049.code">gzip_file.py</a></li> 
+<li><a href="050.code">zipfile constants</a></li> 
+<li><a href="051.code">zipfile constants</a></li> 
+<li><a href="052.code">zlib_objs.py</a></li> 
+<li><a href="053.code">unichr_info.py</a></li> 
+<li><a href="054.code">Using unichr_info.py</a></li> 
+<li><a href="055.code">crc32.py</a></li> 
+<li><a href="056.code">sha.py</a></li> 
+<li><a href="057.code">hash_rotor.py</a></li> 
+<li><a href="058.code">hash_rotor at work</a></li> 
+<li><a href="059.code">findfile1.py</a></li> 
+<li><a href="060.code">findfile2.py</a></li> 
+<li><a href="061.code">Index dictionaries</a></li> 
+<li><a href="062.code">re_show.py</a></li> 
+<li><a href="063.code">re_new.py</a></li> 
+<li><a href="064.code">Regular expression modifiers</a></li> 
+<li><a href="065.code">flush_left.py</a></li> 
+<li><a href="066.code">show_services.py</a></li> 
+<li><a href="067.code">dupwords.py</a></li> 
+<li><a href="068.code">url_examine.py</a></li> 
+<li><a href="069.code">error_page.py</a></li> 
+<li><a href="070.code">Using ex_error_page.py</a></li> 
+<li><a href="071.code">Common continuation characters</a></li> 
+<li><a href="072.code">logical_lines.py</a></li> 
+<li><a href="073.code">find_urls.py</a></li> 
+<li><a href="074.code">pretty_nums.py</a></li> 
+<li><a href="075.code">Glob-style subpatterns</a></li> 
+<li><a href="076.code">Deprecation warning for regex</a></li> 
+<li><a href="077.code">Regular expression patterns</a></li> 
+<li><a href="078.code">EBNF-style description in a developerWorks DTD</a></li> 
+<li><a href="079.code">EBNF-style description of Python floating point</a></li> 
+<li><a href="080.code">Regular expression to identify a floating point</a></li> 
+<li><a href="081.code">EBNF description of "extended floating point</a></li> 
+<li><a href="082.code">Regular expression for option exponent</a></li> 
+<li><a href="083.code">IF/THEN/END examples</a></li> 
+<li><a href="084.code">EBNF grammar for IF/THEN/END structures</a></li> 
+<li><a href="085.code">Pencil-and-Paper Parsing examples</a></li> 
+<li><a href="086.code">IF/THEN/END examples</a></li> 
+<li><a href="087.code">IF/THEN/END/LOOP example</a></li> 
+<li><a href="088.code">IF/THEN/END example</a></li> 
+<li><a href="089.code">IF/THEN/END examples</a></li> 
+<li><a href="090.code">Python code line</a></li> 
+<li><a href="091.code">Python code line quoted</a></li> 
+<li><a href="092.code">File: hypothetical.ini</a></li> 
+<li><a href="093.code">Chunking Python code to process .ini file</a></li> 
+<li><a href="094.code">Parsed .ini structure</a></li> 
+<li><a href="095.code">Counting Python code to process .ini file</a></li> 
+<li><a href="096.code">Strongly functional code to process .ini file</a></li> 
+<li><a href="097.code">A simple state machine input loop in Python</a></li> 
+<li><a href="098.code">File: statemachine.py</a></li> 
+<li><a href="099.code">Sample Buyer/Order Report</a></li> 
+<li><a href="100.code">buyer_invoices.py</a></li> 
+<li><a href="101.code">Buyer state machine diagram</a></li> 
+<li><a href="102.code">pricing.py support data</a></li> 
+<li><a href="103.code">Creating end states for subgraphs</a></li> 
+<li><a href="104.code">ndiff.py report</a></li> 
+<li><a href="105.code">urldump.py</a></li> 
+<li><a href="106.code">typical tabnanny utility usage</a></li> 
+<li><a href="107.code">buyer_report.py</a></li> 
+<li><a href="108.code">buyer_report.py data structure</a></li> 
+<li><a href="109.code">taglist2xml() function</a></li> 
+<li><a href="110.code">mx.TextTools version of Typography()</a></li> 
+<li><a href="111.code">stray_punct successes and failures</a></li> 
+<li><a href="112.code">mxTypography.py infinite loop catcher</a></li> 
+<li><a href="113.code">tag table entry format</a></li> 
+<li><a href="114.code">Tuple in tag table with explicit branches</a></li> 
+<li><a href="115.code">Tuple in tag table with named branches</a></li> 
+<li><a href="116.code">Fail command and MatchFail branch</a></li> 
+<li><a href="117.code">Jump versus Fail for readability</a></li> 
+<li><a href="118.code">Skip and Move examples</a></li> 
+<li><a href="119.code">Equivalent AllIn and AllInSet tuples</a></li> 
+<li><a href="120.code">Equivalent AllNotIn and AllInSet tuples</a></li> 
+<li><a href="121.code">Match the character 'X'</a></li> 
+<li><a href="122.code">Match non-'X' character</a></li> 
+<li><a href="123.code">Equivalent IsIn and IsInSet tuples</a></li> 
+<li><a href="124.code">Equivalent IsNotIn and IsInSet tuples</a></li> 
+<li><a href="125.code">Word example</a></li> 
+<li><a href="126.code">EOF example</a></li> 
+<li><a href="127.code">Call example</a></li> 
+<li><a href="128.code">Call example</a></li> 
+<li><a href="129.code">CallTag example</a></li> 
+<li><a href="130.code">Function and method versions of find()</a></li> 
+<li><a href="131.code">Function and method versions of findall()</a></li> 
+<li><a href="132.code">typography.def</a></li> 
+<li><a href="133.code">Python regexes for smart ASCII markup</a></li> 
+<li><a href="134.code">simpleTypography.py</a></li> 
+<li><a href="135.code">simpleTypography20.py</a></li> 
+<li><a href="136.code">typo_html.py</a></li> 
+<li><a href="137.code">Test run of simpleTypography.py</a></li> 
+<li><a href="138.code">Input and output of simpleTypography run</a></li> 
+<li><a href="139.code">3-to-7 quantification</a></li> 
+<li><a href="140.code">Improved 3-to-7 quantification</a></li> 
+<li><a href="141.code">How to create a SimpleParse parser</a></li> 
+<li><a href="142.code">How to create a SimpleParse v2 parser</a></li> 
+<li><a href="143.code">Reported and Unreported productions</a></li> 
+<li><a href="144.code">A character literal declaration</a></li> 
+<li><a href="145.code">A character class declaration</a></li> 
+<li><a href="146.code">Universal quantifier declaration</a></li> 
+<li><a href="147.code">Existential quantifier declaration</a></li> 
+<li><a href="148.code">Potentiality quantifier declaration</a></li> 
+<li><a href="149.code">Lookahead quantifier declaration</a></li> 
+<li><a href="150.code">Error on failure declaration</a></li> 
+<li><a href="151.code">Example error-on-failure exception</a></li> 
+<li><a href="152.code">Sequence declaration</a></li> 
+<li><a href="153.code">Declarations with negation</a></li> 
+<li><a href="154.code">Bad recursion in SimpleParse</a></li> 
+<li><a href="155.code">Good quantification in SimpleParse</a></li> 
+<li><a href="156.code">Quantified potentiality in SimpleParse</a></li> 
+<li><a href="157.code">No backtracking</a></li> 
+<li><a href="158.code">wordscanner.py</a></li> 
+<li><a href="159.code">Tokenization of smart ASCII text</a></li> 
+<li><a href="160.code">wordplusscanner.py</a></li> 
+<li><a href="161.code">Improved tokenization of smart ASCII text</a></li> 
+<li><a href="162.code">Assigning YaccSlice indices</a></li> 
+<li><a href="163.code">markupbuilder.py</a></li> 
+<li><a href="164.code">Parse list of smart ASCII text</a></li> 
+<li><a href="165.code">EBNF style plain declaration</a></li> 
+<li><a href="166.code">Recursive para declaration</a></li> 
+<li><a href="167.code">Importing lex.py</a></li> 
+<li><a href="168.code">Defining a 'tokens' list</a></li> 
+<li><a href="169.code">Defining token patterns</a></li> 
+<li><a href="170.code">Building the lexer</a></li> 
+<li><a href="171.code">Wrap token stream in iterator</a></li> 
+<li><a href="172.code">While loop with break token stream</a></li> 
+<li><a href="173.code">Importing yacc.py</a></li> 
+<li><a href="174.code">Importing the lexer</a></li> 
+<li><a href="175.code">Parser function with multiple productions</a></li> 
+<li><a href="176.code">Empty productions in yacc.py</a></li> 
+<li><a href="177.code">Assigning YaccSlice indices</a></li> 
+<li><a href="178.code">Building the lexer</a></li> 
+<li><a href="179.code">Underlying constructor</a></li> 
+<li><a href="180.code">Underlying constructor</a></li> 
+<li><a href="181.code">Standard email.Errors exceptions</a></li> 
+<li><a href="182.code">Default 'fmt' string</a></li> 
+<li><a href="183.code">write_payload_list.py</a></li> 
+<li><a href="184.code">check_imap_subjects.py</a></li> 
+<li><a href="185.code">new_email_subjects.py</a></li> 
+<li><a href="186.code">send_email.py</a></li> 
+<li><a href="187.code">Looping through a mailbox in 2.2+</a></li> 
+<li><a href="188.code">Looping through a mailbox in any version</a></li> 
+<li><a href="189.code">HTTP GET request</a></li> 
+<li><a href="190.code">simple.cgi</a></li> 
+<li><a href="191.code">http://gnosis.cx/simpleform.html</a></li> 
+<li><a href="192.code">Response from simple.cgi GET request</a></li> 
+<li><a href="193.code">Response from simple.cgi POST request</a></li> 
+<li><a href="194.code">Web bug link on a Web page</a></li> 
+<li><a href="195.code">visitor.cgi</a></li> 
+<li><a href="196.code">Using cgi.FieldStorage</a></li> 
+<li><a href="197.code">Checking the type of a query value</a></li> 
+<li><a href="198.code">File upload from HTML form</a></li> 
+<li><a href="199.code">Traceback enabled CGI script</a></li> 
+<li><a href="200.code">Debugging CGI script in Python</a></li> 
+<li><a href="201.code">Debugging/logging CGI script in Python</a></li> 
+<li><a href="202.code">Snippet of oddly nested HTML</a></li> 
+<li><a href="203.code">HTMLParser_stack.py</a></li> 
+<li><a href="204.code">HTMLParser_stack output</a></li> 
+<li><a href="205.code">TagStack class example</a></li> 
+<li><a href="206.code">Call back to .handle_data()</a></li> 
+<li><a href="207.code">Call back to .handle_data()</a></li> 
+<li><a href="208.code">Closed empty tag</a></li> 
+<li><a href="209.code">Opening URLs with a custom class</a></li> 
+<li><a href="210.code">specifying proxies and authentication</a></li> 
+<li><a href="211.code">Diagram of network location</a></li> 
+<li><a href="212.code">location_parse.py</a></li> 
+<li><a href="213.code">XML document with special nodes</a></li> 
+<li><a href="214.code">DTD for simple subelement XML document</a></li> 
+<li><a href="215.code">XML Schema "item" Element Definition</a></li> 
+<li><a href="216.code">Order info XML document</a></li> 
+<li><a href="217.code">xmlcat.py</a></li> 
+<li><a href="218.code">gnosis.xml.indexer search</a></li> 
+<li><a href="219.code">Limit matches to ones in a title element</a></li> 
+<li><a href="220.code">dissertation.dtd</a></li> 
+<li><a href="221.code">dissertation.py</a></li> 
+<li><a href="222.code">PYX format example</a></li> 
+<li><a href="223.code">Format code flags</a></li> 
+<li><a href="224.code">Format type codes</a></li> 
+<li><a href="225.code">Functional version of print statement</a></li> 
+<li><a href="226.code">Explicit 'for' loop</a></li> 
+<li><a href="227.code">List-application loop</a></li> 
+<li><a href="228.code">apply() as first-class function</a></li> 
+<li><a href="229.code">Telephone Number Report</a></li> 
+<li><a href="230.code">Run length encoding example</a></li> 
+<li><a href="231.code">Huffman encoding example</a></li> 
+<li><a href="232.code">Huffman translation example</a></li> 
+<li><a href="233.code">LZ77 Algorithm</a></li> 
+<li><a href="235.code">Word-based Huffman compression</a></li> 
+<li><a href="236.code">word_huffman.py</a></li> 
+<li><a href="237.code">Hex view of several character string encodings</a></li> 
+<li><a href="238.code">MIME Header</a></li> 
+<li><a href="239.code">HTTP Header</a></li> 
+<li><a href="240.code">Content-Type META tag</a></li> 
+<li><a href="241.code">XML Encoding Declaration</a></li> 
+<li><a href="242.code">mk_unicode_chart.py</a></li> 
+<li><a href="243.code">Use of book2html.py</a></li> 
+<li><a href="244.code">colorize.py</a></li> 
+<li><a href="245.code">book2html.py</a></li> 
+<li><a href="246.code">Common Big-O Complexities</a></li> 
+</ul> 
+<p> 
+<a href="http://validator.w3.org/check/referer"> 
+  <img src="http://www.w3.org/Icons/valid-xhtml10" 
+       alt="Valid XHTML 1.0!" height="31" width="88" /> 
+</a> 
+</p> 
+</body></html> 
+ 

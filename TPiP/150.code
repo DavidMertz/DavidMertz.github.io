@@ -1,0 +1,5 @@
+#---------- Error on failure declaration----------#
+require_Xs   := "X"!
+require_code := ([A-Z]+, [0-9])!
+contraction := "'", ('clock'/'d'/'ll'/'m'/'re'/'s'/'t'/'ve')!
+

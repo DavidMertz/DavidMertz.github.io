@@ -1,0 +1,16 @@
+#---------- Test run of simpleTypography.py----------#
+% python simpleTypography.py < p.txt > p.html
+(1,
+ [('plain', 0, 15, []),
+  ('markup', 15, 27, [('emph', 15, 27, [('plain', 16, 26, [])])]),
+  ('plain', 27, 42, []),
+  ('markup', 42, 51, [('module', 42, 51, [('plain', 43, 50, [])])]),
+  ('plain', 51, 55, []),
+  ('markup', 55, 70, [('code', 55, 70, [('plain', 56, 69, [])])]),
+  ('plain', 70, 90, []),
+  ('markup', 90, 96, [('strong', 90, 96, [('plain', 91, 95, [])])]),
+  ('plain', 96, 132, []),
+  ('markup', 132, 145, [('title', 132, 145, [('plain',133,144,[])])]),
+  ('plain', 145, 174, [])],
+ 174)
+

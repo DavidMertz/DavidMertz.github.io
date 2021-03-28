@@ -1,0 +1,8 @@
+#---------- Regular expression modifiers----------#
+* L (re.L) - Locale customization of \w, \W, \b, \B
+* i (re.I) - Case-insensitive match
+* m (re.M) - Treat string as multiple lines
+* s (re.S) - Treat string as single line
+* u (re.U) - Unicode customization of \w, \W, \b, \B
+* x (re.X) - Enable verbose regular expressions
+

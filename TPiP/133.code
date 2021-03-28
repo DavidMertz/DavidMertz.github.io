@@ -1,0 +1,12 @@
+#---------- Python regexes for smart ASCII markup----------#
+# [module] names
+re_mods =   r"""([\(\s'/">]|^)\[(.*?)\]([<\s\.\),:;'"?!/-])"""
+# *strongly emphasize* words
+re_strong = r"""([\(\s'/"]|^)\*(.*?)\*([\s\.\),:;'"?!/-])"""
+# -emphasize- words
+re_emph =   r"""([\(\s'/"]|^)-(.*?)-([\s\.\),:;'"?!/])"""
+# _Book Title_ citations
+re_title =  r"""([\(\s'/"]|^)_(.*?)_([\s\.\),:;'"?!/-])"""
+# 'Function()' names
+re_funcs =  r"""([\(\s/"]|^)'(.*?)'([\s\.\),:;"?!/-])"""
+

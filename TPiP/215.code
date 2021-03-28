@@ -1,0 +1,18 @@
+#---------- XML Schema "item" Element Definition----------#
+<xsd:element name="item">
+  <xsd:complexType>
+    <xsd:sequence>
+      <xsd:element name="USPrice"  type="xsd:decimal"/>
+      <xsd:element name="shipDate" type="xsd:date"
+                   minOccurs="0" maxOccurs=3 />
+    </xsd:sequence>
+    <xsd:attribute name="partNum" type="SKU"/>
+  </xsd:complexType>
+</xsd:element>
+<!-- Stock Keeping Unit, a code for identifying products -->
+<xsd:simpleType name="SKU">
+   <xsd:restriction base="xsd:string">
+      <xsd:pattern value="\d{3}-[A-Z]{2}"/>
+   </xsd:restriction>
+</xsd:simpleType>
+

@@ -1,0 +1,7 @@
+#---------- Tuple in tag table with explicit branches----------#
+# Branch forward one state if next character -is not- an X
+# ... branch backward three states if it is an X
+tupX = (None, Is, 'X', +1, -3)
+# assume all the tups are defined somewhere...
+tagtable = (tupA, tupB, tupV, tupW, tupX, tupY, tupZ)
+

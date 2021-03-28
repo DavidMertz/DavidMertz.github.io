@@ -1,0 +1,11 @@
+#---------- IF/THEN/END examples----------#
+IF cond1 THEN act1 END
+-----
+IF cond2 THEN
+  IF cond3 THEN act3 END
+END
+-----
+IF cond4 THEN
+  act4
+END
+

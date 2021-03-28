@@ -1,0 +1,4 @@
+#---------- Jump versus Fail for readability----------#
+tup1 = (None, Fail, Here, +3)
+tup2 = (None, Jump, To, +3)
+

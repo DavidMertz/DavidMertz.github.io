@@ -1,0 +1,17 @@
+#---------- Examples of 'cat' utility----------#
+% cat a
+AAAAA
+% cat a b
+AAAAA
+BBBBB
+% cat - b < a
+AAAAA
+BBBBB
+% cat < b
+BBBBB
+% cat a < b
+AAAAA
+% echo "XXX" | cat a -
+AAAAA
+XXX
+

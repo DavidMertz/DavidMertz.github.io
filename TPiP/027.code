@@ -1,0 +1,9 @@
+#---------- Typical usage of sys.stdin----------#
+% cat cap_stdin.py
+#!/usr/bin/env python
+import sys, string
+input = sys.stdin.read()
+print string.upper(input)
+% echo "this and that" | ./cap_stdin.py
+THIS AND THAT
+

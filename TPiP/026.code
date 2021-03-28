@@ -1,0 +1,19 @@
+#---------- Typical usage of sys.stderr and sys.stdout----------#
+% cat cap_file.py
+#!/usr/bin/env python
+import sys, string
+if len(sys.argv) < 2:
+    sys.stderr.write("No filename specified\n")
+else:
+    fname = sys.argv[1]
+    try:
+        input = open(fname).read()
+        sys.stdout.write(string.upper(input))
+    except:
+        sys.stderr.write("Could not read '%s'\n" % fname)
+% ./cap_file.py this > CAPS
+% ./cap_file.py nosuchfile > CAPS
+Could not read 'nosuchfile'
+% ./cap_file.py > CAPS
+No filename specified
+

@@ -1,0 +1,18 @@
+#---------- HTMLParser_stack.py----------#
+#!/usr/bin/env python
+import HTMLParser
+html = """<html><head><title>Advice</title></head><body>
+<p>The <a href="http://ietf.org">IETF admonishes:
+   <i>Be strict in what you <b>send</b>.</i></a></p>
+</body></html>
+"""
+tagstack = []
+class ShowStructure(HTMLParser.HTMLParser):
+    def handle_starttag(self, tag, attrs): tagstack.append(tag)
+    def handle_endtag(self, tag): tagstack.pop()
+    def handle_data(self, data):
+        if data.strip():
+            for tag in tagstack: sys.stdout.write('/'+tag)
+            sys.stdout.write(' >> %s\n' % data[:40].strip())
+ShowStructure().feed(html)
+

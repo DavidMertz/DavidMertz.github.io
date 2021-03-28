@@ -1,0 +1,9 @@
+#---------- Example error-on-failure exception----------#
+% python typo2.py < p.txt
+Traceback (most recent call last):
+[...]
+simpleparse.error.ParserSyntaxError:  ParserSyntaxError:
+Failed parsing production "contraction" @pos 84 (~line 1:29).
+Expected syntax: ('clock'/'d'/'ll'/'m'/'re'/'s'/'t'/'ve')
+Got text: 'command lines'.  Still others are *bold*
+

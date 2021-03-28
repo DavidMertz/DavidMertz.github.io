@@ -1,0 +1,4 @@
+#---------- Quantified potentiality in SimpleParse----------#
+a := (b? / c)*
+x := (y?, z?)+
+

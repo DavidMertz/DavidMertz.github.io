@@ -1,0 +1,9 @@
+#---------- IF/THEN/END example----------#
+IF cond1 THEN
+  act1
+  act2
+ELSE
+  act3
+  act4
+END
+

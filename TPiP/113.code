@@ -1,0 +1,4 @@
+#---------- tag table entry format----------#
+(tagobj, command[+modifiers], argument
+         [,jump_no_match=MatchFail [,jump_match=+1]])
+

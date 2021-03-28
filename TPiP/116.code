@@ -1,0 +1,5 @@
+#---------- Fail command and MatchFail branch----------#
+table1 = ( ('foo', Is, 'X', MatchFail, MatchOk), )
+table2 = ( ('foo', Is, 'X', +1, +2),
+           ('Not_X', Fail, Here) )
+

@@ -1,0 +1,18 @@
+#---------- Debugging/logging CGI script in Python----------#
+import sys, traceback
+print "Content-type: text/html\n\n"
+try:               # use explicit exception handling
+    import my_cgi  # main CGI functionality in 'my_cgi.py'
+    my_cgi.main()
+except:
+    import time
+    errtime = '--- '+ time.ctime(time.time()) +' ---\n'
+    errlog = open('cgi_errlog', 'a')
+    errlog.write(errtime)
+    traceback.print_exc(None, errlog)
+    print "<html>\n<head>"
+    print "<title>CGI Error Encountered!</title>\n</head>"
+    print "<body><p>A problem was encountered running MyCGI</p>"
+    print "<p>Please check the server error log for details</p>"
+    print "</body></html>"
+

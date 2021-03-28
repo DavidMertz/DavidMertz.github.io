@@ -1,0 +1,14 @@
+#---------- visitor.cgi----------#
+#!/usr/bin/python
+import os
+from sys import stdout
+addr = os.environ.get("REMOTE_ADDR","Unknown IP Address")
+agent = os.environ.get("HTTP_USER_AGENT","No Known Browser")
+fp = open('visitor.log','a')
+fp.write('%s\t%s\n' % (addr, agent))
+fp.close()
+stdout.write("Content-type: image/gif\n\n")
+stdout.write('GIF89a\001\000\001\000\370\000\000\000\000\000')
+stdout.write('\000\000\000!\371\004\001\000\000\000\000,\000')
+stdout.write('\000\000\000\001\000\001\000\000\002\002D\001\000;')
+

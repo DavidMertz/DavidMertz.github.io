@@ -1,0 +1,3 @@
+#---------- Use of a compositional Boolean function----------#
+selected = filter(satisfiedP, lines)
+

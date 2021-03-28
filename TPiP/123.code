@@ -1,0 +1,5 @@
+#---------- Equivalent IsIn and IsInSet tuples----------#
+tup1 = ('xyz', IsIn, 'XYZxyz')
+tup2 = ('xyz', IsInSet, set('XYZxyz')
+tup3 = ('xyz', IsInSet, CharSet('XYZxyz')
+

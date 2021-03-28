@@ -1,0 +1,6 @@
+#---------- How to create a SimpleParse parser----------#
+from simpleparse import generator
+parser = generator.buildParser(decl).parserbyname('toplevel')
+from mx.TextTools import TextTools
+taglist = TextTools.tag(src, parser)
+

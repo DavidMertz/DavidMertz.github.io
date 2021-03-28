@@ -1,0 +1,4 @@
+#---------- Functional style line selection----------#
+selected = filter(isCond, open(filename).readlines())
+# Py2.2 -> filter(isCond, open(filename))
+

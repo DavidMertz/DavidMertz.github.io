@@ -1,0 +1,7 @@
+#---------- Opening URLs with a custom class----------#
+import urllib
+class MyOpener(urllib.FancyURLopener):
+    pass
+urllib._urlopener = MyOpener()
+u = urllib.urlopen("http://some.url")   # uses custom class
+

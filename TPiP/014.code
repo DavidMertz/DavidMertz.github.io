@@ -1,0 +1,3 @@
+#---------- Boolean algebra of return values----------#
+satisfied = (thisP(s) or thatP(s)) and (fooP(s) or barP(s))
+

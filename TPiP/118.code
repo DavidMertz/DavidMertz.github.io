@@ -1,0 +1,6 @@
+#---------- Skip and Move examples----------#
+# read-head forward 20 chars, jump to next state
+tup1 = (None, Skip, 20)
+# read-head to position 10, and jump back 4 states
+tup2 = (None, Move, 10, 0, -4)
+

@@ -1,0 +1,5 @@
+#---------- re_new.py----------#
+import re
+def re_new(pat, rep, s):
+    print re.sub(pat, '{'+rep+'}', s)
+

@@ -1,0 +1,7 @@
+#---------- Response from simple.cgi POST request----------#
+CONTENT_LENGTH :: 28
+REQUEST_URI :: /cgi-bin/simple.cgi
+QUERY_STRING ::
+REQUEST_METHOD :: POST
+<STDIN> :: this=that&spam=eggs+are+good
+

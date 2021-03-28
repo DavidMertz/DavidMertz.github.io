@@ -1,0 +1,11 @@
+#---------- Defining token patterns----------#
+t_FOO = r"[Ff][Oo]{1,2}"
+t_BAR = r"[Bb][Aa][Rr]"
+def t_BAZ(t):
+    r"([Bb][Aa][Zz])+"
+    t.value = 'BAZ'   # canonical caps BAZ
+    return t
+def t_FLAM(t):
+    r"(FLAM|flam)*"
+    # flam's are discarded (no return)
+

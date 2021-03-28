@@ -1,0 +1,19 @@
+#---------- pprint2.py----------#
+from pprint import pformat
+import string, sys
+def pformat2(o):
+    if hasattr(o,'__dict__'):
+        lines = []
+        klass = o.__class__.__name__
+        module = o.__module__
+        desc = '<%s.%s instance at 0x%x>' % (module, klass, id(o))
+        lines.append(desc)
+        for k,v in o.__dict__.items():
+            lines.append('instance.%s=%s' % (k, pformat(v)))
+        return string.join(lines,'\n')
+    else:
+        return pprint.pformat(o)
+
+def pprint2(o, stream=sys.stdout):
+    stream.write(pformat2(o)+'\n')
+

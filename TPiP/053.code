@@ -1,0 +1,20 @@
+#---------- unichr_info.py----------#
+# Return all the information [unicodedata] has
+# about the single unicode character whose codepoint
+# is specified as a command-line argument.
+# Arg may be any expression evaluating to an integer
+from unicodedata import *
+import sys
+char = unichr(eval(sys.argv[1]))
+print 'bidirectional', bidirectional(char)
+print 'category     ', category(char)
+print 'combining    ', combining(char)
+print 'decimal      ', decimal(char,0)
+print 'decomposition', decomposition(char)
+print 'digit        ', digit(char,0)
+print 'mirrored     ', mirrored(char)
+print 'name         ', name(char,'NOT DEFINED')
+print 'numeric      ', numeric(char,0)
+try: print 'lookup       ', `lookup(name(char))`
+except: print "Cannot lookup"
+

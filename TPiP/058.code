@@ -1,0 +1,11 @@
+#---------- hash_rotor at work----------#
+% cat mary.txt
+Mary had a little lamb
+% python sha.py mary.txt | hash_rotor.py mypassword >> mary.txt
+Files: mary.txt
+SHA: Encryption:
+% cat mary.txt
+Mary had a little lamb
+c49bf9a7840f6c07ab00b164413d7958e0945941
+63a9d3a2f4493d957397178354f21915cb36f8f8
+

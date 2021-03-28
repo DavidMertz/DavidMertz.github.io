@@ -1,0 +1,6 @@
+#---------- specifying proxies and authentication----------#
+import urllib
+proxies = {'http':'http://192.168.1.1','ftp':'ftp://192.168.256.1'}
+urllib._urlopener = urllib.URLopener(proxies, key_file='mykey',
+                                     cert_file='mycert')
+

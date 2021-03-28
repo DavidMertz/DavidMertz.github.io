@@ -1,0 +1,10 @@
+#---------- DTD for simple subelement XML document----------#
+<!ELEMENT root ((a|OTHER-A)?, b, c*)>
+<!ELEMENT a (#PCDATA)>
+<!ELEMENT b EMPTY>
+<!ATTLIST b data CDATA #REQUIRED
+            NOT-THERE (this|that) #IMPLIED>
+<!ELEMENT c (d+)>
+<!ATTLIST c data CDATA #IMPLIED>
+<!ELEMENT d (#PCDATA)>
+

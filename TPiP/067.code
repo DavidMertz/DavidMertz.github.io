@@ -1,0 +1,17 @@
+#---------- dupwords.py----------#
+# Detect doubled words and display with context
+# Include words doubled across lines but within paras
+
+import sys, re, glob
+for pat in sys.argv[1:]:
+    for file in glob.glob(pat):
+        newfile = 1
+        for para in open(file).read().split('\n\n'):
+            dups = re.findall(r'(?m)(^.*(\b\w+\b)\s*\b\2\b.*$)', para)
+            if dups:
+                if newfile:
+                    print '%s\n%s\n' % ('-'*70,file)
+                    newfile = 0
+                for dup in dups:
+                    print '[%s] -->' % dup[1], dup[0]
+

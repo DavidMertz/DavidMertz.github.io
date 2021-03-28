@@ -1,0 +1,47 @@
+#---------- Sample Buyer/Order Report----------#
+MONTHLY REPORT -- April 2002
+===================================================================
+
+Rules:
+ - Each buyer has price schedule for each item (func of quantity).
+ - Each buyer has a discount schedule based on dollar totals.
+ - Discounts are per-order (i.e., contiguous block)
+ - Buyer listing starts with line containing ">>", then buyer name.
+ - Item quantities have name-whitespace-number, one per line.
+ - Comment sections begin with line starting with an asterisk,
+   and ends with first line that ends with an asterisk.
+
+>> Acme Purchasing
+
+  widgets      100
+  whatzits    1000
+  doodads     5000
+  dingdongs   20
+
+* Note to Donald: The best contact for Acme is Debbie Franlin, at
+* 413-555-0001.  Fallback is Sue Fong (call switchboard). *
+
+>> Megamart
+
+doodads   10k
+whatzits  5k
+
+>> Fly-by-Night Sellers
+   widgets        500
+   whatzits      4
+   flazs         1000
+
+* Note to Harry: Have Sales contact FbN for negotiations *
+
+*
+Known buyers:
+>>  Acme
+>>  Megamart
+>>  Standard (default discounts)
+*
+
+*** LATE ADDITIONS ***
+
+>> Acme Purchasing
+widgets      500     (rush shipment)**
+

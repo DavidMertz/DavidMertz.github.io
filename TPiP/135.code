@@ -1,0 +1,5 @@
+#---------- simpleTypography20.py----------#
+from simpleparse.parser import Parser
+parser = Parser(open('typography.def').read(), 'para')
+taglist = parser.parse(src)
+

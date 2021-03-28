@@ -1,0 +1,3 @@
+#---------- EBNF style plain declaration----------#
+plain := (ALPHANUMS | CONTRACTION | SAFEPUNCT | MDASH | WORDPUNCT)+
+

@@ -1,0 +1,16 @@
+#---------- dissertation.py----------#
+from gnosis.xml.validity import *
+class appendix(PCDATA):   pass
+class table(EMPTY):       pass
+class figure(EMPTY):      pass
+class _mixedpara(Or):     _disjoins = (PCDATA, figure, table)
+class paragraph(Some):    _type = _mixedpara
+class title(PCDATA):      pass
+class _paras(Some):       _type = paragraph
+class chapter(Seq):       _order = (title, _paras)
+class dedication(PCDATA): pass
+class _apps(Any):         _type = appendix
+class _chaps(Some):       _type = chapter
+class _dedi(Maybe):       _type = dedication
+class dissertation(Seq):  _order = (_dedi, _chaps, _apps)
+

@@ -1,0 +1,14 @@
+#---------- Input and output of simpleTypography run----------#
+% cat p.txt
+Some words are -in italics-, others
+name [modules] or 'command lines'.
+Still others are *bold* -- that's how
+it goes. Maybe some _book titles_.
+And some in-fixed dashes.
+% cat p.html
+Some words are <em>in italics</em>, others
+name <em><code>modules</code></em> or <code>command lines</code>.
+Still others are <strong>bold</strong> -- that's how
+it goes. Maybe some <cite>book titles</cite>.
+And some in-fixed dashes.
+

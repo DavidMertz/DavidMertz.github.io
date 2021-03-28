@@ -1,0 +1,6 @@
+#---------- Boolean "predicative" functions on lines----------#
+def isFileCopy(line):
+    return line[:10]=='File Copy:' # or line.startswith(...)
+def isFileOverwrite(line):
+    return line[:15]=='File Overwrite:'
+

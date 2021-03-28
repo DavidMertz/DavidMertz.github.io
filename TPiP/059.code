@@ -1,0 +1,50 @@
+#---------- findfile1.py----------#
+# Find files matching date and size
+_usage = """
+Usage:
+   python findfile1.py [-start=days_ago] [-end=days_ago]
+                       [-small=min_size] [-large=max_size] [pattern]
+ Example:
+   python findfile1.py -start=10 -end=5 -small=1000 -large=5000 *.txt
+"""
+import os.path
+import time
+import glob
+import sys
+
+def parseargs(args):
+    """Somewhat flexible argument parser for multiple platforms.
+
+    Switches can start with - or /, keywords can end with = or :.
+    No error checking for bad arguments is performed, however.
+    """
+    now = time.time()
+    secs_in_day = 60*60*24
+    start = 0           # start of epoch
+    end = time.time()   # right now
+    small = 0           # empty files
+    large = sys.maxint  # max file size
+    pat = '*'           # match all
+    for arg in args:
+       if arg[0] in '-/':
+          if   arg[1:6]=='start': start = now-(secs_in_day*int(arg[7:]))
+          elif arg[1:4]=='end':   end   = now-(secs_in_day*int(arg[5:]))
+          elif arg[1:6]=='small': small = int(arg[7:])
+          elif arg[1:6]=='large': large = int(arg[7:])
+          elif arg[1] in 'h?': print _usage
+       else:
+          pat = arg
+    return (start,end,small,large,pat)
+
+if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        (start,end,small,large,pat) = parseargs(sys.argv[1:])
+        for fname in glob.glob(pat):
+            if not os.path.isfile(fname):
+                continue          # don't check directories
+            modtime = os.path.getmtime(fname)
+            size = os.path.getsize(fname)
+            if small <= size <= large and start <= modtime <= end:
+                print time.ctime(modtime),'%8d '%size,fname
+    else: print _usage
+

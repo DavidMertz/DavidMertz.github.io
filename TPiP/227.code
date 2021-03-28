@@ -1,0 +1,3 @@
+#---------- List-application loop----------#
+filter(sys.stdout.write, map(str, range(100)))
+

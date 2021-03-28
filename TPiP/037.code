@@ -1,0 +1,10 @@
+#---------- Custom Repr class----------#
+class MyRepr(repr.Repr):
+    def repr_file(self, obj, level):
+        if obj.name in ['<stdin>', '<stdout>', '<stderr>']:
+            return obj.name
+        else:
+            return `obj`
+aRepr = MyRepr()
+print aRepr.repr(sys.stdin)          # prints '<stdin>'
+

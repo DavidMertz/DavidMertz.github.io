@@ -1,0 +1,3 @@
+#---------- Simple Boolean algebra of values----------#
+satisfied = (this or that) and (foo or bar)
+

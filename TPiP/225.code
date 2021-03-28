@@ -1,0 +1,5 @@
+#---------- Functional version of print statement----------#
+def print_func(*args):
+    import sys
+    sys.stdout.write(' '.join(map(repr,args))+'\n')
+

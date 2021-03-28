@@ -1,0 +1,5 @@
+#---------- Deprecation warning for regex----------#
+% python -c "import regex"
+-c:1:  DeprecationWarning:  the regex module is deprecated;
+please use the re module
+

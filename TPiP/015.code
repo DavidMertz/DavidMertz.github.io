@@ -1,0 +1,3 @@
+#---------- Boolean algebra of composed functions----------#
+satisfiedP = both(either(thisP,thatP), either(fooP,barP))
+

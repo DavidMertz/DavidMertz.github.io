@@ -1,0 +1,5 @@
+#---------- Functional style predicates----------#
+isRegDBRoot = lambda line: line[:11]=='RegDB Root:'
+isRegDBKey = lambda line: line[:10]=='RegDB Key:'
+isRegDBVal = lambda line: line[:10]=='RegDB Val:'
+

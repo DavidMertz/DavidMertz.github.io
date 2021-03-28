@@ -1,0 +1,3 @@
+#---------- Diagram of network location----------#
+[user[:password]@]host[:port]
+

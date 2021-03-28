@@ -1,0 +1,4 @@
+#---------- Explicit 'for' loop----------#
+for x in range(100):
+    sys.stdout.write(str(x))
+

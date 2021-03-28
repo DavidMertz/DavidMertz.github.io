@@ -1,0 +1,4 @@
+#---------- Filter on two line predicates----------#
+shortline = lambda line: len(line) < 25
+short_regvals = filter(shortline, filter(isRegDBVal, lines))
+

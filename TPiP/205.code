@@ -1,0 +1,21 @@
+#---------- TagStack class example----------#
+class TagStack:
+    def __init__(self, lst=[]): self.lst = lst
+    def __getitem__(self, pos): return self.lst[pos]
+    def append(self, tag):
+        # Remove every paragraph-level tag if this is one
+        if tag.lower() in ('p','blockquote'):
+            self.lst = [t for t in self.lst
+                          if t not in ('p','blockquote')]
+        self.lst.append(tag)
+    def pop(self, tag):
+        # "Pop" by tag from nearest pos, not only last item
+        self.lst.reverse()
+        try:
+            pos = self.lst.index(tag)
+        except ValueError:
+            raise HTMLParser.HTMLParseError, "Tag not on stack"
+        del self.lst[pos]
+        self.lst.reverse()
+tagstack = TagStack()
+

@@ -1,0 +1,6 @@
+#---------- Function and method versions of find()----------#
+from mx.TextTools import BMS, find
+s = 'some string with a pattern in it'
+pos1 = find(s, BMS('pat'))
+pos2 = BMS('pat').find(s)
+

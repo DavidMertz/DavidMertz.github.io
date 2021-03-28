@@ -1,0 +1,43 @@
+#---------- wordscanner.py----------#
+# List of token names.  This is always required.
+tokens = [ 'ALPHANUMS','SAFEPUNCT','BRACKET','ASTERISK',
+          'UNDERSCORE','APOSTROPHE','DASH' ]
+
+# Regular expression rules for simple tokens
+t_ALPHANUMS     = r"[a-zA-Z0-9]+"
+t_SAFEPUNCT     = r'[!@#$%^&()+=|\{}:;<>,.?/"]+'
+t_BRACKET       = r'[][]'
+t_ASTERISK      = r'[*]'
+t_UNDERSCORE    = r'_'
+t_APOSTROPHE    = r"'"
+t_DASH          = r'-'
+
+# Regular expression rules with action code
+def t_newline(t):
+    r"\n+"
+    t.lineno += len(t.value)
+
+# Special case (faster) ignored characters
+t_ignore = " \t\r"
+
+# Error handling rule
+def t_error(t):
+    sys.stderr.write("Illegal character '%s' (%s)\n"
+                     % (t.value[0], t.lineno))
+    t.skip(1)
+
+import lex, sys
+def stdin2tokens():
+    lex.input(sys.stdin.read())     # Give the lexer some input
+    toklst = []                     # Tokenize
+    while 1:
+        t = lex.token()
+        if not t: break   # No more input
+        toklst.append(t)
+    return toklst
+
+if __name__=='__main__':
+    lex.lex()                       # Build the lexer
+    for t in stdin2tokens():
+        print '%s<%s>' % (t.value.ljust(15), t.type)
+

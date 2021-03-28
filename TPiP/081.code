@@ -1,0 +1,3 @@
+#---------- EBNF description of "extended floating point----------#
+exponent ::= ("e" | "E") ["+" | "-"] floatnumber
+

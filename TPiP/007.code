@@ -1,0 +1,8 @@
+#---------- Find the RegDB lines----------#
+def isAnyRegDB(line):
+    if   line[:11]=='RegDB Root:': return 1
+    elif line[:10]=='RegDB Key:':  return 1
+    elif line[:10]=='RegDB Val:':  return 1
+    else:                          return 0
+# For recent Pythons, line.startswith(...) is better
+

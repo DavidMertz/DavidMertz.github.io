@@ -1,0 +1,15 @@
+#---------- Modifying files in place with [fileinput]----------#
+% cat a b
+AAAAA
+BBBBB
+% cat modify.py
+#!/usr/bin/env python
+import fileinput, sys
+for line in fileinput.input(sys.argv[1:], inplace=1):
+        print "MODIFIED", line,
+% echo "XXX" | ./modify.py a b -
+MODIFIED XXX
+% cat a b
+MODIFIED AAAAA
+MODIFIED BBBBB
+

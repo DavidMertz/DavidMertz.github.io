@@ -1,0 +1,7 @@
+#---------- Checking the type of a query value----------#
+if type(eggs) is type([]):  # several eggs
+    for egg in eggs:
+        print "<dt>Egg</dt>\n<dd>", egg.value, "</dd>"
+else:
+    print "<dt>Eggs</dt>\n<dd>", eggs.value, "</dd>"
+

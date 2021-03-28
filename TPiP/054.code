@@ -1,0 +1,25 @@
+#---------- Using unichr_info.py----------#
+% python unichr_info.py 1488
+bidirectional R
+category      Lo
+combining     0
+decimal       0
+decomposition
+digit         0
+mirrored      0
+name          HEBREW LETTER ALEF
+numeric       0
+lookup        u'\u05d0'
+
+% python unichr_info.py ord('1')
+bidirectional EN
+category      Nd
+combining     0
+decimal       1
+decomposition
+digit         1
+mirrored      0
+name          DIGIT ONE
+numeric       1.0
+lookup        u'1'
+

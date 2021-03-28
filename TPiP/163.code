@@ -1,0 +1,60 @@
+#---------- markupbuilder.py----------#
+import yacc
+from wordplusscanner import *
+
+def p_para(t):
+    '''para : para plain
+            | para emph
+            | para strong
+            | para module
+            | para code
+            | para title
+            | plain
+            | emph
+            | strong
+            | module
+            | code
+            | title '''
+    try:    t[0] = t[1] + t[2]
+    except: t[0] = t[1]
+
+def p_plain(t):
+    '''plain : ALPHANUMS
+             | CONTRACTION
+             | SAFEPUNCT
+             | MDASH
+             | WORDPUNCT
+             | plain plain '''
+    try:    t[0] = t[1] + t[2]
+    except: t[0] = [t[1]]
+
+def p_emph(t):
+    '''emph : DASH plain DASH'''
+    t[0] = ['<i>'] + t[2] + ['</i>']
+
+def p_strong(t):
+    '''strong : ASTERISK plain ASTERISK'''
+    t[0] = ['<b>'] + t[2] + ['</b>']
+
+def p_module(t):
+    '''module : BRACKET plain BRACKET'''
+    t[0] = ['<em><tt>'] + t[2] + ['</tt></em>']
+
+def p_code(t):
+    '''code : APOSTROPHE plain APOSTROPHE'''
+    t[0] = ['<code>'] + t[2] + ['</code>']
+
+def p_title(t):
+    '''title : UNDERSCORE plain UNDERSCORE'''
+    t[0] = ['<cite>'] + t[2] + ['</cite>']
+
+def p_error(t):
+    sys.stderr.write('Syntax error at "%s" (%s)\n'
+                     % (t.value,t.lineno))
+
+if __name__=='__main__':
+    lex.lex()               # Build the lexer
+    yacc.yacc()             # Build the parser
+    result = yacc.parse(sys.stdin.read())
+    print result
+

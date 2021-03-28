@@ -1,0 +1,12 @@
+#---------- File: hypothetical.ini----------#
+; set the colorscheme and userlevel
+[colorscheme]
+background=red
+foreground=blue
+title=green
+
+[userlevel]
+login=2
+; admin=0
+title=1
+

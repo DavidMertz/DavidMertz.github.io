@@ -1,0 +1,20 @@
+#---------- crc32.py----------#
+# Calculate CRC32 hash of input files or STDIN
+# Incremental read for large input sources
+# Usage:     python crc32.py [file1 [file2 [...]]]
+#    or:     python crc32.py < STDIN
+
+import binascii
+import fileinput
+filelist = []
+crc = binascii.crc32('')
+for line in fileinput.input():
+    if fileinput.isfirstline():
+        if fileinput.isstdin():
+            filelist.append('STDIN')
+        else:
+            filelist.append(fileinput.filename())
+    crc = binascii.crc32(line,crc)
+print 'Files:', ' '.join(filelist)
+print 'CRC32:', crc
+

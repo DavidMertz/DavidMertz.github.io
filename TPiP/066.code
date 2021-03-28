@@ -1,0 +1,43 @@
+#---------- show_services.py----------#
+import re, os, string, sys
+
+def show_opts(cmdline):
+    args = string.split(cmdline)
+    cmd = args[0]
+    if len(args) > 1:
+        opts = args[1:]
+    # might want to check error output, so use popen3()
+    (in_, out_, err) = os.popen3('man %s | col -b' % cmd)
+    manpage = out_.read()
+    if len(manpage) > 2:      # found actual documentation
+        print '\n%s' % cmd
+        for opt in opts:
+            pat_opt = r'(?sm)^\s*'+opt+r'.*?(?=\n\n)'
+            opt_doc = re.search(pat_opt, manpage)
+            if opt_doc is not None:
+                print opt_doc.group()
+            else:             # try harder for something relevant
+                mentions = []
+                for para in string.split(manpage,'\n\n'):
+                   if re.search(opt, para):
+                       mentions.append('\n%s' % para)
+                if not mentions:
+                   print '\n    ',opt,' '*9,'Option docs not found'
+                else:
+                   print '\n    ',opt,' '*9,'Mentioned in below para:'
+                   print '\n'.join(mentions)
+    else:                     # no manpage available
+        print cmdline
+        print '    No documentation available'
+
+def services(fname):
+    conf = open(fname).read()
+    pat_srv = r'''(?xm)(?=^[^#])       # lns that are not commented out
+                  (?:(?:[\w/]+\s+){6}) # first six fields ignored
+                  (.*$)                # to end of ln is servc launch'''
+    return re.findall(pat_srv, conf)
+
+if __name__ == '__main__':
+    for service in services(sys.argv[1]):
+        show_opts(service)
+

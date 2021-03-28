@@ -1,0 +1,12 @@
+#---------- url_examine.py----------#
+import sys
+from urllib import urlopen
+
+if len(sys.argv) > 1:
+    fpin = urlopen(sys.argv[1])
+    print fpin.geturl()
+    print fpin.info()
+    print fpin.read()
+else:
+    print "No specified URL"
+

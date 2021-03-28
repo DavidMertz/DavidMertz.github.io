@@ -1,0 +1,10 @@
+#---------- Looping through a mailbox in 2.2+----------#
+#!/usr/bin/env python
+from mailbox import PortableUnixMailbox
+from email import message_from_file as mff
+import sys
+folder = open(sys.argv[1])
+for message in PortableUnixMailbox(folder, mff):
+    # do something with the message...
+    print message['Subject']
+

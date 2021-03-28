@@ -1,0 +1,14 @@
+#---------- C++ signature-based polymorphism----------#
+#include <stdio.h>
+class Print {
+public:
+  void print(int i)    { printf("int %d\n", i); }
+  void print(double d) { printf("double %f\n", d); }
+  void print(float f)  { printf("float %f\n", f); }
+};
+main() {
+  Print *p = new Print();
+  p->print(37);      /* --> "int 37" */
+  p->print(37.0);    /* --> "double 37.000000" */
+}
+

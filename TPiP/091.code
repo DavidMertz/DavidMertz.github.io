@@ -1,0 +1,5 @@
+#---------- Python code line quoted----------#
+"""How to use SomeClass:
+myObject = SomeClass(this, that, other)
+"""
+

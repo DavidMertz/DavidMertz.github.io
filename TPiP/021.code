@@ -1,0 +1,18 @@
+#---------- cachedlinelist.py----------#
+import linecache, types
+class CachedLineList:
+    # Note: in Python 2.2+, it is probably worth including:
+    # __slots__ = ('_fname')
+    # ...and inheriting from 'object'
+    def __init__(self, fname):
+        self._fname = fname
+    def __getitem__(self, x):
+        if type(x) is types.SliceType:
+            return [linecache.getline(self._fname, n+1)
+                    for n in range(x.start, x.stop, x.step)]
+        else:
+            return linecache.getline(self._fname, x+1)
+    def __getslice__(self, beg, end):
+        # pass to __getitem__ which does extended slices also
+        return self[beg:end:1]
+

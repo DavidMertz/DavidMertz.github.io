@@ -1,0 +1,5 @@
+#---------- Index dictionaries----------#
+*Indexer.fileids:   fileid --> filename
+*Indexer.files:     filename --> (fileid, wordcount)
+*Indexer.words:     word --> {fileid1:occurs, fileid2:occurs, ...}
+

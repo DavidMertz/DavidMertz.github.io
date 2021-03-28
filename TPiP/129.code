@@ -1,0 +1,9 @@
+#---------- CallTag example----------#
+>>> def todo_flag(taglist, s, start, end, subtags):
+...     sys.stderr.write("Fix issue at offset %d\n" % start)
+...
+>>> tup = (todo_flag, Word+CallTag, 'XXX')
+>>> tag('XXX more stuff', (tup,))
+Fix issue at offset 0
+(1, [], 3)
+

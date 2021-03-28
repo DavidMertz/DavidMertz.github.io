@@ -1,0 +1,9 @@
+#---------- EBNF-style description of Python floating point----------#
+floatnumber   ::= pointfloat | exponentfloat
+pointfloat    ::= [intpart] fraction | intpart "."
+exponentfloat ::= (intpart | pointfloat) exponent
+intpart       ::= digit+
+fraction      ::= "." digit+
+exponent      ::= ("e" | "E") ["+" | "-"] digit+
+digit         ::= "0"..."9"
+

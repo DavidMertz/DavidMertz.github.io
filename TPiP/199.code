@@ -1,0 +1,4 @@
+#---------- Traceback enabled CGI script----------#
+import cgitb
+cgitb.enable()
+

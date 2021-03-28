@@ -1,0 +1,16 @@
+#---------- urldump.py----------#
+#!/usr/bin/env python
+import sys
+from urllib import urlopen
+from htmllib import HTMLParser
+from formatter import AbstractFormatter, DumbWriter
+if len(sys.argv) > 1:
+    fpin = urlopen(sys.argv[1])
+    parser = HTMLParser(AbstractFormatter(DumbWriter()))
+    parser.feed(fpin.read())
+    print '----------------------------------------------------'
+    print fpin.geturl()
+    print fpin.info()
+else:
+    print "No specified URL"
+

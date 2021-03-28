@@ -1,0 +1,12 @@
+#---------- Some examples using higher-order functions----------#
+# Don't nest filters, just produce func that does both
+short_regvals = filter(both(shortline, isRegVal), lines)
+
+# Don't multiply ad hoc functions, just describe need
+regroot_lines = \
+    filter(some([isRegDBRoot, isRegDBKey, isRegDBVal]), lines)
+
+# Don't nest transformations, make one combined transform
+capFlipNorm = compose3(upper, flip, normalize)
+cap_flip_norms = map(capFlipNorm, lines)
+

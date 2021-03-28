@@ -1,0 +1,22 @@
+#---------- Regular expression to identify a floating point----------#
+pat = r'''(?x)
+      (                   # exponentfloat
+        (                 # intpart or pointfloat
+          (               # pointfloat
+            (\d+)?[.]\d+  # optional intpart with fraction
+            |
+            \d+[.]        # intpart with period
+          )               # end pointfloat
+          |
+          \d+             # intpart
+        )                 # end intpart or pointfloat
+        [eE][+-]?\d+      # exponent
+      )                   # end exponentfloat
+      |
+      (                   # pointfloat
+        (\d+)?[.]\d+      # optional intpart with fraction
+        |
+        \d+[.]            # intpart with period
+      )                   # end pointfloat
+      '''
+

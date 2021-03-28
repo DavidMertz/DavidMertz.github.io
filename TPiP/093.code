@@ -1,0 +1,20 @@
+#---------- Chunking Python code to process .ini file----------#
+txt = open('hypothetical.ini').read()
+from string import strip, split
+nocomm = lambda s: s[0] != ';'        # "no comment" util
+eq2pair = lambda s: split(s,'=')      # assignmet -> pair
+def assignments(sect):
+    name, body = split(sect,']')      # identify name, body
+    assigns = split(body,'\n')        # find assign lines
+    assigns = filter(strip, assigns)  # remove outside space
+    assigns = filter(None, assigns)   # remove empty lines
+    assigns = filter(nocomm, assigns) # remove comment lines
+    assigns = map(eq2pair, assigns)   # make name/val pairs
+    assigns = map(tuple, assigns)     # prefer tuple pairs
+    return (name, assigns)
+sects = split(txt,'[')                # divide named sects
+sects = map(strip, sects)             # remove outside newlines
+sects = filter(nocomm, sects)         # remove comment sects
+config = map(assignments, sects)      # find assigns by sect
+pprint.pprint(config)
+

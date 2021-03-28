@@ -1,0 +1,5 @@
+#---------- Equivalent IsNotIn and IsInSet tuples----------#
+from mx.TextTools import IsNotIn, IsInSet, invset
+tup1 = ('xyz', IsNotIn, 'XYZxyz')
+tup2 = ('xyz', IsInSet, invset('xyzXYZ'))
+

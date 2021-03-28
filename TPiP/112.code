@@ -1,0 +1,9 @@
+#---------- mxTypography.py infinite loop catcher----------#
+def jump_count(taglist,txt,l,r,subtag):
+    global head_pos
+    if head_pos is None: head_pos = r
+    elif head_pos == r:
+        raise "InfiniteLoopError", \
+              txt[l-20:l]+'{'+txt[l]+'}'+txt[l+1:r+15]
+    else: head_pos = r
+

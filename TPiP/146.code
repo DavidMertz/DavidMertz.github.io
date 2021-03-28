@@ -1,0 +1,4 @@
+#---------- Universal quantifier declaration----------#
+any_Xs     := "X"*
+any_digits := [0-9]*
+

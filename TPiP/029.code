@@ -1,0 +1,14 @@
+#---------- "Quacks like a duck" overloading of argument----------#
+def overloaded_get_text(o):
+    if hasattr(o,'read'):
+        return o.read()
+    try:
+        return ""+o
+    except TypeError:
+        pass
+    try:
+        return repr(0+o)
+    except TypeError:
+        pass
+    raise
+

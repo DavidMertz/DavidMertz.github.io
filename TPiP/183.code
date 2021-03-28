@@ -1,0 +1,15 @@
+#---------- write_payload_list.py----------#
+#!/usr/bin/env python
+"Write payload list to separate files"
+import email, sys
+def get_payload_list(msg, decode=1):
+    payload = msg.get_payload(decode=decode)
+    if type(payload) in [type(""), type(u"")]:
+        return [payload]
+    else:
+        return payload
+mess = email.message_from_file(sys.stdin)
+for part,num in zip(get_payload_list(mess),range(1000)):
+    file = open('%s.%d' % (sys.argv[1], num), 'w')
+    print >> file, part
+

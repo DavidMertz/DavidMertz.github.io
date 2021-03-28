@@ -1,0 +1,20 @@
+#---------- Improved tokenization of smart ASCII text----------#
+% python wordplusscanner.py < p.txt
+Illegal character '~' (1)
+-              <DASH>
+Itals          <ALPHANUMS>
+-              <DASH>
+,              <SAFEPUNCT>
+[              <BRACKET>
+modname        <ALPHANUMS>
+]              <BRACKET>
+&mdash;        <MDASH>
+let            <ALPHANUMS>
+'s             <CONTRACTION>
+add            <ALPHANUMS>
+underscored    <ALPHANUMS>
+var            <ALPHANUMS>
+_              <WORDPUNCT>
+name           <ALPHANUMS>
+.              <SAFEPUNCT>
+

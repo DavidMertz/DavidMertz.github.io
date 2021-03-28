@@ -1,0 +1,4 @@
+#---------- Snippet of oddly nested HTML----------#
+<p>The <a href="http://ietf.org">IETF admonishes:
+   <i>Be lenient in what you <b>accept</i></a>.</b>
+

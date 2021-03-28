@@ -1,0 +1,23 @@
+#---------- pricing.py support data----------#
+from buyers import STANDARD, ACME, MEGAMART, BAGOBOLTS
+
+# Discount consists of dollar requirement and a percentage reduction
+# Each buyer can have an ascending series of discounts, the highest
+# one applicable to a month is used.
+discount_schedules = {
+    STANDARD  : [(5000,10),(10000,20),(15000,30),(20000,40)],
+    ACME      : [(1000,10),(5000,15),(10000,30),(20000,40)],
+    MEGAMART  : [(2000,10),(5000,20),(10000,25),(30000,50)],
+    BAGOBOLTS : [(2500,10),(5000,15),(10000,25),(30000,50)],
+  }
+item_prices = {
+    STANDARD  : {'widgets':1.0, 'whatzits':0.9, 'doodads':1.1,
+                 'dingdongs':1.3, 'flazs':0.7},
+    ACME      : {'widgets':0.9, 'whatzits':0.9, 'doodads':1.0,
+                 'dingdongs':0.9, 'flazs':0.6},
+    MEGAMART  : {'widgets':1.0, 'whatzits':0.8, 'doodads':1.0,
+                 'dingdongs':1.2, 'flazs':0.7},
+    BAGOBOLTS : {'widgets':0.8, 'whatzits':0.9, 'doodads':1.1,
+                 'dingdongs':1.3, 'flazs':0.5},
+  }
+

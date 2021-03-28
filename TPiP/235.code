@@ -1,0 +1,8 @@
+#---------- Word-based Huffman compression----------#
+small_text = word_Huffman_compress(big_text)
+search_term = "Foobar"
+coded_term = word_Huffman_compress(search_term)
+offset = small_text.find(coded_term)
+coded_context = small_text[offset-10:offset+10+len(search_term)]
+plain_context = word_Huffman_expand(coded_context)
+

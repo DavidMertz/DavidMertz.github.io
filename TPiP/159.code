@@ -1,0 +1,24 @@
+#---------- Tokenization of smart ASCII text----------#
+% cat p.txt
+-Itals-, [modname]--let's add ~ underscored var_name.
+% python wordscanner.py < p.txt
+Illegal character '~' (1)
+-              <DASH>
+Itals          <ALPHANUMS>
+-              <DASH>
+,              <SAFEPUNCT>
+[              <BRACKET>
+modname        <ALPHANUMS>
+]              <BRACKET>
+-              <DASH>
+-              <DASH>
+let            <ALPHANUMS>
+'              <APOSTROPHE>
+s              <ALPHANUMS>
+add            <ALPHANUMS>
+underscored    <ALPHANUMS>
+var            <ALPHANUMS>
+_              <UNDERSCORE>
+name           <ALPHANUMS>
+.              <SAFEPUNCT>
+

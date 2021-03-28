@@ -1,0 +1,17 @@
+#---------- Format type codes----------#
+d  Signed integer decimal
+i  Signed integer decimal
+o  Unsigned octal
+u  Unsigned decimal
+x  Lowercase unsigned hexadecimal
+X  Uppercase unsigned hexadecimal
+e  Lowercase exponential format floating point
+E  Uppercase exponential format floating point
+f  Floating point decimal format
+g  Floating point: exponential format if -4 < exp < precision
+G  Uppercase version of 'g'
+c  Single character: integer for chr(i) or length-one string
+r  Converts any Python object using repr()
+s  Converts any Python object using str()
+%  The '%' character, e.g.: '%%%d' % (1) --> '%1'
+

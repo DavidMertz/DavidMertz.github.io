@@ -1,0 +1,25 @@
+#---------- new_email_subjects.py----------#
+#!/usr/bin/env python
+import poplib, sys, string
+spamlist = []
+(host, user, passwd) = sys.argv[1:]
+mbox = poplib.POP3(host)
+mbox.user(user)
+mbox.pass_(passwd)
+
+for i in range(1, mbox.stat()[0]+1):
+    # messages use one-based indexing
+    headerlines = mbox.top(i, 0)[1]    # No body lines
+    for line in headerlines:
+        if string.upper(line[:9]) == 'SUBJECT: ':
+            if -1 <> string.find(line,'URGENT'):
+                spam = string.join(mbox.retr(i)[1],'\n')
+                spamlist.append(spam)
+                mbox.dele(i)
+            else:
+                 print line[9:]
+
+mbox.quit()
+for spam in spamlist:
+    report_to_spamcop(spam)     # assuming this func exists
+

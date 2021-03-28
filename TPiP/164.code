@@ -1,0 +1,7 @@
+#---------- Parse list of smart ASCII text----------#
+% python markupbuilder.py < p.txt
+Illegal character '~' (1)
+['<i>', 'Itals', '</i>', ',', '<em><tt>', 'modname',
+'</tt></em>', '&mdash;', 'let', "'s", 'add', 'underscored',
+'var', '_', 'name', '.']
+

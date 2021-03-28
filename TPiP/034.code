@@ -1,0 +1,13 @@
+#---------- Use of time.clock() for benchmarking----------#
+import time
+start1 = time.clock()
+approach_one()
+time1 = time.clock()-start1
+start2 = time.clock()
+approach_two()
+time2 = time.clock()-start2
+if time1 > time2:
+    print "The second approach seems better"
+else:
+    print "The first approach seems better"
+

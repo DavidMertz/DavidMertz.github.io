@@ -1,0 +1,11 @@
+#---------- hash_rotor.py----------#
+#!/usr/bin/env python
+# Encrypt hash on STDIN using sys.argv[1] as password
+import rotor, sys, binascii
+cipher = rotor.newrotor(sys.argv[1])
+hexhash = sys.stdin.read()[:-1]  # no newline
+print hexhash
+hash = binascii.unhexlify(hexhash)
+sys.stderr.write('Encryption: ')
+print binascii.hexlify(cipher.encrypt(hash))
+

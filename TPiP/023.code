@@ -1,0 +1,3 @@
+#---------- Piping random lines to application----------#
+% randline.py reallybig.log 1000 | testapp
+

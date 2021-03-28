@@ -1,0 +1,23 @@
+#---------- PYX format example----------#
+% cat test.xml
+<?xml version="1.0"?>
+<?xml-stylesheet href="test.css" type="text/css"?>
+<Spam flavor="pork">
+  <Eggs>Some text about eggs.</Eggs>
+  <MoreSpam>Ode to Spam (spam="smoked-pork")</MoreSpam>
+</Spam>
+% ./xmln test.xml
+?xml-stylesheet href="test.css" type="text/css"
+(Spam
+Aflavor pork
+-\n
+(Eggs
+-Some text about eggs.
+)Eggs
+-\n
+(MoreSpam
+-Ode to Spam (spam="smoked-pork")
+)MoreSpam
+-\n
+)Spam
+

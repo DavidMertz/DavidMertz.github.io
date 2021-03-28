@@ -1,0 +1,13 @@
+#---------- Empty productions in yacc.py----------#
+def p_empty(t):
+    '''empty : '''
+    pass
+def p_maybefoo(t):
+    '''foo  : FOOTOKEN
+            | empty '''
+    t[0] = t[1]
+def p_maybebar(t):
+    '''bar  : BARTOKEN
+            | empty '''
+    t[0] = t[1]
+

@@ -1,0 +1,4 @@
+#---------- Select lines that fill predicate----------#
+lines = open(r'd:\python22\install.log').readlines()
+regroot_lines = filter(isRegDBRoot, lines)
+

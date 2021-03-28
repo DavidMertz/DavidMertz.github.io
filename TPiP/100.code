@@ -1,0 +1,125 @@
+#---------- buyer_invoices.py----------#
+from statemachine import StateMachine
+from buyers import STANDARD, ACME, MEGAMART
+from pricing import discount_schedules, item_prices
+import sys, string
+
+#-- Machine States
+def error(cargo):
+    # Don't want to get here! Unidentifiable line
+    sys.stderr.write('Unidentifiable line:\n'+ line)
+
+def eof(cargo):
+    # Normal termination -- Cleanup code might go here.
+    sys.stdout.write('Processing Successful\n')
+
+def read_through(cargo):
+    # Skip through headers until buyer records are found
+    fp, last = cargo
+    while 1:
+        line = fp.readline()
+        if not line:            return eof, (fp, line)
+        elif line[:2] == '>>':  return whichbuyer(line), (fp, line)
+        elif line[0] == '*':    return comment, (fp, line)
+        else:                   continue
+
+def comment(cargo):
+    # Skip comments
+    fp, last = cargo
+    if len(last) > 2 and string.rstrip(last)[-1:] == '*':
+        return read_through, (fp, '')
+    while 1:
+        # could save or process comments here, if desired
+        line = fp.readline()
+        lastchar = string.rstrip(line)[-1:]
+        if not line:            return eof, (fp, line)
+        elif lastchar == '*':   return read_through, (fp, line)
+
+def STANDARD(cargo, discounts=discount_schedules[STANDARD],
+                    prices=item_prices[STANDARD]):
+    fp, company = cargo
+    invoice = 0
+    while 1:
+        line = fp.readline()
+        nextstate = buyerbranch(line)
+        if nextstate == 0: continue         # blank line
+        elif nextstate == 1:                # order item
+            invoice = invoice + calc_price(line, prices)
+        else:                               # create invoice
+            pr_invoice(company, 'standard', discount(invoice,discounts))
+            return nextstate, (fp, line)
+
+def ACME(cargo, discounts=discount_schedules[ACME],
+                prices=item_prices[ACME]):
+    fp, company = cargo
+    invoice = 0
+    while 1:
+        line = fp.readline()
+        nextstate = buyerbranch(line)
+        if nextstate == 0: continue         # blank line
+        elif nextstate == 1:                # order item
+            invoice = invoice + calc_price(line, prices)
+        else:                               # create invoice
+            pr_invoice(company, 'negotiated', discount(invoice,discounts))
+            return nextstate, (fp, line)
+
+def MEGAMART(cargo, discounts=discount_schedules[MEGAMART],
+                    prices=item_prices[MEGAMART]):
+    fp, company = cargo
+    invoice = 0
+    while 1:
+        line = fp.readline()
+        nextstate = buyerbranch(line)
+        if nextstate == 0: continue         # blank line
+        elif nextstate == 1:                # order item
+            invoice = invoice + calc_price(line, prices)
+        else:                               # create invoice
+            pr_invoice(company, 'negotiated', discount(invoice,discounts))
+            return nextstate, (fp, line)
+
+#-- Support function for buyer/state switch
+def whichbuyer(line):
+    # What state/buyer does this line identify?
+    line = string.upper(string.replace(line, '-', ''))
+    find = string.find
+    if find(line,'ACME') >= 0:      return ACME
+    elif find(line,'MEGAMART')>= 0: return MEGAMART
+    else:                           return STANDARD
+
+def buyerbranch(line):
+    if not line:                    return eof
+    elif not string.strip(line):    return 0
+    elif line[0] == '*':            return comment
+    elif line[:2] == '>>':          return whichbuyer(line)
+    else:                           return 1
+
+#-- General support functions
+def calc_price(line, prices):
+    product, quant = string.split(line)[:2]
+    quant = string.replace(string.upper(quant),'K','000')
+    quant = int(quant)
+    return quant*prices[product]
+
+def discount(invoice, discounts):
+    multiplier = 1.0
+    for threshhold, percent in discounts:
+        if invoice >= threshhold: multiplier = 1 - float(percent)/100
+    return invoice*multiplier
+
+def pr_invoice(company, disctype, amount):
+    print "Company name:", company[3:-1], "(%s discounts)" % disctype
+    print "Invoice total: $", amount, '\n'
+
+if __name__== "__main__":
+    m = StateMachine()
+    m.add_state(read_through)
+    m.add_state(comment)
+    m.add_state(STANDARD)
+    m.add_state(ACME)
+    m.add_state(MEGAMART)
+    m.add_state(error, end_state=1)
+    m.add_state(eof, end_state=1)
+    m.set_start(read_through)
+    m.run((sys.stdin, ''))
+
+

@@ -1,0 +1,19 @@
+#---------- Formatting codes for struct module----------#
+x       pad byte             0 bytes
+c       char                 1 bytes
+b       signed char          1 bytes
+B       unsigned char        1 bytes
+h       short int            2 bytes
+H       unsigned short       2 bytes
+i       int                  4 bytes
+I       unsigned int         4 bytes
+l       long int             4 bytes
+L       unsigned long        4 bytes
+q       long long int        8 bytes
+Q       unsigned long long   8 bytes
+f       float                4 bytes
+d       double               8 bytes
+s       string               padded to size
+p       Pascal string        padded to size
+P       char pointer         4 bytes
+

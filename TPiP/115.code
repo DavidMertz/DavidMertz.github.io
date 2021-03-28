@@ -1,0 +1,9 @@
+#---------- Tuple in tag table with named branches----------#
+tag_table = ('start',
+             ('lowercase',AllIn,a2z,+1,'skip'),
+             ('upper',AllIn,A2Z,'skip'),
+             'skip',
+             (None,AllIn,white+newline,+1),
+             (None,AllNotIn,alpha+white+newline,+1),
+             (None,EOF,Here,'start') )
+

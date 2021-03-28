@@ -1,0 +1,4 @@
+#---------- zipfile constants----------#
+zipfile.ZIP_STORED = 0
+zipfile.ZIP_DEFLATED = 8
+

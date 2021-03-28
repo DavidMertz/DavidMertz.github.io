@@ -1,0 +1,56 @@
+#---------- read_backwards.py----------#
+# Read blocks of a file from end to beginning.
+# Blocks may be defined by any delimiter, but the
+#  constants LINE and PARA are useful ones.
+# Works much like the file object method '.readline()':
+#  repeated calls continue to get "next" part, and
+#  function returns empty string once BOF is reached.
+
+# Define constants
+from os import linesep
+LINE = linesep
+PARA = linesep*2
+READSIZE = 1000
+
+# Global variables
+buffer = ''
+
+def read_backwards(fp, mode=LINE, sizehint=READSIZE, _init=[0]):
+    """Read blocks of file backwards (return empty string when done)"""
+    # Trick of mutable default argument to hold state between calls
+    if not _init[0]:
+        fp.seek(0,2)
+        _init[0] = 1
+    # Find a block (using global buffer)
+    global buffer
+    while 1:
+        # first check for block in buffer
+        delim = buffer.rfind(mode)
+        if delim <> -1:     # block is in buffer, return it
+            block = buffer[delim+len(mode):]
+            buffer = buffer[:delim]
+            return block+mode
+        #-- BOF reached, return remainder (or empty string)
+        elif fp.tell()==0:
+            block = buffer
+            buffer = ''
+            return block
+        else:           # Read some more data into the buffer
+            readsize = min(fp.tell(),sizehint)
+            fp.seek(-readsize,1)
+            buffer = fp.read(readsize) + buffer
+            fp.seek(-readsize,1)
+
+#-- Self test of read_backwards()
+if __name__ == '__main__':
+    # Let's create a test file to read in backwards
+    fp = open('lines','wb')
+    fp.write(LINE.join(['--- %d ---'%n for n in range(15)]))
+    # Now open for reading backwards
+    fp = open('lines','rb')
+    # Read the blocks in, one per call (block==line by default)
+    block = read_backwards(fp)
+    while block:
+        print block,
+        block = read_backwards(fp)
+

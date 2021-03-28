@@ -1,0 +1,9 @@
+#---------- Checking what numbers can do----------#
+def approx(x):                # int attributes require 2.2+
+    if hasattr(x,'__and__'):  # supports bitwise-and
+        return x & ~0x0FL
+    try:                      # supports real/imag
+        return (round(x.real,2)+round(x.imag,2)*1j)
+    except AttributeError:
+        return round(x,2)
+

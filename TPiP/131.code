@@ -1,0 +1,6 @@
+#---------- Function and method versions of findall()----------#
+from mx.TextTools import BMS, findall
+s = 'some string with a pattern in it'
+pos1 = findall(s, BMS('pat'))
+pos2 = BMS('pat').findall(s)
+

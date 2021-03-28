@@ -1,0 +1,60 @@
+#---------- encode_binary.py----------#
+# Provide encoders for arbitrary binary data
+# in Python strings.  Handles block size issues
+# transparently, and returns a string.
+# Precompression of the input string can reduce
+# or eliminate any size penalty for encoding.
+
+import sys
+import zlib
+import binascii
+
+UU = 45
+BASE64 = 57
+BINHEX = sys.maxint
+
+def ASCIIencode(s='', type=BASE64, compress=1):
+    """ASCII encode a binary string"""
+    # First, decide the encoding style
+    if type == BASE64:   encode = binascii.b2a_base64
+    elif type == UU:     encode = binascii.b2a_uu
+    elif type == BINHEX: encode = binascii.b2a_hqx
+    else: raise ValueError, "Encoding must be in UU, BASE64, BINHEX"
+    # Second, compress the source if specified
+    if compress: s = zlib.compress(s)
+    # Third, encode the string, block-by-block
+    offset = 0
+    blocks = []
+    while 1:
+        blocks.append(encode(s[offset:offset+type]))
+        offset += type
+        if offset > len(s):
+            break
+    # Fourth, return the concatenated blocks
+    return ''.join(blocks)
+
+def ASCIIdecode(s='', type=BASE64, compress=1):
+    """Decode ASCII to a binary string"""
+    # First, decide the encoding style
+    if type == BASE64:   s = binascii.a2b_base64(s)
+    elif type == BINHEX: s = binascii.a2b_hqx(s)
+    elif type == UU:
+        s = ''.join([binascii.a2b_uu(line) for line in s.split('\n')])
+    # Second, decompress the source if specified
+    if compress: s = zlib.decompress(s)
+    # Third, return the decoded binary string
+    return s
+
+# Encode/decode STDIN for self-test
+if __name__ == '__main__':
+    decode, TYPE = 0, BASE64
+    for arg in sys.argv:
+        if   arg.lower()=='-d': decode = 1
+        elif arg.upper()=='UU': TYPE=UU
+        elif arg.upper()=='BINHEX': TYPE=BINHEX
+        elif arg.upper()=='BASE64': TYPE=BASE64
+    if decode:
+        print ASCIIdecode(sys.stdin.read(),type=TYPE)
+    else:
+        print ASCIIencode(sys.stdin.read(),type=TYPE)
+

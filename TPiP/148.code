@@ -1,0 +1,4 @@
+#---------- Potentiality quantifier declaration----------#
+maybe_Xs     := "X"?
+maybe_digits := [0-9]?
+

@@ -1,0 +1,3 @@
+#---------- EOF example----------#
+tup = (None, EOF, Here)
+

@@ -1,0 +1,25 @@
+#---------- A simple state machine input loop in Python----------#
+global state, blocks, newblock
+for line in fpin.readlines():
+    if state == "HEADER":         # blank line means new block of ?
+        if blankln.match(line):   newblock = 1
+        elif textln.match(line):  startText(line)
+        elif codeln.match(line):  startCode(line)
+        else:
+            if newblock: startHead(line)
+            else: blocks[-1] += line
+    elif state == "TEXT":         # blank line means new block of ?
+        if blankln.match(line):   newblock = 1
+        elif headln.match(line):  startHead(line)
+        elif codeln.match(line):  startCode(line)
+        else:
+            if newblock: startText(line)
+            else: blocks[-1] += line
+    elif state == "CODE":         # blank line does not change state
+        if blankln.match(line):   blocks[-1] += line
+        elif headln.match(line):  startHead(line)
+        elif textln.match(line):  startText(line)
+        else: blocks[-1] += line
+    else:
+        raise ValueError, "unexpected input block state: "+state
+

@@ -1,0 +1,49 @@
+#---------- reformat_para.py----------#
+# Simple paragraph reformatter.  Allows specification
+# of left and right margins, and of justification style
+# (using constants defined in module).
+
+LEFT,RIGHT,CENTER = 'LEFT','RIGHT','CENTER'
+
+def reformat_para(para='',left=0,right=72,just=LEFT):
+    words = para.split()
+    lines = []
+    line  = ''
+    word = 0
+    end_words = 0
+    while not end_words:
+        if len(words[word]) > right-left: # Handle very long words
+            line = words[word]
+            word +=1
+            if word >= len(words):
+                end_words = 1
+        else:                             # Compose line of words
+            while len(line)+len(words[word]) <= right-left:
+                line += words[word]+' '
+                word += 1
+                if word >= len(words):
+                    end_words = 1
+                    break
+        lines.append(line)
+        line = ''
+    if just==CENTER:
+        r, l = right, left
+        return '\n'.join([' '*left+ln.center(r-l) for ln in lines])
+    elif just==RIGHT:
+        return '\n'.join([line.rjust(right) for line in lines])
+    else: # left justify
+        return '\n'.join([' '*left+line for line in lines])
+
+if __name__=='__main__':
+    import sys
+    if len(sys.argv) <> 4:
+        print "Please specify left_margin, right_marg, justification"
+    else:
+        left  = int(sys.argv[1])
+        right = int(sys.argv[2])
+        just  = sys.argv[3].upper()
+
+        # Simplistic approach to finding initial paragraphs
+        for p in sys.stdin.read().split('\n\n'):
+            print reformat_para(p,left,right,just),'\n'
+

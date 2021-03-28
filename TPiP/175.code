@@ -1,0 +1,9 @@
+#---------- Parser function with multiple productions----------#
+def p_rulename(t):
+    '''rulename   : foo SPACE bar
+                  | foo bar baz
+                  | bar SPACE baz
+       otherrule  : this that other
+                  | this SPACE that '''
+#...action code...
+

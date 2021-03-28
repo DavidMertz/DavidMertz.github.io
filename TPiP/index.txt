@@ -1,0 +1,13 @@
+APPENDIX -- INDEX NOTES
+-------------------------------------------------------------------
+
+  Parsing arguments:
+      `sys.argv`
+      Chapter 2/EXERCISE 3/findfile1.py
+
+  Fuzzy logic:
+      Chapter 3/Problem 4
+
+  Place holder
+      Chapter 2/Module [string]/Intro
+

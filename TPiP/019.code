@@ -1,0 +1,16 @@
+#---------- Python capability-based polymorphism----------#
+def toDOM(xml_src=None):
+    from xml.dom import minidom
+    if hasattr(xml_src, 'documentElement'):
+        return xml_src    # it is already a DOM object
+    elif hasattr(xml_src,'read'):
+        # it is something that knows how to read data
+        return minidom.parseString(xml_src.read())
+    elif type(xml_src) in (StringType, UnicodeType):
+        # it is a filename of an XML document
+        xml = open(xml_src).read()
+        return minidom.parseString(xml)
+    else:
+        raise ValueError, "Must be initialized with " +\
+              "filename, file-like object, or DOM object"
+

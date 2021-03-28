@@ -1,0 +1,3 @@
+#---------- EBNF-style description in a developerWorks DTD----------#
+<!ELEMENT body  ((example-column | image-column)?, text-column) >
+

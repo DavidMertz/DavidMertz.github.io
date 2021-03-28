@@ -1,0 +1,10 @@
+#---------- EBNF grammar for IF/THEN/END structures----------#
+if_expr   ::= "IF" ws cond ws "THEN" ws action ws "END"
+whitechar ::= " " | "\t" | "\n" | "\r" | "\f" | "\v"
+ws        ::= whitechar+
+digit     ::= "0"..."9"
+number    ::= digit+
+cond      ::= "cond" number
+action    ::= simpleact | if_expr
+simpleact ::= "act" number
+

@@ -1,0 +1,10 @@
+#---------- Strongly functional code to process .ini file----------#
+from string import strip, split
+eq2tup = lambda s: tuple(split(s,'='))
+splitnames = lambda s: split(s,']')
+parts = lambda s, delim: map(strip, split(s, delim))
+useful = lambda ss: filter(lambda s: s and s[0]!=';', ss)
+config = map(lambda _:(_[0], map(eq2tup, useful(parts(_[1],'\n')))),
+             map(splitnames, useful(parts(txt,'['))) )
+pprint.pprint(config)
+

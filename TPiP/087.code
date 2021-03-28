@@ -1,0 +1,9 @@
+#---------- IF/THEN/END/LOOP example----------#
+IF cond1 THEN
+  LOOP 100
+    IF cond2 THEN
+      act2
+    END
+  END
+END
+

@@ -1,0 +1,3 @@
+#---------- Round-tripping with pprint----------#
+o == eval(pprint.pformat(o))
+

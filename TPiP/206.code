@@ -1,0 +1,8 @@
+#---------- Call back to .handle_data()----------#
+class CharacterData(HTMLParser.HTMLParser):
+    def handle_charref(self, name):
+        import unicodedata
+        char = unicodedata.name(unichr(int(name)))
+        self.handle_data(char)
+    [...other methods...]
+

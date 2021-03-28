@@ -1,0 +1,9 @@
+#---------- gnosis.xml.indexer search----------#
+% indexer symmetric
+./crypto1.xml::/section[2]/panel[8]/title
+./crypto1.xml::/section[2]/panel[8]/body/text_column/code_listing
+./crypto1.xml::/section[2]/panel[7]/title
+./crypto2.xml::/section[4]/panel[6]/body/text_column/p[1]
+4 matched wordlist: ['symmetric']
+Processed in 0.100 seconds (SlicedZPickleIndexer)
+

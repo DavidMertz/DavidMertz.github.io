@@ -1,0 +1,5 @@
+#---------- Declarations with negation----------#
+nonletters   := -[a-zA-Z]
+nonfoo       := -foo
+notfoobarbaz := -(foo, bar, baz)
+

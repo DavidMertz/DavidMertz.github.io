@@ -1,0 +1,14 @@
+#---------- http://gnosis.cx/simpleform.html----------#
+<html><head><title>Test simple.cgi</title></head><body>
+<form action="cgi-bin/simple.cgi" method="GET" name="form">
+<input type="hidden" name="this" value="that">
+<input type="text" value="" name="spam" size="55" maxlength="256">
+<input type="submit" value="GET">
+</form>
+<form action="cgi-bin/simple.cgi" method="POST" name="form">
+<input type="hidden" name="this" value="that">
+<input type="text" value="" name="spam" size="55" maxlength="256">
+<input type="submit" value="POST">
+</form>
+</body></html>
+

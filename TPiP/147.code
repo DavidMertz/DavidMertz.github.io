@@ -1,0 +1,4 @@
+#---------- Existential quantifier declaration----------#
+some_Xs     := "X"+
+some_digits := [0-9]+
+

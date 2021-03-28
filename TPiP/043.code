@@ -1,0 +1,91 @@
+#---------- histogram.py----------#
+# Create occurrence counts of words or characters
+# A few utility functions for presenting results
+# Avoids requirement of recent Python features
+
+from string import split, maketrans, translate, punctuation, digits
+import sys
+from types import *
+import types
+
+def word_histogram(source):
+    """Create histogram of normalized words (no punct or digits)"""
+    hist = {}
+    trans = maketrans('','')
+    if type(source) in (StringType,UnicodeType):  # String-like src
+        for word in split(source):
+            word = translate(word, trans, punctuation+digits)
+            if len(word) > 0:
+                hist[word] = hist.get(word,0) + 1
+    elif hasattr(source,'read'):                  # File-like src
+        try:
+            from xreadlines import xreadlines     # Check for module
+            for line in xreadlines(source):
+                for word in split(line):
+                    word = translate(word, trans, punctuation+digits)
+                    if len(word) > 0:
+                        hist[word] = hist.get(word,0) + 1
+        except ImportError:                       # Older Python ver
+            line = source.readline()          # Slow but mem-friendly
+            while line:
+                for word in split(line):
+                    word = translate(word, trans, punctuation+digits)
+                    if len(word) > 0:
+                        hist[word] = hist.get(word,0) + 1
+                line = source.readline()
+    else:
+        raise TypeError, \
+              "source must be a string-like or file-like object"
+    return hist
+
+def char_histogram(source, sizehint=1024*1024):
+    hist = {}
+    if type(source) in (StringType,UnicodeType):  # String-like src
+        for char in source:
+            hist[char] = hist.get(char,0) + 1
+    elif hasattr(source,'read'):                  # File-like src
+        chunk = source.read(sizehint)
+        while chunk:
+            for char in chunk:
+                hist[char] = hist.get(char,0) + 1
+            chunk = source.read(sizehint)
+    else:
+        raise TypeError, \
+              "source must be a string-like or file-like object"
+    return hist
+
+def most_common(hist, num=1):
+    pairs = []
+    for pair in hist.items():
+        pairs.append((pair[1],pair[0]))
+    pairs.sort()
+    pairs.reverse()
+    return pairs[:num]
+
+def first_things(hist, num=1):
+    pairs = []
+    things = hist.keys()
+    things.sort()
+    for thing in things:
+        pairs.append((thing,hist[thing]))
+    pairs.sort()
+    return pairs[:num]
+
+if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        hist = word_histogram(open(sys.argv[1]))
+    else:
+        hist = word_histogram(sys.stdin)
+
+    print "Ten most common words:"
+    for pair in most_common(hist, 10):
+        print '\t', pair[1], pair[0]
+
+    print "First ten words alphabetically:"
+    for pair in first_things(hist, 10):
+        print '\t', pair[0], pair[1]
+
+    # a more practical command-line version might use:
+    # for pair in most_common(hist,len(hist)):
+    #     print pair[1],'\t',pair[0]
+

@@ -1,0 +1,9 @@
+#---------- Using cgi.FieldStorage----------#
+import cgi
+query = cgi.FieldStorage()
+eggs = query.getvalue('eggs','default_eggs')
+numfields = len(query)
+if query.has_key('spam'):
+    spam = query['spam']
+[...]
+

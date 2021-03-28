@@ -1,0 +1,40 @@
+#---------- randline.py----------#
+#!/usr/bin/python
+"""Iterate over random lines in a file (req Python 2.2+)
+From command-line use: % randline.py <fname> <numlines>
+"""
+import sys
+from os import stat, linesep
+from stat import ST_SIZE
+from random import randrange
+MAX_LINE_LEN = 4096
+
+#-- Iterable class
+class randline(object):
+    __slots__ = ('_fp','_size','_limit')
+    def __init__(self, fname, limit=sys.maxint):
+        self._size = stat(fname)[ST_SIZE]
+        self._fp = open(fname,'rb')
+        self._limit = limit
+    def __iter__(self):
+        return self
+    def next(self):
+        if self._limit <= 0:
+            raise StopIteration
+        self._limit -= 1
+        pos = randrange(self._size)
+        priorlen = min(pos, MAX_LINE_LEN)   # maybe near start
+        self._fp.seek(pos-priorlen)
+        # Add extra linesep at beg/end in case pos at beg/end
+        prior = linesep + self._fp.read(priorlen)
+        post = self._fp.read(MAX_LINE_LEN) + linesep
+        begln = prior.rfind(linesep) + len(linesep)
+        endln = post.find(linesep)
+        return prior[begln:]+post[:endln]
+
+#-- Use as command-line tool
+if __name__=='__main__':
+    fname, numlines = sys.argv[1], int(sys.argv[2])
+    for line in randline(fname, numlines):
+        print line
+

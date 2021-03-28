@@ -1,0 +1,27 @@
+#---------- findfile2.py----------#
+# Find files that contain a word
+_usage = "Usage: python findfile.py word"
+import os.path
+import glob
+import sys
+
+if len(sys.argv) == 2:
+    search_word = sys.argv[1]
+    results = []
+    for fname in glob.glob('*'):
+        if os.path.isfile(fname):   # don't check directories
+            text = open(fname).read()
+            fsize = len(text)
+            hits = text.count(search_word)
+            density = (fsize > 0) and float(hits)/(fsize)
+            if density > 0:         # consider when density==0
+                results.append((density,fname))
+    results.sort()
+    results.reverse()
+    print 'RANKING  FILENAME'
+    print '-------  --------------------------'
+    for match in results:
+        print '%6d  '%int(match[0]*1000000), match[1]
+else:
+    print _usage
+

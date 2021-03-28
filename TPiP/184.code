@@ -1,0 +1,25 @@
+#---------- check_imap_subjects.py----------#
+#!/usr/bin/env python
+import imaplib, sys
+if len(sys.argv) == 4:
+    sys.argv.append('INBOX')
+(host, user, passwd, mbox) = sys.argv[1:]
+i = imaplib.IMAP4(host, port=143)
+i.login(user, passwd)
+resp = i.select(mbox)
+if r[0] <> 'OK':
+    sys.stderr.write("Could not select %s\n" % mbox)
+    sys.exit()
+# delete some spam messages
+typ, spamlist = i.search(None, '(SUBJECT) "URGENT"')
+i.store(','.join(spamlist.split()),'+FLAGS.SILENT','\deleted')
+i.expunge()
+typ, messnums = i.search(None,'ALL').split()
+for mess in messnums:
+    typ, header = i.fetch(mess, 'RFC822.HEADER')
+    for line in header[0].split('\n'):
+        if string.upper(line[:9]) == 'SUBJECT: ':
+            print line[9:]
+i.close()
+i.logout()
+

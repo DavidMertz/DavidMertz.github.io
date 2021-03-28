@@ -1,0 +1,4 @@
+#---------- Lookahead quantifier declaration----------#
+next_is_Xs         := ?"X"
+next_is_not_digits := ?-[0-9]
+

@@ -1,0 +1,6 @@
+#---------- Building the lexer----------#
+mylexer = lex.lex()   # named lexer
+lex.lex()             # default lexer
+mylexer.input(mytext) # set input for named lexer
+lex.input(othertext)  # set input for default lexer
+

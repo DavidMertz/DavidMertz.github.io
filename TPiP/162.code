@@ -1,0 +1,7 @@
+#---------- Assigning YaccSlice indices----------#
+def p_rulename(t):
+    'rulename : somerule SOMETOKEN otherrule'
+    #   ^          ^         ^         ^
+    #  t[0]       t[1]      t[2]      t[3]
+    t[0] = Node('rulename', t[1:])
+

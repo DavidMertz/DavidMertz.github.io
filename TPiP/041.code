@@ -1,0 +1,21 @@
+#---------- wc.py----------#
+# Report the chars, words, lines, paragraphs
+# on STDIN or in wildcard filename patterns
+import sys, glob
+if len(sys.argv) > 1:
+    c, w, l, p = 0, 0, 0, 0
+    for pat in sys.argv[1:]:
+        for file in glob.glob(pat):
+            s = open(file).read()
+            wc = len(s), len(s.split()), \
+                 len(s.split('\n')), len(s.split('\n\n'))
+            print '\t'.join(map(str, wc)),'\t'+file
+            c, w, l, p = c+wc[0], w+wc[1], l+wc[2], p+wc[3]
+    wc = (c,w,l,p)
+    print '\t'.join(map(str, wc)), '\tTOTAL'
+else:
+    s = sys.stdin.read()
+    wc = len(s), len(s.split()), len(s.split('\n')), \
+         len(s.split('\n\n'))
+    print '\t'.join(map(str, wc)), '\tSTDIN'
+

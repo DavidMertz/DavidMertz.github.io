@@ -1,0 +1,7 @@
+#---------- Limit matches to ones in a title element----------#
+% indexer "-filter=*::/*/title" symmetric
+./crypto1.xml::/section[2]/panel[8]/title
+./crypto1.xml::/section[2]/panel[7]/title
+2 matched wordlist: ['symmetric']
+Processed in 0.080 seconds (SlicedZPickleIndexer)
+

@@ -1,0 +1,13 @@
+#---------- Self test of read_backwards()----------#
+if __name__ == '__main__':
+    # Let's create a test file to read in backwards
+    fp = open('lines','wb')
+    fp.write(LINE.join(['--- %d ---'%n for n in range(15)]))
+    # Now open for reading backwards
+    fp = open('lines','rb')
+    # Read the blocks in, one per call (block==line by default)
+    block = read_backwards(fp)
+    while block:
+        print block,
+        block = read_backwards(fp)
+

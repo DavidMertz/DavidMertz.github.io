@@ -1,0 +1,3 @@
+#---------- Improved 3-to-7 quantification----------#
+foos := foo{3,7}
+

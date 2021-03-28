@@ -1,0 +1,14 @@
+#---------- Naive overloading of argument----------#
+import types, exceptions
+def overloaded_get_text(o):
+    if type(o) is types.FileType:
+        text = o.read()
+    elif type(o) is types.StringType:
+        text = o
+    elif type(o) in (types.IntType, types.FloatType,
+                     types.LongType, types.ComplexType):
+        text = repr(o)
+    else:
+        raise exceptions.TypeError
+    return text
+

@@ -1,0 +1,10 @@
+#---------- dissertation.dtd----------#
+<!ELEMENT dissertation (dedication?, chapter+, appendix*)>
+<!ELEMENT dedication (#PCDATA)>
+<!ELEMENT chapter (title, paragraph+)>
+<!ELEMENT title (#PCDATA)>
+<!ELEMENT paragraph (#PCDATA | figure | table)+>
+<!ELEMENT figure EMPTY>
+<!ELEMENT table EMPTY>
+<!ELEMENT appendix (#PCDATA)>
+

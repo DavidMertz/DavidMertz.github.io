@@ -1,0 +1,6 @@
+#---------- Building the lexer----------#
+myparser = yacc.yacc()      # named parser
+yacc.yacc()                 # default parser
+r1 = myparser.parse(mytext) # set input for named parser
+r0 = yacc.parse(othertext)  # set input for default parser
+

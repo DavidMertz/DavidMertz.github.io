@@ -1,0 +1,8 @@
+#---------- zipfile constants----------#
+zipfile.stringCentralDir = 'PK\x01\x02'
+zipfile.stringEndArchive = 'PK\x05\x06'
+zipfile.stringFileHeader = 'PK\x03\x04'
+zipfile.structCentralDir = '<4s4B4H3l5H2l'
+zipfile.structEndArchive = '<4s4H2lH'
+zipfile.structFileHeader = '<4s2B4H3l2H'
+

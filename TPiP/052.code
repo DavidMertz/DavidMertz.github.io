@@ -1,0 +1,18 @@
+#---------- zlib_objs.py----------#
+# Demonstrate compression object streams
+import zlib, glob
+decom = zlib.decompressobj()
+com = zlib.compressobj()
+for file in glob.glob('*'):
+    s = open(file).read()
+    c = com.compress(s)
+    print 'COMPRESSED:', len(c), 'bytes out'
+    d = decom.decompress(c)
+    print 'DECOMPRESS:', len(d), 'bytes out'
+    print 'UNUSED DATA:', len(decom.unused_data), 'bytes'
+    raw_input('-- %s (%s bytes) --' % (file, `len(s)`))
+f = com.flush()
+m = decom.decompress(f)
+print 'DECOMPRESS:', len(m), 'bytes out'
+print 'UNUSED DATA:', len(decom.unused_data), 'byte'
+

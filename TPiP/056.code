@@ -1,0 +1,18 @@
+#---------- sha.py----------#
+# Calculate SHA hash of input files or STDIN
+# Usage:     python sha.py [file1 [file2 [...]]]
+#    or:     python sha.py < STDIN
+
+import sha, fileinput, os, sys
+filelist = []
+sha = sha.sha()
+for line in fileinput.input():
+    if fileinput.isfirstline():
+        if fileinput.isstdin():
+            filelist.append('STDIN')
+        else:
+            filelist.append(fileinput.filename())
+    sha.update(line[:-1]+os.linesep)   # same as binary read
+sys.stderr.write('Files: '+' '.join(filelist)+'\nSHA: ')
+print sha.hexdigest()
+

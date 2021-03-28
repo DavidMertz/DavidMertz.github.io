@@ -1,0 +1,9 @@
+#---------- Parsed .ini structure----------#
+[('colorscheme',
+  [('background', 'red'),
+   ('foreground', 'blue'),
+   ('title', 'green')]),
+ ('userlevel',
+  [('login', '2'),
+   ('title', '1')])]
+

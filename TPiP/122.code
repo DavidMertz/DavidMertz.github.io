@@ -1,0 +1,3 @@
+#---------- Match non-'X' character----------#
+tup = ('X', IsNot, 'X')
+

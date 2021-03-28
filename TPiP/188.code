@@ -1,0 +1,12 @@
+#---------- Looping through a mailbox in any version----------#
+#!/usr/bin/env python
+"Subject printer, older Python and rfc822.Message objects"
+import sys
+from mailbox import PortableUnixMailbox
+mbox = PortableUnixMailbox(open(sys.argv[1]))
+while 1:
+    message = mbox.next()
+    if message is None:
+        break
+    print message.getheader('Subject')
+

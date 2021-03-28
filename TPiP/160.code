@@ -1,0 +1,16 @@
+#---------- wordplusscanner.py----------#
+"Enhanced word/markup tokenization"
+from wordscanner import *
+tokens.extend(['CONTRACTION','MDASH','WORDPUNCT'])
+t_CONTRACTION   = r"(?<=[a-zA-Z])'(am|clock|d|ll|m|re|s|t|ve)"
+t_WORDPUNCT     = r'(?<=[a-zA-Z0-9])[-_](?=[a-zA-Z0-9])'
+def t_MDASH(t): # Use HTML style mdash
+    r'--'
+    t.value = '&mdash;'
+    return t
+
+if __name__=='__main__':
+    lex.lex()                       # Build the lexer
+    for t in stdin2tokens():
+        print '%s<%s>' % (t.value.ljust(15), t.type)
+

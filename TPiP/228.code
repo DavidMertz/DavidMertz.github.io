@@ -1,0 +1,12 @@
+#---------- apply() as first-class function----------#
+defer_list = []
+if some_runtime_condition():
+    doIt = apply
+else:
+    doIt = lambda *x: defer_list.append(x)
+#...do stuff like read records and options...
+doIt(operation, args, keywds)
+#...do more stuff...
+#...carry out deferred actions...
+map(lambda (f,args,kw): f(*args,**kw), defer_list)
+

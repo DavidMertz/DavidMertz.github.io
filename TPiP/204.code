@@ -1,0 +1,9 @@
+#---------- HTMLParser_stack output----------#
+% ./HTMLParser_stack.py
+/html/head/title >> Advice
+/html/body/p >> The
+/html/body/p/a >> IETF admonishes:
+/html/body/p/a/i >> Be strict in what you
+/html/body/p/a/i/b >> send
+/html/body/p/a/i >> .
+

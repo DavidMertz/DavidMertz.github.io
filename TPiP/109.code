@@ -1,0 +1,10 @@
+#---------- taglist2xml() function----------#
+def taglist2xml(s, taglist, root):
+    print '<%s>' % root
+    for tt in taglist:
+        if tt[3]:
+            taglist2xml(s, tt[3], tt[0])
+        else:
+            print '<%s>%s</%s>' % (tt[0], s[tt[1]:tt[2]], tt[0])
+    print '</%s>' % root
+

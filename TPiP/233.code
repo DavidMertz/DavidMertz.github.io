@@ -1,0 +1,16 @@
+#---------- LZ77 Algorithm----------#
+7 --> Lookup: 7 found       --> nothing to add    --> keep looking
+7 --> Lookup: 77 not found  --> add '77' to [11]  --> output [7]=00111
+2 --> Lookup: 72 not found  --> add '72' to [12]  --> output [7]=00111
+7 --> Lookup: 27 not found  --> add '27' to [13]  --> output [2]=00010
+6 --> Lookup: 76 not found  --> add '76' to [14]  --> output [7]=00111
+2 --> Lookup: 62 not found  --> add '62' to [15]  --> output [6]=00110
+8 --> Lookup: 28 not found  --> add '28' to [16]  --> output [2]=00010
+7 --> Lookup: 87 not found  --> add '87' to [17]  --> output [8]=00100
+7 --> Lookup: 77 found      --> nothing to add    --> keep looking
+2 --> Lookup: 772 not found --> add '772' to [18] --> output [11]=01011
+8 --> Lookup: 28 found      --> nothing to add    --> keep looking
+6 --> Lookup: 286 not found --> add '286' to [19] --> output [16]=10000
+...
+
+

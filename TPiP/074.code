@@ -1,0 +1,42 @@
+#---------- pretty_nums.py----------#
+# Create/manipulate grouped string versions of numbers
+
+import re
+
+def commify(f, digits=2, maxgroups=5, european=0):
+    template = '%%1.%df' % digits
+    s = template % f
+    pat = re.compile(r'(\d+)(\d{3})([.,]|$)([.,\d]*)')
+    if european:
+        repl = r'\1.\2\3\4'
+    else:   # could also use locale.localeconv()['decimal_point']
+        repl = r'\1,\2\3\4'
+    for i in range(maxgroups):
+        s = re.sub(pat,repl,s)
+    return s
+
+def uncommify(s):
+    return s.replace(',','')
+
+def eurify(s):
+    s = s.replace('.','\000')   # place holder
+    s = s.replace(',','.')      # change group delimiter
+    s = s.replace('\000',',')   # decimal delimiter
+    return s
+
+def anglofy(s):
+    s = s.replace(',','\000')   # place holder
+    s = s.replace('.',',')      # change group delimiter
+    s = s.replace('\000','.')   # decimal delimiter
+    return s
+
+vals = (12345678.90, 23456789.01, 34567890.12)
+sample = '''The company budget is $%s.
+Its debt is $%s, against assets
+of $%s'''
+
+if __name__ == '__main__':
+    print sample % vals, '\n-----'
+    print sample % tuple(map(commify, vals)), '\n-----'
+    print eurify(sample % tuple(map(commify, vals))), '\n-----'
+

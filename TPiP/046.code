@@ -1,0 +1,3 @@
+#---------- equivalent expression----------#
+string.join(map(string.capitalize,string.split(s))
+

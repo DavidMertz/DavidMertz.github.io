@@ -1,0 +1,36 @@
+#---------- error_page.py----------#
+import re, sys
+page = sys.stdin.read()
+
+# Mapping from patterns to probability contribution of pattern
+err_pats = {r'(?is)<TITLE>.*?(404|403).*?ERROR.*?</TITLE>': 0.95,
+            r'(?is)<TITLE>.*?ERROR.*?(404|403).*?</TITLE>': 0.95,
+            r'(?is)<TITLE>ERROR</TITLE>': 0.30,
+            r'(?is)<TITLE>.*?ERROR.*?</TITLE>': 0.10,
+            r'(?is)<META .*?(404|403).*?ERROR.*?>': 0.80,
+            r'(?is)<META .*?ERROR.*?(404|403).*?>': 0.80,
+            r'(?is)<TITLE>.*?File Not Found.*?</TITLE>': 0.80,
+            r'(?is)<TITLE>.*?Not Found.*?</TITLE>': 0.40,
+            r'(?is)<BODY.*(404|403).*</BODY>': 0.10,
+            r'(?is)<H1>.*?(404|403).*?</H1>': 0.15,
+            r'(?is)<BODY.*not found.*</BODY>': 0.10,
+            r'(?is)<H1>.*?not found.*?</H1>': 0.15,
+            r'(?is)<BODY.*the requested URL.*</BODY>': 0.10,
+            r'(?is)<BODY.*the page you requested.*</BODY>': 0.10,
+            r'(?is)<BODY.*page.{1,50}unavailable.*</BODY>': 0.10,
+            r'(?is)<BODY.*request.{1,50}unavailable.*</BODY>': 0.10,
+            r'(?i)does not exist': 0.10,
+           }
+err_score = 0
+for pat, prob in err_pats.items():
+    if err_score > 0.9: break
+    if re.search(pat, page):
+        # print pat, prob
+        err_score += prob
+
+if err_score > 0.90:   print 'Page is almost surely an error report'
+elif err_score > 0.75: print 'It is highly likely page is an error report'
+elif err_score > 0.50: print 'Better-than-even odds page is error report'
+elif err_score > 0.25: print 'Fair indication page is an error report'
+else:                 print 'Page is probably real content'
+

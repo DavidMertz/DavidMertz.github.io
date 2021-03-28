@@ -1,0 +1,9 @@
+#---------- Counting Python code to process .ini file----------#
+for line in open('hypothetical.ini').readlines():
+    if line[0] == '[':
+        current_section = line[1:-2]
+    elif line[0] == ';':
+        pass    # ignore comments
+    else:
+        apply_value(current_section, line)
+

@@ -1,0 +1,17 @@
+#---------- Assigning YaccSlice indices----------#
+# Sum N different numbers: "1.0 + 3 + 3.14 + 17"
+def p_sum(t):
+    '''sum : number PLUS number'''
+    #   ^      ^      ^    ^
+    #  t[0]   t[1]  t[2]  t[3]
+    t[0] = t[1] + t[3]
+def p_number(t):
+    '''number : BASICNUMBER
+              | sum         '''
+    #    ^        ^
+    #   t[0]     t[1]
+    t[0] = float(t[1])
+# Create the parser and parse some strings
+yacc.yacc()
+print yacc.parse('1.0')
+

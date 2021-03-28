@@ -1,0 +1,11 @@
+#---------- list_capwords.py----------#
+import string,sys
+capwords = []
+
+#*--- fix linebreak ---#
+for line in sys.stdin.readlines():
+    for word in line.split():
+        if word == word.upper() and word.isalpha():
+            capwords.append(word)
+print string.join(capwords, '\n')
+

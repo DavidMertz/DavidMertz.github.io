@@ -1,0 +1,4 @@
+#---------- Using ex_error_page.py----------#
+% python urlopen.py http://gnosis.cx/nonesuch | python ex_error_page.py
+Page is almost surely an error report
+

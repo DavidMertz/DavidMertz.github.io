@@ -1,0 +1,13 @@
+#---------- Wrap token stream in iterator----------#
+from __future__ import generators
+# ...define the lexer rules, etc...
+def tokeniterator(lexer=lex):
+    while 1:
+        t = lexer.token()
+        if t is None:
+            raise StopIteration
+        yield t
+# Loop through the tokens
+for t in tokeniterator():
+    # ...do something with each token...
+

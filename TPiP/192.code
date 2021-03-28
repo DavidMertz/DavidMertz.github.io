@@ -1,0 +1,18 @@
+#---------- Response from simple.cgi GET request----------#
+DOCUMENT_ROOT :: /home/98/46/2924698/web
+HTTP_ACCEPT_ENCODING :: gzip, deflate, compress;q=0.9
+CONTENT_TYPE :: application/x-www-form-urlencoded
+SERVER_PORT :: 80
+REMOTE_ADDR :: 151.203.xxx.xxx
+SERVER_NAME :: www.gnosis.cx
+HTTP_USER_AGENT :: Mozilla/5.0 (Macintosh; U; PPC Mac OS...
+REQUEST_URI :: /cgi-bin/simple.cgi?this=that&spam=eg...
+QUERY_STRING :: this=that&spam=eggs+are+good
+SERVER_PROTOCOL :: HTTP/1.1
+HTTP_HOST :: gnosis.cx
+REQUEST_METHOD :: GET
+SCRIPT_NAME :: /cgi-bin/simple.cgi
+SCRIPT_FILENAME :: /home/98/46/2924698/web/cgi-bin/simple.cgi
+HTTP_REFERER :: http://gnosis.cx/simpleform.html
+<STDIN> ::
+

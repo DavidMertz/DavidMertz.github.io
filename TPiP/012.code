@@ -1,0 +1,4 @@
+#---------- Limit nesting depth of map()/filter()----------#
+intermed = filter(niceProperty, map(someTransform, lines))
+final = map(otherTransform, intermed)
+
