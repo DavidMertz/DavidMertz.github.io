@@ -1,0 +1,384 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>LINUX ZONE FEATURE: The Twisted Framework -- Part Two, Implementing Web Servers -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="twisted_1.html" TITLE="LINUX ZONE FEATURE: The Twisted Framework #1">
+<link REL="next" HREF="twisted_3.html" TITLE="LINUX ZONE FEATURE: The Twisted Framework #3">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Linux Zone Feature: The Twisted Framework</h1>
+<h2>Part Two, Implementing Web Servers</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Selector, Gnosis Software, Inc.<br>
+ June, 2003<br>
+ <br>
+</p>
+<blockquote>
+    The first installment in this series on Twisted introduced
+    asynchronous server programming.  While a web server is, in
+    a sense, just another network service, Twisted provides a
+    number of higher-level techniques for writing web services.
+</blockquote>
+<h3>Introduction</h3>
+ <p>
+  In a lot of ways, the low-level aspects of Twisted are the
+  easiest to jump into. Even though aysynchronous, non-blocking
+  styles are somewhat novel for developers accustomed to threading,
+  a new protocol can follow the examples in the Twisted Matrix
+  documentation.  The higher-level tools for web development are
+  undergoing more rapid flux, and have more API details to learn.
+  In fact, Twisted's web templating framework, <em>woven</em>, while
+  becoming quite sophisticated, is unstable enough that I will
+  only touch on it here.
+</p>
+<p>
+  A note on the name of the Twisted library is worthwhile.
+  "Twisted Matrix Laboratories" is the name a geographically
+  diverse group of developers call themselves, with a certain
+  levity.  The Python library for event-driven network
+  programming is called just "Twisted"--my last column did not
+  carefully distinguish the group from the product.
+</p>
+<h3>Enhancing The Weblog Server</h3>
+ <p>
+  We looked earlier at a slightly-better-than-trivial server that
+  used a custom protocol, with custom servers and clients, to
+  remotely monitor hits to a web site. For this installment, let us
+  enhance that functionality with a web-based interface. A certain
+  URL can be used, in our scenario, to watch hits a web site
+  receives.
+</p>
+<p>
+  There is a very simple approach to a web-based web-log server
+  that has nothing to do with Twisted <em>per se</em>. Suppose that you
+  you simply let a web page like <code>weblog.html</code> list some
+  information about the latest few hits to a web site. In keeping
+  with the prior examples, we will display the referrer and
+  resource of a hit, but only when the request has a status code of
+  <code>200</code> (and referrer is available). An example of such a page
+  (that is not being updated for content) can be found at:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/publish/programming/weblog.html">http://gnosis.cx/publish/programming/weblog.html</a>
+</blockquote>
+<p>
+  What we need to do is two things: (1) Put a <code>&lt;meta
+  http-equiv=refresh ...&gt;</code> tag in the HTML header to keep the
+  display up-to-date; (2) Rewrite the <code>weblog.html</code> file itself
+  intermittently when new hits occur. The second task only requires
+  a background process that is left running, e.g.:
+</p>
+<div class="code-sample"><h4>logmaker.py web-log refresher script</h4><PRE><FONT COLOR=#3333CC><B>from</B></FONT> webloglib <FONT COLOR=#3333CC><B>import</B></FONT> log_fields, TOP, ROW, END, COLOR
+<FONT COLOR=#3333CC><B>import</B></FONT> webloglib as wll
+<FONT COLOR=#3333CC><B>from</B></FONT> urllib <FONT COLOR=#3333CC><B>import</B></FONT> unquote_plus as uqp
+<FONT COLOR=#3333CC><B>import</B></FONT> os, time
+LOG = open(<FONT COLOR=#115511>'../access-log'</FONT>)
+RECS = []
+PAGE = <FONT COLOR=#115511>'www/weblog.html'</FONT>
+<FONT COLOR=#3333CC><B>while</B></FONT> 1:
+    page = open(PAGE+<FONT COLOR=#115511>'.tmp'</FONT>,<FONT COLOR=#115511>'w'</FONT>)
+    RECS.extend(LOG.readlines())
+    RECS = RECS[-35:]
+    <FONT COLOR=#3333CC><B>print</B></FONT> &gt;&gt; page, TOP
+    odd = 0
+    <FONT COLOR=#3333CC><B>for</B></FONT> rec <FONT COLOR=#3333CC><B>in</B></FONT> RECS:
+        hit = [field.strip(<FONT COLOR=#115511>'"'</FONT>) <FONT COLOR=#3333CC><B>for</B></FONT> field <FONT COLOR=#3333CC><B>in</B></FONT> log_fields(rec)]
+        <FONT COLOR=#3333CC><B>if</B></FONT> hit[wll.status]==<FONT COLOR=#115511>'200'</FONT> <FONT COLOR=#3333CC><B>and</B></FONT> hit[wll.referrer]!=<FONT COLOR=#115511>'-'</FONT>:
+            resource = hit[wll.request].split()[1]
+            referrer = uqp(hit[wll.referrer]).replace(<FONT COLOR=#115511>'&amp;amp;'</FONT>,<FONT COLOR=#115511>' &amp;'</FONT>)
+            <FONT COLOR=#3333CC><B>print</B></FONT> &gt;&gt; page, ROW % (COLOR[odd], referrer, resource)
+            odd = <FONT COLOR=#3333CC><B>not</B></FONT> odd
+    <FONT COLOR=#3333CC><B>print</B></FONT> &gt;&gt; page, END
+    page.close()
+    os.rename(PAGE+<FONT COLOR=#115511>'.tmp'</FONT>,PAGE)
+    time.sleep(5)</PRE></div><p>
+  The precise HTML used is contained in the module <em><code>webloglib</code></em>,
+  along with some constants for log field positions.  You can
+  download that module from the URL listed in the Resources
+  section, if you wish.
+</p>
+<p>
+  Notice here that you do not even need to use Twisted as a
+  server--'Apache' or any other web server works fine.
+</p>
+<h3>Creating A Twisted Web Server</h3>
+ <p>
+  Running a Twisted web server is quite simple--perhaps even
+  easier than launching other servers. The first step in running
+  a Twisted web server is creating a <code>.tap</code> file, as we saw in
+  the first installment. You <em>can</em> create a <code>.tap</code> file by
+  defining an application in a script, including a call to
+  <code>application.save()</code>, and running the script.  But you can also
+  create a <code>.tap</code> file using the tool <code>mktap</code>.  In fact, for many
+  common protocols, you can create a server <code>.tap</code> file without
+  any special script at all.  For example:
+</p>
+<div class="code-sample"><h4></h4><pre>mktap web --path ~/twisted/www --port 8080
+
+</pre></div><p>
+  This creates a fairly generic server that serves files out of
+  the base directory <code>~/twisted/www</code> on port <code>8080</code>. To run the
+  server, use the tool <code>twistd</code> to launch the created <code>web.tap</code>
+  file:
+</p>
+<div class="code-sample"><h4></h4><pre>twistd -f web.tap
+
+</pre></div><p>
+  For servers of types other than HTTP, you could also use other
+  names in place of <code>web</code>: <code>dns</code>, <code>conch</code>, <code>news</code>, <code>telnet</code>,
+  <code>im</code>, <code>manhole</code>, and others.  Some of those name familiar
+  servers, others are special to Twisted.  And more are added all
+  the time.
+</p>
+<p>
+  Any static HTML files that happen to live in the base directory
+  are delivered by the server, much as with other servers. But in
+  addition, you may serve dynamic pages that have the extension
+  <code>.rpy</code>--in concept, these are like CGI scripts, but they avoid
+  the forking overhead and interpreter startup time that slows down
+  CGI. A Twisted dynamic script is arranged slightly differently
+  than a CGI script, in the simplest case it can look something
+  like:
+</p>
+<div class="code-sample"><h4>www/dynamic.rpy Twisted page</h4><pre>
+from twisted.web import resource
+page = '''&lt;html&gt;&lt;head&gt;&lt;title&gt;Dynamic Page&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+  &lt;p&gt;Dynamic Page served by Twisted Matrix&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;'''
+class Resource(resource.Resource):
+    def render(self, request):
+        return page
+resource = Resource()
+
+</pre></div><p>
+  The file-level variable <code>resource</code> is special--it needs to
+  point to an instance of a <code>twisted.web.resource.Resource</code>
+  child, where its class defines a <code>.render()</code> method.  You can
+  include as many dynamic pages as you like within the directory
+  served, and each will be served automatically.
+</p>
+<h3>Using Twisted To Update A Static Page</h3>
+ <p>
+  The timed callback technique presented in my first Twisted
+  installment can be used to periodically update the <code>weblog.html</code>
+  file discussed above. That is, you can substitute a non-blocking
+  <code>twisted.internet.reactor.callLater()</code> calls for the
+  <code>time.sleep()</code> call in <code>logmaker.py</code>:
+</p>
+<div class="code-sample"><h4>tlogmaker.py web-log refresher script</h4><PRE><FONT COLOR=#3333CC><B>from</B></FONT> webloglib <FONT COLOR=#3333CC><B>import</B></FONT> log_fields, TOP, ROW, END, COLOR
+<FONT COLOR=#3333CC><B>import</B></FONT> webloglib as wll
+<FONT COLOR=#3333CC><B>from</B></FONT> urllib <FONT COLOR=#3333CC><B>import</B></FONT> unquote_plus as uqp
+<FONT COLOR=#3333CC><B>import</B></FONT> os, twisted.internet
+LOG = open(<FONT COLOR=#115511>'../access-log'</FONT>)
+RECS = []
+PAGE = <FONT COLOR=#115511>'www/weblog.html'</FONT>
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="update"><FONT COLOR=#CC0000><B> update</B></FONT></A>():
+    <FONT COLOR=#3333CC><B>global</B></FONT> RECS
+    page = open(PAGE+<FONT COLOR=#115511>'.tmp'</FONT>,<FONT COLOR=#115511>'w'</FONT>)
+    RECS.extend(LOG.readlines())
+    RECS = RECS[-35:]
+    <FONT COLOR=#3333CC><B>print</B></FONT> &gt;&gt; page, TOP
+    odd = 0
+    <FONT COLOR=#3333CC><B>for</B></FONT> rec <FONT COLOR=#3333CC><B>in</B></FONT> RECS:
+        hit = [field.strip(<FONT COLOR=#115511>'"'</FONT>) <FONT COLOR=#3333CC><B>for</B></FONT> field <FONT COLOR=#3333CC><B>in</B></FONT> log_fields(rec)]
+        <FONT COLOR=#3333CC><B>if</B></FONT> hit[wll.status]==<FONT COLOR=#115511>'200'</FONT> <FONT COLOR=#3333CC><B>and</B></FONT> hit[wll.referrer]!=<FONT COLOR=#115511>'-'</FONT>:
+            resource = hit[wll.request].split()[1]
+            referrer = uqp(hit[wll.referrer]).replace(<FONT COLOR=#115511>'&amp;amp;'</FONT>,<FONT COLOR=#115511>' &amp;'</FONT>)
+            <FONT COLOR=#3333CC><B>print</B></FONT> &gt;&gt; page, ROW % (COLOR[odd], referrer, resource)
+            odd = <FONT COLOR=#3333CC><B>not</B></FONT> odd
+    <FONT COLOR=#3333CC><B>print</B></FONT> &gt;&gt; page, END
+    page.close()
+    os.rename(PAGE+<FONT COLOR=#115511>'.tmp'</FONT>,PAGE)
+    twisted.internet.reactor.callLater(5, update)
+update()
+twisted.internet.reactor.run()</PRE></div><p>
+  There is not much difference between <code>logmaker.py</code> and
+  <code>tlogmaker.py</code>--both can be launched in the background and left
+  running to update the page <code>referesher.html</code>.  What would be
+  more interesting would be to build <code>tlogmaker.py</code> directory
+  into a Twisted server, rather than simply have it run in a
+  background process.  Easy enough, we just need two more lines
+  at the end of the script:
+</p>
+<div class="code-sample"><h4></h4><pre>from twisted.web import static
+resource = static.File("~/twisted/www")
+
+</pre></div><p>
+  The call to <code>twisted.internet.reactor.run()</code> may also be
+  removed.  With these changes, create a server using:
+</p>
+<div class="code-sample"><h4></h4><pre>mktap --resource-script=tlogmaker.py --port 8080
+      --path ~/twisted/www
+
+</pre></div><p>
+  And run the created <code>web.tap</code> server using <code>twistd</code>, as before.
+  Now the web server itself will refresh the page <code>weblog.html</code>
+  every five seconds, using its standard core dispath loop.
+</p>
+<h3>Making The Weblog A Dynamic Page</h3>
+ <p>
+  Another approach to serving the web log is to use a dynamic
+  page to generate the most recent hits each time they are
+  requested.  However, it is a bad idea to read the entire
+  <code>access-log</code> file each time such a request is received--a busy
+  website is likely to have many thousands of records in a log
+  file, reading those repeatedly is time-consuming.  A better
+  approach is to let the Twisted server itself hold a file
+  handle for the log file, and only read <em>new</em> records when
+  needed.
+</p>
+<p>
+  In a way, having the server maintain a file handle is just what
+  <code>tlogmaker.py</code> does, but it stores the latest records in a file
+  rather than in memory.  However, that approach forces us to
+  write the whole server around this persistence function.  It is
+  more elegant to let individual dynamic pages make their own
+  persistence requests to the server.  This way, for example, you
+  can add new stateful dynamic pages without stopping or altering
+  the long-running (and generic) server.  The key to
+  page-allocated persistence is Twisted's <em>registry</em>.  For
+  example, here is a dynamic page that serves the weblog:
+</p>
+<div class="code-sample"><h4>www/weblog.rpy dynamic web-log page</h4><pre>
+from twisted.web import resource, server
+from persist import Records
+from webloglib import log_fields, TOP, ROW, END, COLOR
+import webloglib as wll
+
+records = registry.getComponent(Records)
+if not records:
+   records = Records()
+   registry.setComponent(Records, records)
+
+class Resource(resource.Resource):
+    def render(self, request):
+        request.write(TOP)
+        odd = 0
+        for rec in records.getNew():
+            print rec
+            hit = [field.strip('"') for field in log_fields(rec)]
+            if hit[wll.status]=='200' and hit[wll.referrer]!='-':
+                resource = hit[wll.request].split()[1]
+                referrer = hit[wll.referrer].replace('&amp;amp;',' &amp;')
+                request.write(ROW % (COLOR[odd],referrer,resource))
+                odd = not odd
+        request.write(END)
+        request.finish()
+        return server.NOT_DONE_YET
+resource = Resource()
+
+</pre></div><p>
+  One thing that is initially confusing about the registry is that
+  it is never imported by <code>weblog.rpy</code>. An <code>.rpy</code> script is not
+  quite the same as a plain <code>.py</code> script--the former runs <em>within</em>
+  the Twisted environment, which provides automatic access to
+  <code>register</code> among other things. The <code>request</code> object is another
+  thing that comes from the framework rather than the <code>.rpy</code>
+  itself.
+</p>
+<p>
+  Notice also the somewhat new style of returning the page
+  contents. Rather than just return an HTML string, in the above,
+  we cache several writes to the <code>request</code> object, then finish them
+  up with the call to <code>request.finish()</code>. The odd looking return
+  value <code>server.NOT_DONE_YET</code> is a flag to the Twisted server to
+  flush the page content out of the <code>request</code> object. Another
+  option is to add a Deferred object to the request, and serve the
+  page when the callback to the Deferred is performed (for example,
+  if the page cannot be generated until a database query
+  completes).
+</p>
+<h3>Creating Persistent Objects</h3>
+ <p>
+  Notice the little conditional logic at the top of <code>weblog.rpy</code>.
+  The first time the dynamic page is served, no <code>Records</code> object
+  has yet been added to the registry. But after that first time,
+  we want to keep using the same object for each call to
+  <code>records.getNew()</code>. The call to <code>registry.getComponent()</code>
+  returns the registered object of the appropriate class if it can,
+  otherwise it returns a false value to allow testing. Between
+  calls, of course, the object is maintained in the address space
+  of the Twisted server.
+</p>
+<p>
+  A persistence class should best live in a module that the <code>.rpy</code>
+  file imports. This way, every dynamic page can utilize
+  persistence classes you write. Any sort of persistence you like
+  can be contained in the instance attributes. However, some things
+  like open files cannot be saved between shutdowns of the server
+  (simple values, however, can be persisted between server runs,
+  and are saved in a file like <code>web-shutdown.tap</code>). The module
+  <em><code>persist</code></em> that I use contains one very simple class, <code>Counter</code>,
+  that is borrowed from the Twisted Matrix documentation, and
+  another, <code>Records</code>, that I use for the web-log dynamic page:
+</p>
+<div class="code-sample"><h4>Persistence support module persist.py</h4><PRE><FONT COLOR=#3333CC><B>class</B></FONT><A NAME="Counter"><FONT COLOR=#CC0000><B> Counter</B></FONT></A>:
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="__init__"><FONT COLOR=#CC0000><B> __init__</B></FONT></A>(self):
+        self.value = 0
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="increment"><FONT COLOR=#CC0000><B> increment</B></FONT></A>(self):
+        self.value += 1
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="getValue"><FONT COLOR=#CC0000><B> getValue</B></FONT></A>(self):
+        <FONT COLOR=#3333CC><B>return</B></FONT> self.value
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="Records"><FONT COLOR=#CC0000><B> Records</B></FONT></A>:
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="__init__"><FONT COLOR=#CC0000><B> __init__</B></FONT></A>(self, log_name=<FONT COLOR=#115511>'../access-log'</FONT>):
+        self.log = open(log_name)
+        self.recs = self.log.readlines()
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="getNew"><FONT COLOR=#CC0000><B> getNew</B></FONT></A>(self):
+        self.recs.extend(self.log.readlines())
+        self.recs = self.recs[-35:]
+        <FONT COLOR=#3333CC><B>return</B></FONT> self.recs</PRE></div><p>
+  You are perfectly free to put whatever methods you like in
+  persistence classes--the registry simply holds instances in
+  memory between different calls to dynamic pages.
+</p>
+<h3>For Next Time</h3>
+ <p>
+  In this installment, we have looked at the basics of Twisted web
+  servers. A basic server--or even one with minor custom code--is
+  easy to setup. But greater power is available in the
+  <em><code>twisted.web.woven</code></em> module which provides a templating system for
+  Twisted web servers.  In outline, woven provides a programming
+  style similar to PHP, ColdFusion, JSP, but arguably with a more
+  useful division between code and templates than those other
+  systems offer (and of course, <em><code>twisted.web.woven</code></em> lets you
+  program in Python).  If we can fit it in, we will look also
+  address dynamic pages and web security.
+</p>
+<h3>Resources</h3>
+ <p>
+  Twisted Matrix comes with quite a bit of documentation, and
+  many examples.  Browse around its homepage to glean a greater
+  sense of how Twisted Matrix works, and what has been
+  implemented with it (or wait for the next installments here):
+</p>
+<blockquote>
+   <a href="http://twistedmatrix.com">http://twistedmatrix.com</a>
+</blockquote>
+<p>
+  A simple version of a weblog server was presented in the
+  developerWorks tip, <cite>Use Simple API for XML as a long-running
+  event processor</cite>:
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/xml/library/x-tipasysax.html">http://www-106.ibm.com/developerworks/xml/library/x-tipasysax.html</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz believes that it is turtles all the way down. David
+  may be reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a> And buy his book:
+ <a href="http://gnosis.cx/TPiP/.">http://gnosis.cx/TPiP/.</a>
+</p>
+</body></html>

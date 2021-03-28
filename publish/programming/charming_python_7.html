@@ -1,0 +1,419 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>CHARMING PYTHON #7 -- Dynamically reloading modules in long-running processes -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="charming_python_6.html" TITLE="CHARMING PYTHON #6">
+<link REL="next" HREF="charming_python_8.html" TITLE="CHARMING PYTHON #8">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<h1>Charming Python #7</h1>
+<h2>Dynamically reloading modules in long-running processes</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Mesmerist, Gnosis Software, Inc.<br>
+ September 2000<br>
+ <br>
+</p>
+<blockquote>
+    One of the great advantages of Python over most other
+    programming languages is the extreme runtime dynamism it is
+    capable of.  As a consequence of having the handy <code>reload()</code>
+    function, we can write programs that run persistently, but
+    that load components that have been modified during the run
+    of the process.  Pretty handy for services where continuous
+    uptime is critical.  This column illustrates runtime program
+    modification by means of some enhancements to the Txt2Html
+    front-end discussed in an earlier column.  Specifically,
+    our sample program will do a background check for new
+    versions of the Txt2Html conversion library on the Internet,
+    and download and reload any new version as needed without
+    manual user intervention.
+</blockquote>
+<h3>What Is Python?</h3>
+ <p>
+  Python is a freely available, very-high-level, interpreted
+  language developed by Guido van Rossum.  It combines a clear
+  syntax with powerful (but optional) object-oriented semantics.
+  Python is available for almost every computer platform you
+  might find yourself working on, and has strong portability
+  between platforms.
+</p>
+<h3>Introduction</h3>
+ <p>
+  Let us paint a scenario for this column:  Suppose you want to
+  run a process on your local machine, but part of your program
+  logic lives somewhere else.  Specifically, let us assume that
+  this program logic is updated from time-to-time, and when you
+  run your process, you would like to use the most current
+  program logic.  There are a number of approaches to addressing
+  the requirement just described; this column will walk a reader
+  through several of them.
+</p>
+<p>
+  As this column has progressed, I have discussed ongoing
+  enhancements to my public-domain utility <code>Txt2Html</code>.  This
+  utility converts "smart ASCII" text files to HTML.  Previous
+  columns discussed the web-proxy version of the utility and a
+  <code>curses</code> interface for the utility.  It also happens that from
+  time-to-time I notice that some ASCII markup could be converted
+  in a more useful way, or I fix a bug in handling a particular
+  markup construct.
+</p>
+<p>
+  In fact, these columns are written in ASCII, and converted
+  during the editorial process to the HTML format you are
+  probably reading.  Prior to sending a draft article off for
+  publication, I run something like the following process:
+</p>
+<div class="code-sample"><h4>Command-line HTMLization of articles</h4><pre>
+txt2html charming_python_7.txt &gt; charming_python_7.html
+
+</pre></div><p>
+  If I wanted, I could specify some flags to modify the
+  operation; but either way, I just rely on the fact that the
+  most current version of the coverter is on my local drive and
+  path.  If I were working on a different machine, or for readers
+  who might want want to use the utility, the process is more
+  cumbersome:  check my website, compare version numbers and
+  filedates (sometimes I make a change too small to number),
+  download the current version, copy current version to the right
+  directory, run the command-line converter.
+</p>
+<p>
+  There are several manual and moderately time consuming steps
+  involved in the above.  It ought to be easier, and it can be.
+</p>
+<h3>Command-line Web Access</h3>
+ <p>
+  Most people think of the web as a way interactively to browse
+  pages in a GUI environment.  Doing that is nice, of course.
+  But there is also a lot of power in a command-line.  Systems
+  with the text-mode web-browser <code>lynx</code> can largely treat the
+  entire WWW as just another set of files for command-line tools
+  to work with.  For example, some commands I find useful are:
+</p>
+<div class="code-sample"><h4>Command-line web browsing with lynx</h4><pre>
+lynx -dump http://gnosis.cx/publish/.
+lynx -dump http://ibm.com/developer/. &gt; ibm_developer.txt
+lynx -dump http://gnosis.cx/publish | wc | sed "s/( *[0-9]* *\)\([0-9]*\)\(.*\)/\2/g"
+
+</pre></div><p>
+  The first of these says "Display David Mertz' homepage to the
+  console" (as ASCII text).  The second says, "Save an ASCII
+  version of IBM's current developerWorks homepage to a file."
+  The third example says "Display the number of words in David's
+  homepage" (Don't worry about the specifics, it just shows
+  command-line tools being combined with pipes).
+</p>
+<p>
+  One thing about <code>lynx</code> is that (with the <code>-dump</code> option) it
+  does almost exactly the opposite thing as <code>Txt2Html</code>:  the
+  former converts HTML to text, and latter converts in the other
+  direction.  But there is no reason not to be able to use
+  <code>Txt2Html</code> in the same fashion as <code>lynx</code>.  Doing so can be
+  accomplished with a short Python script:
+</p>
+<div class="code-sample"><h4>'fetch_txt2html.py' command-line converter</h4><PRE><FONT COLOR=#3333CC><B>import</B></FONT> sys
+<FONT COLOR=#3333CC><B>from</B></FONT> urllib <FONT COLOR=#3333CC><B>import</B></FONT> urlopen, urlencode
+<FONT COLOR=#3333CC><B>if</B></FONT> len(sys.argv) == 2:
+  cgi = <FONT COLOR=#115511>'http://gnosis.cx/cgi-bin/txt2html.cgi'</FONT>
+  opts = urlencode({<FONT COLOR=#115511>'source'</FONT>:sys.argv[1], <FONT COLOR=#115511>'proxy'</FONT>:<FONT COLOR=#115511>'NONE'</FONT>})
+  <FONT COLOR=#3333CC><B>print</B></FONT> urlopen(cgi, opts).read()
+<FONT COLOR=#3333CC><B>else</B></FONT>:
+  <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"Please specify URL for Txt2Html conversion"</PRE></FONT></div><p>
+  To run this script, just do something like:
+</p>
+<div class="code-sample"><h4></h4><pre>python fetch_txt2html.py http://gnosis.cx/publish/programming/charming_python_7.txt
+
+</pre></div><p>
+  This does not provide you with all the switches of local
+  <code>Txt2Html</code> process, but it would be simple to add those if
+  needed.  You can pipe and redirect the output just as you would
+  with any command-line tool.  However, in the above version,
+  you can only process data files that can be reached by URL, not
+  local files.
+</p>
+<p>
+  Actually, <code>fetch_txt2html.py</code> does something <code>lynx</code> does not
+  (and neither does <code>Txt2Html</code> by itself):  it not only fetches
+  the data source from a URL, it also gets the <strong>program logic</strong>
+  remotely.  If you use <code>fetch_txt2html.py</code> there is no need to
+  even <em>have</em> <code>Txt2Html</code> on your local machine; the processing is
+  remotely invoked (with the latest version), and the results are
+  sent back to you exactly as if you had run a local process.
+  Neat, huh?  The local version of <code>Txt2Html</code> can access remote
+  URLs just as with local files, but it cannot make sure it keeps
+  itself up to date... yet!
+</p>
+<h3>Dynamic Initialization</h3>
+ <p>
+  Using <code>fetch_txt2html.py</code> assures that the latest program logic
+  is always used in conversions.  Another thing this approach
+  does, however, is move the processor (and memory) requirements
+  onto the gnosis.cx webserver.  The load imposed by this
+  particular process is not particularly high, but it is easy to
+  imagine other types of processes where processing on the client
+  is more efficient and desirable.
+</p>
+<p>
+  The way <code>Txt2Html</code> is organized--like the way most programs are
+  organized--is with a couple core flow-control functions
+  assisted by a variety of utility functions.  In particular, the
+  utility functions are the ones that I update fairly frequenty;
+  the core functions (<code>main()</code> and a few others) will only be
+  touched in the event of a major rewrite.  In short, what could
+  helpfully be updated at each program run is the utility
+  functions.  Most of the time, in fact, most of the functions
+  will be fine in the main <code>Txt2Html</code> module <em><code>dmTxt2Html</code></em>.
+</p>
+<p>
+  To reflect this organization, I have pulled out <em>copies</em> of all
+  the text-manipulation utility functions into a support module
+  called <em><code>d2h_textfuncs</code></em>.  The same functions still exist in the
+  primary module, but the support module might contain more
+  up-to-date versions of functions.  The <em><code>d2h_textfuncs</code></em> module
+  is mostly a skeleton right now, but it might be filled in over
+  time.  Most functions are merely commented headers, real
+  updated program logic can be filled in as needed.  The support
+  module looks like the below (abridged):
+</p>
+<div class="code-sample"><h4>'d2h_textfuncs.py' dyanamic Txt2Html updates</h4><PRE><FONT COLOR=#115511>"""Hot-pluggable replacement functions for Txt2Html"""</FONT>
+
+<FONT COLOR=#1111CC>#-- Functions to massage blocks by type</FONT>
+<FONT COLOR=#1111CC>#def </FONT>Titleify(block):
+<FONT COLOR=#1111CC>#def </FONT>Authorify(block):
+<FONT COLOR=#1111CC># ... [more block massaging functions] ...</FONT>
+
+<FONT COLOR=#1111CC>#-- Utility functions for text transformation</FONT>
+<FONT COLOR=#1111CC>#def </FONT>AdjustCaps(txt):
+<FONT COLOR=#1111CC>#def </FONT>capwords(txt):
+<FONT COLOR=#1111CC>#def </FONT>URLify(txt):
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="Typographify"><FONT COLOR=#CC0000><B> Typographify</B></FONT></A>(txt):
+    <FONT COLOR=#1111CC># [module] names</FONT>
+    r = re.compile(r<FONT COLOR=#115511>"""([\(\s'/"&gt;]|^)\[(.*?)\]([&lt;\s\.\),:;'"?!/-])"""</FONT>, re.M | re.S)
+    txt = r.sub(<FONT COLOR=#115511>'\\1&lt;em&gt;&lt;code&gt;\\2&lt;/code&gt;&lt;/em&gt;\\3'</FONT>,txt)
+    <FONT COLOR=#1111CC># *strongly emphasize* words</FONT>
+    r = re.compile(r<FONT COLOR=#115511>"""([\(\s'/"]|^)\*(.*?)\*([\s\.\),:;'"?!/-])"""</FONT>, re.M | re.S)
+    txt = r.sub(<FONT COLOR=#115511>'\\1&lt;strong&gt;\\2&lt;/strong&gt;\\3'</FONT>, txt)
+    <FONT COLOR=#1111CC># ... [more text massaging] ...</FONT>
+    <FONT COLOR=#3333CC><B>return</B></FONT> txt
+<FONT COLOR=#1111CC># ... [more text transformation functions] ...</PRE></FONT></div><p>
+  In order to utilize the support module in its latest-and-
+  greatest incarnation, a few steps of preparation are necessary.
+  First, download the main <code>Txt2Html</code> module to your local system
+  (this is a one-time step).  Second, create a Python script on
+  your local system that reads:
+</p>
+<div class="code-sample"><h4>'dyn_txt2html.py' command-line converter</h4><PRE><FONT COLOR=#3333CC><B>from</B></FONT> dmTxt2Html <FONT COLOR=#3333CC><B>import</B></FONT> *     <FONT COLOR=#1111CC># Import the body of 'Txt2Html' code</FONT>
+<FONT COLOR=#3333CC><B>from</B></FONT> urllib <FONT COLOR=#3333CC><B>import</B></FONT> urlopen
+<FONT COLOR=#3333CC><B>import</B></FONT> sys
+
+<FONT COLOR=#1111CC># Check for updated functions (fail gracefully if not fetchable)</FONT>
+<FONT COLOR=#3333CC><B>try</B></FONT>:
+    updates = urlopen(<FONT COLOR=#115511>'http://gnosis.cx/download/t2h_textfuncs.py'</FONT>).read()
+    fh = open(<FONT COLOR=#115511>'t2h_textfuncs.py'</FONT>, <FONT COLOR=#115511>'w'</FONT>)
+    fh.write(updates)
+    fh.close()
+<FONT COLOR=#3333CC><B>except</B></FONT>:
+    sys.stderr.write(<FONT COLOR=#115511>'Cannot currently download Txt2Html updates'</FONT>)
+
+<FONT COLOR=#1111CC># Import the updated functions (if available)</FONT>
+<FONT COLOR=#3333CC><B>try</B></FONT>:
+    <FONT COLOR=#3333CC><B>from</B></FONT> t2h_textfuncs <FONT COLOR=#3333CC><B>import</B></FONT> *
+<FONT COLOR=#3333CC><B>except</B></FONT>:
+    sys.stderr.write(<FONT COLOR=#115511>'Cannot import the updated Txt2Html functions'</FONT>)
+
+<FONT COLOR=#3333CC><B>if</B></FONT> len(sys.argv) == 2:
+    cfg_dict = ParseArgs(sys.argv[1:])
+    main(cfg_dict)
+<FONT COLOR=#3333CC><B>else</B></FONT>:
+    <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"Please specify URL (and options) for Txt2Html conversion"</PRE></FONT></div><p>
+  A few comments are warranted concerning the <code>dyn_txt2html.py</code>
+  script.  Notice that when the <code>from t2h_textfuncs import *</code>
+  statement is executed, all the functions (like
+  <code>Typographify()</code>) that were defined previously in <em><code>dmTxt2Html</code></em>
+  are replaced by the <em><code>t2h_textfuncs</code></em> version of the same-named
+  functions.  Of coure, where functions in <em><code>t2h_textfuncs</code></em> are
+  only commented-out placeholders, no replacement occurs.
+</p>
+<p>
+  One minor matter is that different systems handle
+  writes to STDERR differently.  Under Unix-like systems, you can
+  redirect STDERR when you run the script; however, under my
+  current OS/2 shell, and under Windows/DOS, the STDERR messages
+  will be appended to the console output.  You might want to
+  either write the above errors/warning to a log file, or simply
+  get in the habit of directing the STDOUT to a file (where it is
+  probably more useful anyway.  For example:
+</p>
+<div class="code-sample"><h4>Command-line session of 'dyn_txt2html'</h4><pre>
+G:\txt2html&gt; python dyn_txt2html.py test.txt &gt; test.html
+Cannot currently download Txt2Html updates
+
+</pre></div><p>
+  The error goes to console, the converted output to a file.
+</p>
+<p>
+  A more interesting matter is why <code>dyn_txt2html.py</code> does not
+  just download the whole <em><code>dmTxt2Html</code></em> module instead of the
+  support module only.  There are a few things going on here.
+  The <em><code>t2h_textfuncs</code></em> support module is significantly smaller
+  than the main <em><code>dmTxt2Html</code></em> module, especially since most of the
+  functions are stubbed/commented out.  On a modem connection
+  this could be significantly faster.  But download size is not
+  the main thing.
+</p>
+<p>
+  For <code>Txt2Html</code> it probably does not matter if users
+  auto-download the whole latest module.  But what about a system
+  where the program logic is <strong>distributed</strong> <em></em> and especially
+  where the responsibility for maintenance is distributed?  You
+  might have Alice, Bob and Charlie be responsible for modules
+  <em><code>Funcs_A</code></em>, <em><code>Funcs_B</code></em> and <em><code>Funcs_C</code></em>, respectively.  Each of them
+  make periodic (and independent) changes to the functions under
+  their control, and upload the latest-and-greatest to their own
+  website (such as http://alice.com/Funcs_A.py).  In this
+  scenario it is not feasable to have all three programmers make
+  changes to the same main module.  But a script similar to
+  <code>dyn_txt2html.py</code> can straightforwardly be extended to try
+  importing <em><code>Funcs_A</code></em>, <em><code>Funcs_B</code></em> and <em><code>Funcs_C</code></em> all at startup
+  (and fallback to <em><code>MainProg</code></em> version if these resources cannot
+  be obtained).
+</p>
+<h3>A Long-running Dynamic Process</h3>
+ <p>
+  The tools we have looked at so far get their dynamic program
+  logic by downloading updated resources at initialization.  This
+  makes a lot of sense for command-line or batch processes, but
+  what about long-running applications.  Such long-running
+  applications are most likely to be server processes that
+  respond to client requests continuously.  In our case, however,
+  we will use the <code>curses_txt2html.py</code> script developed for a
+  previous column to illustrate Python's <code>reload()</code> function.
+  The program <code>curses_txt2html</code> is a wrapper for a local copy
+  of <em><code>dmTxt2Html</code></em>.  Without trying to address <code>curses</code> programming
+  a second time herein, it is enough to mention that
+  <code>curses_txt2html</code> provides a set of interactive menus to
+  configure and run multiple, sequential <code>Txt2Html</code> conversions.
+</p>
+<p>
+  <code>curses_txt2html</code> could potentially be left running in the
+  background all the time, and we would like it to be able to
+  utilize up-to-date program logic when we switch to its session,
+  and run a conversion.  For this specific simple example, it
+  admittedly would not be difficult to close and relaunch the
+  application, and no particular disadvantages would be incurred.
+  But it is easy to imagine other processes that genuinely do
+  depend on being left running all the time, perhaps ones that
+  are stateful as to action performed in a session.
+</p>
+<p>
+  For this column, a new File/Update submenu was added.  When
+  activated, it simply calls a new function called
+  <code>update_txt2html()</code>.  Aside from the <em><code>curses</code></em> calls that relate
+  to providing some confirmation of what occurred, we have mostly
+  already seen these steps in other examples in this column:
+</p>
+<div class="code-sample"><h4>'curses_txt2html.py' dynamic update function</h4><PRE><FONT COLOR=#3333CC><B>def</B></FONT><A NAME="update_txt2html"><FONT COLOR=#CC0000><B> update_txt2html</B></FONT></A>():
+    <FONT COLOR=#1111CC># Check for updated functions (fail gracefully if not fetchable)</FONT>
+    s = curses.newwin(6, 60, 4, 5)
+    s.box()
+    s.addstr(1, 2, <FONT COLOR=#115511>"* PRESS ANY KEY TO CONTINUE *"</FONT>, curses.A_BOLD)
+    s.addstr(3, 2, <FONT COLOR=#115511>"...downloading..."</FONT>)
+    s.refresh()
+    <FONT COLOR=#3333CC><B>try</B></FONT>:
+        <FONT COLOR=#3333CC><B>from</B></FONT> urllib <FONT COLOR=#3333CC><B>import</B></FONT> urlopen
+        updates = urlopen(<FONT COLOR=#115511>'http://gnosis.cx/download/dmTxt2Html.py'</FONT>).read()
+        fh = open(<FONT COLOR=#115511>'dmTxt2Html.py'</FONT>, <FONT COLOR=#115511>'w'</FONT>)
+        fh.write(updates)
+        fh.close()
+        s.addstr(3, 2, <FONT COLOR=#115511>"Module [dmTxt2Html] downloaded to current directory"</FONT>)
+    <FONT COLOR=#3333CC><B>except</B></FONT>:
+        s.addstr(3, 2,  <FONT COLOR=#115511>"Download of updated [dmTxt2Html] module failed!"</FONT>)
+    reload(dmTxt2Html)
+    s.addstr(4, 2, <FONT COLOR=#115511>"Module [dmTxt2Html] reloaded from current directory  "</FONT>)
+    s.refresh()
+    c = s.getch()
+    s.erase()</PRE></div><p>
+  There are two significant differences between <code>dyn_txthtml.py</code>
+  and our <code>update_txt2html()</code> function.  One is that we go ahead
+  and import the main <em><code>dmTxt2Html</code></em> module rather than just the
+  support functions.  This is largely just to simplify the
+  import.  The issue here is that we use an <code>import dmTxt2Html</code>
+  to access the module instead of a <code>from dmTxt2Html import *</code>.
+  In many ways this is a safer procedure, but a consequence is
+  that it is more difficult to (accidentally or deliberately)
+  overwrite functions in <em><code>dmTxt2Html</code></em>.  If we wanted to attach
+  functions from <em><code>d2h_textfuncs</code></em> we would have to do a <code>dir()</code> on
+  the imported support module, and attach members to the
+  "dmTxt2Html" namespace in attribute fashion.  Doing this style
+  of overwriting is left as an exercise for readers.
+</p>
+<p>
+  The most significant difference introduced by the
+  <code>update_txt2html()</code> function is the use of Python's built-in
+  <code>reload()</code> function.  Just performing a brand new
+  <code>import dmTxt2Html</code> will <strong>not</strong> overwrite the functions
+  previously imported.  Watch out for this!  A lot of beginners
+  assume that reimporting a module will update the version in
+  memory.  It won't.  Instead, the way to update the in-memory
+  image of the functions in a module is to <code>reload()</code> the module.
+</p>
+<p>
+  There is another small trick performed above.  The download
+  location of an updated <em><code>dmTxt2Html</code></em> module is the local working
+  directory, which may or may not be the directory where
+  <em><code>dmTxt2Html</code></em> was originally loaded from.  In fact, if it is in
+  the Python library directory, you probably will not be working
+  there (and probably don't have permissions to it as a user).
+  But the <code>reload()</code> call tries loading from the current
+  directory first, then from the rest of Python's path.  So
+  whether or not the download succeeds, the <code>reload()</code> should be
+  a safe operation (it may or may not load anything new though).
+</p>
+<h3>Resources</h3>
+ <p>
+  The web-proxy CGI version of <code>Txt2Html</code>:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/cgi-bin/txt2html.cgi">http://gnosis.cx/cgi-bin/txt2html.cgi</a>
+</blockquote>
+<p>
+  Support module <em><code>t2h_textfuncs</code></em>:
+</p>
+<p>
+  <a href="http://gnosis.cx/download/t2h_textfuncs.py">http://gnosis.cx/download/t2h_textfuncs.py</a>
+</p>
+<p>
+  Main module <em><code>dmTxt2Html</code></em>:
+</p>
+<p>
+  <a href="http://gnosis.cx/download/dmTxt2Html.py">http://gnosis.cx/download/dmTxt2Html.py</a>
+</p>
+<p>
+  Files used and mentioned in this article:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/download/charming_python_7.zip">http://gnosis.cx/download/charming_python_7.zip</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  As David Mertz went to sleep one night after troubled
+  wakefulness, he dreamed himself transformed into a technical
+  journalist.  He needs the rest.  David may be reached at
+  mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+</p>
+</body></html>

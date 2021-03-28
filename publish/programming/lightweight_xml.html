@@ -1,0 +1,315 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>XML ZONE TIP: Lightweight XML Libraries -- The KISS Principle -- </title>
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Xml Zone Tip: Lightweight Xml Libraries</h1>
+<h2>The KISS Principle</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Gesticulator, Gnosis Software, Inc.<br>
+ March, 2002<br>
+ <br>
+</p>
+<blockquote>
+    When not to use heavyweight XML APIs. Standard XML APIs like
+    SAX, DOM, and XSLT provide sophisticated ways of transforming
+    and manipulating XML documents.  But each of them is also
+    complex enough to warrant multi-hundred page specification
+    documents, and myriad 3rd party books.  For easy tasks, there
+    are easier way to get the XML work done.  This tip provides
+    links to a number of lightweight XML libraries, and pointers
+    on when programmers should use them.
+</blockquote>
+<h3>Introduction</h3>
+ <p>
+  XML is meant to be easy.  The promise of XML is to provide a
+  simple, direct, and universal means of exchanging data between
+  various platforms and programming languages.  Unfortunately,
+  the most common APIs that have sprung up for manipulating XML
+  are anything but simple--they each have multi-hundred page
+  specification documents, and require a steep learning curve.
+  Admittedly, XML itself has also become a bit more complicated
+  than its initial promise.  There ought to be an easier
+  way--and, in point of fact, there are a number of easier ways.
+</p>
+<p>
+  Internally, most of the lightweight APIs this tip points out
+  are built as higher-level wrappers around SAX(-like) libraries.
+  To use the high-level APIs, a programmer need not know much
+  anything about the underlying parsers.  In one respect or
+  another, simplified APIs just present something easy for an XML
+  programmer to deal with.
+</p>
+<p>
+  There are two general approaches to lightweight XML libraries.
+  One approach transforms XML into a line-oriented format that
+  familiar tools like <code>wc</code>, <code>tail</code>, <code>head</code>, <code>uniq</code>, <code>grep</code>,
+  <code>sed</code>, <code>awk</code>, and in a more sophisticated way <code>perl</code> and other
+  scripting languages are accustomed to dealing with.  Another
+  approach is libraries that represent XML documents according to
+  the "native" data structures of a given programming language.
+  Such libraries exist for a number of programming languages, and
+  are also generally simpler (and more intuitive to programmers
+  of a given language) to invoke than are DOM, XSLT or SAX.
+</p>
+<h3>Line-oriented Xml</h3>
+ <p>
+  The PYX format is a line-oriented representation of XML
+  documents.  PYX is not itself XML, but it is able to represent
+  the information within an XML document.  Moreover, PYX
+  documents can themselves be transformed back into XML as
+  needed.  In PYX, the first character on each line identifies
+  the content-type of the line.  The prefix characters are:
+</p>
+<div class="code-sample"><h4>PYX prefix characters</h4><pre>
+(  start-tag
+)  end-tag
+A  attribute
+-  character data
+?  processing instruction
+
+</pre></div><p>
+  The motivation for PYX is the wide usage, convenience, and
+  familiarity of line-oriented text processing tools and
+  techniques.  These types of tools both generally expect
+  newline-delimited records and rely on regular expression
+  patterns to identify parts of texts--good matches for PYX, but
+  not for XML.
+</p>
+<p>
+  PYX libraries exist for several programming languages, but much
+  of the time it is most useful simply to use the command line
+  tools <code>xmln</code> (non-validating) and <code>xmlv</code> (validating).
+</p>
+<p>
+  The PYX format, in contrast to the XML format, allows one to
+  easily pose a variety of ad hoc questions about a document.
+  For example:  what are all the attribute values in the sample
+  document?  Using PYX, we can simply ask:
+</p>
+<div class="code-sample"><h4>An ad hoc query using PYX format</h4><pre>
+[PYX]# ./xmln test.xml | grep "^A" | awk '{print $2}'
+
+</pre></div><p>
+  Or another, let us try to dump the non-empty content lines of
+  an XML document:
+</p>
+<div class="code-sample"><h4>An ad hoc query using PYX format (contents)</h4><pre>
+[PYX]# ./xmln test.xml | grep '^-[^\n ]' | sed s/^-//
+
+</pre></div><p>
+  One could do write custom applications do do these things with
+  SAX or DOM, but queries like this really <em>deserve</em> to be
+  one-liners.
+</p>
+<h3>Going Native</h3>
+ <p>
+  The API methods of DOM give one access to a certain
+  data-structure that represents an XML document.  The problem is
+  that this data-structure is very little like the built-in data
+  types of programming languages.  A number of libraries have
+  made the move to "native" versions of XML documents.
+</p>
+<h3>Python's <code>xml_objectify</code>
+</h3>
+ <p>
+  When my own Python module <em><code>xml_objectify</code></em> is used to read in an
+  XML document, what one gets is a very simple Python object,
+  whose object attributes correspond to the subelements and
+  attributes of the root document element.  The only difference
+  between subelements and tag attributes is whether they contain
+  futher objects or plain text.  Testing the type of thing a
+  (Python) attribute contains is sufficient for determining
+  whether it started out as a subelement or XML attribute.
+</p>
+<p>
+  Remember first how one might use DOM to look at data in an XML
+  document:
+</p>
+<div class="code-sample"><h4>Python DOM access to XML data structures</h4><PRE><FONT COLOR=#3333CC><B>from</B></FONT> xml.dom <FONT COLOR=#3333CC><B>import</B></FONT> minidom
+dom = minidom.parse(<FONT COLOR=#115511>'test.xml'</FONT>)
+<FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>'flavor='</FONT>+dom.childNodes[1]._attrs[<FONT COLOR=#115511>'flavor'</FONT>].nodeValue
+<FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>'PCDATA='</FONT>+dom.childNodes[1].childNodes[5].childNodes[0].nodeValue</PRE></div><p>
+  In contrast, <em><code>xml_objectify</code></em> lets a user refer to the XML
+  document data in much more intuitive, and Pythonic, ways:
+</p>
+<div class="code-sample"><h4>[xml_objectify] access to XML data structures</h4><pre>
+from xml_objectify import XML_Objectify
+py_obj = XML_Objectify('test.xml').make_instance()
+print 'flavor=' + py_obj.flavor
+print 'PCDATA=' + py_obj.MoreSpam.PCDATA
+
+</pre></div><h3>Ruby's <code>REXML</code>
+</h3>
+ <p>
+  The <em><code>REXML</code></em> library is a library for the Ruby programming
+  language that operates in multiple modes.  The stream parser
+  works in a way similar to SAX, but with a more Ruby-oriented
+  syntax. The tree mode is the most interesting.  Basically, this
+  mode is quite similar to the data representation one gets with
+  <em><code>xml_objectify</code></em> or Perl's <em><code>XML::Parser</code></em> "Tree" style.  One
+  advantage the <em><code>REXML</code></em> library has is its integration of an
+  XPATH-like region specifier syntax.  For example, the REXML
+  tutorial shows these lines:
+</p>
+<div class="code-sample"><h4>REXML tree mode parsing and data structure</h4><pre>
+require "rexml/document"
+include REXML    # don't have to prefix everything with REXML::
+doc = Document.new File.new("mydoc.xml")
+doc.elements.each("inventory/section")
+    { |element| puts element.attributes["name"] }
+    # -&gt; health
+    # -&gt; food
+
+</pre></div><h3>Java's <code>JDOM</code>
+</h3>
+ <p>
+  Java gets in the native game also.  Even though DOM was itself
+  largely styled around Java, the programming language neutral
+  methods of DOM are still unnecessarily complex to work with
+  (even in Java).  JDOM is a more Java-native version of XML
+  processing.  Let's just look at the JDOM mission statement to
+  make the point:
+</p>
+<blockquote>
+    There is no compelling reason for a Java API to manipulate XML to
+    be complex, tricky, unintuitive, or a pain in the neck.  JDOM
+    is both Java-centric and Java-optimized.  It behaves like Java,
+    it uses Java collections, it is completely natural API for
+    current Java developers, and it provides a low-cost entry point
+    for using XML.
+</blockquote>
+<h3>Perl's TMTOWTDI
+</h3>
+ <p>
+  In the culture of the Perl programming language, there is a
+  motto held by programmers:  "there's more than one way to do
+  it."  This slogan is well enough known that it is usually just
+  abbreviated as TMTOWTDI.  As one would expect from this motto,
+  Perl developers have come up with quite a few different ways of
+  handling XML.  While there <em>do</em> exist Perl modules to support
+  standards like DOM and SAX, most Perl programmers prefer
+  modules that embody the Perlish cardinal virtues:  laziness,
+  hubris, and impatience.  Perl programmers are the types of
+  folks who think they can do it better, faster, and with less
+  work than conformance with rigid and complex standards allow.
+</p>
+<p>
+  In keeping with the style in other presented programming
+  languages, both <em><code>XML::Grove</code></em> and <em><code>XML::Parser</code></em> in tree style
+  parse XML documents into very Perlish native data structures.
+</p>
+<h3>Haskell's <code>HaXml</code>
+</h3>
+ <p>
+  <em><code>HaXml</code></em> is a lot like Haskell itself.  It is not necessarily
+  simple, but it is striking in its elagance.  <em><code>HaXml</code></em> does a
+  good job of bringing a function programming style to XML
+  manipulation.  As with the other modules discussed, <em><code>HaXml</code></em>
+  makes XML documents look a lot like native data structures.
+</p>
+<p>
+  A quick example shows how one can do an XSLT-like
+  transformation to HTML:
+</p>
+<div class="code-sample"><h4>HaXml program to output an I Ching HTML Table</h4><pre>
+module Main where
+import XmlLib
+main = processXmlWith (hexagrams `o` tag "IChing")
+hexagrams =
+    html [
+      hhead [htitle [keep /&gt; tag "title" /&gt; txt] ],
+      hbody [htableBorder [rows `o` children `with` tag "hexagram"] ]
+    ]
+htableBorder = mkElemAttr "TABLE" [("BORDER",("1"!))]
+rows f = hrow [hcol [num], hcol [nam], hcol [jdg]] f
+         where num = keep /&gt; tag "number" /&gt; txt
+               nam = keep /&gt; tag "name" /&gt; txt
+               jdg = keep /&gt; tag "judgement" /&gt; txt
+
+
+</pre></div><h3>Resources</h3>
+ <p>
+  Everything one really <em>needs</em> to know about XML is in the
+  Extensible Markup Language (XML) 1.0 W3C Recommendation.  Of
+  course understanding exactly what this signifies requires some
+  subtlety:
+</p>
+<blockquote>
+   <a href="http://www.w3.org/TR/REC-xml">http://www.w3.org/TR/REC-xml</a>
+</blockquote>
+<p>
+  The home page for Pyxie (the Python PYX library, and also C
+  versions of the <code>xmlv</code> and <code>xmln</code> tools) is hosted by
+  Sourceforge:
+</p>
+<blockquote>
+   <a href="http://pyxie.sourceforge.net/">http://pyxie.sourceforge.net/</a>
+</blockquote>
+<p>
+  In a very similar spirit to PYX is a project called
+  "XmlConnect"--in large part the two formats are compatible
+  (both were inspired by ESIS for SGML):
+</p>
+<blockquote>
+   <a href="http://uucode.com/xc/index.html">http://uucode.com/xc/index.html</a>
+</blockquote>
+<p>
+  <cite>XML Matters #17</cite> discusses PYX in greater detail.
+</p>
+<p>
+  <cite>XML Matters #18</cite> discusses REXML in greater detail.
+</p>
+<p>
+  My articles describing <em><code>xml_objectify</code></em> can be found on IBM
+  developerWorks at the following URLs"
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/library/xml-matters2/index.html">http://www-106.ibm.com/developerworks/library/xml-matters2/index.html</a>
+</blockquote>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/library/x-matters11.html">http://www-106.ibm.com/developerworks/library/x-matters11.html</a>
+</blockquote>
+<p>
+  The homepage for the Ruby <em><code>REXML</code></em> library is at:
+</p>
+<blockquote>
+   <a href="http://www.germane-software.com/~ser/software/rexml/">http://www.germane-software.com/~ser/software/rexml/</a>
+</blockquote>
+<p>
+  The homepage for the Java <em><code>JDOM</code></em> library is at:
+</p>
+<blockquote>
+   <a href="http://www.jdom.org/">http://www.jdom.org/</a>
+</blockquote>
+<p>
+  The CPAN documentation for the <em><code>XML::Grove</code></em> module can be found
+  at:
+</p>
+<blockquote>
+   <a href="http://search.cpan.org/doc/KMACLEOD/XML-Grove-0.46alpha/lib/XML/Grove.pm">http://search.cpan.org/doc/KMACLEOD/XML-Grove-0.46alpha/lib/XML/Grove.pm</a>
+</blockquote>
+<p>
+  The documentation for the <em><code>XML::Parser</code></em> module can be found in
+  the distribution, and also at:
+</p>
+<blockquote>
+   <a href="http://search.cpan.org/doc/TWEGNER/XML-Parser-2.30-bin56Mac/Parser.pm">http://search.cpan.org/doc/TWEGNER/XML-Parser-2.30-bin56Mac/Parser.pm</a>
+</blockquote>
+<p>
+  <cite>XML Matters #14</cite> discusses HaXml in greater detail.
+</p>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz uses a wholly unstructured brain to write about
+  structured document formats.  David may be reached at
+  mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>
+</p>
+</body></html>

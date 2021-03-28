@@ -1,0 +1,61 @@
+WEB ZONE TIP: Pay attention to the CSS @media rule
+When to define the 'screen' media type
+
+David Mertz, Ph.D.
+Once Bitten, Gnosis Software
+July, 2007
+
+    The CSS '@media' rule is a useful way to target an HTML or XML
+    document to an intended output device. Use of the 'print' media is
+    now fairly widespread, and provides a much cleaner means of creating
+    print-friendly pages than do separate "printable version". The use
+    of the 'screen' media has been somewhat underused, perhaps under an
+    inaccurate belief that to screen is merely the "default rendering."
+    However, in regard to positioning--especially absolute
+    positioning--the screen media type has an important meaning that is
+    not covered by media-free stylesheet rules.
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  At a recent job I encountered a surprisingly difficult to research
+  glitch in an AJAX web application I was creating. As in many web
+  applications, I wished to create an interface widget in a fixed
+  position on the screen. In my case, and in this tip, it was a bar
+  across the bottom of an information display. For my real application,
+  this bar contained a variety of child widgets to configure and
+  interact with the application; for this tip, we will substitute a
+  static collection of information.  The CSS problem is not affected by
+  the simplification.
+
+  One might go about this interface design by putting elements in a
+  '<frame>' or '<iframe>' element. Using frames, however, loses both
+  some of the easy RESTfulness of the application and the power of
+  client ECMAscript to toggle the visibility of '<div>' elements during
+  interaction. The best thing all around would be to have a pure CSS
+  description of the interface.
+
+  Let us try it.
+
+A FIRST MISTAKE
+------------------------------------------------------------------------
+
+  For this tip, I created a toy
+
+
+      Use the '@media screen' CSS rule to enable correct element
+    positioning. There's a subtle gotcha in using 'absolute' positioning
+    of HTML elements--especially for special or sometimes-hidden <div>
+    elements: Elements positioned correctly on initial rendering will
+    not stay where they should upon scrolling unless those <div>'s are
+    styled within '@media screen' rules. Briefly discuss use of
+    media-specific style sheet tags, with example of automatic
+    print-friendly page versions.
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz... . David may be reached at mertz@gnosis.cx; his life
+  pored over at http://gnosis.cx/publish/. And buy his book:
+  http://gnosis.cx/TPiP/.

@@ -1,0 +1,443 @@
+LINUX ZONE FEATURE: Linux on PowerPC 970
+Moving to a Home-User Supercomputer
+
+David Mertz, Ph.D.
+Whiz Kid, Gnosis Software, Inc.
+August, 2004
+
+    IBM's PPC 970 CPUs are well-designed, high-performance chips that
+    happen to ship millions of units to end user systems under Apple
+    Computers' G5 moniker. These CPUs greatly lower the bar for 64-bit
+    computing on the desktop and on small servers. David follows up his
+    earlier Linux/PPC article by installing Yellow Dog Linux onto a G5
+    Macintosh.
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  This articles explores how to set up a dual-boot environment with
+  Yellow Dog Linux (YDL) and OSX, on Apple G5 systems, including issues
+  to watch for during installation and configuration. I had hoped to
+  include details on running OSX applications within the Mac-on-Linux
+  environment; unfortunately, it does not currently appear possible to
+  run Mac-on-Linux on a G5 without further developer efforts.
+
+  My previous article, "Linux on PowerPC Processors" (see Resources)
+  explored some general motivations for running Linux on Apple
+  hardware--especially given that every Apple already ships with a
+  generally excellent Unix-family operating system called OSX. I will
+  not repeat that general discussion here, but a number of issues
+  specific to running Yellow Dog on (multiprocessor) G5 systems was not
+  addressed in that earlier piece.
+
+  Some general features of the Yellow Dog distribution--as of this
+  writing, the only G5-ready Linux system I know of--are addressed, such
+  as configuration and tool details. To give a sense of performance, I
+  also perform benchmarks using LMBench, under several scenarios. As
+  well, this article touches briefly on processor-specialized
+  compilation options using 'gcc', and also on cross-compilation to
+  other POWER-family chips.
+
+INSTALLING YELLOW DOG
+------------------------------------------------------------------------
+
+  Let us get some bad news out of the way first, and then we will get to
+  the quite nice features of Linux on Apple G5 machines. First
+  thing--and this is not immediately obvious from the Yellow Dog Linux
+  website and documentation--you cannot boot a G5 from the publicly
+  available YDL3.0.1 ISOs. Instead, to obtain access to (beta) ISOs with
+  G5 compatibility, you currently need to pay for a membership
+  subscription to "YDL.net Enhanced" (see Resources). Moreover, even
+  once you have subscribed, the ISOs you need are still numbered as
+  "3.0.1", with only a different date--also, do not confuse the general
+  update ISOs in the FTP '/enhanced/iso/' directory with those buried
+  more deeply under '/enhanced/iso/PowerMacG5/'. Given the beta (or
+  maybe experimental) status, the exact file dates are likely to change
+  (I used those named '*-20040204-*.iso').
+
+  According to Terra Soft representative Kai Staats, Terra Soft's
+  pre-built G5 systems optionally come configued with a 64-bit kernel
+  (at buyer request). Terra Soft anticipates shipping its non-beta
+  "Y-HPC" distribution in the next few months; Y-HPC will include 64-bit
+  kernels, but only be available on a fee licensed basis.
+
+  The second bit of bad news is that there is not yet any good way to
+  non-destructively repartition existing HFS+ partions.  Since PowerMac
+  G5s come partitioned as one large partion, you will need to wipe out
+  and reinstall OSX to get your dual-boot system configured.  Of course,
+  for dedicated server use, you probably only need one OS anyway; but
+  for hackers and home users, multi-boot is a useful configuration.
+
+  The easiest way to setup a dual- or multi-boot PowerMac G5 system is
+  probably to reinstall OSX from the installation media that came with
+  the machine.  At the start of the OSX installation, select "Disk
+  Utility" from the menu, create a smaller partition as HFS+, and leave
+  the remainder as free space.  On my 160 GB test system HDD, I
+  allocated 30 GB for OSX (I can always create more HFS+ partitions
+  later if need be).
+
+  Once you have reinstalled and left some free disk space, simply put in
+  the G5-compatible YDL CD that you obtained according to the above
+  instructions. As with all Macintosh system, hold down the "c" key
+  during reboot to boot from CD rather than HDD. Yellow Dog's installer
+  is very friendly, and is based on Red Hat's Anaconda installer.
+  Everything except the sound card was automatically recognized
+  correctly by the installer--even my exact monitor model and
+  capabilities, which OSX failed to detect. My DHCP router and ethernet
+  network connected seamlessly. A minor annoyance was that the installer
+  ran with a 60 Hz monitor refresh, which produces a distracting flicker
+  under florescent lights. But once installed, Yellow Dog uses a healthy
+  (and configurable) 70+ Hz.
+
+  During installation, YDL presents you with partitioning options,
+  performed with the user-friendly tool "Disk Druid." Journaling ext3 is
+  its preferred filesystem (and what I used). If you select "Automatic,"
+  Disk Druid will claim all the free space for Linux; I preferred to
+  manually configure another 30 GB ext3 partition (and leave the default
+  swap partition at the end of the disk). This leaves about 100 GB free
+  for me to install additional OS or data partitions, using whichever
+  filesystems I need. A little bit later in the installation process,
+  Yellow Dog installs the boot manager 'Yaboot', which mostly works the
+  same as 'lilo' does on x86 systems (including an '/etc/yaboot.conf/'
+  configuration file).
+
+  Once you select which packages you wish to install--perhaps by
+  choosing a general option like "Desktop", "Server" or "Developer
+  Workstation"--the installation finishes up, and reboots into the
+  Yaboot boot manager. Assuming you choose "Linux" rather than "OSX"
+  during boot, Yellow Dog scrolls through all the textual messages about
+  drivers and daemons loading that Linux users are accustomed to. After
+  about 40 seconds (on a dual-1.8GHz G5 machine), you get to the Yellow
+  Dog welcome screen where you can log in as a user, reboot, choose
+  desktop environment, and the like. For what it's worth, OSX boots in a
+  very impressive 15 seconds on the same machine. KDE is YDL's default
+  environment, but Gnome also comes on the installation CDs (and you can
+  build whatever window manager you like from source).
+
+WORKING WITH YOUR YDL SYSTEM
+------------------------------------------------------------------------
+
+  YDL is a lot like most any other modern Linux distribution. It comes
+  with GCC 3.3.3, recent versions of Python, Perl, Ruby, and other
+  programming languages. The KDE launch menu contains office software
+  like OpenOffice.org, GIMP, Mozilla, and several development
+  environments such as KDevelop, arranged in logical hierarchies. The
+  default scheme and interface configuration are nicely chosen--but you
+  can use KDE Control Center and/or miscellaneous right-clicks to change
+  behavior as you like.
+
+  Let me mention a few issues specific to Macintosh/G5 configurations
+  that x86 Linux users may not be familiar with.  An early thing you
+  might want to do is make your OSX HFS+ parition available to read data
+  off.  My understanding is that the driver to handle journalling in
+  HFS+ is still experimental, so you are better off treating HFS+ as
+  read-only.  The steps you will take to access HFS+ are something like
+  the following (you will  need to log in as root or 'su'):
+
+      #------------ Mounting an HFS+ partition under YDL --------------#
+      % mkdir /mnt/osx
+      % modprobe hfsplus
+      % parted /dev/sda  # press "p" for partition list
+      % mount /dev/sda3 /mnt/osx -thfsplus
+      % ls /mnt/osx
+
+  The 'parted' command lets you check partition numbers and filesystems.
+  Take a look within the tool to see which HFS+ partitions you have. If
+  you like using the Konqueror and the KDE desktop to navigate files,
+  you may want to drag '/mnt/osx' from a Konqueror window to the
+  desktop.
+
+  Unlike on x86 systems, Apples do not come with an "eject" button on
+  their CD drives.  Under OSX you open the drive with a special button
+  on the keyboard.  Under YDL, you will need to issue the command 'eject
+  /dev/cdrom' from a shell prompt (or attach the action to an icon).
+  Once you insert a new CD in the drive, you will need to run 'mount
+  /dev/cdrom' or configure automount appropriately.
+
+  Mac-on-Linux (MoL) proved a disappointment. YDL 3.0.1 includes older
+  MoL kernel modules that are not compatible with the 2.6.4
+  experimental/beta YDL kernel. Downloading and building the latest MoL
+  source code gets a little farther: 'molvconfig' runs fine; but
+  'startmol' hard freezes the machine. Betas are betas though.
+
+KERNELS AND BITS
+------------------------------------------------------------------------
+
+  Terra Soft's website claims that the YDL.net Enhanced version of its
+  G5 system ships with both 32-bit and 64-bit kernels. As far as I can
+  tell, that is not true right now. The ISOs I downloaded, as far as I
+  can tell, contain only a 32-bit SMP (and non-SMP) kernel. However,
+  poking around the YDL website turned up slightly older 64-bit kernels.
+  Details may change slightly as the system emerges from beta, but I
+  found kernels at 'http://www.yellowdoglinux.com/products/y-hpc.shtml'
+  and downloaded the 'vmlinux*' and 'System*' files to '/boot/'. From
+  there, I ran:
+
+      #------------- Unpacking the 64-bit Linux kernel ----------------#
+      % gunzip vmlinux-2.6.1-1.64.ydl.1.1280.gz
+      % gunzip System.map-2.6.1-1.64.ydl.1.1280.gz
+      % chmod u+x vmlinux-2.6.1-1.64.ydl.1.1280
+
+  I grabbed the kernel modules too, downloaded to '/root/', and ran:
+
+      #------------ Unpacking 64-bit kernel modules -------------------#
+      % bzip2 -d /root/modules-2.6.1-1.64.ydl.1.1280.tar.bz2
+      % cd /
+      % tar xvf /root/modules-2.6.1-1.64.ydl.1.1280.tar
+
+  This last step creates a large number of files underneath
+  '/lib/modules/2.6.1-1.64.ydl.1.1280/'.  Next step is to add the 64-bit
+  kernel to the boot manager.  First edit '/etc/yaboot.conf' to include:
+
+      #-------------- Adding 64-bit kernel to Yaboot ------------------#
+      image=/boot/vmlinux-2.6.1-1.64.ydl.1.1280
+            label=linux-64bit
+            root=/dev/sda4
+            read-only
+            append="hda=ide-cd"
+
+  Then run 'ybin' (as root).  You are ready to choose kernels at next
+  restart.  As we will see, performance is not all that much affected by
+  using the 64-bit kernel; but choosing 64-bit lets you compile 64-bit
+  applications that might benefit from 64-bit-ness.
+
+GCC OPTIONS AND CROSS-COMPILATION
+------------------------------------------------------------------------
+
+  At the end of this article, I will show some benchmarks for LMBench
+  using variations on kernel versions and compilation options.  While
+  this benchmark was not dramatically affected by the options I tried,
+  the source for LMBench still provided a helpful project to test
+  compiler options on.  For example, in one configuration under the
+  64-bit kernel, I tried configuring the compiler by entering:
+
+      #------------ Setting compiler flags for 'make' -----------------#
+      % export CPPFLAGS='-mcpu=970 -mtune=970'
+
+  Prior to running the usual 'make' step.  A useful summary of key PPC970
+  compiler options can be found in the document "About Compilers with
+  VMX Support" (see Resources).  The referenced document covers GCC
+  3.3.3, the version shipped with YDL, and also apparently with IBM's
+  JS20 Bladecenter PPC970 machine.  You can also compare compiler
+  options available to Linux and Darwin (Mac OSX)--largely similar, but
+  with a few differences.
+
+  Moreover, the design of the whole POWER family architecture allows
+  both cross-compilation to various specific targets, and also
+  compilation to a common instruction base.  The possibility of
+  developing an application on an Apple PowerMac G5, but running it on
+  an IBM pSeries POWER5 is quite intriguing.
+
+  The GCC documentation, section 3.17.23, "IBM RS/6000 and PowerPC
+  Options" (see Resources) provides some helpful information on
+  cross-compilation options. The '-mcpu' flag is the main one to look
+  at. Quoting from the reference:
+
+    -mcpu=cpu_type
+
+    Set architecture type, register usage, choice of mnemonics, and
+    instruction scheduling parameters for machine type cpu_type. Supported
+    values for cpu_type are 401, 403, 405, 405fp, 440, 440fp, 505, 601,
+    602, 603, 603e, 604, 604e, 620, 630, 740, 7400, 7450, 750, 801, 821,
+    823, 860, 970, common, ec603e, G3, G4, G5, power, power2, power3,
+    power4, power5, powerpc, powerpc64, rios, rios1, rios2, rsc, and rs64a.
+
+    -mcpu=common selects a completely generic processor. Code generated
+    under this option will run on any POWER or PowerPC processor. GCC will
+    use only the instructions in the common subset of both architectures,
+    and will not use the MQ register. GCC assumes a generic processor model
+    for scheduling purposes.
+
+  Experimenting, I found that on a stock YDL system, I was able to
+  compile (and run) LMBench to several different CPU targets: for
+  example 'G5', 'G4' or 'powerpc'. I was particularly interested in
+  trying compilation to the 'common' target, but my system lacks some
+  necessary headers. Presumably, I could work this out by downloading
+  the GCC sources and other associated files.  Actually, with the YDL
+  stock GCC, I could still compile many--just not all--of the LMBench
+  source files to the 'common' target.
+
+BENCHMARKING
+------------------------------------------------------------------------
+
+  I do not have sufficient benchmarking expertise to perform meaningful
+  comparisons of a G5 system with competing processors in a similar
+  class, such as Intel's Xeon or AMD's Athlon64. Nor, for that matter,
+  do I own relevant systems with those chips. For what it is worth, few
+  published benchmarks are particularly unbiased anyway. However, I
+  believe it is still fair to take a look at how differences in
+  operating system, kernel-bitness, and compilation options affect
+  benchmark results on the self-same machine. One of the highly touted
+  features of Apple's PowerMac G5 systems is their fast memory
+  subsystem: DDR SDRAM on a 400 MHz bus, allegedly with a bandwidth of
+  up to 6.4 GB/sec (my test system is not the very top-of-the-line
+  though). To look at this, I felt the LMBench 2.0.4 (the latest stable
+  release) was a good tool: it focuses on low-level peformance,
+  especially of memory subsystems.
+
+  I ran LMBench in four different configurations.  In some cases, I
+  performed multiple runs, but the variations were small enough that I
+  present only one example from each configuration.  As a base case, I
+  compiled and ran LMBench on Mac OSX (1.3.4).  In general, it looks
+  like YDL benches -slightly- better than OSX on most tests.  However, a
+  few stunningly bad results on OSX make me wonder if all parts of the
+  suite are running accurately.  For example, it is impressive, but
+  believable that 64-bit YDL gets 50% better local TCP bandwidth than
+  does OSX--Linux is quite well tuned for TCP.  But for OSX to
+  experience -500- times the latency of YDL on disk page faults is
+  rather shocking.  Of course, that latter issue, like the other poor
+  OSX results on "File & VM system latencies" has more to do with the
+  differences between HFS+ and ext3 than with OS kernels as such.
+
+  On the YDL side, I ran one configuration with the default 32-bit
+  kernel, and no compiler options.  Under the 64-bit kernel, I compiled
+  LMBench both with no GCC options, and then with 970-specific tuning.
+  YDL results do not cover a huge range, but there generally appears to
+  be a slight gain with the 64-bit kernel, and another slight gain with
+  the application compiled using the 970 flags.  Here are my LMBench
+  results (edited slightly for layout):
+
+      #----------- LMBench 2.0.4 Summary on PowerMac G5 ---------------#
+      Basic system parameters
+      Host                 OS Description              Mhz
+      --------- ------------- ----------------------- ----
+      Darwin    Darwin 7.2.0  powerpc-apple-darwin7.2 1800
+      YDL3.0.1  Linux 2.6.4-1 powerpc-linux-gnu 32bit 1800
+      64bit     Linux 2.6.1-1 powerpc-linux-gnu 64bit 1800
+      64bit-970 Linux 2.6.1-1    PPC-linux -mtype=970 1800
+
+      Processor, Processes - times in microseconds - smaller is better
+      ----------------------------------------------------------------
+      Host      null null      open selct sig  sig  fork exec sh
+                call  I/O stat clos TCP   inst hndl proc proc proc
+      --------- ---- ---- ---- ---- ----- ---- ---- ---- ---- ----
+      Darwin    2.23 2.78 6.27 9.17  15.6 3.09 8.97 1468 3146 6796
+      YDL3.0.1  0.30 0.42 5.13 6.08  25.5 0.72 2.67  295  990 4093
+      64bit     0.23 0.43 5.04 6.47  33.3 0.70 2.19  257  914 3778
+      64bit-970 0.24 0.44 4.98 6.49  33.2 0.70 2.25  262  955 3856
+
+      Context switching - times in microseconds - smaller is better
+      -------------------------------------------------------------
+      Host      2p/0K 2p/16K 2p/64K 8p/16K 8p/64K 16p/16K 16p/64K
+                ctxsw  ctxsw  ctxsw ctxsw  ctxsw   ctxsw   ctxsw
+      --------- ----- ------ ------ ------ ------ ------- -------
+      Darwin     12.4   12.3   12.3  12.9   16.4   14.2     34.2
+      YDL3.0.1   10.4   10.5   10.6   8.68   9.71   7.57    26.2
+      64bit      11.1   11.3   11.4   9.35   12.7  10.1     29.2
+      64bit-970  11.2   11.3    7.97  7.11   16.4   7.57    27.9
+
+      *Local* Communication latencies in microseconds - smaller is better
+      -------------------------------------------------------------------
+      Host      2p/0K  Pipe AF     UDP  RPC/   TCP  RPC/ TCP
+                ctxsw       UNIX         UDP         TCP conn
+      --------- ----- ----- ---- ----- ----- ----- ----- ----
+      Darwin     12.4  40.6 40.3  58.4        74.3       153.
+      YDL3.0.1   10.4  20.5 24.5  31.5  40.6  57.5  41.4 53.3
+      64bit      11.1  47.8 42.4  58.5  45.9  67.7  68.9 47.9
+      64bit-970  11.2  40.2 24.6  34.0  40.5  35.0  48.5 47.7
+
+      File & VM system latencies in microseconds - smaller is better
+      --------------------------------------------------------------
+      Host        0K File      10K File      Mmap    Prot    Page
+                Create Delete Create Delete  Latency Fault   Fault
+      --------- ------ ------ ------ ------  ------- -----   -----
+      Darwin     108.2  136.3 1440.9  228.2    11.0K 47.4   3740.0
+      YDL3.0.1    44.1   34.3  121.8   64.3   3894.0  0.595    7.0
+      64bit       46.5   30.8  118.2   59.2   3314.0  0.514    4.0
+      64bit-970   46.5   30.8  118.3   59.2   3256.0  0.550    4.0
+
+      *Local* Communication bandwidths in MB/s - bigger is better
+      -----------------------------------------------------------
+      Host      Pipe AF    TCP  File   Mmap  Bcopy  Bcopy  Mem   Mem
+                     UNIX      reread reread (libc) (hand) read write
+      --------- ---- ---- ---- ------ ------ ------ ------ ---- -----
+      Darwin     52.  346 351.  364.0 1837.4 1431.0  897.8 1840 1207.
+      YDL3.0.1  715. 1137 428. 1037.6 1799.4  899.9  888.5 1805 1203.
+      64bit     634. 1189 609.  922.3 1789.5  888.5  888.5 1792 1200.
+      64bit-970 620. 1046 629.  915.4 1792.0  888.4  889.6 1797 1209.
+
+      Memory latencies in nanoseconds - smaller is better
+      ---------------------------------------------------
+      Host        L1 $   L2 $ Main mem
+      ---------  ----- ------ --------
+      Darwin     1.664 6.1040  152.3
+      YDL3.0.1   1.666 6.1110  153.1
+      64bit      1.667 6.1150  153.9
+      64bit-970  1.666 6.1140  153.3
+
+CONCLUSION
+------------------------------------------------------------------------
+
+  Overall, a G5 is quite a slick machine to run Linux on--now available
+  at reasonble end-user desktop prices. Terra Soft's Yellow Dog Linux is
+  mostly ready to run on G5 systems, with relatively few, relatively
+  minor, glitches still remaining in the beta (not all discussed
+  specifically here).
+
+  I was not really sure what to expect in advance about the relative
+  performance of OSX and Linux on a 970 machine. Both operating systems
+  are well greater than "fast enough" as end-user desktops, and any
+  lingering differences tends to conflate the differences between
+  KDE/X11 and Aqua/Quartz, rather than reflect underlying OS
+  characteristics. However, my attempts at memory benchmarking suggests
+  that Linux is likely to provide higher-end performance for
+  high-traffic servers and/or complex scientific or graphical
+  applications than OSX does. Obviously, before reaching any specific
+  conclusion relative to your own needs, high-level benchmarking of
+  specific applications is a good idea, if you have a choice between
+  underlying operating systems (which you usually do for Free Software).
+
+RESOURCES
+------------------------------------------------------------------------
+
+  David's earlier article "Linux on Mac: a POWER programmer's primer"
+  can be found at:
+
+    http://www-106.ibm.com/developerworks/linux/library/l-pmac.html
+
+  Find out more details about YDL.net Enhanced membership, including
+  price and other benefits, check out:
+
+    http://www.ydl.net/enhanced.phtml
+
+  A summary of useful GCC flags "About Compilers with VMX Support":
+
+    http://www.ciri.upc.es/cela_pblade/AboutCompilers.htm
+
+  For detailed information about POWER/PPC cross-compiling, and
+  generally about GCC flags for the architecture family, take a look at
+  "(GCC) IBM RS/6000 and PowerPC Options":
+
+    http://gcc.gnu.org/onlinedocs/gcc/RS_002f6000-and-PowerPC-Options.html
+
+  You can read a concise history of the POWER architecture at:
+
+    http://en.wikipedia.org/wiki/IBM_POWER
+
+  For the PowerPC branch, take a look at:
+
+    http://en.wikipedia.org/wiki/PowerPC
+
+  Terra Soft are the makers of Yellow Dog Linux, and also offer custom
+  PowerPC systems--both as an Apple reseller and their own systems--with
+  pre-installed versions of Yellow Dog on them:
+
+    http://www.yellowdoglinux.com/
+
+  You can find out the current status of Mac-on-Linux at:
+
+    http://www.maconlinux.org/
+
+  Download and read about LMBench at:
+
+    http://sourceforge.net/projects/lmbench
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz is Turing complete, but probably would not pass the Turing
+  Test. David may be reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/. And buy his book: _Text Processing in
+  Python_ (http://gnosis.cx/TPiP/).
+

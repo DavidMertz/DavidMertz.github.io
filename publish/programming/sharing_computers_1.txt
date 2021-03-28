@@ -1,0 +1,419 @@
+Sharing Computers on a Linux (or Heterogeneous) Network: Part One
+SSH and VNC
+
+David Mertz, Ph.D.
+Gnosis Software, Inc.
+November, 20001
+
+  The pair of articles of which this is the first compares and
+  contrasts SSH, remote X, and VNC.  File-and-print sharing are
+  not addressed, however, nor are "internet" services like httpd,
+  ftpd, smtp, or nntpd (although these also usefully "share"
+  something about the computers in question).  As well, a brief
+  introduction to installing and configuring each technology is
+  provided.  Remarks on tool stability, choices, and licensing
+  status are provided (summarized and tested are Win32, FreeBSD,
+  BeOS, OS/2, MacOS).
+
+
+Introduction
+------------------------------------------------------------------------
+
+  Doing what I do--testing and writing about a wide variety of
+  software programs--I find it useful to keep a fairly large
+  number of computers on my local network.  Moreover, these
+  machines run a variety of operating systems, and run on a wide
+  range of hardware configurations.  For a given project, I am
+  often interested in the peformance or features of a given tool
+  on the various platforms it runs, or in comparing similar tools
+  for differing platforms; sometimes the tool is something I am
+  evaluating, and other times it is something I have written
+  myself and want to test for bugs and speed.
+
+  Most of the machines in my network each have multiple operating
+  systems installed in a multi-boot configuration, but several
+  are also "headless" (no monitor or keyboard).  While multi-boot
+  loaders are nice to have around, the time rebooting takes makes
+  detailed comparative testing of platforms rather time consuming
+  on just one machine.  Multi-boot is not very good for "side by
+  side" comparisons.  I have not evaluated any of the tools that
+  let you "virtualize" on operating system within another--such
+  as VMWare, Plex86, VirtualPC, SheepShaver, or others.  In some
+  respects, these tools fulfill a similar purpose as do those
+  this article discusses.
+
+  Several different technologies exist to allow a user at one
+  workstation to run an application that lives on another
+  computer.  SSH provides text terminals to remote computers; the
+  X Window System can be used to display interactive applications
+  on different workstations than where they actually run; VNC can
+  act as a "remote-control" to an entire remote desktop.  Each
+  technology has advantages and disadvantages.  They all run on
+  Linux, but different variations (host or remote) allow
+  interaction with various other OS environments (for
+  heterogeneous networks).  Using combinations of these tools, I
+  can sit at one workstation (the one with the best monitor,
+  keyboard and chair), and run, test, and time applications on a
+  bunch of platforms--usually without rebooting anything.
+
+
+Background on My Network Setup
+------------------------------------------------------------------------
+
+  My local network has seven nodes on it--named Apollo, Bacchus,
+  Chaos, Delphi, Echo, and Gaia.  These nodes are assigned local
+  IP addresses 192.168.1.101 through 192.168.1.107, in the
+  obvious order.  For the most part, the same physical machine
+  gets the same IP address when multi-booted to different OS's
+  (but sometimes I use DHCP, which assigns addresses above
+  192.168.1.200).  The whole thing sits behind a hardware
+  firewall/router, and I trust the firewall enough that I am
+  perhaps not as paranoid as I should be about the services that
+  run on the local machines.  Those readers who need to share
+  computers over the public internet should worry a bit more
+  security matters than I do.  The second part of this pair of
+  articles adds some discussion of security issues.
+
+  I mention the above details mostly so that readers can follow
+  some shell examples that I give below.  The machine I actually
+  sit at is Bacchus, and has local IP address 192.168.1.102.
+
+
+Secure Shell
+------------------------------------------------------------------------
+
+  The most bandwidth friendly way of connecting computers is
+  using a simple text shell.  Non-secure tools for doing this are
+  'telnet' and 'rsh', but so many security problems arise using
+  these that it is almost always better to get 'ssh' installed on
+  the computers that need to communicate.  Even though some
+  examples below use 'telnet' inside my firewall, even that
+  compromise is an artifact the fact that "Fury" is currently
+  devoted to installing and reinstalling test OS's.  Many
+  Unix-like operating systems (including recent Linux
+  distributions) will have 'ssh' installed by default; if not,
+  see the Resources for getting it set up.
+
+  What Secure Shell ('ssh') does is encrypt all the traffic that
+  goes over a certain channel.  Since public-key encryption is
+  used, there is not need for the server and client to share a
+  key prior to session initiation.  Moreover, no secrets are
+  transmitted in unencrypted form over the channel (such as the
+  login password, which 'telnet' transmits loudly to any
+  interceptor).  Other protocols--like VNC or X Window--can be
+  layered on top of 'ssh', but the simplest use of the protocol
+  is for creation of remote text consoles.
+
+  Using 'ssh', one can easily connect to machines running
+  different operating systems than the one on the local machine.
+  The only requirment is for the remote machine to have a 'sshd'
+  server running, and for the local machine to have a 'ssh'
+  client.  For example, to connect my OS/2 Warp "Bacchus" machine
+  to the Slackware Linux "Delphi" machine in the next room is as
+  simple as:
+
+      #---- Connecting to remote box by HOSTS name with ssh ---#
+      C:\UTILS % ssh quilty@delphi
+      Last login: Thu Nov 29 01:41:36 2001 from 192.168.1.102
+      Linux 2.2.19.
+      quilty@delphi:~$ exit
+      logout
+      Connection to delphi closed.
+
+  If my 'HOSTS' file did not have an alias defined, I might use:
+
+      #----- Connecting to remote box by IP with ssh ----------#
+      C:\UTILS % ssh quilty@192.168.1.104
+      Last login: Thu Nov 29 01:51:31 2001 from 192.168.1.102
+      Linux 2.2.19.
+      quilty@delphi:~$
+
+  Likewise, I frequently administer my leased webserver from
+  across the country/world by using:
+
+      #----- Connecting to remote box by DNS name with ssh ----#
+      C:\UTILS % ssh gnosis@gnosis.cx
+      gnosis@gnosis.cx's password:
+
+  The most difficult thing about 'ssh' on heterogeneous platforms
+  is getting the terminal configuration just right.  The problem
+  is not really an 'ssh' issue per se, 'telnet' tends to suffer
+  the same range of problems.  Connecting two Linux machines
+  together almost always works seamlessly.  But often when there
+  is another platform involved as either client or server, the
+  display is not always quite right and/or the key bindings do
+  not work as expected.  The problem seem especially bad when
+  non-Unix-like platforms like Win32, BeOS, MacOS and OS/2 are
+  involved, but even connecting FreeBSD with Linux is imperfect.
+
+  The most typical problem when you create a 'ssh' connection
+  between heterogeneous machines is that the codepage is wrong
+  and/or the color escape codes are wrong.  When this happens,
+  the basic command line is available, but line-draw characters
+  are displayed as something else; often you also only see
+  monochrome terminals rather than color ones.  Shell commands do
+  not suffer much from this "impedance mismatch", but interactive
+  'curses' or 'slang' type applications usually do.  The most
+  notable such application is a text editor, which is usually the
+  application you most need to run over a remote console.  By the
+  way, as a remote text-mode editor, I particularly like recent
+  versions of 'jed'; the strong of heart will probably use 'vim'.
+  Most other Linux/Unix editors are either X-based or overly
+  crude (or obese, in the case of 'emacs').
+
+  There are a few things to play with if you have terminal
+  configuration problems.  If you have are connecting to a
+  Unix-like 'sshd' server, try changing the remote 'TERM'
+  environment variable.  For example:
+
+      #-------- Popular remote terminal settings --------------#
+      quilty@delphi:~$ TERM=vt100
+      quilty@delphi:~$ TERM=ansi
+      quilty@delphi:~$ TERM=linux
+
+  At the same time, your local 'ssh' client will usually have a
+  way to configure the terminal type of the connection.
+  Depending on platform and client program, this might be a
+  command-line option, an environment variable, or a menu dialog.
+  The name you use at the two ends might not wind up being quite
+  the same.  There is some trial and error involved here.  You
+  might also check to make sure that you use "no codepage
+  translation" within your client configuration.  To test the
+  "impedance match", try running a fullscreen remote application
+  (like 'jed' or another editor).
+
+
+Virtual Network Computing
+------------------------------------------------------------------------
+
+  VNC is a client/server system that has been ported to many
+  GUI platforms.  The idea behind VNC is to provide a lightweight
+  protocol for displaying the entire "desktop" of a remote
+  computer on a local system.  Symantec's -pcAnywhere- is a
+  commercial product with a similar purpose, but confined to
+  Microsoft operating systems.  In contrast, VNC runs on
+  literally dozens of different operating systems, and has many
+  implementations and variations.
+
+  A good way to get a sense of VNC is to look at some of the
+  screenshots at its homesite (see Resources).  There are far
+  more possible combinations than displayed there, but the dozen
+  variations shown point to the multitude.  In general, *any*
+  platform that has a VNC client (usually called 'vncviewer') can
+  display the virtual desktop of any platform that has a VNC
+  server (i.e.  'vncserver') within a local window.  Depending on
+  versions of the VNC client, resizing and fullscreen options
+  might be available.
+
+  There is a bit of a difference between the X-based version of
+  VNC server (i.e. 'Xvnc') and that on other platforms.
+  Single-user systems like Windows, MacOS, BeOS and OS/2 do not
+  have a concept of "desktop sessions" the way the X Window
+  System does.  Therefore, a Windows VNC servers, for example,
+  just displays a remote version of the same Windows desktop that
+  appears on the local system; this gets called "desktop :0" when
+  connecting.  X Window, by contrast, is multi-user and
+  mult-session.  Each 'Xvnc' session creates a brand-new desktop,
+  and may have its own resolution, window manager, and state.  In
+  other words, X is a lot niceer for VNC.
+
+  Once VNC Server is installed, starting a session is simple (and
+  installation is very easy, see the Resources).  For the
+  single-user platforms, you basically just run the application,
+  no options (the first time you will need to set up some
+  permissions).  Under X, some command-line options are helpful.
+  For example, I have connected a 'telnet' session from my local
+  OS/2 Warp "Bacchus" machine to the Manrake Linux "Fury" machine
+  below:
+
+      #--------- Launch VNC server sessions on Fury -----------#
+      [root@fury quilty]# cat /usr/bin/vnc-sessions
+      vncserver -name TinyLinux -depth 8 -geometry 640x480
+      vncserver -name BigLinux -depth 32 -geometry 1260x940
+      [root@fury quilty]# vnc-sessions
+
+      New 'TinyLinux' desktop is fury.gnosis.lan:1
+
+      Starting applications specified in /root/.vnc/xstartup
+      Log file is /root/.vnc/fury.gnosis.lan:1.log
+
+
+      New 'BigLinux' desktop is fury.gnosis.lan:2
+
+      Starting applications specified in /root/.vnc/xstartup
+      Log file is /root/.vnc/fury.gnosis.lan:2.log
+
+  From the client side, I can now connect to either 'Fury:1' or
+  'Fury:2' using the local 'vncviewer' (or to both at once).  I
+  could also specify '192.168.1.106:1' explicitly if I wished.
+
+  The same principle works for a non-local network, and VNC can
+  be configured to tunnel through SSH for security purposes.
+
+  For the most part, having a 'vncviewer' connection to a remote
+  computer is functionally the same as sitting in front of the
+  local monitor and keyboard for that remote computer (assuming
+  it is not headless).  Aesthetically, the remote system's
+  desktop will be framed by a window using the local machine's
+  widgets (unless you use a fullscreen option).  These extra
+  frames can be slightly distracting at first, but are easy to
+  ignore after a little usage.
+
+  Choosing the right session geometry and color-depth is
+  important (assuming you are using the 'Xvnc' server where you
+  have a choice, or--on other 'vncserver' platforms--that you are
+  willing to toggle the remote computer's local display to a
+  resolution suited to your VNC needs).  The smaller the remote
+  desktop, and the fewer colors used, the faster the display
+  response.  Then again, screen real-estate is desirable for many
+  applications.  I have found that reducing color-depth has
+  comparatively little effect on responsiveness; VNC's hextile encoding
+  is much more efficient than a naive pixel-by-pixel transmission
+  of the screen.  But screen size obviously makes a difference.
+
+  In general, I find that using a remote geometry like the above
+  1260x940 works very nicely with my local 1280x1024 video
+  setting.  I leave just a little bit of extra space to allow
+  room for the VNC titlebar, and for my local desktop's taskbar.
+  But my 'vncviewer' window still occupies -almost- my whole
+  screen, which is nice.  On a 100 Mbit ethernet connection,
+  this connection is hardly any worse than a local display.  On
+  10 Mbit ethernet, one sees slight delays when moving or sizing
+  windows.  At slower speeds VNC tends not to be an optimal
+  solution to remote operation.  Cable, DSL, or T1 connections
+  are still workable, but not seamless.  Anything less than that
+  is really for an emergency only.
+
+  One problem with VNC connections is that local desktops need to
+  grab some keystrokes for their own purposes.  Depending on the
+  specific client, a number of remote keystrokes might have to be
+  emulated with multi-keystroke operations.  For example, my
+  local OS/2 'vncviewer' requires me to press 'Alt-A, F, Alt-A'
+  to enter a remote 'Alt-F'.  Those extra strokes are sometimes
+  hard for a touch typist to adjust to.  The situation is even
+  more complicated under non-PC platforms--like Macs--that have
+  their own keyboards and (one-button) mice.  There is a bit more
+  to learn, and to type, but there is generally a way to emulate
+  any remote input action.  Linux to Linux connections work
+  pretty smoothly, however.  Depending on the specific window
+  managers used at both ends, it is usually only a few key
+  combinations that do not get passed through directly to the
+  remote session.
+
+  One noteworthy implementation of VNC is that Java version.
+  A lot of native versions are available, but even those platforms
+  without a native 'vncviewer' can use the Java version (assuming
+  a JVM exists for the platform).  VNC-java can run inside a
+  webbrowser, which provides a familiar interface to establishing
+  the connection.  But the Java viewer can also run as a Java
+  application outside a browser.  The links below (see Resources)
+  provide a bit of extra information on VNC-java, including an
+  archive I have created that might help some users get going).
+
+
+NEXT TIME
+------------------------------------------------------------------------
+
+  In the next part of this series, we will take a look at remote
+  X and some other ways of running remote applications across
+  networks.  As well look forward to a few pointers on security
+  issues when using remote applications.
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+SSH Resources
+
+  The commercial and official version of -SSH- is made by SSH
+  Comunications Security.  There is a version available
+  free-of-charge for non-commercial use, but it is not Free
+  Software:
+
+    http://www.ssh.com/
+
+  Most Linux distribution package -OpenSSH- instead.  The license
+  is a bit complicated because of parts that are inherited from
+  various places, but it is "BSD-like":
+
+    http://www.openssh.com/
+
+  Confusing matters farther, there is also a -FreSSH- that
+  reimplements the SSH protocol in order to avoid any reliance on
+  earlier code.  Fortunately, the protocol itself is shared by
+  all the implementations:
+
+    http://www.fressh.org/
+
+  The site FreeSSH (not to be confused with FreSSH), provides
+  links to a number of Free and commercial SSH implementations on
+  numerous platforms:
+
+    http://www.freessh.org/
+
+  For Windows, I recommend the Free (MIT license) Software
+  program -PuTTY-.  It is a very nice, and very easy to install bit
+  of software:
+
+    http://www.chiark.greenend.org.uk/~sgtatham/putty/
+
+  For BeOS and OS/2, I recommend searching on BeBits.com and
+  hobbes.nmsu.edu, respectively.  For MacOS, I have used -MacSSH-,
+  but have no opinion one way or the other about -Nifty Telnet 1.1
+  SSH-.  Check the FreeSSH site for MacOS links.
+
+
+VNC Resources
+
+  The AT&T homesite for Virtual Network Computing is:
+
+    http://www.uk.research.att.com/vnc/
+
+  Official versions of VNC for many platforms can be found at the
+  VNC homesite, including Linux, Solaris, Win32, MacOS (68k and
+  PPC, but not OSX specific), OSF, WinCE, and Java sources.
+
+    http://www.uk.research.att.com/vnc/download.html
+
+  The AT&T VNC site provides links to port of VNC for numerous
+  additional platforms.  Those can be found at:
+
+    http://www.uk.research.att.com/vnc/platforms.html
+
+  The VNC ports page is not entirely up-to-date.  For the latest
+  and greatest version of VNC for your particular platform, you
+  might be better off checking the standard application
+  repositories for that platform.  For example, BeOS users are
+  best checking:
+
+    http://bebits.com/search?search=vnc&x=0&y=0
+
+  OS/2 Warp or eComStation users should probably check:
+
+    http://hobbes.nmsu.edu/cgi-bin/h-search?key=VNC&pushbutton=Search
+
+  Some readers may want to use the Java version of VNCviewer, but
+  have only a Java runtime environment, not the 'javac'
+  development tool, on their machine.  I have created a (totally
+  unsupported) set of bytecode compiled '.jar' and '.class' files
+  that you are welcome to try:
+
+    http://gnosis.cx/download/vnc-java-bin.zip
+
+Other Resources
+
+  IBM developerWorks' three part tutorial on "Introduction to
+  encryption concepts" provides a background for the concept of
+  "public-key encryption" mentioned in the 'ssh' discussion.
+
+
+About the Author
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz is all things to all people.  Computers crash at
+  the very sight of him.  David may be reached at
+  mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/.  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+

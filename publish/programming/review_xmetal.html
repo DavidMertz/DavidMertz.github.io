@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>PRODUCT REVIEW: -- XMetal 2.0 -- </title>
+<style>
+             {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+em           {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt}
+ul, ol, li   {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+tt           {font-family: mono, courier}
+pre          {font-family: mono; font-size: 9pt}
+th           {font-family: mono, courier; font-size: 8pt}
+
+.code-sample {background-color: #CCCCCC}
+.sidebar     {background-color: #FFFFCC}
+.title       {font-size: medium; color: #3333CC}
+.subtitle    {font-size: 9pt; color: #3333CC}
+.subhead     {font-size: 12pt}
+.input       {background: #FFFFFF; color: #000000; font-weight: normal}
+</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<p><strong class="title">Product Review:</strong><br>
+<strong class="subtitle">XMetal 2.0</strong></p>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Gnosis Software, Inc.<br>
+ November 2000<br>
+ <br>
+</p>
+<p><strong class="subhead">At A Glance</strong></p>
+ <p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>Creator:       SoftQuad Software
+Price/License: $495. Closed-source.
+Home Page:     http://www.softquad.com/
+
+</pre>
+</td></tr></table></p>
+<p>  This review is one in new series by David that cover
+  specialized XML content editors.  A review of XML Spy appeared
+  earlier on Webreview.com, and a review of XML Instance is
+  planned for the near future.  If readers would like to see
+  other XML editors reviewed, they are encouraged to contact the
+  author or WR's editors.
+</p>
+<h3>WHAT IS XMetal?
+
+</h3> <p>  XMetal is an XML editor that aims for both the ease-of-use a
+  wordprocessor and the generality and power of a structured
+  editor.  For the most part, it succeeds at its goals.
+</p>
+<p><strong class="subhead">The Accommodations</strong></p>
+ <p>  XMetal's default editing interface is called the "normal" or
+  "wordprocessing" view, and will appear quite familiar at first
+  to Microsoft Word users especially.  Like many tools of
+  late, many of the toolbar icons, menu shortcuts, menus, and so
+  on are copied from MS-Office.  The familiarity may be somewhat
+  deceiving, since what XMetal <strong>does</strong> is actually rather
+  different from what a wordprocessor does.  But the familiarity
+  is a good starting point.
+</p>
+<p>  In addition to the "normal" view, XMetal offers several others,
+  with most features borrowed from SoftQuad's popular HotMetal
+  HTML editor.   You can edit in a "plain text" view, which is
+  just what you would expect in a text editor that knows a little
+  bit about XML: you get some syntax highlighting, line numbers,
+  Windows/CUA clipboard operations, search/replace (including
+  basic regular expressions).  Unfortunately, and unnecessarily,
+  some of XMetal's other capabilities are disabled in "plain
+  text" view (i.e. "structure view" and context-sensitive element
+  list).
+</p>
+<p>  The view that SoftQuad first invented (AFAIK) is the "tags on"
+  view.  This one is interesting, and quite useful.  Each tag in
+  the document--opening and closing--is represented by an arrow-
+  like icon that contains the tag name.  The words inside the
+  tags are rendered in the style of the "normal" view, i.e. with
+  different fonts, weights, colors, etc.  This combination both
+  lets you see without ambiguity what the markup structure of a
+  document is, and also lets you see a good approximation of at
+  least on likely final rendering of an XML document.  Obviously,
+  if the particular XML document is being used in a database
+  style rather than in a book/article/documentation style, the
+  rendering has less literal significance (but it can still
+  visually highlight categories of information in the XML).  The
+  element rendering is configurable using CSS, as discussed
+  below.
+</p>
+<p>  Another optional view is available as a separate pane.  The
+  "structure view" is a hierarchical tree representation of the
+  document being edited in the main pane.  Navigation is
+  synchronized between the two panes.  While "plain text" or
+  "tags on" view will show you the tag information, the
+  "structure view" helps make it more explicit.  The structure
+  view itself can take on multiple appearances, some more useful
+  than others, but generally the options involve some helpful
+  nested indentation and/or icons.
+</p>
+<p>  Between all the views, and combinations thereof, XMetal is a
+  versatile and comfortable XML editing environment.
+</p>
+<p><strong class="subhead">Comforts</strong></p>
+ <p>  Beyond basic editing, XMetal is scriptable as a Windows
+  Scripting Host (therefore you can use, e.g. VBScript,
+  Javascript, Perlscript, Pythonscript); you can thereby add
+  toolbars and complex actions for a given document type.  The
+  scripting part is for the techies, but a set of custom toolbars
+  and macro actions are the sort of thing you might deliver to
+  semi-technical XMetal end users (the folks who actually create
+  structured documentation content, for example).
+</p>
+<p>  One extremely nice feature of XMetal is that you can configure
+  the "default" (and therefore the "tags on" view also) to look
+  however you like.  The rendering is determined by Cascading
+  Stylesheets (CSS) attached to the XML document.  XMetal gives
+  you a good interface for modifying and creating these CSS
+  documents, such as automatically configuring the appearance of
+  the element at the current cursor.  From the look of things,
+  the rendering is probably done by calls to the same DLL's
+  Internet Explorer uses, since IE5.5 renders things the same
+  way given the same stylesheet.
+</p>
+<p>  Much as with XML Spy (reviewed previously), XMetal provides you
+  with context-sensitive tag and attribute panes.  These panes
+  are naturally optional, but when enabled they show a list of
+  all the valid insertions at the current cursor location.  This
+  really helps when working with a complex DTD (validation is
+  also performed dynamically, so there are several layers of
+  assistance in producing valid documents).
+</p>
+<p>  Assuming you want to export your XML documents to more
+  traditional viewable formats, you have several options.
+  However, overall, this is a weak point of XMetal.  To produce a
+  many formats, you have the option of using a printer driver,
+  which will render the appearance of the current view
+  (presumably the "normal" WYSIWYG view).  For example,
+  PostScript and PDF files can be created this way (assuming the
+  right printer drivers are on your system).  Exporting to HTML
+  is done via one of a couple separate menus (the "page preview"
+  does this, basically, as does the "preview in browser"). Either
+  one relies on a Microsoft driver, however, which has some
+  problems mentioned below.  XSLT is supported only via an
+  external program of your choice.  You can add some menu options
+  to XMetal, but SoftQuad themselves do not really provide
+  anything in this regard (Some installations of David's <cite>XML
+  Matters</cite> column at IBM developerWorks discusses XSLT as a
+  starting point).
+</p>
+<p><strong class="subhead">Inconveniences</strong></p>
+ <p>  The Microsoft XML Parser (MSXML.DLL) has version/compatibility
+  problems with various Windows versions, and is still a beta
+  product.  At least such is my experience on several systems
+  (various browsers, Windows versions, service packs, etc); YMMV.
+  These problems are not really SoftQuad's fault, but it <em>was</em>
+  their decision to rely on an external DLL they do not control.
+</p>
+<p>  One feature of XMetal is the inclusion of the "Journalist" DTD,
+  which is subset of DocBook.  If you use "Journalist" you get a
+  number of preconfigured menus, toolbars and macros to help you
+  in work with this style of document.  However, I found the
+  "Journalist" DTD a bit too restricted to use in editing my
+  existing DocBook documents.  You can still just use the DocBook
+  DTD itself very well, but minus a lot of the enhancements
+  (unless you want to "roll your own" <em></em> if anyone does, David
+  would love to have a copy, he was too lazy to do the work of
+  programming one himself).
+</p>
+<p>  Generally, XMetal puts functions where you would expect them.
+  But it has a few confusing parts.  For example, if an XML
+  document is not valid, XMetal offers to open it in "well-
+  formed" mode.  Fair enough.  But once as far as I can tell,
+  once you have corrected whatever might be invalid, the only way
+  to enable validation is to close and reopen the document.  And
+  even then, if you do not 100% correct thing, you must revert to
+  "well-formed" mode again. This--and a few other little things--
+  could definitely be handled better.
+</p>
+<p><strong class="subhead">About The Author</strong></p>
+ <p>  David Mertz wrote this review aboard a great big clipper ship,
+  going from this land here to that (but with no sailor's suit
+  and cap). You can find out copious biographical details by
+  sailing to<a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>
+</p>
+</body></html>

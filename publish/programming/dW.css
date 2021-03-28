@@ -1,0 +1,119 @@
+/* Use Times New Roman for default font */
+$DOCUMENT {
+  font-family: "Times New Roman";
+  font-size: 12pt;
+  margin-top: 5px;
+  margin-left: 10px;
+}
+* {
+  display: block;
+  background-color: white;
+  padding: 2px;
+}
+seriestitle {
+  font-weight: bold;
+  font-size: 18pt;
+  text-align: center;
+}
+papertitle {
+  font-weight: bold;
+  font-size: 14pt;
+  text-decoration: underline;
+  text-align: center;
+}
+title {
+  font-weight: bold;
+  font-size: 14pt;
+  text-decoration: underline;
+  text-align: center;
+}
+subtitle {
+  font-weight: bold;
+  text-align: center;
+}
+author {
+  margin-left: 20px;
+  margin-right: 20px;
+  border: solid thin;
+  padding: 5px;
+  margin-top: 10px;
+}
+abstract {
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+p {
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+code {
+  font-family: monospace;
+  white-space: pre;
+  background-color: #e0e0e0;
+  margin-bottom: 10px;
+}
+code[type="inline"] {
+  white-space: nowrap;
+}
+relatedlist {
+  margin-left: 70%;
+  margin-right: 20px;
+  white-space: pre;
+  background-color: #ffffb0;
+}
+sidebar>* {
+  margin-left: 20%;
+  margin-right: 20px;
+  background-color: #ffe7e7;
+}
+heading {
+  font-weight: bold;
+}
+heading[type="major"] {
+  font-size: large;
+  margin-bottom: 10px;
+}
+heading[type="code"] {
+  font-family: "Times New Roman";
+  font-size: large;
+  font-weight: bold;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+article>code {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+li {
+  display: list-item;
+  list-style-position: outside;
+  margin-left: .2in;
+  font-size: 80%;
+  font-weight: normal;
+}
+blockquote {
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+/* Inline Typographic Elements */
+a, i, b, sub, sup, attribution,
+p>code, abstract>code, heading>code, subtitle>code {
+  display: inline;
+  background-color: inherit;
+}
+a { color: blue; text-decoration: underline; }
+i               { font-style: italic; }
+b               { font-weight: bold; }
+b[class="red"]  { color: red; }
+b[class="blue"] { color: blue; }
+b[class="green"]{ color: green; }
+sub             { vertical-align: sub }
+sup             { vertical-align: super }
+sub,sup         { font-size: small }
+attribution     { text-decoration: underline; }
+

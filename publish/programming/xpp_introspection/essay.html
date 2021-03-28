@@ -1,0 +1,496 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>ADDING INTROSPECTION AND OBJECT PERSISTENCE TO XBASE++ -- </title>
+<style>
+             {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+em           {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt}
+ul, ol, li   {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+tt           {font-family: mono, courier}
+pre          {font-family: mono; font-size: 9pt}
+th           {font-family: mono, courier; font-size: 8pt}
+
+.code-sample {background-color: #CCCCCC}
+.sidebar     {background-color: #FFFFCC}
+.title       {font-size: medium; color: #3333CC}
+.subtitle    {font-size: 9pt; color: #3333CC}
+.subhead     {font-size: 12pt}
+.input       {background: #FFFFFF; color: #000000; font-weight: normal}
+</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<p><strong class="title">Adding Introspection And Object Persistence To Xbase++</strong><br>
+<strong class="subtitle"></strong></p>
+ <p>David Mertz, Ph.D.<br>
+ Gnosis Software, Inc.<br>
+ April 2000<br>
+ <br>
+</p>
+<p><strong class="subhead">Abstract</strong></p>
+ <p>  This article discusses how version-safe object persistence and
+  introspection can be implemented in XBase++, and a few of the uses
+  for which one might want to do this.
+</p>
+<p><strong class="subhead">Resource</strong></p>
+ <p>  The source code and library documentation contained at the end of this
+  this article may also be downloaded from:
+</p>
+<blockquote>    URL:<a href="http://gnosis.cx/publish/programming/xpp_introspection.html">http://gnosis.cx/publish/programming/xpp_introspection.html</a>
+</blockquote><p>  A note on intellectual property is worthwhile here.  I don't believe
+  in it.  Not at all; not even in the reluctant way that BSD-style
+  licenses do.  If you want to use this source or the accompanying
+  documentation in any project of your own--free, commercial, or even
+  unfree but unpaid--I will be pleased to have made a contribution to
+  the human community, and do not wish to impose any further obligation
+  upon you.
+</p>
+<p>  Although I do not impose any obligation upon you for the ideas
+  mentioned, there are a few things I consider polite conduct.  (1) If
+  you think something I created helps you, I would certainly be
+  interested in hearing about it; (2) I consider it good manners to make
+  a certain acknowledgment of people who help you out, such as in
+  documents accompanying products or code you distribute; (3) On the off
+  chance that I create something that has significant re-use value for
+  other programmers, I certainly would not object to receiving donations
+  similar to what one might pay for commercial products of similar
+  utility.  But all that is just my opinion on good manners; not any
+  legal restriction on derived works.
+</p>
+<p><strong class="subhead">Introduction</strong></p>
+ <p>  Alaska's XBase++ compiler supports a superset of the Clipper language
+  developed by Computer Associates.  Unlike CA-Clipper (a DOS product),
+  XBase++ is targeted at Win32 and OS/2, including native GUI
+  development on those platforms.  At the same time,
+  backwards-compatible compilation options are provided for extremely
+  easy recompilation of legacy Clipper/DOS code, with the option for
+  incremental improvements to a GUI and event-driven environment.
+</p>
+<p>  One important addition to Clipper that XBase++ provides is the
+  option of using object-oriented programming techniques.  XBase++
+  both provides a very clean syntax for combining OOP and procedural
+  code, and implements a very clear expression of OOP concepts.
+  Almost every OOP technique one would want is present in XBase++:
+  (multiple) inheritence, encapsulation, and polymorphism, of course;
+  but also good scope and access control, and class methods and data.
+  However, at least two niceties are absent from XBase++ OOP system:  a
+  version-safe object persistence mechanism, and (relatedly) object
+  introspection.  Fortunately, these two additional features can be
+  added to XBase++ by creating some carefully designed ancestor classes,
+  and obeying a few conventions in class data members.
+</p>
+<p><strong class="subhead">About Introspection</strong></p>
+ <p>  Even many programmers familiar with object-oriented programming will
+  be unfamiliar with introspection (the concept is also sometimes called
+  "metadata").  Introspection is not among the canonical list of what
+  defines OOP (inheritence, encapsulation, polymorphism), and is absent
+  from many OOP languages (such as C++, Eiffel, and XBase++ by default).
+  What "introspection" means is just the ability of a class or instance
+  to tell other parts of a program what it <strong>has</strong> or what it <strong>does</strong> at
+  runtime.  You can usually determine this from the source code, of
+  course.  But in some contexts there is runtime dynamic class creation;
+  and more often the source code is not available, but you still want to
+  do something with an object.  "Unavailable" is a loose concept, by the
+  way:  it might simply mean that someone else is working on a
+  particular class, and you want to write code that does something with
+  its instances without having to wait for the final version of the
+  class to be written.
+</p>
+<p>  Some languages that have rich notions of introspection are Smalltalk,
+  Python, and Java.  Java--probably the most widespread introspective
+  language--introduced introspection in a way somewhat similar to that
+  discussed in this article:  as part of the JavaBean standard.  That
+  is, introspection is not really a language feature of Java, but rather
+  a documented convention for writing classes that layer on
+  introspection.  Smalltalk and Python, on the other hand--probably
+  related to their extreme dynamism--are introspective at the heart of
+  their language definitions.  Such differences in the "depth" of
+  introspection has some implications for what we can do in XBase++.
+  Specifically, we will be able to add introspection to classes we
+  create ourselves, but we must remain blind to classes we do not
+  control (such as the built in "XBase Parts").
+</p>
+<p>  The limitation of XBase++ (as of 1.2) in regard to "deep"
+  introspection comes down to its provision of only "shallow" metadata
+  functions.  Specifically, two of the functions XBase++ provides us
+  with--IsMemberVar() and IsMethod()--really are introspective
+  functions.  These functions answer a certain question about what an
+  object <strong>has</strong> and <strong>does</strong>.  But the questions they answer is simply not
+  as general as the questions that might be answered by the hypothetical
+  functions ArrayMemberVars() and ArrayMethods()--which in my scenario
+  would return arrays listing all the member variables and methods.  On
+  the plus side for generality (and clarity even, I think), XBase++
+  implements the Clipper macro syntax, even in OOP expressions.  This
+  allows code like the following to work:
+</p>
+<p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>instance        := MyClass():new()
+instance:myData := "Gnosis Software"
+varName         := "myData"
+? instance:&amp;(varName)        // Result: Gnosis Software
+
+
+</pre>
+</td></tr></table></p>
+<p><strong class="subhead">About Object Persistence</strong></p>
+ <p>  As with introspection, object persistence is non-canonical, and not
+  all OOP languages have it.  What "object persistence" is is pretty
+  simple, however.  It is the capability of saving a class instance from
+  one execution context in order to use it in a different execution
+  context.  The second context can be seperated in either time or space.
+  In a distributed network, sometimes we want to create an object on one
+  machine, then ship it across the network to be used by another
+  machine.  Java's RMI is an example of this; CORBA is another; XML-RPC
+  is another; DCOM is yet another; and JINI takes the idea about as far
+  as it might go (as an extension of RMI).  But sometimes our desire for
+  persistence is a bit more mundane than that motivated by the sea of
+  acronyms in the last sentence.  Sometimes we just want to save what
+  our program is doing in order to continue with it later.  In a sense,
+  that is what a database is all about to start with; but a relational
+  database may be a clumsy way to store an OOP object that is not
+  relational in structure.  In these cases, it is easier to store the
+  object itself (maybe in a database, maybe in the file-system, where it
+  lives is not the main point).
+</p>
+<p>  You can have object persistence without having introspection.  But
+  what is difficult to have is <strong>version-safe</strong> object persistence without
+  having introspection.  That is, once a program restores an object that
+  has been stored somewhere (or transmitted to it), it often makes sense
+  to ask whether the object just restored is the same type of thing as
+  another object that might be generated by the program (especially if
+  the two have identical class names).  In this sense, introspection
+  comes first, and (version-safe) object persistence is built on top of
+  it.
+</p>
+<p><strong class="subhead">Enough Computer Science, Why Bother?</strong></p>
+ <p>  What got me worrying about all the somewhat theoretical OOP concerns
+  outlined above was a very practical concern.  I was working as a
+  consultant in converting an old CA-Clipper application to XBase++ 1.2
+  (Win32).  But the issue could equally well come up in developing an
+  application from scratch.
+</p>
+<p>  Two concerns were raised by my client; and the solutions turn out to
+  be almost the same.  The old application had an error logging
+  capability that replaced the default Clipper Error System.  Among
+  other things, when a crash occurred in the old application, it would
+  log some information about the application state to a log file.  This
+  log file could be transmitted to technical support at the company
+  supporting the application in order to identify the source of the
+  problem.  This sort of system is familiar to many Clipper programmers
+  (or programmers of other languages, for that matter).  However, one
+  thing the old error logging system definitely <strong>could not</strong> do was to
+  report meaningfully on what was happening with active instances of the
+  new XBase++ classes.  The error system provided by Alaska does a
+  little bit in this regard, but only a little.
+</p>
+<p>  The second issue was that we wanted to make various aspects of the
+  system--especially the user interface--configurable.  There are many
+  ways to store configuration information, of course; but we decided
+  that a "Configuration" class would be a good way to do it.  The
+  advantage of using OOP for configuration options is that it nests
+  well.  A configurable feature may itself consist of multiple
+  sub-features.  While it is certainly possible to store sub-features in
+  an INI file or a DBF, the model of an object that "has" various
+  attributes--including some attributes that are themselves objects--
+  just seemed to fit what we wanted.  The fact that the development was
+  in a process of design at the same time as being coded seemed to
+  reinforce this idea.  If we just store a Configuration instance to
+  disk, there would be no need to re-normalize our configuration
+  database, or add new fields to a DBF or INI file, as we went along.
+</p>
+<p><strong class="subhead">Solving The Problems</strong></p>
+ <p>  Adding introspection to our own classes allows reporting object state
+  information in an error log, or in other context where it is useful to
+  know just what is in a class instance.  Or rather, adding
+  introspection allows us to report at a higher level of generality than
+  would be possible without it.  Any OOP system can manipulate or
+  display the contents of instance data members if we know what specific
+  members an instance has.  For example, in XBase++, we might have
+  source lines like:
+</p>
+<p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>instance := MyClass():new()
+instance:myData := "Gnosis Software"
+[...]
+? instance:myData     // Result: Gnosis Software
+
+</pre>
+</td></tr></table></p>
+<p>  This answers the specific question, "What value does the data member
+  <code>myData</code> of the object <code>instance</code> hold?"  Introspection adds the
+  capability of asking the meta-question "What are the data members of
+  <code>instance</code>, and what values are stored in those members?"  For
+  example, using the provided function STRINGIFY(), we can report on an
+  arbitrary object without knowing about its data members in advance:
+</p>
+<p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>? STRINGIFY(instance)  // Result:
+                       //  (obj)MyClass
+                       //    [Exposed member data]
+                       //    myBoolean = .F.
+                       //    version = 19990921
+                       //    myData = Gnosis Software
+                       //    myNum = 137
+                       //
+                       //    [Exposed member methods]
+                       //    init
+
+</pre>
+</td></tr></table></p>
+<p>  XBase++ itself provides us with the useful Var2Bin() function--and
+  its partner Bin2Var()--which do most of the work of object
+  persistence.  In fact, in the provided source code, the storage of an
+  object instance only thinly wraps Var2Bin().  A whole method of the
+  parent class Persistent is:
+</p>
+<p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>METHOD Persistent:_toDisk(child, cFile)
+   MEMOWRIT(cFile, Var2Bin(child))
+RETURN child
+
+</pre>
+</td></tr></table></p>
+<p>  If we just wanted object persistence, we would not need to look any
+  farther than this.  But what we actually want is <strong>version-safe</strong> object
+  persistence.  Specific to the Configuration that motivated this, we
+  wish to be able to take several steps:
+</p>
+<blockquote>    
+    1. Read a stored Configuration instance;<br/>
+    2. Check whether the instance matches current application version;<br/>
+    3. If the instance is from an old version, fill in any unavailable
+       configuration options with current default values.
+</blockquote><p>  What we get out of taking these steps is the ability to add new
+  Configuration options as we go along, but still maintain the
+  compatibility with stored configurations from previous application
+  versions.  The example (and actual use) of a configuration file is
+  particularly clear, but in general the same mechanism would work for
+  storage and retrieval of any versioned OOP data.
+</p>
+<p><strong class="subhead">Introspection Conventions</strong></p>
+ <p>  The full details can be found in the included source code and library
+  documentation.  But it is worth summarizing our conventions in this
+  main text.  Introspection is implemented using a specific convention
+  in <strong>every</strong> class created in a project.  This requires some extra
+  attention in writing the class code, but is pretty mechanical to
+  perform.
+</p>
+<p>  Every class defines data members with the names "_data" and
+  "_methods".  Each of these simply contains an array of strings listing
+  the respective types of class members.  I have used the convention of
+  an initial underscore in the name of every data member and method that
+  is <strong>not</strong> to be exposed (including the data members "_data" and
+  "_methods").  This convention allows us to shield some class members
+  from introspection; we might do this either because we think that some
+  members are entirely accidental to implementation, and should not be
+  exposed, or because some members relate to the internal mechanism of
+  introspection and persistence (and should not, as such, be exposed).
+  Ultimately, the programmer has freedom to expose whatever she wishes
+  to, and hide everything else.
+</p>
+<p>  An example of a class which exposes introspection, but is not directly
+  persistent is ColorScheme.  The :init() method of an instrospective
+  class has the special responsibility to initialize the data members
+  "_data" and "_members".  For example:
+</p>
+<p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>METHOD ColorScheme:init()
+   // Introspection data
+   ::_data    := { "Activeborder", "Passiveborder",             ;
+                   "Hilite", "Shadow", "Titlebar", "Titletext", ;
+                   "Statusbar", "DialogBG",                     ;
+                   "SchemeName" }
+   ::_methods := { "init", "Old", "Windows" }
+
+   ::Old()
+RETURN self
+
+</pre>
+</td></tr></table></p>
+<p>  Actually creating these lines in the :init() method is basically as
+  simple as copying a few lines from the class' declaration.  See the
+  source code for ColorScheme.prg as an illustration.
+</p>
+<p>  For a good example of what to do with a class instance, look at the
+  STRINGIFY() function used above (its source code and documentation are
+  in this package also).  In your own project, you will probably want to
+  make additional uses of introspection; but the model in STRINGIFY() is
+  easy to follow and adapt.
+</p>
+<p><strong class="subhead">Persistence Conventions</strong></p>
+ <p>  As was mentioned, nothing much is needed for object persistence per
+  se.  But some conventions are very useful to deal with instance
+  versioning.  The way this is handled in the provided library code is
+  to create an Abstract Parent Class Persistent.  XBase++ does not
+  implement the keyword <code>ABSTRACT</code>, as some languages do.  But it does
+  the equivalent thing with the keyword <code>DEFERRED</code> which applies to
+  methods.  If one or more methods are deferred, the class is an
+  abstract class.
+</p>
+<p>  Every class that wishes to be persistent should inherit from Class
+  Persistent.  In our library samples, the only class that does so is
+  Configuration (however, a ColorScheme instance is a data member of a
+  Configuration instance, so it gains persistence vicariously).
+  The Persistent parent class provides a unified approach to versioning
+  issues; it also implements the actual storage/retrieval methods.  In
+  the provided code, storage is just MEMOREAD()/MEMOWRIT() calls; but by
+  having a parent class, we could globally reimplement a different
+  storage technique without having to make any changes to child classes.
+</p>
+<p>  Classes that inherit from Persistent have several obligations in
+  implementing DEFERRED methods.  Fortunately, as with introspection,
+  the conventions are pretty mechanical.  The clearest thing is to
+  examine Configuration.prg to see how all the conventions are followed
+  (the source file is well documented).  One special line needs to be
+  included in the child's :init() method and several special
+  requirements apply to the child's declaration.  The :init() method
+  should include the following line:
+</p>
+<p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>::Persistent:_init(self)
+
+</pre>
+</td></tr></table></p>
+<p>  In the child class declaration, an initClass() method should be used,
+  and should contain the lines in the below example (if other actions
+  specific to the child class are required, they may be added, of
+  course).  The DEFERRED method exposeSelf() should also be implemented,
+  and should contain exactly the lines listed in the example (adjusting
+  for the current date in the version, and for the actual data members
+  and methods of the child class).  Several (non-exposed) methods are
+  implemented in Persistent, and are named with a leading underscore.
+  The corresponding methods without the underscore are DEFERRED in
+  Persistent, and the child must implement them.  In most cases, the
+  implementation of each exposed method will be no more than a call to
+  the corresponding underscored method.  All in all, the following is a
+  sufficient class declaration for a child of Persistent.  Obviously, if
+  you want the class to do more, add the capabilities it needs.
+</p>
+<p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>CLASS MyClass FROM Persistent
+  PROTECTED:
+    INLINE CLASS METHOD initClass
+      ::exposeSelf()
+      ::exposeParent()
+    RETURN self
+
+    INLINE CLASS METHOD exposeSelf
+      ::C_version := 20000501
+      ::C_data    := {"myBoolean", "myData", "myNum"}
+      ::C_methods := { }
+      RETURN self
+
+  EXPORTED:
+    VAR myBoolean, myData, myNum
+    METHOD init
+    INLINE METHOD fromDisk(c)  ; RETURN ::Persistent:_fromDisk(self, c)
+    INLINE METHOD antiquated() ; RETURN ::Persistent:_antiquated(self)
+    INLINE METHOD uptoDate()   ; RETURN ::Persistent:_uptoDate(self)
+    INLINE METHOD toDisk(c)    ; RETURN ::Persistent:_toDisk(self,"fname")
+    INLINE METHOD verUpdate    ; RETURN ::Persistent:_verUpdate(self)
+
+ENDCLASS
+
+</pre>
+</td></tr></table></p>
+<p>  These few conventions are simple to follow, and wind up providing
+  version-safe object persistence for any child class that follows them.
+</p>
+<p><strong class="subhead">Working With A Persistent Child</strong></p>
+ <p>  I developed the below test script (included with a few extra comments
+  as tstcfg.prg) to validate persistence and versioning of a
+  Configuration instance.  This is a quick workout of the basic
+  Persistent methods.
+</p>
+<p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>oCfg := Configuration():new()
+? "Testing Configuration Class"
+? "------------------------------------------"
+? "Class version", Configuration():C_version
+? "New Instance version", oCfg:version
+? "Up to date?", oCfg:uptoDate()
+?
+? "oCfg:Font_Alert", oCfg:Font_Alert
+?
+? "Change version", (oCfg:version := 2)
+? "Up to date?", oCfg:uptoDate()
+?
+? "Write to disk, read back configuration"
+? "------------------------------------------"
+oCfg:toDisk("USER.CFG")
+oCfg := Configuration():new():fromDisk("USER.CFG")
+?
+? "Read Instance version", oCfg:version
+? "Up to date?", oCfg:uptoDate()
+?
+? "What's antiquated?"
+? oCfg:antiquated()
+? "Try updating the diskfile version"
+? "------------------------------------------"
+oCfg := oCfg:verUpdate()
+oCfg:toDisk("USER.CFG")
+oCfg := Configuration():new():fromDisk("USER.CFG")
+?
+? "Read Instance version", oCfg:version
+? "Up to date?", oCfg:uptoDate()
+?
+? "What's antiquated?"
+? oCfg:antiquated()
+
+</pre>
+</td></tr></table></p>
+<p>  The output from the above steps should be similar to the below.
+  Examining the two should make clear the use of each Persistent method.
+</p>
+<p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>Testing Configuration Class
+------------------------------------------
+Class version   19990924
+New Instance version   19990924
+Up to date? .T.
+
+oCfg:Font_Alert 10.Arial
+
+Change version          2
+Up to date? .F.
+
+Write to disk, read back configuration
+------------------------------------------
+
+Read Instance version          2
+Up to date? .F.
+
+What's antiquated?
+Summary of instance data availability:
+- Instance version =        2
+- Class version = 19990924
+&lt;&lt;Font_Alert&gt;&gt; available in this instance
+&lt;&lt;ButtonLabels&gt;&gt; available in this instance
+&lt;&lt;GrayBar&gt;&gt; available in this instance
+&lt;&lt;ColorScheme&gt;&gt; available in this instance
+&lt;&lt;MY_Date&gt;&gt; available in this instance
+&lt;&lt;savedCfg&gt;&gt; available in this instance
+&lt;&lt;version&gt;&gt; available in this instance
+
+Try updating the diskfile version
+------------------------------------------
+
+Read Instance version   19990924
+Up to date? .T.
+
+What's antiquated?
+This instance matches the current format
+
+
+</pre>
+</td></tr></table></p>
+</body></html>

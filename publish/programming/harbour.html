@@ -1,0 +1,471 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<style>
+                {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+em              {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+ul, ol, li      {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+tt              {font-family: mono, courier; font-size: 8pt}
+pre             {font-family: mono; font-size: 9pt}
+th              {font-family: mono, courier; font-size: 8pt}
+
+.code-sample    {background-color: #CCCCCC}
+.sidebar        {background-color: #FFFFCC}
+.title          {font-size: medium; color: #3333CC}
+.subtitle       {font-size: 9pt; color: #3333CC}
+.subhead        {font-size: 12pt}
+.input          {background: #FFFFFF; color: #000000; font-weight: normal}
+
+.CodeClass      {background-color: #CCCCCC}
+.SidebarClass   {background-color: #FFFFCC}
+</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<!-- TITLE and AUTHOR -->
+<p><strong class="title">
+   A Harbour Project How-To
+</strong><br>
+<strong class="subtitle">
+   A gentle introduction to an open-source implementation of
+   the Clipper language
+</strong></p>
+<p>
+   David Mertz, Ph.D.<br>
+   President, Gnosis Software, Inc.<br>
+   April 2000
+</p>
+<!-- END TITLE and AUTHOR -->
+
+<!-- ABSTRACT -->
+<p><em>This article sketches some brief details of the internal
+workings of Harbour, but focuses on the ordinary details of getting
+Harbour set up; and on recompiling existing Clipper programs (possibly
+to new platforms).  A particular emphasis is given to the setup on
+Linux, but notes are also made on its other ported platforms.  Some
+general observations are made on current limitations of Harbour
+relative to other Clipper implementations on which a developer might
+have an existing codebase.</em></p>
+<!-- END ABSTRACT -->
+
+<!-- BODY -->
+<p><!-- What is Harbour? -->
+   Harbour is a collaborative project that began in 1999.  The goal of
+   the Harbour Project is to create a cross-platform and open-source
+   compiler for the xbase superset language known as Clipper.  Clipper
+   was implemented first, and as Harbour's reference implementation, in
+   CA-Clipper 5.2 (and largely in earlier versions of CA-Clipper); but
+   supersets of Clipper have also been implemented commercially in at
+   least Alaska Software's xBase++, Multisoft's Flagship and Computer
+   Associates' Visual Objects.  In less than a year, Harbour has moved
+   from preliminary discussions to a 95% functional implementation.  And
+   unlike each of the other Clipper implementations, the source code is
+   available under a modified GPL, and ports have been made to Linux,
+   DOS, Win32, OS/2 and MacOS.  One interesting feature, technically, of
+   Harbour is its output:  rather than output platform-specific object
+   code, Harbour's compiler outputs source code in C, Java (incomplete),
+   Pascal (planned), Windows Resource (planned) or a 'Harbour Runtime
+   Binary' (hrb).  From there, your existing compiler/linker takes over
+   to produce a native executable by linking to the runtime libraries and
+   Harbour virtual machine (VM).  Alternately, a compiled native runtime
+   interpreter can process an .hrb file.
+</p><p>
+   Despite the progress made to date, at the time of this article Harbour
+   is still in alpha versions.  It is probably not yet a very good idea to
+   consider Harbour for production environments; but the progress made
+   makes it look like it will be ready soon (contributors to the project
+   are always welcomed, of course).  In particular, the documentation is
+   still in a pretty rough state, and what there is--while generally
+   well-written--is aimed primarily at the Harbour developers themselves.
+   A Clipper programmer who is not necessarily also a C programmer or a
+   compiler designer will probably still encounter a few bumps along the
+   way.  Hopefully, after this author works through a few of these little
+   bumps himself, this article will ease the path to working with Harbour.
+</p>
+
+<p><strong class="subhead">Getting Harbour installed</strong><br>
+   <!-- Sidebar on Harbour help systems -->
+   <table border="0" cellpadding="0" class="sidebar" width="35%" align="right"><tr><td>
+   <strong class="subhead">Harbour's help systems</strong>
+   <ul>
+   <li>Documentation for Harbour is available in a number of formats: WinHelp,
+       OS/2 INF, HTML, Troff/Man, and Norton Guide.  All these formats are
+       generated from marked-up text files using the <em>hbdoc</em> tool, and
+       most can be downloaded pre-built from the Harbour website.</li>
+   <li>Many users who come from a Clipper background will be comfortable with
+       the Norton Guide help system.  Additionally, many Clipper resources
+       (such as libraries used in legacy code) will use the Norton Guide
+       format. Luckily, free Norton Guide readers are available for most
+       Harbour platforms.  Dave Pearson (who is on the Harbour team) has
+       created several good quality
+       <a href="http://www.davep.org/norton-guides/">
+       Norton Guide readers</a> that you can download from his site.</li>
+   </td></tr></table>
+
+   <!-- Intro to installation -->
+   Being at an alpha version, the degree of compatibility and functionality
+   differs somewhat between ported platforms; and the installation on all
+   platforms is still a manual process.  Unfortunately, this turns out to
+   mean (at least as of this writting) that the Linux version lags behind
+   the Win32, DOS and OS/2 versions in some important ways.  The main
+   problem right now is that the console I/O under Linux is basically
+   broken.  While the plan by the developers is to provide both
+   <tt>curses</tt> and <tt>slang</tt> library compatibility, the latter will
+   not compile at all yet, and the former is only partially functional.  The
+   bottom line is that Harbour on Linux is only currently robust for batch
+   oriented processes and command-line driven utilities (see the sidebar on
+   "CGI and HarbourScript", however).</p>
+
+<p><!-- Linux Installation Steps -->
+   <strong>Linux installation.</strong>
+   Installing on Linux is similar to most Linux installations, although there
+   is a little bit more to it than the simplest <tt>make/make install</tt>
+   setup.  The first thing to do for any version you wish to install is to
+   visit the download section of the <http://www.Harbour-Project.org/>Harbour
+   web site</a>.  For Linux, download the source code, which should be in a
+   tarball with a name similar to <tt>harbour-0.33.src.tar.gz</tt>.  On my
+   own system, I decided to work only at a user level (it is, after all,
+   alpha software; and besides, many users will not have root access).  I
+   put the tarball in a ~/Harbour/ directory, and ran the below commands:</p>
+
+   <p><strong>Shell commands to setup Harbour</strong>
+      <table border="0" cellpadding="0" class="code-sample" width="100%">
+      <tr><td><pre>
+<font color="#FF0000">1</font>  $ gunzip -c harbour-0.33.src.tar.gz | tar -x
+<font color="#FF0000">2</font>  $ cd harbour-0.33
+<font color="#FF0000">3</font>  $ export HB_GT_LIB=gtcrs
+<font color="#FF0000">4</font>  $ export C_USR=-DHARBOUR_USE_CRS_GTAPI
+<font color="#FF0000">5</font>  $ chmod u+x make_gnu.sh
+<font color="#FF0000">6</font>  $ ./make_gnu.sh &gt; make_gnu.log
+<font color="#FF0000">7</font>  $ ln -f source/compiler/linux/gcc/harbour ~/bin
+<font color="#FF0000">8</font>  $ ln -f utils/hbrun/linux/gcc/hbrun ~/bin
+<font color="#FF0000">9</font>  $ ln -f source/pp/stdalone/linux/gcc/hbpp ~/bin
+<font color="#FF0000">10</font> $ ln -f utils/hbdoc/linux/gcc/hbdoc ~/bin      </pre>
+       </td></tr></table></p>
+
+<p><!-- Explanation of shell commands -->
+   A few comments are warranted on what I do above.  The <tt>make_gnu.sh</tt>
+   script, run in (6), is a wrapper for GNU <tt>make</tt> that sets a
+   few environment variables first.  Two variables that are <i>not</i> set
+   by default, but need to be for any console support other than tty-style
+   are C_USR and HB_GT_LIB.  Eventually, these will also support values
+   for the <tt>slang</tt> libraries (and maybe others like XTM or KDE) but
+   currently only <tt>ncurses</tt> can compile.  As a minor matter, the
+   provided <tt>make_gnu.sh</tt> does not have execute permissions when unpacked,
+   so you'll either want to change its permission or pass it to a shell
+   explicitly, as in (5).  I found it helpful to redirect the <tt>make</tt>
+   results to a file in (5) so that they could be examined later, and also
+   so that the STDERR messages will stand out more evidently.  I received
+   a non-fatal warning in alpha 0.32, which was corrected in 0.33; you might
+   still get one or two such warnings while Harbour is in other alphas. In
+   (7)-(10) I found it convenient to create links in a standard location for
+   the harbour executables that should be created.
+
+<p><!-- Installation on other OS's -->
+   <strong>Installation on other Operating Systems.</strong>
+   Under Win32, DOS and OS/2, prebuilt Harbour binaries are available, which
+   really saves a lot of work for a novice trying to get a feel for Harbour.
+   Zip files are available for a variety of compiler/OS combinations.  If
+   you intend to compile your own executables, you will need to download
+   a version compatible with the C compiler you intend to use.  Fortunately,
+   a variety of free and non-free C compilers are supported.  Once you get the
+   right zip file, just unpack it where you want Harbour to live (if you use
+   <tt>pkunzip</tt>, be sure to use the <tt>-d</tt> option to maintain
+   subdirectory structure).
+</p><p>
+   The current binary distributions also include the <tt>hbrun.exe</tt>
+   utility which will run an <tt>.hrb</tt> file for you without the need for
+   linking an executable (<tt>hbrun.exe</tt> uses some assembly that cannot
+   yet be built with every compiler/OS combination, but every OS has some
+   version of <tt>hbrun.exe</tt> available).  As a quick way to get started,
+   this is very easy (the sample directory and source file below come from
+   the Harbour source distribution): </p>
+
+   <p><strong>Compiling and running a Harbour Runtime Binary</strong>
+      <table border="0" cellpadding="0" class="code-sample" width="100%">
+      <tr><td><pre>
+ J:\Harbour\tests&gt;..\bin\harbour tstcolor.prg /n /i..\include /gh
+ Harbour Compiler, Build 32 (2000.03.07)
+ Copyright 1999-2000, http://www.harbour-project.org
+ Lines 53, Functions/Procedures 1
+
+ Generating Harbour Portable Object output to 'tstcolor.hrb'... Done.
+
+ J:\Harbour\tests&gt;..\bin\hbrun tstcolor.hrb</pre>
+      </td></tr></table></p>
+<p>
+   Assuming you do have a C compiler setup on your system, creating an
+   executable is most easily accomplished by using the provided build script,
+   e.g.:
+
+   <p><strong>Compiling a Harbour executable</strong>
+      <table border="0" cellpadding="0" class="code-sample" width="100%">
+      <tr><td><pre>
+ J:\Harbour\tests&gt;..\bin\bld_vc.bat tstcolor /n /i..\include
+   [...]
+ J:\Harbour\tests&gt;tstcolor.exe</pre>
+      </td></tr></table></p>
+
+<p><strong class="subhead">Porting considerations</strong><BR>
+   Probably the main issue in porting a legacy Clipper project to Harbour
+   will be the portability of the libraries used in the original project.
+   To a large extent, calls to third-party libraries will have to be
+   rewritten, either in the Harbour language (which includes some enhancements
+   to the traditional DOS/CA-Clipper capabilities), or in C as upgraded
+   capabilities for the Harbour system itself.
+</p><p>
+   However, the Harbour developers have made some efforts in the direction
+   of supporting common CA-Clipper libraries, as well as with improving
+   compatibility with Alaska's XBase++.  A few third party tools have even
+   started to provide Harbour ports.  Of course, many popular CA-Clipper
+   libraries--such as SuperLib and Grumpfish--are already written primarily
+   in Clipper, and come with source code to allow end-user modification.
+   In the case of such libraries, porting to Harbour is likely to be fairly
+   straightforward, even if not necessarily completely effortless.  I sketch
+   below some of the library issues already addressed by the Harbour
+   developers, or by third-parties.
+</p><p>
+   <ul>
+   <li><em>GT Clipper Library.</em>
+       A public domain library created by a number of contributors that
+       contains various useful general-purpose functions.  The Harbour
+       developers have decided to directly support some, but not all, of
+       the GT Library.  All GT Library functions begin with 'GT_' for
+       compatibility, but the calls are integrated into Harbour rather
+       than treated as a seperate library.
+   <li><em>Clipper Tools.</em>
+       A large and popular collection of functions
+       produced by Computer Associates.  The use of Clipper Tools was
+       sufficiently widespread as to be considered almost an integral part
+       of CA-Clipper.  Some--but far from all--Clipper Tools functions
+       are supported by Harbour.
+   <li><em>Fivewin.</em>
+       A library designed for development of Windows applications within
+       CA-Clipper.  It has also been ported to Alaska's XBase++.  A
+       preliminary version of Fivewin for Harbour has been written,
+       and links to it may be found in the "Resources" section of this
+       article.
+   <li><em>Advantage Database Server (ADS).</em>
+       A product used for
+       implementing Clipper applications on a client/server model, and
+       optimizing database queries. Serves a similar niche to SQL databases,
+       and is compatible with a number of programming tools.  Discussion of
+       using Harbour programs to connect with an ADS server, and sample
+       source code, is available in the <tt>/contrib</tt> directory of
+       the Harbour system.
+   <li><em>DirectX.</em>
+       This is not a library issue as such, but discussion
+       and sample source is provided in the <tt>/contrib</tt> directory for
+       utilizing DirectX within Harbour (under the Win32 version, of course).
+   <li><em>ODBC.</em>
+       As with DirectX, this is not a legacy library issue,
+       but rather an enhanced capability experimentally built onto the
+       Harbour system.  It is also available as a discussion and code samples
+       in the <tt>/contrib</tt> directory.
+   <li><em>Object Oriented Programming.</em>
+       Programming in an OOP style is a broader issue than a specific
+       library or a specific interface.  But OOP programming is something
+       many Clipper programmers have come to expect.  CA-Clipper 5.2 and
+       especially 5.3 added a number of base classes, and a matching
+       OOP syntax.  Libraries such as CLASSy, Fivewin, Clip4Win, and TopClass
+       provide OOP extensions with full inheritance and class declaration.
+       Clipper-compatible compilers like XBase++ and Flagship also provided
+       their own OOP extensions.  Luckily, Harbour follows suit in providing
+       a full collection of commands for declaration of classes, inheritance,
+       and so on.  The syntax may not wind up being identical with that in
+       the tool you previously used, but it should be possible to maintain
+       your old Clipper class hierarchy with minimal changes to source code.
+   </ul>
+</p>
+
+<p><strong class="subhead">A sample project</strong><br>
+   <!-- Sidebar on CGI and HarbourScript -->
+   <table border="0" cellpadding="0" class="sidebar" width="35%" align="right"><tr><td>
+   <strong class="subhead">CGI and HarbourScript</strong>
+   <ul>
+   <li>There is at least one thing that Harbour is well suited for that
+       CA-Clipper was rarely ever used for:  CGI scripting.  The Clipper
+       language has a large number of the high-level constructs for
+       dealing with both text and data that one finds in the most common
+       CGI languages.  In this direction, the Harbour developers have
+       provided both an HTML object in the OOP system, and some sample
+       code for working with CGI.</li>
+   <li>In addition to conventional CGI, the Harbour <tt>./sample</tt>
+       directory contains an interesting side project called HarbourScript.
+       The idea of HarbourScript is to allow one to use the Harbour
+       language in a way similar to Active Server Pages or Cold Fusion;
+       but instead of JavaScript or VBScript, the embedded language is
+       Clipper. Like most of Harbour, this side project is still in
+       alpha stages; but the interesting thing is that it works at all,
+       and the proof-of-concept has already been staged on websites.
+   </td></tr></table>
+
+   <!-- About Y2KComp -->
+   As a test of porting to Harbour, I decided to use a smallish (in the
+   neighborhood of 1000 lines), but real-life project.  <tt>Y2KComp</tt>
+   is a utility I created in late 1998 as a consultant at a large company
+   performing Y2K code remediation.   I had since released the code to the
+   public domain; so feel free to download it from the link in the
+   "Resources" section if you wish.  It is probably of little continuing
+   use now that we have passed through the Y2K new-year, but it does have
+   the virtue of using much of the most common functionality of Clipper.
+   In a nutshell, Y2KComp reads in a few values, then performs a "aged-date
+   consistency" comparison on two files.  That is, we do not want to
+   determine just if two files are identical, but rather if all the date
+   difference between the two files are consistent.  Add a 'mutatis mutandis'
+   clause to the notion of sameness.  These files may be DBFs, free-form
+   reports, comma delimited files, or fixed-length flat-files.  A moderate
+   degree of machine intelligence goes into determining what sort of
+   differences are to be expected, and what sort indicates a problem.  At
+   the end of the comparison, a textual report is produced summarizing the
+   comparison results.  In other words, we get some DBF acess, some file I/O,
+   some date functions, some numeric functions, some string functions, and
+   the GET system.  Furthermore, I had created both a DOS and a Fivewin
+   version of the same program (sharing most of the code in common), so
+   potentially this could be a test of Fivewin for Harbour (but not in
+   this article).
+</p><p>
+   <strong>Compiling under Win32.</strong>
+   Building the program under WinNT 4.0 was pretty uneventful.  There were
+   just a few quick workarounds and shortcuts I took that are worth noting.
+   The original utility was built from 4 <tt>.prg</tt> source files.
+   It had been built using a PVCS make file, so the old environment was a
+   bit different from the current one.  As a shortcut in this small project,
+   I just added a few <tt>#include "filename.prg"</tt> statements at the
+   end of the main source file.  This saved the work of creating a new
+   makefile using GNU make, or my C compiler's facilities.
+</p><p>
+   A bit more significant was the fact I had also used a call to SWPRUNCMD()
+   in the original program, which is a function in the Blinker library (to
+   run a child process in a more DOS-memory-friendly way than CA-Clipper's
+   RUN).  The issue behind this is a bit antiquated, but other legacy code
+   might use this or other Blinker functions.  This particular call was to
+   run an external program presumed to be called 'EDIT' on the report file
+   that is created by running the utility.  I tried two things here: (1)
+   Just remove the call altogether (and look at the report using whatever
+   viewer I wish); (2) Substitute a call to the RUN command.  The first
+   worked fine, of course.  The second produced a slightly odd effect.
+   The console did not clear its previous screen, but the cursor highlight
+   moved within the screen, as if EDIT.COM was launched.  Upon forcing a
+   close of the window, I saw a brief flash of what was apparently the
+   EDIT.COM screen.  It appears that the child process is having its console
+   output blocked in some manner; I did not, however, experiment to determine
+   if this effect was specific to particular child applications.
+</p><p>
+   <strong>Compiling under Linux.</strong>
+   Building the <tt>Y2KComp</tt> project under Linux had a number of
+   additional issues beyond those for Win32.  I used the same <tt>#include</tt>
+   shortcut as under Win32; and I also had the same issue with Blinker
+   library functions. More significantly were a mix of issues that one
+   will always expect under Linux with ones that reflect the unfinished
+   version of Harbour I was working with.  The main problem is the
+   incomplete console I/O handling.  DBF support and file I/O is in pretty
+   good shape even in the alpha 0.32, and the functions are almost all
+   implemented.
+</p><p>
+   Here are some issues to expect under Linux, even with later versions of
+   Harbour:  (1) Linux uses a case-sensitive filesystem, while DOS, OS/2
+   and Windows do not.  This will not be news to developers, but a few steps
+   are likely to be required.  Specifically, I found that I had used a
+   variety of <tt>#include</tt>'s in the project (including those I added
+   for the Win32 version above) where the case of the filename used did not
+   match that in the actual filesystem.  Since Clipper was never
+   case-sensitive in its keywords (unlike a lot of languages), a Clipper
+   programmer had some flexibility in when to use caps that was stylistic
+   rather than functional; but some of that is restricted under Linux.
+   (2) <tt>curses</tt>/<tt>slang</tt> support will only work under a Linux
+   console, not under a KDE Konsole or an xterm window.  There may
+   eventually be support for all the styles of Linux terminal windows, but
+   most likely the Linux console will be supported first.
+</p><p>
+   I also encountered some difficulties with compiling/linking the default
+   Harbour output of intermediate C files.  There were not included in
+   the release I worked with any shell scripts analogous to the
+   <tt>bld_vc.bat</tt> files for Windows.  Although the <tt>bld_tpl.cmd</tt>
+   contained some lines for using <tt>gcc</tt> under OS/2 that seemed
+   similar to what was needed, an initial effort to adapt it to a shell
+   script still produced some linking errors.  Overall, I found it most
+   direct simply to use the <tt>.hrb</tt> output format, and the
+   <tt>hbrun</tt> utility to get up-and-running with sample programs, e.g.:
+</p><p>
+   <strong>Compiling and running the project under Linux</strong>
+      <table border="0" cellpadding="0" class="code-sample" width="100%">
+      <tr><td><pre>
+ $ cd ~/Harbour/y2kcomp/
+ $ ~/bin/harbour y2kcomp.prg -n -gh -i../harbour.0.32/include
+ Harbour Compiler, Build 32 (2000.03.07)
+ Copyright 1999-2000, http://www.harbour-project.org
+ Lines 231, Functions/Procedures 37
+
+ Generating Harbour Portable Object output to 'y2kcomp.hrb'... Done.
+ $ ~/bin/hbrun y2kcomp
+      </td></tr></table></p>
+</p><p>
+   The console I/O problems I encounted in alpha 0.32 are discussed
+   below.  Some are fairly serious, and unfortunately, a quick examination
+   of alpha 0.33--released at press times--shows that it does not yet
+   address these issues, for the most part.  (1) <tt>curses</tt> support is
+   still monochrome.  This suffices for the basic GET/SAY of the sample
+   program, but anything with a complicated screen design is likely to rely
+   on color elements (some color appears in 0.33, but so do some other screen
+   artifacts). (2) <tt>INKEY()</tt> codes are not trapped correctly.
+   Specifically, arrow keys are treated as an ESC and/or abnormally
+   terminate an application. This limitation makes it impossible to use
+   <tt>ACHOICE()</tt> or <tt>MENU TO</tt> for item selection.  This again
+   makes complex user interaction difficult.  (3) Possibly related to the
+   <tt>INKEY()</tt> codes, <tt>READ</tt> doesn't behave as expected.  An
+   ENTER will not terminate a read, CTRL-W is required.  This also changes
+   the interaction a user expects.  Each of the above issues greatly limit
+   the possibilities for user interaction in an application.  I expect,
+   they will all be improved in later releases (largely by 0.34 according
+   to a developer working on this aspect).
+</p>
+
+<p><strong class="subhead">Conclusion</strong><br>
+   Despite those difficulties I encountered using Harbour in its current
+   versions, I believe that Harbour is "the future of xbase" (a slogan
+   of the developers).  While it will be a while before Harbour is faster,
+   has smaller executables, is more stable, or has any such positive attribute
+   over commercial Clipper implementations, it is the very fact the
+   Harbour is open source that makes it so exciting.  Commercial vendors
+   may drop their compiler products any day they wish; and even as long as
+   they support them it will be on the platform, price-basis, and license
+   terms that the vendor wishes.  With Harbour, <b>you</b> have all the source
+   to the compiler and the right to enhance it, improve it, or re-platform
+   it however you want (as well as an intelligent and committed developers
+   community behind it).  And even today, Harbour has better cross-platform
+   support than any other Clipper implementation.  A modified GPL assures
+   that Harbour will remain free forever (but the modification grants you
+   the right to distribute applications compiled <em>with</em> Harbour on
+   whatever terms you want).
+</p>
+
+<p><strong class="subhead">Resources</strong><BR>
+   <ul>
+   <li><a href="http://www.Harbour-Project.org/">
+       The Harbour-Project Website</a>
+       (if DNS problems occur, try
+       <a href="http://www.winfakt.com/harbour-project/">this address</a>)
+   <li><a href="http://www.winfakt.com/harbour-project/mailinglist.htm">
+       The Harbour developers mailing list</a>
+   <li><a href="http://www.davep.org/norton-guides/">
+       Hagbard's World (free Norton Guide readers, and other open-source tools)</a>
+   <li><a href="http://www.gnosis.cx/download/y2kcomp.zip">
+       The <tt>y2kcode</tt> sample project</a>
+   <li><a href="http://www.fivetech.com/doc.in/fwh.htm">
+       Fivewin for Harbour</a>
+   </ul>
+
+<p><strong class="subhead">About the author</strong><BR>
+<img src="http://gnosis.cx/general_images/dqm.jpg" border="0" align="left">
+David Mertz leads at least a dual life.  When not developing software or
+writing about it, he also writes articles in obscure areas of academic
+political philosophy.  Nowadays, his main focus in software development,
+is in web-applications, particularly with high-level scripting languages.
+He may be reached at mertz@gnosis.cx.</p>
+
+<!-- END BODY -->
+</body>
+</html>

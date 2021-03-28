@@ -1,0 +1,355 @@
+XML MATTERS #15: More on XML in Python
+The 4Suite XML Tools
+
+David Mertz, Ph.D.
+Filter, Gnosis Software, Inc.
+October 2001
+
+    Think of the 4Suite set of Python modules as a "connoisseur's
+    choice" of XML tools.  With their range and sophistication,
+    4Suite tools give a programmer both a lot of power and a
+    steep learning curve.  But for moving beyond the base XML
+    capabilities offered by recent versions of Python, 4Suite
+    offers useful options.
+
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  In earlier installments of my _Charming Python_ column (some
+  also featured here in IBM developerWorks' XML Zone), I
+  presented the Python XML modules included in standard
+  distributions, as well as a few other modules that add some
+  useful--but fairly limited--enhancements.  What I left out of
+  that discussion was the 800-pound gorilla of Python XML tools.
+
+  4Suite itself is only half of the rather grand open source
+  project shepherded by Fourthought Corporation (and in large
+  part by my fellow dW columnist Uche Ogbuji).  The other part is
+  4Suite Server.  If 4Suite is sufficiently rich and myriad that
+  it takes a while to figure out what it is all about, 4Suite
+  Server practically takes a leap of faith.  In this respect,
+  4Suite Server is a lot like another big Python server project,
+  Zope.  4Suite Server is a very general backend for storage,
+  manipulation, indexing, and interfacing with XML document
+  stores; and for integrating XML into existing processes and
+  systems in ways that take advantage of the business logic (and
+  data formats) already in place.
+
+  4Suite Server does a lot--in fact a lot more than this column
+  will attempt to look at.  For now, I would just like to take a
+  look at 4Suite itself; and even there, only at bits and pieces
+  that I find most interesting (and that I hope will be most
+  useful to readers).
+
+  In part, 4Suite contains enhancements to existing PyXML
+  capabilities.  One such enhancement is the (currently beta)
+  'cDomlette' module, that can build a complex DOM tree much
+  faster than PyXML's default DOM implementation.  But most of
+  what is in 4Suite is a set of tools for more advanced chores
+  than those in PyXML itself.  In main, these tools are:
+  '4XSLT', '4XPATH', '4ODS' and '4RDF'.  Some words on each below.
+
+
+GETTING STARTED WITH 4SUITE
+------------------------------------------------------------------------
+
+  The first thing to do with 4Suite is to download a distribution
+  from its website (see Resources).  As well as the distribution,
+  you will want to grab the documentation file named
+  '4Suite-docs-0_11_1.zip' (or a tarball equivalent; until a
+  later version appears).  The docs contains overlapping, but
+  apparently more complete descriptions of the 4Suite tools than
+  does the source archive.  In particular, the documentation
+  archive contains two very useful directories called 'demo' and
+  'demos' that offer good guidance to the tools.
+
+  Most likely, you will need to obtain an update of the
+  underlying PyXML distribution.  The details seem to depend on
+  the exact platform and Python version you use, and whether you
+  obtain a binary or source version of 4Suite.  But the safest
+  approach is probably to download and install the most
+  recent PyXML distribution first; then afterwards, install
+  4Suite.
+
+  Once you have the requisite parts installed, you should have a
+  few command-line tools available, and quite a few new modules;
+  most of the modules are under the 'Ft' hierarchy, but a few
+  updates within the 'xml' hierarchy are also made.
+
+
+A FEW WORDS ABOUT DOM
+------------------------------------------------------------------------
+
+  One thing Python has is a slightly embarrassing richness of DOM
+  engines.  Choosing the right one is not necessarily obvious.
+  Installing 4Suite adds yet more options.  With 4Suite installed
+  you might use any one of the below almost-equivalent imports:
+
+      #---------- Several ways to get DOM in Python -----------#
+      >>> from xml.dom import minidom as dom1
+      >>> from xml.dom import pulldom as dom2
+      >>> from Ft.Lib import pDomlette as dom3
+      >>> from Ft.Lib import cDomlette as dom4
+
+  The "standard" technique is to use 'minidom' (although
+  pre-Python 2.0, this was less clear).  'pulldom' is built on
+  top of 'minidom', but can selectively build subtrees.  4Suites'
+  'pDomlette' is roughly equivalent to 'minidom', but some
+  API differences might exist.  4Suite tools, moreover, rely on
+  'pDomlette'.  'cDomlette' was mentioned above, and is a
+  potentially much faster way of building a DOM tree (but it is
+  beta, and might not be entirely API-compatible with other
+  modules).
+
+  Confused?  So am I, in truth.  But generally, if you cannot
+  assume 4Suite is present, just use the Python standard imports;
+  if you are using 4Suite, you will probably use higher level
+  modules that take care of importing the DOM they want to have
+  available.
+
+
+4XSLT
+------------------------------------------------------------------------
+
+  The 4Suite tool that is most general purpose performs XSLT
+  transformations.  '4xslt' is the command-line version.  Its
+  source is worth exhibiting:
+
+      #----------- 4xslt Python command-line script -----------#
+      #!/usr/bin/env python
+      from xml.xslt import _4xslt
+      _4xslt.XsltCommandLineApp().run()
+
+  These two lines are all you need to perform an XSLT
+  transformation; the pattern would be very similar in a CGI or
+  other web-server context, or as part of a batch process.  But
+  right with the package one gets a command-line tool, much as
+  one would with a tool like Sablotron, Saxon or Xalan.  Of
+  course, for Python programmers, it is nice to have a tool
+  written in Python.
+
+  The particular flags available for '4xslt' can be found by
+  passing the '--help' option.  Mostly they are similar to other
+  command-line processors.  Validation is optional, and URLs can
+  be specified as arguments.  This lets you perform any
+  transformation on any XML document on the internet.  Kind of
+  handy.  For example:
+
+      #----------- 4xslt run as a command-line tool -----------#
+      % 4xslt -i http://gnosis.cx/publish/mertz/chap5.xml
+                 http://gnosis.cx/publish/mertz/chapter.xsl
+
+  The above should send to STDOUT the exact same HTML document
+  that was generated statically by Sablotron, and lives at
+  'http://gnosis.cx/publish/mertz/chap5.html' (discussed in _XML
+  Matters_ #5, see Resources).
+
+  Incorporating 4XSLT transformations into larger Python
+  applications is equally easy.  Basically, the programmer just
+  needs to pick a stylesheet, then run the transformation on an
+  XML document.  For example:
+
+      #------ Sample Python code-fragment of 4XSLT usage ------#
+      from xml.xslt.Processor import Processor
+      proc1,proc2 = Processor(),Processor()
+      proc1.appendStylesheetUri('mime.xsl')
+      result1 = proc1.runUri('message.xml')
+      proc2.appendStylesheetString(open('mime.xsl').read())
+      result2 = proc2.runString(open('message.xml').read())
+      print result1,result2
+
+  Moreover, since 4XSLT transformations are based on an in-memory
+  DOM tree, it is equally simple to apply an XSLT transformation
+  to just a particular node of the tree.  Use the 'Processor()'
+  method '.runNode()' if you want to mutate the DOM subtree
+  according to the transformation; use '.execute()' if you only
+  want to return the result of the transformation.
+
+
+4XUPDATE
+------------------------------------------------------------------------
+
+  Another little command-line tool utility in the 4Suite package
+  is called '4xupdate'.  The XUpdate specification provides an
+  analog of an SQL 'UPDATE' or 'INSERT' statement, but for XML
+  documents rather than relational databases.  The idea behind
+  this specification is to give a lightweight means of making
+  small changes to XML documents, without requiring as much
+  custom programming as a SAX or DOM approach would require.
+  XUpdate instructions are themselves specified in XML, much like
+  XSLT is--and XPATH paths are used to identify document
+  positions for operations.
+
+
+4XPATH
+------------------------------------------------------------------------
+
+  XPath is a general specification for describing node paths
+  within XML documents.  The XPath specification is integral to
+  XSLT, but it is also used as part of other XML technologies.
+  For example, when I decided to develop an indexer for large XML
+  documents in a previous column, XPath was the obvious syntax to
+  choose for describing parts of XML documents.
+
+  The [xml.xpath] module that comes with 4Suite provides a
+  wrapper for further programming involving XPath descriptions.
+  While XPath per se does not require a DOM framework, in the
+  context of 4XPATH, what XPath provides is a set of utilities
+  for working with DOM trees.  An XPath description can run
+  against a DOM (sub-)tree; a list of node objects matching the
+  description is returned.  For example (adapted from a 4Suite
+  demo program):
+
+      #---- Python fragment to process XPath node matches -----#
+      from xml.dom.ext.reader import PyExpat
+      from xml.xpath import Evaluate
+      reader = PyExpat.Reader()
+      dom = reader.fromString(some_function_to_get_XML())
+      path_descript = '/this/that/other'
+      for node in Evaluate(path_descript, dom.documentElement):
+          # do something with each matched node
+
+  In effect, the above code snippet causes the DOM tree to be
+  recursively traversed finding '<other>' elements who have
+  parent '<that>' and grandparent '<this>'.  But for a class of
+  problems, it is a lot easier just to give an XPath description
+  of the nodes we are interested in.
+
+
+4ODS
+------------------------------------------------------------------------
+
+  I will only point in the direction of what ODS does for two
+  reasons.  On the one hand, 4ODS is not really XML-specific
+  itself; on the other hand, there are too many side issues to
+  address in this installment.  Mostly, 4ODS is part of 4Suite
+  because 4Suite Server wants it to be available.
+
+  What 4ODS does is somewhat similar to what ZODB does.
+  Actually, in a way 4ODS is simpler, and it could be compared to
+  [shelve] or [xml_pickle] (that is, 4ODS does not include native
+  transactional capabilities).  Basically, 4ODS is one of the
+  ways you can make Python objects persistent across application
+  runs.  While worthwhile--and even difficult in most
+  languages--object persistence is handled pretty well by other
+  Python tools.  The thing that is different about 4ODS is that
+  it specifically implements the ODMG Object Data Standard v,3.0
+  (which none of the other tools attempt to do).  Amongst other
+  things, the ODMG standard uses the specification of object
+  formats in '.odl' files.  If you want it, the 4ODS allows more
+  formal design of persistent objects than does an ad hoc
+  approach like [shelve] or [pickle].
+
+
+4RDF
+------------------------------------------------------------------------
+
+  RDF is a way of creating "metadata" about XML documents.  4RDF
+  is both a library and a command-line took, '4rdf', for working
+  with the "Resource Description Framework."  Naturally, RDF
+  documents are themselves in XML format.  A good way to get a
+  handle on what RDF is about is to read Uche Ogbuji's
+  developerWorks columns on the topic (see Resources).
+
+
+CONCLUSION
+------------------------------------------------------------------------
+
+  The 4Suite library adds a number of high-level capabilities to
+  a Python/XML programmer's toolchest.  4XSLT fills a very needed
+  gap in native Python XML tools.  Some other 4Suite tools occupy
+  more niche positions, but are worth exploring if your
+  application falls in that niche.
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  The place to start for everything related to 4Suite is at its
+  homepage.  From there, you can download the latest version and
+  its documentation, and also read a FAQ or join mailing lists:
+
+    http://4suite.org/
+
+  Up to date versions of the PyXML distribution can be found at
+  the below link.  You will probably need a recent release to use
+  the most recent 4Suite version (quite likely more recent than
+  your underlying Python version).  Of course, new PyXML's come
+  with a few of their own goodies:
+
+    http://sourceforge.net/projects/pyxml
+
+  Several installments of my _Chaming Python_ columns summarized
+  a number of general XML tools for Python.  The most up-to-date
+  installment was "Revisiting XML tools for Python" and can be
+  found at:
+
+    http://www-106.ibm.com/developerworks/library/l-pxml.html
+
+  Earlier installments covered pretty much the same ground, but
+  did not reflect a number of changes in both Python and the
+  tools between the times of the articles.  Still, those can be
+  found at, "An introduction to XML tools for Python"
+
+    http://www-106.ibm.com/developerworks/library/python1/
+
+  And, "A closer look at Python's xml.dom module"
+
+    http://www-106.ibm.com/developerworks/library/python2/
+
+  Occupying the same space as 4XSLT is Pyana, which provides a
+  Python wrapper to the Xalan engine.  Pyana is a fairly new
+  project, but Xalan is well-established.  Information and
+  downloads can be obtained from:
+
+    http://sourceforge.net/projects/pyana/
+
+  Also of note is PIRXX, which wraps the Xerces parser, and
+  thereby provides yet another Python DOM option (along with
+  SAX).  PIRXX can be found at:
+
+    http://sourceforge.net/projects/pirxx/
+
+  Uche Ogbuji has written several article for IBM developerWorks
+  on RDF (and 4RDF).  Many of the more advanced topics appear in
+  his _Thinking XML_ column.  An general introduction to RDF in
+  general is at:
+
+    http://www-106.ibm.com/developerworks/library/w-rdf/?dwzone=xml
+
+  An earlier _XML Matters_ column that introduces XSLT can be
+  found at the below URL.  The example document and
+  transformation used in this installment was introduced in back
+  then:
+
+    http://www-106.ibm.com/developerworks/library/x-matters5.html
+
+  Another _XML Matters_ column was called "Indexing XML
+  Documents."  In developing the tool discussed, XPath was chosen
+  as a means of specifying match locations:
+
+    http://www-106.ibm.com/developerworks/library/x-matters10.html
+
+  If you are wondering about ZODB, probably the best place to
+  start is with Andrew Kuchling's introduction to it.  Find that
+  at:
+
+    http://www.amk.ca/zodb/guide/
+
+  A formal introduction to RDF can be found at:
+
+    http://www.w3.org/RDF/
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author:  http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz, in his gnomist aspirations, wishes he had coined
+  the observation that the great thing about standards is that
+  there are so many to choose from.  David may be reached at
+  mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/.  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+

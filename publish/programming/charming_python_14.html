@@ -1,0 +1,458 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>CHARMING PYTHON #14 (20000061) -- Text processing in Python with mxTextTools: Advanced Tips -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="charming_python_13.html" TITLE="CHARMING PYTHON #13">
+<link REL="next" HREF="charming_python_15.html" TITLE="CHARMING PYTHON #15">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<h1>Charming Python #14 (20000061)</h1>
+<h2>Text processing in Python with mxTextTools: Advanced Tips</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Whirling dervish, Gnosis Software, Inc.<br>
+ January, 2001<br>
+ <br>
+</p>
+<blockquote>
+    <em><code>mxTextTools</code></em> is a powerful extension module that lets Python
+    programmers flexibly process text files at a lightning fast
+    speed.  Speed comes at the price of some work, however.  The
+    tips and techniques in this column will guide a reader
+    towards developing text processing programs utilizing
+    <em><code>mxTextTools</code></em>.
+</blockquote>
+<h3>What Is Python?</h3>
+ <p>
+  Python is a freely available, very-high-level, interpreted
+  language developed by Guido van Rossum.  It combines a clear
+  syntax with powerful (but optional) object-oriented semantics.
+  Python is available for almost every computer platform you
+  might find yourself working on, and has strong portability
+  between platforms.
+</p>
+<h3>Introduction</h3>
+ <p>
+  One of the strengths of Python is a good set of text processing
+  tools.  The inherent tools are powerful, flexible, and easy to
+  work with.  One thing Python's built-in text processing is
+  <em>not</em> is particularly fast.  Mind you, for a lot of thing,
+  Python by itself is as fast as you need.  But for a certain
+  class of problems, Python has a problem.
+</p>
+<p>
+  Readers of this column will remember the <code>Txt2Html</code> tool that
+  has been discussed and enhanced to demonstrate various
+  techniques and extension modules.  The purpose of this tool, at
+  heart, is to let me write articles like this one in a "smart
+  ASCII" format that uses email-like conventions to lightly mark
+  features like word emphasis, source code, and URL links.  By
+  obeying just a few conventions (that are almost the same as I
+  would use on Usenet or in email), I can write without much
+  clutter, then convert to the HTML you are probably reading.  On
+  my own website, "smart ASCII" content I have placed there is
+  dynamically delivered as converted HTML also.
+</p>
+<p>
+  The <code>Txt2Html</code> utility uses a generous collection of regular
+  expressions to identify and modify markup patterns in source
+  text.  Even though Python's regular expression engine is
+  moderately slow (Perl is faster, but Python 2 also adds
+  improvements), converting an article like this one takes only a
+  couple seconds.  In practice, <code>Txt2Html</code> is more than adequate
+  for my own 20k documents, and for the few hits my personal
+  website gets.  However, it is easy to imagine a
+  not-so-different situation where one was converting
+  multi-megabyte documents and/or delivering such dynamicly
+  converted content on a high-volume web site.  In such a case,
+  Python's string operations, and especially regular expressions,
+  would simply be too slow.
+</p>
+<p>
+  Fortunately, Marc-Andre Lemburg has provided the Python world
+  with his blazingly fast and extremely powerful <em><code>mxTextTools</code></em>
+  extension module (written itself in C).  On the minus side, it
+  is, frankly, a lot of work to adjust to the conceptual space of
+  using <em><code>mxTextTools</code></em>; and it is a bit laborious to get the kinks
+  out of a complex processing task.  In this column, we will take
+  a look at working with <em><code>mxTextTools</code></em>, and implement a speedup
+  for <code>Txt2Html</code>.
+</p>
+<h3>Benchmarks</h3>
+ <p>
+  A familiar computer-industry paraphrase of Mark Twain dictates
+  that there are "Lies, Damn Lies, and Benchmarks."  I will not
+  argue with that; and certainly do not want readers to put too
+  great an import on the timings below.  Nonetheless, in writing
+  this article, I wanted to get some sense of just how fast
+  <em><code>mxTextTools</code></em> might be.  So here is a rough idea.
+</p>
+<p>
+  Although <code>Txt2Html</code> does a variety of transformation tricks at
+  both block and inline levels, the feature I expect to encounter
+  the most in "smart ASCII" is inline markup of words and phrases
+  as <code>&lt;code&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;strong&gt;</code> and the like.  This markup is
+  converted by the function <code>Typographify()</code> (not all at once,
+  however, but in paragraph blocks).  Therefore, I decided to
+  make conversion of this function my first <em><code>mxTextTools</code></em> task.
+  In retrospect, some later efforts at timing show that not
+  nearly as much time is spent in <code>Typographify()</code> as I had
+  expected; therefore, the speedup in <code>Txt2Html</code> as a whole is
+  not huge.  I believe, however, that converting other elements
+  of the program to take advantage of <em><code>mxTextTools</code></em> would provide
+  additional speed gains.
+</p>
+<p>
+  In order to get a timable test case, I concatenated 110 copies
+  of a recent article to get a file a bit over 2mb. <code>wc</code> reports
+  that it has 41k lines and 300k words.  The self-test in
+  <em><code>mxTypographify</code></em> processes an entire input as one text block
+  (unlike <code>Txt2Html</code>), first using an <em><code>mxTextTools</code></em> version of
+  <code>Typographify()</code>, then using the old <em><code>re</code></em> version.  The time
+  spent in each function call is reported using <code>time.time()</code>
+  calls that surround only the calls themselves (to eliminate any
+  issues of file opening, program startup, etc).
+</p>
+<p>
+  I reduced the processing time of the same test file from about
+  34 seconds to about 12 seconds on one Linux test machine
+  (running Python 1.5.2).  In other words, <em><code>mxTextTools</code></em> has
+  given me about a 3x speedup over what I get with the <em><code>re</code></em>
+  module, at least for my requirement.  My results,
+  naturally, are specific to the task I am addressing.  However,
+  I have been careful enough with both versions of
+  <code>Typographify()</code> that I doubt large improvements are possible
+  while still using the same extension module for each (but
+  readers' improvements are welcomed).  Based on such a 3x
+  speedup, <em><code>mxTextTools</code></em> definitely looks like a useful and
+  promising module for text processing.
+</p>
+<h3>How Does <em><code>mxTextTools</code></em> Work?</h3>
+ <p>
+  For the computer scientists, <em><code>mxTextTools</code></em> looks an awful lot
+  like a Turing Machine.  You have a set of states (tag tuples)
+  together with a tape (read buffer).  Each state can do one of
+  two things, jump on failure to one next state or jump on success
+  to another next state (they might be the same).  On failure,
+  the read head is restored to the same position it was at before
+  the state evaluation.  However, unlike a standard definition of
+  a Turing Machine, one state can evaluate multiple tape symbols
+  to decide on success or failure.  And also unlike a standard
+  Turing Machine, little state machines are typically nested
+  inside one another, with success or failure propogating upward.
+</p>
+<p>
+  All the Turing/state machine talk is a bit formalistic.  The
+  short characterization is that <em><code>mxTextTools</code></em> can do everything
+  regular expressions can, plus some things regular expressions
+  cannot.  Readers can get a better idea by diving into some
+  code.  Let's take a bit from this column's project:
+</p>
+<div class="code-sample"><h4>Detector for isolated punctuation</h4><pre>
+stray_punct = \
+ ( emit_misc, Table+CallTag,           # Pickup any cases where multiple (1)
+   ( (None, IsInSet, punct_set),       # punctuation character occur     (2)
+     (None, AllInSet, punct_set),      # alone (followed by whitespace)  (3)
+     (None, IsInSet, whitespace_set),                                    (4)
+     (None, Skip, -1)                  # Give back the whitespace        (5)
+   )
+ )
+
+</pre></div><p>
+  The <em><code>mxTypographify</code></em> module's overal purpose is to read through
+  a string, and determine if the "next thing" matches one of the
+  markup patterns used in "smart ASCII".  Or rather, it better
+  match some pattern or it just will not know what action to
+  take for the next bit of text.  The "tag tuple" bound to the
+  name "stray_punct" is mostly a fallback condition.  It detects
+  the condition where the "next thing" is some punctuation
+  symbols standing alone without abutting any words.  In most
+  cases, I don't <em>want</em> "smart ASCII" to contain such a pattern,
+  but <em><code>mxTypographify</code></em> has to do <em>something</em> with them if they
+  are encountered.  Let's walk through the lines above, this
+  example is a good illustration of what <em><code>mxTextTools</code></em> does
+  generally.
+</p>
+<blockquote>
+    (1) Declare what action to perform and what type of pattern
+        to look for.  In this example, we are using a callback
+        function <code>emit_misc</code> in the case of a match.  The
+        function gets passed arguments that tell it about the
+        details of the match, if found.  We might also append the
+        match to a "taglist," or just do nothing if "None" is
+        specified.  The second tuple element expresses two things
+        in the example.  It tries to match a table (the tuple
+        that follows), and if it does match it calls the callback
+        function.
+</blockquote>
+<blockquote>
+    (2) Lines 2-5 are all part of the table/tuple indicated in
+        line (1).  In other words the success or failure of the
+        whole tuple in 2-5 determines the correspondng success or
+        failure of "stray_punct" as a whole.  Line (2) itself
+        uses the <code>IsInSet</code> command to try to match the current
+        head position against a collection of values (in this
+        case "punct_set" which is defined elsewhere in the
+        program).  Commands that start with "Is" match exactly
+        one character, or fail.  Should line (2) fail, it will
+        pass the failure back up to "stray_punct" which then
+        fails as a whole.  However, had we specified another
+        tuple element in line (2), we could have jumped to
+        another line in case of failure.  By default, on success
+        we jump to the next line; however, by specifying the
+        fifth tuple position we could make the jump go somewhere
+        other than the next state (i.e. default is +1).
+</blockquote>
+<blockquote>
+    (3) Operates much like line (2) does.  However, the
+        <code>AllInSet</code> command matches as many characters as it can,
+        not just one like <code>Is*</code> commands do.  In order to
+        succeed, <code>All*</code> commands must match at least one
+        character.  The read head is advanced with each matching
+        character encountered.  As above, failure is propogated
+        up to "stray_punct".  The <code>All*</code> commands are very similar
+        to the "+" operator in regular expressions.
+</blockquote>
+<blockquote>
+    (4) This is basically just like line (2).  The only differnce
+        is that a different set of characters is matched
+        (whitespace characters, in the example).
+</blockquote>
+<blockquote>
+    (5) The <code>Skip</code> command is a little subtle, and very
+        important.  <code>Skip</code> <em>always</em> successfully matches the
+        current read head position, then causes the read head to
+        move by the amount specified in the next element.  The
+        match that is propogated up to "stray_punct" includes
+        only the characters between the initial and current read
+        head position.  In the example, this means that the
+        whitespace must be matched for "stray_punct" to succeed,
+        but that whitespace is not included in the actual match.
+        In terms of regular expressions, this resembles the
+        "(?:\s)" pattern.
+</blockquote>
+<p>
+  A few example of matches and failures might help here (assume
+  the read head is at the beginning of each line):
+</p>
+<div class="code-sample"><h4>stray_punct successes and failures</h4><pre>
+-- spam      # matches "--"
+&amp; spam       # fails at "AllInSet" since (2) advanced head
+#@$ %% spam  # matches "#@$"
+**spam       # fails (whitespace isn't encountered before 's')
+
+</pre></div><p>
+   After each success, the read head is at the space right before
+   the next word "spam" or "%%".  After a failure, the read head
+   remains where it started out (at the beginning of the line).
+</p>
+<h3>Assembling A Text Processor</h3>
+ <p>
+  Putting together a complete processing application (or
+  function) is largely a matter of defining all the needed match
+  components (like "stray_punct").  The module <em><code>mxTypographify</code></em>
+  contains a more fleshed out processor, but we can look at the
+  essential structure here:
+</p>
+<div class="code-sample"><h4>"smart ASCII" tagger</h4><pre>
+# Tag all the (possibly marked-up) words
+tag_words = \
+ ( stray_punct+ (+1,),
+   emphs   + (+1,),                    # -Emphasized- words
+   funcs   + (+1,),                    # 'Functions()'
+   strongs + (+1,),                    # *Strong* emphasis
+   plain_words + (+1,),                # Unadorned words
+   (emit_misc, AllInSet+CallTag,
+          leadout_set,+1,+1),          # Lead-out eater
+   (jump_count, Skip+CallTag, 0),      # Check for infinite loop
+   (None, EOF, Here, -7)               # Check for EOF
+ )
+
+tag(txt, tag_words, 0, len(txt), None)
+
+</pre></div><p>
+  This code deserves a bit of further explanation.
+</p>
+<p>
+  Like "stray_punct," "emphs," "funcs," "strongs," and
+  "plain_words" contain tuples with tag tables.  They each have
+  their appropriate callback functions (all "emitters" of various
+  names, because they "emit" the match along with surrounding
+  HTML codes if needed).  The first five lines each have a "+1"
+  appended to their tuple; what this does is specify where to
+  jump in case of a match failure.  That is, even if these
+  patterns fail to match, we continue on--with the read head in
+  the same position--to try matching against the other patterns.
+</p>
+<p>
+  After the basic word patterns each attempt a match, we get to
+  the "Lead-out eater" line.  In my terminology a "leadout" is
+  the opposite of a "leadin".  That is, the latter are things
+  that might precede a word pattern, and the former are things that
+  might follow a word pattern.  The "leadout_set" includes
+  whitespace characters, but it also includes things like comma,
+  period, question-mark, which might end a word.  The "Lead-out
+  eater" uses a callback function too.  As designed, I preserve
+  exactly the whitespace the input has.  However, it would be
+  easy to normalize whitespace here by emitting something other
+  than the actual match (e.g. a single space always).
+</p>
+<p>
+  The <code>jump_count</code> is extremely important, but let us come back
+  to it.  For now, it is enough to say that we <em>hope</em> the line
+  never does anything.
+</p>
+<p>
+  The <code>EOF</code> line is our flow control, in a way.  The call made by
+  this line is to <code>None</code>, which is to say that nothing is
+  actually <em>done</em> with any match.  The command <code>EOF</code> is the
+  important thing (<code>Here</code> is just a filler value that occupies
+  the tuple position).  It succeeds if the read head is past the
+  end of the read buffer.  On success, the whole tag table
+  "tag_words" succeeds; and having succeeded, processing stops.
+  <code>EOF</code> failure is more interesting.  Assuming we haven't reached
+  the end of our string, we jump -7 states (to "stray_punct").
+  From there, the whole process starts over; hopefully with the
+  read head advanced to the next word.  By looping back to the
+  start of the list tag tuples, we continue eating successive
+  word patterns until the read buffer is exhausted (calling
+  callbacks along the way).
+</p>
+<p>
+  The <code>tag()</code> call simply launches processing of the tag table we
+  pass to it (against the read buffer contained in <code>txt</code>).  In
+  our case, we do not care about the return value of <code>tag()</code>
+  since everything is handled in callbacks.  However, in cases
+  where the tag table does not loop itself, part of the
+  return value can be used to determine if there is reason to
+  call <code>tag()</code> again with a tail of the read buffer.
+</p>
+<h3>Debugging A Tag Table</h3>
+ <p>
+  Describing it is easy, but I spent a large number of hours
+  finding the exact collection of tag tables that would match
+  every pattern I was interested in without mismatching any
+  pattern as something it wasn't.  While "smart ASCII" markup
+  seems pretty simple, there are actually quite a few
+  complications (e.g. markup characters being used in non-markup
+  contexts, or markup characters and other punctuation appearing
+  in various sequences).  Any structured document format that is
+  complicated enough to warrant using <em><code>mxTextTools</code></em> instead of
+  <em><code>string</code></em> is likely to have similar complications.
+</p>
+<p>
+  Without question, the worst thing that can go wrong in a
+  looping state pattern like the above is that <em>none</em> of the
+  listed states match from the current read head position.  If
+  that happens, your program winds up in a tight infinite loop
+  (entirely inside the extension module, so you cannot really get
+  at it with Python code directly).  I wound up forcing a manual
+  kill of the process <em>countless</em> times during development.
+</p>
+<p>
+  Only near the end of my project with <em><code>mxTextTools</code></em> did I hit on
+  a good way to handle the infinite loop problem.  This is the
+  <code>jump_count</code> callback.  Let me present my function as a
+  reference:
+</p>
+<div class="code-sample"><h4>mxTypographify.pypinfinite loop catcher</h4><PRE><FONT COLOR=#3333CC><B>def</B></FONT><A NAME="jump_count"><FONT COLOR=#CC0000><B> jump_count</B></FONT></A>(taglist,txt,l,r,subtag):
+    <FONT COLOR=#3333CC><B>global</B></FONT> head_pos
+    <FONT COLOR=#3333CC><B>if</B></FONT> head_pos <FONT COLOR=#3333CC><B>is</B></FONT> None: head_pos = r
+    <FONT COLOR=#3333CC><B>elif</B></FONT> head_pos == r:
+        <FONT COLOR=#3333CC><B>raise</B></FONT> <FONT COLOR=#115511>"InfiniteLoopError"</FONT>, \
+              txt[l-20:l]+<FONT COLOR=#115511>'{'</FONT>+txt[l]+<FONT COLOR=#115511>'}'</FONT>+txt[l+1:r+15]
+    <FONT COLOR=#3333CC><B>else</B></FONT>: head_pos = r</PRE></div><p>
+  The basic purpose of <code>jump_count</code> is simple:  we want to catch
+  the situation where our tag table has been run through multiple
+  times without matching anything.  The simplest way to do this
+  is to check whether the last read head position is the same as
+  the current.  If it is, more loops cannot get anywhere, since
+  we have reached the exact same state twice, and the same thing
+  is fated to happen forever.  In my example, I simply raise an
+  error to stop the program (I also report a little bit of buffer
+  context in case I can eyeball what is going on).  However, it
+  would also be possible to manually move the read head, and try
+  again from a different starting position.
+</p>
+<p>
+  Not as bad as an infinite loop, but still undesirable, is
+  having patterns within a tag table match when they are not
+  supposed to or not match when they are suppose to (but
+  something else has to match, or we would have an infinite loop
+  issue).  Using callbacks everywhere makes examining this
+  situation much easier.  During development, I frequently
+  created temporary changes to my <code>emit_*</code> callbacks to print or
+  log when certain emitters get called.  By looking at output
+  from these temporary <code>print</code> statements, most times one can
+  tell where the problem lies.
+</p>
+<h3>Conclusion</h3>
+ <p>
+  If text processing speed is crucial to your project, you can
+  probably still use Python by adding in <em><code>mxTextTools</code></em>.  Getting
+  up to speed with the extension module involves adjusting your
+  thinking from usual <em><code>string</code></em> and <em><code>re</code></em> techniques.  But with
+  some planning and effort, <em><code>mxTextTools</code></em> can match or beat the
+  performance you would find in a low level language like C (or a
+  high level one with tuned regular expressions, like Perl).
+</p>
+<h3>Resources</h3>
+ <p>
+  Obtaining <em><code>TextTools</code></em> is unfortunately a bit harder than it
+  should be (depending on platform).  Your starting point should
+  be the project homepage at:
+</p>
+<blockquote>
+   <a href="http://www.lemburg.com/files/python/mxTextTools.html">http://www.lemburg.com/files/python/mxTextTools.html</a>
+</blockquote>
+<p>
+  On that homepage, you can download the module archive at:
+</p>
+<blockquote>
+   <a href="http://www.lemburg.com/files/python/mxTextTools-1.1.1.zip">http://www.lemburg.com/files/python/mxTextTools-1.1.1.zip</a>
+</blockquote>
+<p>
+  However, if you are installing on a Windows platform, the
+  required DLL is not included in the package (despite the
+  documentation claiming otherwise).  You can compile it yourself
+  if you happen to have VC++ by following the instructions on the
+  project homepage (so I presume, I have not done it).
+  Hopefully, the packaging will be improved with time (or will
+  even become part of "standard" Python distributions).
+</p>
+<p>
+  An introductory discussion of text processing techniques in
+  Python is contained in my earlier column:
+</p>
+<blockquote>
+    <cite>Charming Python #5: Text Processing in Python</cite>
+   <a href="http://gnosis.cx/publish/programming/charming_python_5.html">http://gnosis.cx/publish/programming/charming_python_5.html</a>
+</blockquote>
+<p>
+  The public-domain <code>Txt2Html</code> utility, including the
+  <em><code>mxTypographify</code></em> module discussed in this column, can be
+  downloaded from:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/download/txt2html.zip">http://gnosis.cx/download/txt2html.zip</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz wonders if he could pass the Turing test (and
+  whether this article has).  David may be reached at
+  mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+</p>
+</body></html>

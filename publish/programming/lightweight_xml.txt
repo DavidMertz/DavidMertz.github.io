@@ -1,0 +1,278 @@
+XML ZONE TIP: Lightweight XML Libraries
+The KISS Principle
+
+David Mertz, Ph.D.
+Gesticulator, Gnosis Software, Inc.
+March, 2002
+
+    When not to use heavyweight XML APIs. Standard XML APIs like
+    SAX, DOM, and XSLT provide sophisticated ways of transforming
+    and manipulating XML documents.  But each of them is also
+    complex enough to warrant multi-hundred page specification
+    documents, and myriad 3rd party books.  For easy tasks, there
+    are easier way to get the XML work done.  This tip provides
+    links to a number of lightweight XML libraries, and pointers
+    on when programmers should use them.
+
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  XML is meant to be easy.  The promise of XML is to provide a
+  simple, direct, and universal means of exchanging data between
+  various platforms and programming languages.  Unfortunately,
+  the most common APIs that have sprung up for manipulating XML
+  are anything but simple--they each have multi-hundred page
+  specification documents, and require a steep learning curve. 
+  Admittedly, XML itself has also become a bit more complicated
+  than its initial promise.  There ought to be an easier
+  way--and, in point of fact, there are a number of easier ways.
+
+  Internally, most of the lightweight APIs this tip points out
+  are built as higher-level wrappers around SAX(-like) libraries.
+  To use the high-level APIs, a programmer need not know much
+  anything about the underlying parsers.  In one respect or
+  another, simplified APIs just present something easy for an XML
+  programmer to deal with.
+
+  There are two general approaches to lightweight XML libraries. 
+  One approach transforms XML into a line-oriented format that
+  familiar tools like 'wc', 'tail', 'head', 'uniq', 'grep',
+  'sed', 'awk', and in a more sophisticated way 'perl' and other
+  scripting languages are accustomed to dealing with.  Another
+  approach is libraries that represent XML documents according to
+  the "native" data structures of a given programming language. 
+  Such libraries exist for a number of programming languages, and
+  are also generally simpler (and more intuitive to programmers
+  of a given language) to invoke than are DOM, XSLT or SAX.
+
+
+LINE-ORIENTED XML
+------------------------------------------------------------------------
+
+  The PYX format is a line-oriented representation of XML
+  documents.  PYX is not itself XML, but it is able to represent
+  the information within an XML document.  Moreover, PYX
+  documents can themselves be transformed back into XML as
+  needed.  In PYX, the first character on each line identifies
+  the content-type of the line.  The prefix characters are:
+
+      #---------------- PYX prefix characters -----------------#
+      (  start-tag
+      )  end-tag
+      A  attribute
+      -  character data
+      ?  processing instruction
+
+  The motivation for PYX is the wide usage, convenience, and
+  familiarity of line-oriented text processing tools and
+  techniques.  These types of tools both generally expect
+  newline-delimited records and rely on regular expression
+  patterns to identify parts of texts--good matches for PYX, but
+  not for XML.
+
+  PYX libraries exist for several programming languages, but much
+  of the time it is most useful simply to use the command line
+  tools 'xmln' (non-validating) and 'xmlv' (validating).
+
+  The PYX format, in contrast to the XML format, allows one to
+  easily pose a variety of ad hoc questions about a document. 
+  For example:  what are all the attribute values in the sample
+  document?  Using PYX, we can simply ask:
+
+      #----------- An ad hoc query using PYX format -----------#
+      [PYX]# ./xmln test.xml | grep "^A" | awk '{print $2}'
+
+  Or another, let us try to dump the non-empty content lines of
+  an XML document:
+
+      #----- An ad hoc query using PYX format (contents) ------#
+      [PYX]# ./xmln test.xml | grep '^-[^\n ]' | sed s/^-//
+
+  One could do write custom applications do do these things with
+  SAX or DOM, but queries like this really -deserve- to be
+  one-liners.
+
+
+GOING NATIVE
+------------------------------------------------------------------------
+
+  The API methods of DOM give one access to a certain
+  data-structure that represents an XML document.  The problem is
+  that this data-structure is very little like the built-in data
+  types of programming languages.  A number of libraries have
+  made the move to "native" versions of XML documents.  
+
+Python's 'xml_objectify'
+
+  When my own Python module [xml_objectify] is used to read in an
+  XML document, what one gets is a very simple Python object,
+  whose object attributes correspond to the subelements and
+  attributes of the root document element.  The only difference
+  between subelements and tag attributes is whether they contain
+  futher objects or plain text.  Testing the type of thing a
+  (Python) attribute contains is sufficient for determining
+  whether it started out as a subelement or XML attribute.
+
+  Remember first how one might use DOM to look at data in an XML
+  document:
+
+      #-------- Python DOM access to XML data structures ------#
+      from xml.dom import minidom
+      dom = minidom.parse('test.xml')
+      print 'flavor='+dom.childNodes[1]._attrs['flavor'].nodeValue
+      print 'PCDATA='+dom.childNodes[1].childNodes[5].childNodes[0].nodeValue
+
+  In contrast, [xml_objectify] lets a user refer to the XML
+  document data in much more intuitive, and Pythonic, ways:
+
+      #----- [xml_objectify] access to XML data structures ----#
+      from xml_objectify import XML_Objectify
+      py_obj = XML_Objectify('test.xml').make_instance()
+      print 'flavor=' + py_obj.flavor
+      print 'PCDATA=' + py_obj.MoreSpam.PCDATA
+
+Ruby's 'REXML'
+
+  The [REXML] library is a library for the Ruby programming
+  language that operates in multiple modes.  The stream parser
+  works in a way similar to SAX, but with a more Ruby-oriented
+  syntax. The tree mode is the most interesting.  Basically, this
+  mode is quite similar to the data representation one gets with
+  [xml_objectify] or Perl's [XML::Parser] "Tree" style.  One
+  advantage the [REXML] library has is its integration of an
+  XPATH-like region specifier syntax.  For example, the REXML
+  tutorial shows these lines:
+
+      #------ REXML tree mode parsing and data structure ------#
+      require "rexml/document"
+      include REXML    # don't have to prefix everything with REXML::
+      doc = Document.new File.new("mydoc.xml")
+      doc.elements.each("inventory/section")
+          { |element| puts element.attributes["name"] }
+          # -> health
+          # -> food
+
+Java's 'JDOM'
+
+  Java gets in the native game also.  Even though DOM was itself
+  largely styled around Java, the programming language neutral
+  methods of DOM are still unnecessarily complex to work with
+  (even in Java).  JDOM is a more Java-native version of XML
+  processing.  Let's just look at the JDOM mission statement to
+  make the point:
+
+    There is no compelling reason for a Java API to manipulate XML to
+    be complex, tricky, unintuitive, or a pain in the neck.  JDOM
+    is both Java-centric and Java-optimized.  It behaves like Java,
+    it uses Java collections, it is completely natural API for
+    current Java developers, and it provides a low-cost entry point
+    for using XML.
+
+Perl's TMTOWTDI
+
+  In the culture of the Perl programming language, there is a
+  motto held by programmers:  "there's more than one way to do
+  it."  This slogan is well enough known that it is usually just
+  abbreviated as TMTOWTDI.  As one would expect from this motto,
+  Perl developers have come up with quite a few different ways of
+  handling XML.  While there -do- exist Perl modules to support
+  standards like DOM and SAX, most Perl programmers prefer
+  modules that embody the Perlish cardinal virtues:  laziness,
+  hubris, and impatience.  Perl programmers are the types of
+  folks who think they can do it better, faster, and with less
+  work than conformance with rigid and complex standards allow.
+
+  In keeping with the style in other presented programming
+  languages, both [XML::Grove] and [XML::Parser] in tree style
+  parse XML documents into very Perlish native data structures.
+
+Haskell's 'HaXml'
+
+  [HaXml] is a lot like Haskell itself.  It is not necessarily
+  simple, but it is striking in its elagance.  [HaXml] does a
+  good job of bringing a function programming style to XML
+  manipulation.  As with the other modules discussed, [HaXml]
+  makes XML documents look a lot like native data structures.
+
+  A quick example shows how one can do an XSLT-like
+  transformation to HTML:
+
+      #---- HaXml program to output an I Ching HTML Table -----#
+      module Main where
+      import XmlLib
+      main = processXmlWith (hexagrams `o` tag "IChing")
+      hexagrams =
+          html [
+            hhead [htitle [keep /> tag "title" /> txt] ],
+            hbody [htableBorder [rows `o` children `with` tag "hexagram"] ]
+          ]
+      htableBorder = mkElemAttr "TABLE" [("BORDER",("1"!))]
+      rows f = hrow [hcol [num], hcol [nam], hcol [jdg]] f
+               where num = keep /> tag "number" /> txt
+                     nam = keep /> tag "name" /> txt
+                     jdg = keep /> tag "judgement" /> txt
+
+  
+RESOURCES
+------------------------------------------------------------------------
+
+  Everything one really -needs- to know about XML is in the
+  Extensible Markup Language (XML) 1.0 W3C Recommendation.  Of
+  course understanding exactly what this signifies requires some
+  subtlety:
+
+    http://www.w3.org/TR/REC-xml
+
+  The home page for Pyxie (the Python PYX library, and also C
+  versions of the 'xmlv' and 'xmln' tools) is hosted by
+  Sourceforge:
+
+    http://pyxie.sourceforge.net/
+
+  In a very similar spirit to PYX is a project called
+  "XmlConnect"--in large part the two formats are compatible
+  (both were inspired by ESIS for SGML):
+  
+    http://uucode.com/xc/index.html
+
+  _XML Matters #17_ discusses PYX in greater detail.
+
+  _XML Matters #18_ discusses REXML in greater detail. 
+
+  My articles describing [xml_objectify] can be found on IBM
+  developerWorks at the following URLs"
+
+    http://www-106.ibm.com/developerworks/library/xml-matters2/index.html
+
+    http://www-106.ibm.com/developerworks/library/x-matters11.html
+
+  The homepage for the Ruby [REXML] library is at:
+
+    http://www.germane-software.com/~ser/software/rexml/
+
+  The homepage for the Java [JDOM] library is at:
+
+    http://www.jdom.org/
+
+  The CPAN documentation for the [XML::Grove] module can be found
+  at:
+
+    http://search.cpan.org/doc/KMACLEOD/XML-Grove-0.46alpha/lib/XML/Grove.pm
+
+  The documentation for the [XML::Parser] module can be found in
+  the distribution, and also at:
+
+    http://search.cpan.org/doc/TWEGNER/XML-Parser-2.30-bin56Mac/Parser.pm
+
+  _XML Matters #14_ discusses HaXml in greater detail.
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz uses a wholly unstructured brain to write about
+  structured document formats.  David may be reached at
+  mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/.

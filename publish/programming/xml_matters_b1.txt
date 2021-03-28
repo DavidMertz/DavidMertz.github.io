@@ -1,0 +1,422 @@
+XML MATTERS #b1: MochiKit
+Lift up your DOM manipulation of XML
+
+David Mertz, Ph.D.
+Dialectician, Gnosis Software, Inc.
+August 2006
+
+    MochiKit is a useful and high-level library for Javascript, that
+    helps with both Ajax tasks as such (as much as such are well
+    defined), and anything else you might want to do with Javascript.
+    MochiKit takes its main inspiration from Python, and from the many
+    conveniences the Python standard library offers; but on the side it
+    also smooths over the inconsistencies among browser versions.
+    MochiKit.DOM is a particularly handy component that lets you work
+    with DOM objects in much friendlier ways than "raw" Javascript
+    provides. A lot of MochiKit.DOM is customized for XHTML work, which
+    possibly makes its use of XHTML wrapped "micro-formats" (previously
+    discussed by Dethe) particularly convenient when combining MochiKit
+    and Ajax.
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  In the next couple articles, I will look into some themes my recent
+  guest columnist, Dethe Elza, has addressed in his several installments
+  of this column. He has presented a number of interesting ideas
+  surrounding AJAX, microformats, and Atom that I think bear further
+  exploration.
+
+  As a first step, this installment will look at a wonderful ECMAScript
+  library that Dethe touched on briefly in his "picoformats" article:
+  Bob Ippolito's [MochiKit]. MochiKit contains a number of nice
+  enhancements to basic Javascript ("ECMAscript", technically)
+  capabilities, mostly inspired by a combination of Ippolito's fondness
+  for functional programming, and his love of Python's rich standard
+  library and flexible constructs. In many ways, [MochiKit] lets you
+  program in Javascript while pretending you are using the (to many
+  developers) friendlier Python language.
+
+Why XML?
+
+  As readers of this column will well know, the "X" in "AJAX" is there
+  largely because ECMAscript, as implemented in web browser,
+  more-or-less supports the W3C DOM specification (depending on your
+  precise browser version, the "less" may dominate the "more"). Which is
+  just a fancy way of saying that your Javascript code automatically has
+  a parser for XML and (X)HTML documents, along with a collection of API
+  calls to traverse, search, and modify those documents as abstract
+  structures. It seems like a natural fit; except for the awkward fact
+  that the DOM is a remarkably awkward API. While there might be an
+  argument for using the formality of the W3C DOM for a strongly and
+  statically typed, highly structured, and carefully encapsulated,
+  language like Java--what we scripting programmers call a
+  "bondage-and-discipline language"--there seems little motivation for
+  it in a comparatively "agile" language like ECMAScript.
+
+  A reader might be inclined to wonder why she should bother with the
+  XML part at all, even given what [MochiKit.DOM] makes easier. After
+  all, JSON is essentially just a native Javascript data structures
+  (that by happy coincidence is simultaneously valid Python), which is
+  lighter still. Nonetheless, XML retains some advantages. On one hand,
+  in presentation contexts, XML is well able to be styled directly with
+  CSS2. You can, of course, -transform- JSON into a stylable DOM object,
+  but that essentially just means moving back to XML or (X)HTML. On the
+  other hand, a lot more tools outside the ECMAScript interpreter itself
+  are happy to talk XML than know how to talk JSON. Data may arrive
+  from--or be delivered back to--servers that use XML to define
+  structured data.  In some cases, this XML may follow well-known and
+  well-defined schemas, including ones that conform to published
+  standards.  If some other system in the overall communication flow
+  wants to communicate using SVG, or OpenDocument, or TEI, or some ebXML
+  standard, there are probably good reasons not to insert JSON as an
+  extra layer in that mix.
+
+Simple Magic
+
+  Fortunately, [MochiKit.DOM] builds on what W3C DOM is intended to
+  do--provide an API for abstract document structures--while making the
+  easy things easy, and the hard things still a lot less hard than they
+  are in W3C DOM.  The real magic in [MochiKit.DOM] is its willingness
+  to flexibly coerce various types of objects into the right types
+  during method calls, including doing so recursively.  [MochiKit]
+  assumes that if there is one obvious -right thing- to do, there is no
+  need to make a programmer jump through hoops in casting types or
+  calling methods to extract or mutate out the thing we need.  Moreover,
+  [MochiKit]'s FP-inspired partial application lets a programmer (and a
+  program) be lazy just when it is most convenient to be so.
+
+WHAT'S THE BIG DEAL ABOUT HTML?
+------------------------------------------------------------------------
+
+  Obviously "web pages" are usually written in (X)HTML, or often in
+  something resembling HTML while not actually quite -being- HTML. I
+  confess that "quirks mode" of browsers do pretty remarkable jobs. But
+  with wide implementation of CSS in modern browsers, -any- XML document
+  with suitable styling works equally well, and can, in fact, let you
+  use the specific tags of interest to the semantics of your document.
+  Nowadays, it is largely possible to think of (X)HTML as just that XML
+  schema that comes with a default CSS stylesheet.
+
+  The parity of generalized XML with (X)HTML is nice for AJAX contexts.
+  Most of the examples that come with MochiKit wind up parsing XML or
+  JSON into HTML tags; but a more conceptually "pure" style of sticking
+  with XML is largely possible.  For a few example, I will use the same
+  '<datatable>' XML format that MochiKit uses for its "ajax_tables"
+  example, but put it to slightly different use.  First let us try to
+  style the table suitably.  A simple CSS stylesheet might look like:
+
+      #------------------------- table.css ----------------------------#
+      datatable {
+          display: table;
+          width: 99%;
+          border: solid 1px;
+          margin-left: auto;
+          margin-right: auto
+          }
+      columns {
+          display: table-header-group;
+          background-color: lightblue;
+          }
+      column {
+          display: table-cell;
+          font-weight: bold;
+          border-right: solid 1px;
+          }
+      rows {
+          display: table-row-group
+          }
+      row {
+          display: table-row
+          }
+      cell {
+          display: table-cell; border-right: solid 1px;
+          }
+
+  You can pretty well infer the structure of a styled XML document from
+  this CSS, but let us go ahead and look at one of the data files we
+  use:
+
+      #------------------------ table1.xml ----------------------------#
+      <?xml version="1.0"?>
+      <?xml-stylesheet href="table.css" type="text/css"?>
+      <datatable>
+          <columns>
+              <column>First_name</column>
+              <column>Last_name</column>
+              <column>Domain_name</column>
+          </columns>
+          <rows>
+              <row>
+                  <cell>Dethe</cell>
+                  <cell>Elza</cell>
+                  <cell>livingcode.org</cell>
+              </row>
+              <row>
+                  <cell>Bob</cell>
+                  <cell>Ippolito</cell>
+                  <cell>bob.pythonmac.org</cell>
+              </row>
+          </rows>
+      </datatable>
+
+  Not much too it, and you can perfectly well publish this static
+  document.  Readers of it can see something like:
+
+  {Screenshot of Firefox displaying 'table1.xml':
+     http://gnosis.cx/publish/programming/table1-xml.png}
+
+MANIPULATING THE XML
+------------------------------------------------------------------------
+
+  Of course, just displaying styled XML does not need AJAX, and does not
+  need MochiKit.  So let us work up to some code that -does something-
+  with the XML.  For a start, let us wrap up our XML goodness with some
+  old-fashioned HTML page.  Sure, we could use the magic
+  'xml:link' attribute to adding XLINK capabilities; but let us keep it
+  simple for now:
+
+      #-------------- table project index.html home -------------------#
+      <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+                     "http://www.w3.org/TR/html4/strict.dtd">
+      <html>
+        <head>
+          <title>DOM made simple</title>
+          <script type="text/javascript"
+                  src="../../lib/MochiKit/MochiKit.js"></script>
+          <script type="text/javascript"
+                  src="../../lib/MochiKit/DOM.js"></script>
+          <script type="text/javascript"
+                  src="table.js"></script>
+        </head>
+        <body>
+        <p id="actions">
+          <b onclick="showXML()">[Show current XML]</b>
+          <b onclick="showText()">[Show text of table]</b> <br/>
+          <b onclick="newChildContent('table1.xml')">[Load table1.xml]</b>
+          <b onclick="newChildContent('table2.xml')">[Load table2.xml]</b>
+          <b onclick="addRow()">[Add row of data]</b>        </p>
+        <iframe name="child" id="child" src="table.xml" width="600" />
+        </body>
+      </html>
+
+  There are three basic parts in the example HTML page: (1) Load some
+  ECMAScript from two MochiKit components and one custom script file;
+  (2) Define a few clickable actions; (3) Use in '<iframe>' to display
+  the table, as in the above screenshot. Obviously, a more full-fledged
+  application is likely to interact with a page in more sophisticated
+  ways, perhaps using forms, page regions and custom widgets. But that
+  is a different article.
+
+Dissecting the Javascript
+
+  Supporting the functions called in the HTML are a couple small support
+  functions.  Let us go ahead and look at them:
+
+      #---------------- Support routines in table.js ------------------#
+      childDoc = function() {
+          return frames['child'].document;
+      };
+      getRows = function() {
+          return childDoc().getElementsByTagName('rows')[0];
+      };
+      randint = function(n) {
+          return Math.floor(Math.random()*n);
+      }
+
+  These are fairly self-evident shorthands, and do not use any MochiKit
+  capabilities.  The two display functions use some minor MochiKit
+  conveniences:
+
+      #------------ Display the XML content in table.js ---------------#
+      showXML = function() {
+          alert(toHTML(childDoc().documentElement));
+      };
+      showText = function() {
+          alert(scrapeText(childDoc().documentElement));
+      };
+
+   Not a whole lot here either.  In a non-toy program, I presume you
+   would do something with the XML we play with other than just pop it
+   up in an 'alert()' box: maybe send it back to a server; or at least
+   process and scan it further as part of the client application.  Still
+   the 'scrapeText()' convenience function for extracting all the text
+   nodes in a document; and 'toHTML()' does proper escaping of reserved
+   characters to render a DOM tree as an XML string (despite the name).
+   Those at least let us examine the status of our table XML.
+
+(Slightly) Real XML work
+
+  Where things start to get a little interesting is in loading and
+  modifying the XML content we work with.  Before commenting, let me
+  present the code that loads new XML data:
+
+      #----------------- Loading XML in table.js ----------------------#
+      newChildContent = function(url) {
+          var req = getXMLHttpRequest();
+          req.overrideMimeType("text/xml");
+          req.open("GET", url, true);
+          d = sendXMLHttpRequest(req).addCallback(datatableFromXMLRequest);
+      };
+      datatableFromXMLRequest = function (req) {
+          var xml = req.responseXML;
+          var new_rose = xml.getElementsByTagName('rows')[0]
+          swapDOM(getRows(),new_rose);
+          rows = getRows().getElementsByTagName('row');
+          for (var i=0; i < rows.length; i++) {
+              setNodeAttribute(rows[i], 'id', 'row'+i);
+          }
+      };
+
+  The first nice thing we notice is that MochiKit--like some other
+  Javascript libraries--wraps the peculiarities of the various Microsoft
+  IE versions in a friendly function, 'getXMLHttpRequest()', that stops
+  us from worrying about the details. It also, of course, is happy to
+  talk with standards-complient browsers that support
+  'XMLHttpRequest()'.  The still more interesting part is with the
+  'sendXMLHttpRequest()', which utilizes the MochiKit.Async toolkit.  As
+  the name suggests, this lets us retrieve requests asyncronously, and
+  do other work while we are waiting to find out whether the request
+  succeeds.  We do not take advantage of it in this toy code, but real
+  code can decide what to do based on the result.  For example,
+  MochiKit's 'ajax_tables.js' example does this with the "deferred"
+  object 'd':
+
+      #-------- Handling a deferred object in ajax_tables.js ----------#
+      // call this.initWithData(data) once it's ready
+      d.addCallback(this.initWithData);
+      // except for a simple cancellation, log the error
+      d.addErrback(function (err) {
+          if (err instanceof CancelledError) {
+              return;
+          }
+          logError(err);
+      });
+
+  In 'table.js' I just assume the request succeeds in loading a local
+  file.  From there, I pull out the '<rows>' element, using the standard
+  DOM '.getElementsByTagName()' method.  But the 'swapDOM()' in MochiKit
+  is a nice shortcut for more convoluted DOM syntax.  However, my first
+  hunch had been to try swapping the whole document element with
+  'swapDOM(childDoc().documentElement,xml.documentElement)'.
+  Unfortunately, that fails to add any nodes; perhaps readers can
+  explain to me why this does not succeed.  Obviously, what you want to
+  swap depends on application specifics, but I found it frustrating not
+  to be able to just choose the "top" of the hierarchy.
+
+  In my callback function I also somewhat superfluously add 'id'
+  attributes to my '<row>' elements.  A bunch of MochiKit elements
+  shortcut on the DOM method '.getElementsById()', but they presume a
+  context in the main document rather than in the iframe DOM.  So most
+  are not obvious how to use for my toy application.  Had I only been
+  worrying about the main document, I could have used shortcuts like:
+
+      #---------------- Firebug interactive console -------------------#
+      >>> $('child')
+      <iframe width="600" src="table.xml" id="child" name="child">
+      >>> $('actions')
+      <p id="actions">
+
+  A bunch of MochiKit functions let you name nodes by their 'id', and
+  perform some action on them that way.  For example,
+  'addElementClass("foo","newClass")' would add 'newClass' to the
+  element with 'id' 'foo', but not disrupt existing classes is had.
+
+Tweaking the XML
+
+  Loading documents is a pretty bare start, and my sample code does not
+  do all that much more than that. But another nice XML and (X)HTML
+  convenience in MochiKit.DOM is its simple DOM creation functions,
+  which play nice with MochiKit's iterators and functional programming
+  style. Most the the HTML functions already have pre-built convenience
+  functions (conventionally named with all-caps), but it is easy to roll
+  your own for XML formats. For example, here is how I add (silly) rows
+  to the XML table:
+
+      #----------------- DOM creation magic in table.js ---------------#
+      ROW = createDOMFunc('row');
+      CELL = createDOMFunc('cell');
+      newRow = function(cells) {
+          return ROW({'type':'name'}, map(partial(CELL, null), cells));
+      };
+      addRow = function() {
+          fn = ['John','Jane','Jim','Jill','June'][randint(5)];
+          ln = ['Wu','Williams','Wegner','Wulu','Watanabi'][randint(5)];
+          dn = ['gnosis.cx','google.com','gmail.com',
+                     'gnu.org','groklaw.net'][randint(5)];
+          appendChildNodes(getRows(), newRow([fn,ln,dn]));
+      };
+
+  You can see that the rows I add are fairly pointless: I just randomly
+  permute a few possible values for each field, which is just enough to
+  make added rows non-identical to each other.  The minor magic comes in
+  the cool DOM functions 'ROW()' and 'CELL()', and especially in their
+  quick combination in the 'newRow()' function.  Just to show off the
+  possibility, I add a 'type="name"' attribute to each '<row>' here; if
+  you pass a dictionary rather than a 'null', a set of attributes are
+  created.
+
+MAKING LIFE EASIER
+------------------------------------------------------------------------
+
+  This introduction has been fairly compact. There is a lot more to
+  MochiKit and MochiKit.DOM than the small parts I have touched on. But
+  I believe my brush illustrates how a nice wrapper can greatly ease the
+  pain of full W3C DOM calls.  We have not seen a whole lot of it here,
+  but MochiKit.DOM is careful to transform the arguments that are
+  actually passed to its functions into something the particular
+  function can use.  So for example, strings naming 'id' attributes are
+  often interchangeable with nodes themselves.  And sequences and
+  iterators get unrolled whenever doing so makes things easier.
+
+  Another convenience I discovered while writing this article was the
+  really wonderful FireFox plugin called FireBug. This is not the
+  article to talk about it, but it provides a rich environment for
+  debugging and experimenting with Javascript, XML, and web pages in
+  general. Perhaps the nicest feature of all in FireBug is its
+  interactive console that lets you try out Javascript commands
+  (including, e.g. MochiKit enhancements to them) in the same way you
+  would try out commands in a Python interactive shell. Of course, for
+  good measure, FireBug throws in a debugger and an inspector while it
+  is at it (including a nice way to view the current DOM, and examine
+  'XMLHttpRequest()' results to understand AJAX applications).
+
+RESOURCES
+------------------------------------------------------------------------
+
+  Find MochiKit itself, including documentation and downloads of stable
+  and bleeding-edge versions at:
+
+    http://mochikit.com/
+
+  Ecma International's -Standard ECMA-262- provides the precide
+  "ECMAScript Language Specification". It can be found at:
+
+    http://www.ecma-international.org/publications/files/ecma-st/ECMA-262.pdf
+
+  The ECMAScript binding for the Level 2 Document Object Model HTML
+  definitions is given in Appendix D of the DOM specification:
+
+    http://www.w3.org/TR/DOM-Level-2-HTML/ecma-script-binding.html
+
+  For the low-down on using CSS and XMl together, turn to the every
+  present W3C for a specification, "Associating Style Sheets with XML
+  documents Version 1.0":
+
+    http://www.w3.org/TR/xml-stylesheet/
+
+  Read about FireBug, or download it, from:
+
+    https://addons.mozilla.org/firefox/1843/
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi} David Mertz
+  David Mertz wishes easy things were easier. David may be reached at
+  mertz@gnosis.cx; his life pored over at http://gnosis.cx/publish/.
+  Suggestions and recommendations on this, past, or future, columns are
+  welcomed. Check out David's book _Text Processing in Python_ at
+  http//gnosis.cx/TPiP/.
+
+

@@ -1,0 +1,422 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN"> 
+<html> 
+<head> 
+<title>CHARMING PYTHON #B1 -- Iterators and Simple Generators -- </title> 
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico"> 
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles"> 
+<link REL="prev" HREF="charming_python_b0.html" TITLE="CHARMING PYTHON #b0"> 
+<link REL="next" HREF="charming_python_b2.html" TITLE="CHARMING PYTHON #b2"> 
+<link REL="Book" HREF="http://gnosis.cx/TPiP/" 
+                 TITLE="Text Processing in Python"> 
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html"> 
+ 
+<style>.code-sample {background-color: #CCCCCC}</style> 
+</head> 
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Charming Python #b1</h1>
+<h2>Iterators and Simple Generators</h2> 
+ <br> 
+<p>David Mertz, Ph.D.<br> 
+ Autodidact, Gnosis Software, Inc.<br> 
+ September, 2001<br> 
+ <br> 
+</p> 
+<blockquote> 
+    Python 2.2 will introduce a new construct, accompanied by a 
+    new keyword.  The construct is <em>generators</em>, the keyword is 
+    <code>yield</code>. Generators make possible several new, powerful, and 
+    expressive programming idioms, but are also a little bit hard 
+    to get one's mind around at first glance.  This article 
+    provides a gentle introduction to generators--and also to the 
+    related introduction of iterators. 
+</blockquote> 
+<h3>What Is Python?</h3> 
+ <p> 
+  Python is a freely available, very-high-level, interpreted 
+  language developed by Guido van Rossum.  It combines a clear 
+  syntax with powerful (but optional) object-oriented semantics. 
+  Python is available for almost every computer platform you 
+  might find yourself working on, and has strong portability 
+  between platforms. 
+</p> 
+<h3>Introduction</h3> 
+ <p> 
+  Welcome to the world of exotic flow control.  With Python 2.2, 
+  programmers will get some new options for how to make programs 
+  tick that were not available--or at least not as convenient--in 
+  earlier Python versions. 
+</p> 
+<p> 
+  While what Python 2.2 gives us is not quite as mind-melting as 
+  the full continuations and microthreads that are possible in 
+  Stackless Python, generators and iterators do something a bit 
+  different from traditional functions and classes. 
+</p> 
+<p> 
+  Let us consider iterators first, since they are simpler to 
+  understand. Basically, and iterator is just an object that has 
+  a <code>.next()</code> method.  Well, that is not quite true; but it is 
+  close.  Actually, most iterator contexts want an object that 
+  will generate an iterator when the new <code>iter()</code> builtin 
+  function is applied to it.  All one needs to do to have a user 
+  defined class (that has the requisite <code>.next()</code> method) return 
+  an iterator is to have a <code>__iter__()</code> method return <code>self</code>. 
+  The examples will make this all clear.  An iterator's <code>.next()</code> 
+  method might decide to raise a <code>StopIteration</code> exception if the 
+  iteration has a logical termination. 
+</p> 
+<p> 
+  A generator is a little more complicated and general.  But the 
+  most typical use of generators will be for defining iterators; 
+  so some of the subtlety is not always worth worrying about.  A 
+  generator is a function that remembers the point in the 
+  function body where it last returned.  Calling a generator 
+  function a second (or n'th) time jumps into the middle of the 
+  function, with all local variables intact from the last 
+  invocation. 
+</p> 
+<p> 
+  In some ways, a generator is like the closures which were 
+  discussed in the installments of this column discussing 
+  functional programming.  Like a closure, a generator 
+  "remembers" the state of its data.  But a generator goes a bit 
+  further than a closure inasmuch as a generator also "remembers" 
+  its position within flow-control constructs (which in 
+  imperative programming is something more than just data 
+  values).  Continuations are still move general since they let 
+  one jump arbitrarily between execution frames, rather than 
+  returning always to the immediate caller's context (as a 
+  generator does). 
+</p> 
+<p> 
+  Fortunately, using a generator is much less work than 
+  is understanding all the conceptual issues of program flow and 
+  state.  In fact, after very little practice, generators seem as 
+  obvious as ordinary functions. 
+</p> 
+<h3>Taking A Random Walk</h3> 
+ <p> 
+  For purpose of this explanation, let me pose a fairly simple 
+  problem that we can solve in several ways--both new and old. 
+
+  Suppose we want a stream of positive random numbers less than 
+  one that obey a backward-looking constraint.  Specifically, we 
+  want each successive number to be at least 0.4 more or less 
+  than the last one.  Moreover, the stream itself is not 
+  infinite, but rather ends after a random number of steps.  For 
+  the examples, we will simply end the stream when a number less 
+  than 0.1 is produced.  The constraints described are a bit like 
+  one might find in a "random walk" algorithm, with the end 
+  condition resembling a "statisficing" or "local minimum" 
+  result--but certainly the requirements are simpler than most 
+  real world ones. 
+</p> 
+<p> 
+  In Python 2.1 or earlier, we have a few approaches to solving 
+  our problem.  One approach is to simply produce and return a 
+  list of numbers in the stream.  This might look like: 
+</p> 
+<div class="code-sample"><h4>RandomWalk_List.py</h4><PRE><FONT COLOR=#3333CC><B>import</B></FONT> random 
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="randomwalk_list"><FONT COLOR=#CC0000><B> randomwalk_list</B></FONT></A>(): 
+    last, rand = 1, random.random() <FONT COLOR=#1111CC># init candidate elements</FONT> 
+    nums = []                       <FONT COLOR=#1111CC># empty list</FONT> 
+    <FONT COLOR=#3333CC><B>while</B></FONT> rand &gt; 0.1:               <FONT COLOR=#1111CC># threshhold terminator</FONT> 
+        <FONT COLOR=#3333CC><B>if</B></FONT> abs(last-rand) &gt;= 0.4:   <FONT COLOR=#1111CC># accept the number</FONT> 
+            last = rand 
+            nums.append(rand)       <FONT COLOR=#1111CC># add latest candidate to nums</FONT> 
+        <FONT COLOR=#3333CC><B>else</B></FONT>: 
+            <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>'*'</FONT>,              <FONT COLOR=#1111CC># display the rejection</FONT> 
+        rand = random.random()      <FONT COLOR=#1111CC># new candidate</FONT> 
+    nums.append(rand)               <FONT COLOR=#1111CC># add the final small element</FONT> 
+    <FONT COLOR=#3333CC><B>return</B></FONT> nums</PRE></div><p> 
+  Utilizing this function is as simple as: 
+</p> 
+<div class="code-sample"><h4>Iterate over Random Walk List</h4><pre> 
+for num in randomwalk_list(): 
+    print num, 
+ 
+</pre></div><p> 
+  There are a few notable limitations to the above approach.  The 
+  specific example is exceedingly unlikely to produce huge lists; 
+  but just by making the threshhold terminator more stringent, we 
+  could create arbitrarily large streams (of random exact size, 
+  but of anticipatable order-of-magnitude).  At a certain point, 
+  memory and performance issues can make this approach 
+  undesirable and unnecessary.  This same concern got <code>xrange()</code> 
+  and <code>xreadlines()</code> added to Python in earlier versions.  More 
+  significantly, many streams depend on external events, and yet 
+  should be processed as each element is available.  For example, 
+  a stream might listen to a port, or wait for user inputs. 
+  Trying to create a complete list out of the stream is simply 
+  not an option in these cases. 
+</p> 
+<p> 
+  One trick available in Python 2.1 and earlier is to use a 
+  "static" function-local variable to remember things about the 
+  last invocation of a function.  Obviously, global variables 
+  could do the same job, but they cause the familiar problems 
+  with pollution of the global namespace, and allow mistakes due 
+  to non-locality.  You might be surprised here if you are 
+  unfamiliar with the trick--Python does not have an "official" 
+  static scoping declaration.  However, if named parameters are 
+  given mutable default values, the parameters can act as 
+  persistent memories of previous invocations.  Lists, 
+  specifically, are handy mutable objects that can conveniently 
+  even hold multiple values. 
+</p> 
+<p> 
+  Using a "static" approach, we can write a function like: 
+</p> 
+<div class="code-sample"><h4>RandomWalk_Static.py</h4><PRE><FONT COLOR=#3333CC><B>import</B></FONT> random 
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="randomwalk_static"><FONT COLOR=#CC0000><B> randomwalk_static</B></FONT></A>(last=[1]):    <FONT COLOR=#1111CC># init the "static" var(s)</FONT> 
+    rand = random.random()          <FONT COLOR=#1111CC># init a candidate value</FONT> 
+    <FONT COLOR=#3333CC><B>if</B></FONT> last[0] &lt; 0.1:               <FONT COLOR=#1111CC># threshhold terminator</FONT> 
+        <FONT COLOR=#3333CC><B>return</B></FONT> None                 <FONT COLOR=#1111CC># end-of-stream flag</FONT> 
+    <FONT COLOR=#3333CC><B>while</B></FONT> abs(last[0]-rand) &lt; 0.4:  <FONT COLOR=#1111CC># look for usable candidate</FONT> 
+        <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>'*'</FONT>,                  <FONT COLOR=#1111CC># display the rejection</FONT> 
+        rand = random.random()      <FONT COLOR=#1111CC># new candidate</FONT> 
+    last[0] = rand                  <FONT COLOR=#1111CC># update the "static" var</FONT> 
+    <FONT COLOR=#3333CC><B>return</B></FONT> rand</PRE></div><p> 
+  This function is quite memory-friendly.  All it needs to 
+  remember is one previous value, and all it returns is a single 
+  number (not a big list of them).  And a function similar to 
+  this could return successive values that depended (partly or 
+  wholly) on external events.  On the down side, utilizing this 
+  function is somewhat less concise, and considerably less 
+  elegant: 
+</p> 
+<div class="code-sample"><h4>Iterate over Static Random Walk</h4><pre> 
+num = randomwalk_static() 
+while num is not None: 
+    print num, 
+    num = randomwalk_static() 
+ 
+ 
+</pre></div><h3>New Ways Of Walking</h3> 
+ <p> 
+  "Under the hood", Python 2.2 sequences are all iterators.  The 
+  familiar Python idiom <code>for elem in lst:</code> now actually asks 
+  <code>lst</code> to produce an iterator.  The <code>for</code> loop then repeatedly 
+  calls the <code>.next()</code> method of this iterator until it encounters 
+  a <code>StopIteration</code> exception.  Luckily, Python programmers do 
+  not need to know what is happening here, since all the familiar 
+  builtin types produce their iterators automatically.  In fact, 
+  now dictionaries have the methods <code>.iterkeys()</code>, <code>.iteritems()</code> 
+  and <code>.itervalues()</code> to produce iterators; the first is what 
+  gets used in the new idiom <code>for key in dct:</code>.  Likewise, the 
+  new idiom <code>for line in file:</code> is supported via an iterator that 
+  calls <code>.readline()</code>. 
+</p> 
+<p> 
+  But given what <em>is</em> actually happening within the Python 
+  interpreter, it becomes obvious to use custom classes that 
+  produce their own iterators rather than exclusively use the 
+  iterators of builtin types.  A custom class that enables both 
+  the direct usage of <code>randomwalk_list()</code> and the 
+  element-at-a-time parsimony of <code>randomwalk_static</code> is 
+  straightforward: 
+</p> 
+<div class="code-sample"><h4>RandomWalk_Iter.py</h4><PRE><FONT COLOR=#3333CC><B>import</B></FONT> random 
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="randomwalk_iter"><FONT COLOR=#CC0000><B> randomwalk_iter</B></FONT></A>: 
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="__init__"><FONT COLOR=#CC0000><B> __init__</B></FONT></A>(self): 
+        self.last = 1               <FONT COLOR=#1111CC># init the prior value</FONT> 
+        self.rand = random.random() <FONT COLOR=#1111CC># init a candidate value</FONT> 
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="__iter__"><FONT COLOR=#CC0000><B> __iter__</B></FONT></A>(self): 
+        <FONT COLOR=#3333CC><B>return</B></FONT> self                 <FONT COLOR=#1111CC># simplest iterator creation</FONT> 
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="next"><FONT COLOR=#CC0000><B> next</B></FONT></A>(self): 
+        <FONT COLOR=#3333CC><B>if</B></FONT> self.rand &lt; 0.1:         <FONT COLOR=#1111CC># threshhold terminator</FONT> 
+            <FONT COLOR=#3333CC><B>raise</B></FONT> StopIteration     <FONT COLOR=#1111CC># end of iteration</FONT> 
+        <FONT COLOR=#3333CC><B>else</B></FONT>:                       <FONT COLOR=#1111CC># look for usable candidate</FONT> 
+            <FONT COLOR=#3333CC><B>while</B></FONT> abs(self.last-self.rand) &lt; 0.4: 
+                <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>'*'</FONT>,          <FONT COLOR=#1111CC># display the rejection</FONT> 
+                self.rand = random.random() <FONT COLOR=#1111CC># new candidate</FONT> 
+            self.last = self.rand   <FONT COLOR=#1111CC># update prior value</FONT> 
+            <FONT COLOR=#3333CC><B>return</B></FONT> self.rand</PRE></div><p> 
+  Use of this custom iterator looks exactly the same as for a 
+  true list generated by a function: 
+</p> 
+<div class="code-sample"><h4>Iterate with Random Walk Class</h4><pre> 
+for num in randomwalk_iter(): 
+    print num, 
+ 
+</pre></div><p> 
+  In fact, even the idiom <code>if elem in iterator</code> is supported, 
+  which lazily only tries as many elements of the iterator as are 
+  needed to determine the truth value (if it winds up false, it 
+  needs to try all the elements, of course). 
+</p> 
+<h3>Leaving A Trail Of Crumbs</h3> 
+ <p> 
+  The above approaches are fine for the problem at hand.  But 
+  none of them scale very well to the case where a routine 
+  creates a large number of local variables along the way, and 
+  winds its way into a nest of loops and conditionals.  If an 
+  iterator class, or a function with static (or global) variables 
+  depends on multiple data states, two problems come up.  One is 
+  the mundane matter of creating multiple instance attributes or 
+  static list elements to hold each of the data values.  The far 
+  more important problem is figuring out how to get back to 
+  exactly the relevant part of the flow logic that corresponds to 
+  the data states.  It is awfully easy to forget about the 
+  interaction and codependence of different data. 
+</p> 
+<p> 
+  Generators simply bypass the whole problem.  A generator 
+  "returns" with the new keyword <code>yield</code>, but "remembers" the 
+  exact point of execution where it returned.  Next time the 
+  generator is called, it picks up where it left before--both in 
+  terms of function flow and in terms of variable values. 
+</p> 
+<p> 
+  One does not directly <em>write</em> a generator in Python 2.2+. 
+  Instead, one writes a function that, when called, returns a 
+  generator.  This might seem odd, but "function factories" are a 
+  familiar feature of Python, and "generator factories" are an 
+  obvious conceptual extension of this.  What makes a function a 
+  generator factory in Python 2.2+ is the presence of one or more 
+  <code>yield</code> statements somewhere in its body.  If <code>yield</code> occurs, 
+  <code>return</code> must only occur without any accompanying return value. 
+  A better choice, however, is to arrange the function bodies so 
+  that execution just "falls off the end" after all the <code>yield's 
+  are accomplished.  But if a 'return</code> is encountered, it causes 
+  the produced generator to raise a <code>StopIteration</code> exception 
+  rather than yield further values. 
+</p> 
+<p> 
+  In my own opinion, the choice of syntax for generator factories 
+  was somewhat poorly chosen.  A <code>yield</code> statment can occur well 
+  into the body of a function, and one might be unable to 
+  determine that a function is destined to act as a generator 
+  factory anywhere within the first N lines of a function.  The 
+  same thing could, of course, be true of a function factory--but 
+  being a function factory doesn't change the actual <strong>syntax</strong> of 
+  a function body (and a function body is allowed to sometimes 
+  return a plain value; albeit probably not out of good design). 
+  To my mind, a new keyword--such as <code>generator</code> in place of 
+  <code>def</code> would have been a better choice. 
+</p> 
+<p> 
+  Quibbles over syntax aside, generators have the good manners to 
+  automatically act as iterators when called on to do so. 
+  Nothing like the <code>.__iter__()</code> method of classes is needed 
+  here.  Every <code>yield</code> encountered becomes a return value for 
+  generator's <code>.next()</code> method.  Let's look at the simplest 
+  generator to make things clear: 
+</p> 
+<div class="code-sample"><h4>Simplest Possible Python 2.2 Generator</h4><PRE>&gt;&gt;&gt; <FONT COLOR=#3333CC><B>from</B></FONT> __future__ <FONT COLOR=#3333CC><B>import</B></FONT> generators 
+&gt;&gt;&gt; <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="gen"><FONT COLOR=#CC0000><B> gen</B></FONT></A>(): 
+        yield 1 
+ 
+&gt;&gt;&gt; g = gen() 
+&gt;&gt;&gt; g.next() 
+1 
+&gt;&gt;&gt; g.next() 
+Traceback (most recent call last): 
+  File <FONT COLOR=#115511>"&lt;pyshell#15&gt;"</FONT>, line 1, <FONT COLOR=#3333CC><B>in</B></FONT> ? 
+    g.next() 
+StopIteration</PRE></div><p> 
+  Let us put a generator to work in our sample problem: 
+</p> 
+<div class="code-sample"><h4>RandomWalk_Generator.py</h4><PRE><FONT COLOR=#3333CC><B>from</B></FONT> __future__ <FONT COLOR=#3333CC><B>import</B></FONT> generators   <FONT COLOR=#1111CC># only needed for Python 2.2</FONT> 
+<FONT COLOR=#3333CC><B>import</B></FONT> random 
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="randomwalk_generator"><FONT COLOR=#CC0000><B> randomwalk_generator</B></FONT></A>(): 
+    last, rand = 1, random.random() <FONT COLOR=#1111CC># initialize candidate elements</FONT> 
+    <FONT COLOR=#3333CC><B>while</B></FONT> rand &gt; 0.1:               <FONT COLOR=#1111CC># threshhold terminator</FONT> 
+        <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>'*'</FONT>,                  <FONT COLOR=#1111CC># display the rejection</FONT> 
+        <FONT COLOR=#3333CC><B>if</B></FONT> abs(last-rand) &gt;= 0.4:   <FONT COLOR=#1111CC># accept the number</FONT> 
+            last = rand             <FONT COLOR=#1111CC># update prior value</FONT> 
+            yield rand              <FONT COLOR=#1111CC># return AT THIS POINT</FONT> 
+        rand = random.random()      <FONT COLOR=#1111CC># new candidate</FONT> 
+    yield rand                      <FONT COLOR=#1111CC># return the final small element</PRE></FONT></div><p> 
+  The simplicity of this definition is quite appealing.  One can 
+  utilize the generator either manually, or as an iterator.  In 
+  the manual case, the generator can be passed around a program, 
+  and called wherever and whenever needed (which is quite 
+  flexible).  A simple example of the manual case is: 
+</p> 
+<div class="code-sample"><h4>Manual use of Random Walk Generator</h4><pre> 
+gen = randomwalk_generator() 
+try: 
+    while 1: print gen.next(), 
+except StopIteration: 
+    pass 
+ 
+</pre></div><p> 
+  Most frequently, however, one is likely to use a generator as 
+  an iterator, which is even more concise (and again looks just 
+  like an old-fashioned sequence): 
+</p> 
+<div class="code-sample"><h4>Random Walk Generator as Interator</h4><pre> 
+for num in randomwalk_generator(): 
+    print_short(num) 
+ 
+ 
+</pre></div><h3>Yielding</h3> 
+ <p> 
+  It will take a little while for Python programmers to become 
+  familiar with the ins-and-outs of generators.  The added power 
+  of such a simple construct is surprising at first; and even 
+  quite accomplished programmers (like the Python developers 
+  themselves) will continue to discover subtle new techniques 
+  using generators for some time, I predict. 
+</p> 
+<p> 
+  To close, let me present one more generator example that comes 
+  from the <code>test_generators.py</code> module distributed with Python 
+  2.2.  Suppose you have a tree object, and want to search its 
+  leaves in left-to-right order.  Using tradition 
+  state-monitoring variables getting a class or function just 
+  right is difficult.  Using generators makes it almost laughably 
+  easy: 
+</p> 
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt;&gt; # A recursive generator that generates Tree leaves in in-order. 
+&gt;&gt;&gt; def inorder(t): 
+...     if t: 
+...         for x in inorder(t.left): 
+...             yield x 
+...         yield t.label 
+...         for x in inorder(t.right): 
+...             yield x 
+ 
+ 
+</pre></div><h3>Resources</h3> 
+ <p> 
+  As for the last several Python versions, Andrew Kuchling has written 
+  his usual excellent introduction to the changes in Python 2.2. 
+  <cite>What's New in Python 2.2</cite> can be found at: 
+</p> 
+<blockquote> 
+   <a href="http://www.amk.ca/python/22/">http://www.amk.ca/python/22/</a> 
+</blockquote> 
+<p> 
+  The definitive word on Simple Generators lives in their Python 
+  Enhancement Proposal, PEP255: 
+</p> 
+<blockquote> 
+   <a href="http://python.sourceforge.net/peps/pep-0255.html">http://python.sourceforge.net/peps/pep-0255.html</a> 
+</blockquote> 
+<p> 
+  Likewise, the real dirt on Iterators is in PEP234: 
+</p> 
+<blockquote> 
+   <a href="http://python.sourceforge.net/peps/pep-0234.html">http://python.sourceforge.net/peps/pep-0234.html</a> 
+</blockquote> 
+<p> 
+  The code demonstated in this column installment can be found in 
+  one source file at: 
+</p> 
+<blockquote> 
+   <a href="http://gnosis.cx/download/random_walk.py">http://gnosis.cx/download/random_walk.py</a> 
+</blockquote> 
+<h3>About The Author</h3> 
+ <p> 
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author"> 
+  Since conceptions without intuitions are empty, and intuitions 
+  without conceptions, blind, David Mertz wants a cast sculpture 
+  of Milton for his office.  Start planning for his birthday. 
+  David may be reached at mertz@gnosis.cx; his life pored over at 
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and recommendations on 
+  this, past, or future, columns are welcomed. 
+</p> 
+</body></html>

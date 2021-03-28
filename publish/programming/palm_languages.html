@@ -1,0 +1,328 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN"><html><head><title>PalmOS Hosted Programming Languages: -- Using the Palm as a Development Environment --</title>
+
+<style>
+             {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+em           {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt}
+ul, ol, li   {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+tt           {font-family: mono, courier}
+pre          {font-family: mono; font-size: 9pt}
+th           {font-family: mono, courier; font-size: 8pt}
+
+.code-sample {background-color: #CCCCCC}
+.sidebar     {background-color: #FFFFCC}
+.title       {font-size: medium; color: #3333CC}
+.subtitle    {font-size: 9pt; color: #3333CC}
+.subhead     {font-size: 12pt}
+.input       {background: #FFFFFF; color: #000000; font-weight: normal}
+</style></head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<p><strong class="title">PalmOS Hosted Programming Languages:</strong><br>
+<strong class="subtitle">Using the Palm as a Development Environment</strong></p>
+ 
+<p>David Mertz, Ph.D.<br>
+ Andrew Blais, Ph.D.<br>
+ Gnosis Software, Inc.<br>
+ June, 20001<br>
+ 
+</p>
+<blockquote>    When most people who think of it at all think of developing
+    PalmOS application, they imagine writing C/C++ code on a
+    desktop, then cross-compiling to the PalmOS.  But, there is a
+    whole other approach to PalmOS development.  The products we
+    look at in this article are all complete programming
+    languages and development environments that can run entirely
+    on a Palm handheld, all the way from program editing to final
+    run.  For mobile programmers, new possibilities are opened by
+    these tools.
+</blockquote><p><strong class="subhead">Introduction</strong></p>
+ <p>  At first brush, the compact physical form of a PalmOS handheld
+  leads one to think of it a device dedicated to a few
+  pre-packaged applications.  But appearances can be deceiving. A
+  PalmOS handheld is actually a moderately powerful computer in
+  its own right--with more memory and CPU power than many early
+  computers the authors, and readers, have used and owned (and
+  more than many embedded systems).  In fact, using the right
+  tools, a PalmOS handheld can act as a complete program
+  development environment--allowing customization of application
+  functionality without the need for a desktop PC.
+</p>
+<p>  The Palm is a rather unusual device for people used to
+  programming desktop computers--whether MacOS, Windows,
+  Unix/Linux, or other environments.  In a lot of ways, the
+  architecture will be more familiar to embedded programmers.  In
+  particular, in almost ironic juxtoposition to the Unix
+  philosophy of "everything is a file," the PalmOS wholly lacks
+  the concept of a file.  This means that there are no special
+  files for STDIN, STDOUT and STDERR.  But, even more
+  interestingly, it means that there are no <em>files</em> in which to
+  store source code for interpretation/compilation.  The route
+  most of the development environments we look at take to this
+  "problem" of missing files is twofold.  On the one hand, most
+  PalmOS-hosted IDEs have their own mini-editors to run one-shot
+  code (sort of like one-liners in Perl or other script
+  languages).  But, on the other hand, most of these IDEs utilize
+  the PalmOS Memo Pad to compose persistent programs.  Program
+  source "files" are identified by Memo Pad category and/or by
+  special memo naming conventions.
+</p>
+<p>  After looking at Pippy in another article (see Resources), we
+  were particularly curious about how different PalmOS programming
+  environments handled floating point and various higer-order
+  mathematical functions (Pippy came up short here).  We were also
+  interested in the types of input and output (e.g. forms)
+  provided by different environments.
+</p>
+<p><strong class="subhead">HotPaw Basic</strong></p>
+ <p>  HotPaw Basic is one of the two Basic implementations we'll look
+  at in this article.  HotPaw claims to implement over 95% of the
+  ANSI/ISO Basic Programming Language Standard.  As well, HotPaw
+  supports most GW-Basic functions and statements.  As with other
+  modern versions of Basic, HotPaw uses structured programming
+  constructs rather than the old-fashioned line numbers and GOTOs
+  (beloved by one of the present authors).  HotPaw supports
+  color; custom forms and dialogs; serial, IR, and IP
+  communication; access to several database formats; and both
+  double precision and transcendental mathematical functions
+  (using the LGPL <code>MathLib.prc</code>, which is also used by other
+  programming environments).
+</p>
+<p>  There is a short tutorial on HotPaw and some examples available
+  at the HotPaw website.  We found it easy to install and use
+  HotPaw.  Knowing a little Basic opens the possibility of
+  writing your own PalmOS applications for the Palm, on the Palm.
+  In order to install HotPaw, you will need to install the file
+  <code>yBasic.prc</code> by the means usual to your desktop platform.  You
+  will probaby also want to install <code>MathLib.prc</code> (version 1.1+),
+  which you need to obtain from a separate site (see Resources).
+  <code>yBasic.prc</code> itself is the virtual machine which allows you to
+  run either source code files from Memo Pad or bytecode compiled
+  applications (the applications can have their own icon, and run
+  without the HotPaw interactive interface).  The distribution
+  has a few extra helpers and samples, but they are not strictly
+  required.
+</p>
+<p>  One of the nicest things about HotPaw is nice form support.
+  You can use the <code>form()</code> function to define a few basic
+  parameterized input/output forms.  This makes it easy to make a
+  PalmOS GUI, at least for simple applications.  With a little
+  bit more work--but not too much--you can create more customized
+  forms, and even output graphical elements to the screen (lines,
+  shapes, pictures).
+</p>
+<p><strong class="subhead">SmallBASIC</strong></p>
+ <p>  SmallBASIC is another Basic environment, this one under GPL
+  license and also available for Linux/SVGALib and Linux/SDL
+  environments.  Like most of the development environments we
+  review, SmallBASIC is a code interpreter, rather than a native
+  compiler.  SmallBASIC echos the feel of 1986--it refers to
+  "files" and VGA colors, it uses line numbers and GOTOs, and it
+  even recreates the F-KEY prompts of IBM-PC ROM BASIC.  All this
+  may sound crude, but actually SmallBASIC has one of the better
+  development interfaces of the IDEs reviewed here.  Even though
+  there is no filesystem on the PalmOS, SmallBASIC's
+  sophisticated built-in source code editor uses menu options for
+  "File Save", "Save As", "Close", and "Open".  This built-in
+  editor allows for larger documents than Memo Pad supports, it
+  has "search", "goto line" and "search again" options, clipboard
+  support, and an unique online help system.
+</p>
+<p>  Installing SmallBASIC is pretty much the same as installing
+  HotPaw. You just install the <code>sbpad.prc</code> and <code>MathLib.prc</code>
+  files that come with the distribution archive.  After that, run
+  SmallBASIC from its icon, and create and run scripts using the
+  SmallBASIC interface.  We do wish that SmallBASIC was a bit
+  stronger on documentation--like many free software projects--or
+  at least on English language documentation (Greek and Japanese
+  are better supported).
+</p>
+<p>  SmallBASIC supports a good variety of functions; mostly the
+  same ones as GW-BASIC and QBASIC, actually.  You can draw
+  graphic primitives to screen, create sounds, output texts in
+  different fonts, get keyboard input, and basically everything
+  you need for a useful application.  We do wish that the
+  underlying language used more modern structured programming
+  techniques (OOP and FP are two much to wish for), but
+  SmallBASIC is still a good way to quickly write ad hoc
+  Palm-hosted applications.
+</p>
+<p><strong class="subhead">PocketC</strong></p>
+ <p>  PocketC is a C-like language for the PalmOS, with versions of
+  the same compiler available for Win32 and WinCE.  The Win32
+  "Desktop" version lets you target PalmOS and WinCE handhelds.
+  But we are interested in the Palm-hosted version here.  PocketC
+  operates much like most of the languages we have looked at in
+  that it provides its own runtime environment, which amounts to
+  a virtual machine to interpret PocketC compiled bytecodes.  The
+  language is basically C, but a number of functions for the
+  Palm, and a few C++ syntax conventions were added.  You <em>do</em>
+  also get some features typical of bytecode languages, such as a
+  string data type and garbage collection.  Being a PalmOS
+  application, some extra functions for graphics, sounds,
+  database I/O, and form I/O are included in the "standard
+  library."  Writing an application consists largely of calling
+  these Palm-specific functions, but with flow control in a
+  familiar C style.
+</p>
+<p>  The environment for PocketC is generally similar to the other
+  IDEs we have looked at.  As with those, the Memo Pad is used to
+  store source code.  You can even use the Memo Pad to store
+  <code>#include</code> headers.  Unlike some of the "fully interpreted"
+  languages, PocketC requires a separate compilation step before
+  you can run an application; but you can do this compilation
+  right within the same interface (and when you do it once, the
+  bytecode sticks around).  One nice touch to PocketC's
+  interaction with the Memo Pad is that if there is a source code
+  error, PocketC gives you the opportunity to jump straight to
+  the error and highlights it.
+</p>
+<p>  While PocketC is nice for C programmers, it seems to us that C
+  is inherently more verbose than this niche requires.  The
+  high-level functions, string types, and garbage collection of
+  PocketC save a bit of code length.  But if you need those
+  features (which you <em>do</em> want for Palm-hosted quick application
+  development), why not use a language like Basic, Scheme or
+  Python, rather than one whose syntax is designed around
+  low-level efficiency?  Nonetheless, PocketC is quite nicely
+  done, and tastes in programming languages are largely a matter
+  of personal faith and devotion.
+</p>
+<p><strong class="subhead">OnBoard C</strong></p>
+ <p>  OnBoard C really aims at a different target than the other
+  development environments we review.  It supports true native
+  compilation of source code to PRC executables or HackMaster
+  hacks, rather than using a virtual machine and bytecodes.
+  Moreover, OnBoard C is a real project-based IDE, with a choice
+  of source code and resource editors, and the ability to include
+  a variety of "files" in a given project.  The source code
+  editors supported by OnBoard C include pedit, pedit32, QED and
+  SmartEdit; of course, you can just use Memo Pad too.  The
+  applications you create with OnBoard C can, therefore, be
+  distributed without including any sort of runtime or library
+  (other than the Palm ROM's API).
+</p>
+<p>  Developers who use OnBoard C will usually also want to get
+  RsrcEdit, which is a resource editor.  RsrcEdit allows you to
+  create forms, text strings, bitmaps, menus, and other GUI
+  elements you might want to call from your OnBoard C
+  applications.  Like OnBoard C, RsrcEdit is entirely
+  Palm-hosted.
+</p>
+<p>  Developers whom OnBoard C appeals to will generally be people
+  who are already pretty familiar with the ins-and-outs of PalmOS
+  development--it is not as good for people who just want to bang
+  out a quick custom application.  Obviously, you get a lot
+  faster applications, and a lot more low-level control, using
+  ONBoard C than you will with other IDEs that are Palm-hosted.
+  The price for speed and control is verbose and explicit source
+  code, and the need to hand-tweak resources.
+</p>
+<p><strong class="subhead">Poplet Kit</strong></p>
+ <p>  The Poplet Kit is an interesting creature.  Most of the IDEs
+  reviewed here are basically full-cycle write/compile/run
+  environments.  Poplet Kit, however, does not allow you to <em>run</em>
+  scripts within its environment (nor is it meaningful to do so,
+  in most cases).  Instead, each "poplet" that is created and
+  enabled within Poplet Kit adds enhanced capabilities to <em>every</em>
+  PalmOS application.  This is much like what HackMaster hacks
+  do, but with a friendly and interpreted language.  To call a
+  poplet in an application, you just call up the PalmOS Command
+  Bar. For many poplets, whatever text is highlighted will act
+  as the input for the poplet (e.g. computing a calculated
+  expression, or reformatting some selected text).
+</p>
+<p>  The language of Poplet Kit is called Handscript, and is similar
+  to Javascript.  The OOP features of Javascript are left out,
+  but the syntax and function semantics are the same.  Some
+  modularity is added by grouping functions into poplets.  As
+  well, a few shortcut commands for using PalmOS features are
+  added.  Basically, if you know Javascript, Handscript will be
+  easy to work with.
+</p>
+<p>  The interface for Poplet Kit is well done.  A number of views
+  of your poplets are presented, similar to the different views
+  in an application like DateBook+.  In one area you can read
+  documentation about a poplet; in another you can browse
+  functions; in another you can edit function definitions.  You
+  can also quickly enable or disable each of the installed
+  poplets (a good sample collection comes with the system).
+</p>
+<p>  Even though Poplet Kit might strike one as a mere system
+  enhancement rather than a programming environment, the programs
+  you can run using Poplet Kit are just as general as with the
+  other languages/IDEs. You can input anything you want by
+  highlighting relevant inputs, and anything can be output to the
+  active application and/or presented in dialogs.  In terms of
+  practical usage and interaction with the rest of your Palm,
+  Poplet Kit even shines above the other IDEs.
+</p>
+<p><strong class="subhead">Conclusion</strong></p>
+ <p>  Check out Michael Winikoff's page (see Resources) for even more
+  Palm-hosted IDE's than we looked at.  Some "exotic languages"
+  like Forth and Lua are included in the list.  We did make a
+  start at looking at the environment LispMe, which is a Scheme
+  for the PalmOS.  Unfortunately, at least on our test platforms,
+  LispMe was too unstable to really examine (constant resets);
+  this might be a problem with particular ROM/OS versions.  But
+  those we have not yet looked at might still interest readers.
+</p>
+<p><strong class="subhead">Resources</strong></p>
+ <p>  An earlier article I wrote covered the programming environment
+  Pippy, which is a version of Python for the PalmOS.  That
+  article can be found at:
+</p>
+<blockquote>   <a href="http://gnosis.cx/publish/programming/pippy.html">http://gnosis.cx/publish/programming/pippy.html</a>
+</blockquote><p>  Dr. Michael Winikoff has compiled an excellent list of
+  links to development environments for the PalmOS.  Winikoff
+  includes in his page, titled "PalmPilot Software Development -
+  Alternatives to C", both PalmOS hosted and PC hosted software
+  development kits (SDKs):
+</p>
+<blockquote>   <a href="http://goanna.cs.rmit.edu.au/%7Ewinikoff/palm/dev.html">http://goanna.cs.rmit.edu.au/~winikoff/palm/dev.html</a>
+</blockquote><p>  HotPaw Basic can be found at the below link.  There is a free
+  demo, and the full system can be purchased for a very moderate
+  $20:
+</p>
+<blockquote>   <a href="http://www.hotpaw.com/rhn/hotpaw/">http://www.hotpaw.com/rhn/hotpaw/</a>
+</blockquote><p>  SmallBASIC can be found at:
+</p>
+<blockquote>   <a href="http://smallbasic.sourceforge.net/">http://smallbasic.sourceforge.net/</a>
+</blockquote><p>  Information about PocketC can be found at the below link.
+  There is a free (time-limited) demo there:
+</p>
+<blockquote>   <a href="http://www.orbworks.com/PalmOS/index.html">http://www.orbworks.com/PalmOS/index.html</a>
+</blockquote><p>  To purchase PocketC (for a modest $18.50), head to PalmGear:
+</p>
+<blockquote>   <a href="http://www.viaweb.com/pilotgearsw/orbworks.html">http://www.viaweb.com/pilotgearsw/orbworks.html</a>
+</blockquote><p>  The homepage for OnBoard C is below (the cost is $15):
+</p>
+<blockquote>   <a href="http://www.individeo.net/OnBoardC.html">http://www.individeo.net/OnBoardC.html</a>
+</blockquote><p>  If you use OnBoard C, you will probably want to pick up the
+  accompanying resource editor, RsrcEdit (also $15):
+</p>
+<blockquote>   <a href="http://www.individeo.net/RsrcEdit.html">http://www.individeo.net/RsrcEdit.html</a>
+</blockquote><p>  Information on the Poplet Kit can be found below.  Buying it
+  costs $20, or you can download a demo version:
+</p>
+<blockquote>   <a href="http://www.handwave.com/handwavepoplets.html">http://www.handwave.com/handwavepoplets.html</a>
+</blockquote><p>  LispMe can be found at:
+</p>
+<blockquote>   <a href="http://www.lispme.de/lispme/">http://www.lispme.de/lispme/</a>
+</blockquote><p>  MathLib.prc can be obtained at:
+</p>
+<blockquote>   <a href="http://www.radiks.net/%7Erhuebner/mathlib.html">http://www.radiks.net/~rhuebner/mathlib.html</a>
+</blockquote><p><strong class="subhead">About The Authors</strong></p>
+ <p>  Andrew Blais divides his time between homeschooling his son,
+  writing for Gnosis, and teaching philosophy and religion at
+  Anna Maria College. He can be reached at onlymice@gnosis.cx.
+</p>
+<p>  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz worries that if the density of transistors doubles
+  every eighteen months, then he may lose his next computer in a
+  haystack. David may be reached at mertz@gnosis.cx; his life pored
+  over at <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and
+  recommendations on this, past, or future, columns are welcomed.
+</p>
+</body></html>

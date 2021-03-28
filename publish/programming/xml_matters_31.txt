@@ -1,0 +1,438 @@
+XML MATTERS #31: SXML and SSAX
+Manipulating XML in the Scheme Programming Language
+
+David Mertz, Ph.D.
+Parenthesizer, Gnosis Software, Inc.
+October 2003
+
+    Previous installments have looked at XML libraries for various
+    programming languages, and with various strengths and weaknesses.
+    The Lisp family of languages remains popular, especially in teaching
+    and among purists. The SSAX library for Scheme is an efficient
+    pure-functional parser; SXML is a tree library (like DOM); and
+    related tools SXSLT and SXPath have been created to work with these.
+    This installment looks at the advantages of parsing in a strongly
+    functional language, and compares SSAX with libraries for other
+    languages.
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  I am aware--as a factual matter--that there are connoisseurs of
+  single-malt scotches. But given that I rarely drink alcohol at all;
+  and when I do it in less concentrated amounts as beer or wine, I have
+  trouble fully understanding the mindset or discourse of these
+  connoisseurs.
+
+  I feel almost the same way about Lisp and Scheme programming. I can
+  tell that it is an area filled with sophistication and intelligence,
+  but somehow both the Polish (prefix) notation and endless parentheses,
+  and the fervent semantic eshewal of a distinction between code and
+  data, continue to feel alien to me. Nonetheless, I have enough of a
+  fascination that I want to see how these languages approach XML
+  processing.
+
+WHAT IS SXML?
+------------------------------------------------------------------------
+
+  The starting point for the [SSAX] library for Scheme is a meme common
+  among Lisp/Scheme enthusiasts: the observation that XML is
+  semantically almost identical to the nested list-oriented data
+  structures native to Lisp-like languages.  Anything you can represent
+  in XML can be straightforwardly represented as SXML--Scheme lists
+  nesting the same data as the original XML.  Moreover, Scheme comes
+  with a rich library of list and tree manipulation functions, and a
+  history of contemplating manipulation of those very structures.  A
+  natural fit, perhaps.
+
+  A good first step is to see SXML in its concrete form.  Trees are the
+  underlying abstraction--the Infoset--of XML; but the abstract
+  information takes a specific semantic form.  For example, the
+  following is a starkly reduced (but still well-formed) version of
+  another article I wrote recently:
+
+      #----------- An XML document with most XML features -------------#
+      $ cat example.xml
+      <?xml version="1.0" encoding="UTF-8"?>
+      <?xml-stylesheet type="text/css"
+            href="http://gnosis.cx/publish/programming/dW.css" ?>
+      <dw-document xmlns:dw="http://www.ibm.com/developerWorks/">
+        <title>The Twisted Matrix Framework</title>
+        <author name="David Mertz, Ph.D.">
+          <bio>David thinks it's turtles all the way down...</bio>
+        </author>
+        <docbody>
+          <dw:heading refname="" toc="yes">Introduction</dw:heading>
+          <p>
+            Sorting through Twisted Matrix is reminiscent of the old story
+            about blind men and elephants. Twisted Matrix has many
+            capabilities within it, and it takes a bit of a gestalt switch
+            to <i>get</i> a good sense of why they are all there.
+          </p>
+        </docbody>
+      </dw-document>
+
+  Transformed to SXML, this article looks like:
+
+      #----------- An SXML document with most XML features ------------#
+      $ ./xml2sxml example.xml
+      (*TOP* (*PI* xml "version=\"1.0\" encoding=\"UTF-8\"")
+             (*PI* xml-stylesheet
+                   "type=\"text/css\"
+            href=\"http://gnosis.cx/publish/programming/dW.css\" ")
+             (dw-document
+               (title "The Twisted Matrix Framework")
+               (author
+                 (@ (name "David Mertz, Ph.D."))
+                 (bio "David thinks it's turtles all the way down..."))
+               (docbody
+                 (http://www.ibm.com/developerWorks/:heading
+                   (@ (toc "yes") (refname ""))
+                   "Introduction")
+                 (p "
+            Sorting through Twisted Matrix is reminiscent of the old story
+            about blind men and elephants. Twisted Matrix has many
+            capabilities within it, and it takes a bit of a gestalt switch
+            to "
+                    (i "get")
+                    " a good sense of why they are all there.
+          "))))
+
+  There are a number of interesting differences between XML and SXML,
+  but also a obvious and direct correspondence between every aspect.
+  Some of the differences are relatively trivial--parentheses instead of
+  angle brackets, for example. And others are ambivalent: for example,
+  SSAX's creator, Oleg Kiselyov, thinks the reduction of closing tags to
+  closing parentheses is a pure advantage in conciseness. However, the
+  designers of XML went out of their way to remove the tag reduction
+  options in SGML; maybe they were wrong, but explicit closing tags are
+  not there because their possibility was overlooked.
+
+  In a number of ways, however, SXML corrects some awkwardness in XML,
+  while not losing any information. In particular, the distinction
+  between attributes and element contents feels arbitrary to most XML
+  developers, and SXML removes it in an elegant way.  An attribute
+  collection is simply another nested list, but one that happens to
+  start with the name '@'--a name that conveniently is not permitted in
+  XML identifiers.  Effectively, an SXML document is like an XML
+  document that eshews attributes, but sometimes nests a '<@>' child
+  inside other elements.  Referring to children that happen to be named
+  '@' is no different in SXML is no different the filtering on any other
+  tag name.  Of interest is that both my [gnosis.xml.objectify] and
+  RelaxNG stylesheets attempt a similar homogenization of attributes and
+  elements.
+
+  Processing instructions and comments are also reduced to special "tag"
+  names that are not available in XML: '*PI*' for the former,
+  '*COMMENT*' for the latter.  As with most of Lisp, there is just one
+  basic data structure to represent everything.
+
+  Namespaces are also interesting in the SXML format. The full namespace
+  URI simply becomes part of the tagname, when SXML is generated as
+  above. However, and optional '*NAMESPACES*' tag can be used to
+  abbreviate namespace references in essentially the same way as with
+  XML. You need to either write SXML by hand, or enhance the conversion
+  utility, to utilize this, however.
+
+WORKING WITH THE SSAX LIBRARY
+------------------------------------------------------------------------
+
+  From the description above, SXML seems like just another shortcut
+  notation for XML, or which there are many, e.g. PYX, SOX, SLiP,
+  XSLTXT, YAML (sort of), etc.  The difference is that SXML is not
+  merely (arguably) simpler to read and edit, but is already itself code
+  in Scheme.  No special parsers for the format are needed or even
+  relevant.
+
+  As a first example of working with the [SSAX] library, let us take a
+  look at the application 'xml2sxml' that was utilized above:
+
+      #--------------- xml2sxml conversion script ---------------------#
+      #!/sw/bin/guile -s
+      !#
+      (load "sxml-all.scm")
+      (pp (SSAX:XML->SXML (open-input-file (cadr (command-line))) '() ))
+
+  Not too much too it, huh? Of course, this relies on a collection of
+  'load' functions that I put into my convenience module:
+
+      #--------------- sxml-all.scm support file ----------------------#
+      (load "libs/pp.scm")
+      (load "libs/guile/common.scm")
+      (load "libs/guile/myenv.scm")
+      (load "libs/guile/parse-error.scm")
+      (load "libs/util.scm")
+      (load "libs/input-parse.scm")
+      (load "libs/look-for-str.scm")
+      (load "sxml/ssax.scm")
+      (define (port? x) (or (input-port? x) (output-port? x)))
+
+  I may not need all of those 'load' functions every time, but this
+  loads the complete collection of [SSAX] functions.  The last line is
+  an oddity--for whatever reason, the function 'port?' that is used by
+  [SSAX] is not available in the version of Guile that I installed on
+  MacOSX using 'fink'.  However, the definition I added comes straight
+  out of the manual for Guile.  A different Scheme system would
+  presumably not have this same issue.
+
+  The data structure produced by the function 'SSAX:XML->SXML' is a
+  regular list that you can work with using all the usual Scheme
+  functions.  E.g.:
+
+      guile> (load "sxml-all.scm")
+      guile> (define sxml
+               (SSAX:XML->SXML (open-input-file "example.xml") `()))
+      guile> (list-ref sxml 1)
+      (*PI* xml "version=\"1.0\" encoding=\"UTF-8\"")
+      guile> (cadr (list-ref sxml 3))
+      (title "The Twisted Matrix Framework")
+      guile> (eq? (car (list-ref sxml 3)) `dw-document)
+      #t
+
+USING SSAX
+------------------------------------------------------------------------
+
+  While an SXML representation is just a tree that can be manipulated
+  and traversed with general Scheme techniques, the [SSAX] library
+  provides a handy macro called 'SSAX:make-parser' that works in a
+  fashion similar to the SAX API in other programming languages.  A
+  number of tree-walking optimizations are built in to this macro,
+  giving you linear, O(N), efficiencies in processing a given SXML
+  structure; a naive approach could easily use more memory or CPU
+  time.
+
+  Unlike the actual SAX API that you might have used in languages like
+  C, C++, Python, Perl, and the like, [SSAX] is walks a tree rather than
+  scans a linear bytestream. That is, SAX or [expat] simply look for
+  opening and closing tags as events, and callback to the relevant
+  handlers. If you want to keep track of the relative nesting and
+  context in which a tag occurs, you need to maintain your own stack, or
+  other data structure. In [SSAX], in contrast, every node descends from
+  a parent, passing and returning a 'seed' Of course, this 'seed' is
+  itself essentially a data structure that you can modify in each
+  'NEW-LEVEL-SEED' and 'FINISH-ELEMENT' handler--but at least it is
+  local rather than global.
+
+  To show off the working of [SSAX] I have enhanced an outline example
+  that is available on the CVS directory for the [SSAX] library.  I
+  demonstrate displaying attributes and (abbreviated) CDATA content.
+  This is most of the way toward writing an 'sxml2xml' utility--one
+  which oddly is *not* distributed as part of [SSAX], not even as a
+  direct function or macro.  However, I do not handle proper escaping,
+  nor processing instructions and a few other aspects.
+
+      #---------------- outline conversion script ---------------------#
+      #!/sw/bin/guile -s
+      !#
+      (load "sxml-all.scm")
+
+      (define (format-attrs attrs)
+        (if (and (pair? attrs) (pair? (car attrs)))
+          (string-append " " (caar attrs) "='" (cdar attrs) "'"
+            (if (> (length attrs) 1)
+              (format-attrs (cdr attrs)) ""))
+          ""))
+
+      (define (tag->string tag)
+        (if (symbol? tag) tag (cdr tag)))
+
+      (define (outline xml-port)
+        ((SSAX:make-parser
+            NEW-LEVEL-SEED
+            (lambda (elem-gi attrs namespaces expected-content seed)
+              (display (string-append
+                seed                  ; indent the element name
+                "<"                   ; open brace
+                (tag->string elem-gi) ; print the name of the element
+                (format-attrs attrs)  ; display the attributes
+                ">\n"))               ; closing brace, newline
+              (string-append "  " seed)) ; advance the indent level
+
+            FINISH-ELEMENT
+            (lambda (elem-gi attributes namespaces parent-seed seed)
+                parent-seed)          ; restore the indent level
+
+            CHAR-DATA-HANDLER
+            (lambda (s1 s2 seed)
+              (if (> (string-length s1) 30)
+                (display
+                  (string-append seed "|" (substring s1 0 30) "...\n")))
+              seed)
+
+            ) xml-port ""))
+
+      (display (call-with-input-file (cadr (command-line)) outline)))
+
+  The basics are a lot like a SAX class. The function 'outline' is
+  generated with the 'SSAX:make-parser' macro which allows definition of
+  several event types.  The main ones are entering and leaving an
+  element, and getting character data.  A couple support functions help
+  with the process.
+
+  The 'seed' we use in 'outline' is quite simple, it is just a string
+  that gets longer as deeper branches of the tree are reached.  Of
+  course, you -could- pass around a whole list of encountered tags--e.g.
+  for an XPATH-like analysis of what to do with a node.  Our CDATA
+  handler simply checks whether there is enough CDATA to bother
+  displaying (at least 30 chars, arbitrarily chosen), then displays it
+  at the same indent as the current element.
+
+  The 'NEW-LEVEL-SEED' handler demonstrates a couple interesting
+  aspects, mostly in the two support functions it employs. Not every tag
+  is a simple symbol in our SSXML structure; specifically, a namespace
+  qualified tag is a pair instead.  The function 'tag->string' checks
+  which type a tag is, and only displays the local part of the name, not
+  the namespace.  You could do something different, of course, but this
+  demonstrates the test needed.
+
+  The function 'format-attrs' is probably more an example of recursive
+  programming in Scheme generically than it is specific to [SSAX].
+  Still, tags can have none, one, or several attributes, and we need to
+  return a string for each case.  Probably a real Scheme programmer can
+  point out an even more concise way to do this--I welcome comments in
+  the discussion are for this article.
+
+  Let us look at the output, given the earlier XML document.  By the
+  way, warnings are generated for the unprocessed PIs, so I redirect
+  STDERR to ignore those:
+
+      #------------- An outline display of example.xml ----------------#
+      $ ./outline example.xml 2>/dev/null
+      <dw-document>
+        <title>
+        <author name='David Mertz, Ph.D.'>
+          <bio>
+            |David thinks it's turtles all ...
+        <docbody>
+          <heading refname='' toc='yes'>
+          <p>
+            |
+            Sorting through Twisted...
+            <i>
+            | a good sense of why they are ...
+
+WHAT ELSE?
+------------------------------------------------------------------------
+
+  As well as its equivalents for SAX and DOM (i.e. the native Scheme
+  nested lists), [SSAX] comes with its own [SXPath] and [SXSLT]
+  components.  This article does not have room for extensive discussion
+  of these, but they are worth mentioning briefly.
+
+  Unfortunately, the [SXPath] and [SXSLT] functions and macros
+  discussed in Oleg Kiselyov's document "XML, XPath, XSLT
+  implementations as SXML, SXPPath and SXSLT" are not included in the
+  [SSAX] distribution, at least not the one for Guile (other
+  distributions are available for a number of Scheme systems).  What can
+  be easily downloaded only works with a few Scheme-systems, and
+  versioning is unclear.  Based just on the document mentioned, SXPath
+  works much like XPath.  For example, either of the following
+  expressions expand to a selection function:
+
+      #----------- SXPath expressions, native and textual -------------#
+      ((sxpath '(// TAF VALID @ Trange *text)) document)
+      ((txpath "//TAF/VALID/@TRange/text()") document)
+
+  These undergo macro expansion to:
+
+      #----------------- Full path selector function ------------------#
+      ((node-join
+        (node-closure (node-typeof? 'TAF))
+        (select-kids (node-typeof? 'VALID))
+        (select-kids (node-typeof? '@))
+        (select-kids (node-typeof? 'TRange))
+        (select-kids (node-typeof? '*text*)))
+      document)
+
+  Of course, playing with this expanded form would allow programming
+  arbitrary calculations inside an XPath-like selector--anything you can
+  write in Scheme.
+
+  SXSLT is similar in concept.  Stylesheets are written in Scheme form
+  that is semantically similar to XSLT.  But much as with the
+  flexibility of [HaXml], within any particular transformation rule, you
+  can embed arbitrary extra code.  Particular XSLT engines, of course,
+  often come with foreign-function APIs to write extra capabilities in
+  Javascript, VB, or other languages.  But with SXSLT, the custom
+  functions are written in the very same Scheme language as the
+  transformation stylesheet elements.
+
+CONCLUSION
+------------------------------------------------------------------------
+
+  I like the [SSAX] library quite a bit; and I suspect I will like it
+  more as I become more comfortable with Lisp/Scheme.programming.  It
+  shares many of the advantages of other "native" XML libraries I have
+  written about in other installments: [gnosis.xml.objectify], [REXML],
+  [XML::Grove], [HaXml], and so on.  There's a lot to be said for making
+  XML into -just another data object- in whatever programming language
+  you use.
+
+  That said, [SSAX] has a lot of rough edges.  It is hard to figure out
+  what to download, and what Scheme systems each part is available for.
+  The documentation is somewhat inconsistent and incomplete--most of the
+  documents are academic in focus, and do more to discuss abstract goals
+  and concepts than on concrete usage and API.  As a demonstration of
+  what is possible in Scheme--using functional techniques--these papers
+  are interesting; but it would be nice to have something that is easy
+  to install and use, and -just works-.
+
+RESOURCES
+------------------------------------------------------------------------
+
+  The homepage for SXML is below.  A number of overlapping documents are
+  available on that site, mostly written by Oleg Kiselyov:
+
+    http://okmij.org/ftp/Scheme/xml.html
+
+  To download version of the [SSAX] library for various Scheme systems,
+  see:
+
+    http://www196.pair.com/lisovsky/xml/ssax/
+
+  The [SXPath] extension appears to be available at the below page, but
+  unfortunately not for Guile:
+
+    http://www196.pair.com/lisovsky/query/sxpath/
+
+  The XML Information Set (Infoset) is a W3C Recommendation that
+  specifies the information content of XML documents; i.e. it indicates
+  which features of a concrete document carry information, and which are
+  incidental.
+
+    http://www.w3.org/TR/xml-infoset/
+
+  The version of Scheme I used for this article is the GNU project's
+  Guile.  Other versions, both commercial and free software exist as
+  well, but Guile seems widespread--and it is the version that 'fink'
+  will install under MacOSX.  The Guile home page is at:
+
+    http://www.gnu.org/software/guile/docs/index.html
+
+  A previous installment of this column discussed the XML library
+  [HaXml] for the functional programming language Haskell.  While
+  Haskell is purer in its functional programming paradigm, many common
+  motivations and designs went into HaXml and SXML.
+
+    http://www-106.ibm.com/developerworks/xml/library/x-matters14.html
+
+  Ed Dumbill wrote an article called "Exploring alternative syntaxes
+  for XML" for developerWorks:
+
+    http://www-106.ibm.com/developerworks/xml/library/x-syntax.html
+
+  Scott Sweeney has also produced a nice visual summary of syntax
+  varations of near-XML languages:
+
+    http://www.scottsweeney.com/static/projects/slip/XMLShorthandComparison.htm
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz once led the desperate life of scholarship. David may be
+  reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/. Suggestions and recommendations on this,
+  past, or future, columns are welcomed. Check out David's new book
+  _Text Processing in Python_.
+

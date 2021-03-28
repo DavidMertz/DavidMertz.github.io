@@ -1,0 +1,396 @@
+CHARMING PYTHON #7
+Dynamically reloading modules in long-running processes
+
+David Mertz, Ph.D.
+Mesmerist, Gnosis Software, Inc.
+September 2000
+
+    One of the great advantages of Python over most other
+    programming languages is the extreme runtime dynamism it is
+    capable of.  As a consequence of having the handy 'reload()'
+    function, we can write programs that run persistently, but
+    that load components that have been modified during the run
+    of the process.  Pretty handy for services where continuous
+    uptime is critical.  This column illustrates runtime program
+    modification by means of some enhancements to the Txt2Html
+    front-end discussed in an earlier column.  Specifically,
+    our sample program will do a background check for new
+    versions of the Txt2Html conversion library on the Internet,
+    and download and reload any new version as needed without
+    manual user intervention.
+
+
+WHAT IS PYTHON?
+------------------------------------------------------------------------
+
+  Python is a freely available, very-high-level, interpreted
+  language developed by Guido van Rossum.  It combines a clear
+  syntax with powerful (but optional) object-oriented semantics.
+  Python is available for almost every computer platform you
+  might find yourself working on, and has strong portability
+  between platforms.
+
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  Let us paint a scenario for this column:  Suppose you want to
+  run a process on your local machine, but part of your program
+  logic lives somewhere else.  Specifically, let us assume that
+  this program logic is updated from time-to-time, and when you
+  run your process, you would like to use the most current
+  program logic.  There are a number of approaches to addressing
+  the requirement just described; this column will walk a reader
+  through several of them.
+
+  As this column has progressed, I have discussed ongoing
+  enhancements to my public-domain utility 'Txt2Html'.  This
+  utility converts "smart ASCII" text files to HTML.  Previous
+  columns discussed the web-proxy version of the utility and a
+  'curses' interface for the utility.  It also happens that from
+  time-to-time I notice that some ASCII markup could be converted
+  in a more useful way, or I fix a bug in handling a particular
+  markup construct.
+
+  In fact, these columns are written in ASCII, and converted
+  during the editorial process to the HTML format you are
+  probably reading.  Prior to sending a draft article off for
+  publication, I run something like the following process:
+
+      #-------- Command-line HTMLization of articles ----------#
+      txt2html charming_python_7.txt > charming_python_7.html
+
+  If I wanted, I could specify some flags to modify the
+  operation; but either way, I just rely on the fact that the
+  most current version of the coverter is on my local drive and
+  path.  If I were working on a different machine, or for readers
+  who might want want to use the utility, the process is more
+  cumbersome:  check my website, compare version numbers and
+  filedates (sometimes I make a change too small to number),
+  download the current version, copy current version to the right
+  directory, run the command-line converter.
+
+  There are several manual and moderately time consuming steps
+  involved in the above.  It ought to be easier, and it can be.
+
+
+COMMAND-LINE WEB ACCESS
+------------------------------------------------------------------------
+
+  Most people think of the web as a way interactively to browse
+  pages in a GUI environment.  Doing that is nice, of course.
+  But there is also a lot of power in a command-line.  Systems
+  with the text-mode web-browser 'lynx' can largely treat the
+  entire WWW as just another set of files for command-line tools
+  to work with.  For example, some commands I find useful are:
+
+      #--------- Command-line web browsing with lynx ----------#
+      lynx -dump http://gnosis.cx/publish/.
+      lynx -dump http://ibm.com/developer/. > ibm_developer.txt
+      lynx -dump http://gnosis.cx/publish | wc | sed "s/( *[0-9]* *\)\([0-9]*\)\(.*\)/\2/g"
+
+  The first of these says "Display David Mertz' homepage to the
+  console" (as ASCII text).  The second says, "Save an ASCII
+  version of IBM's current developerWorks homepage to a file."
+  The third example says "Display the number of words in David's
+  homepage" (Don't worry about the specifics, it just shows
+  command-line tools being combined with pipes).
+
+  One thing about 'lynx' is that (with the '-dump' option) it
+  does almost exactly the opposite thing as 'Txt2Html':  the
+  former converts HTML to text, and latter converts in the other
+  direction.  But there is no reason not to be able to use
+  'Txt2Html' in the same fashion as 'lynx'.  Doing so can be
+  accomplished with a short Python script:
+
+      #------ 'fetch_txt2html.py' command-line converter ------#
+      import sys
+      from urllib import urlopen, urlencode
+      if len(sys.argv) == 2:
+        cgi = 'http://gnosis.cx/cgi-bin/txt2html.cgi'
+        opts = urlencode({'source':sys.argv[1], 'proxy':'NONE'})
+        print urlopen(cgi, opts).read()
+      else:
+        print "Please specify URL for Txt2Html conversion"
+
+  To run this script, just do something like:
+
+      python fetch_txt2html.py http://gnosis.cx/publish/programming/charming_python_7.txt
+
+  This does not provide you with all the switches of local
+  'Txt2Html' process, but it would be simple to add those if
+  needed.  You can pipe and redirect the output just as you would
+  with any command-line tool.  However, in the above version,
+  you can only process data files that can be reached by URL, not
+  local files.
+
+  Actually, 'fetch_txt2html.py' does something 'lynx' does not
+  (and neither does 'Txt2Html' by itself):  it not only fetches
+  the data source from a URL, it also gets the *program logic*
+  remotely.  If you use 'fetch_txt2html.py' there is no need to
+  even -have- 'Txt2Html' on your local machine; the processing is
+  remotely invoked (with the latest version), and the results are
+  sent back to you exactly as if you had run a local process.
+  Neat, huh?  The local version of 'Txt2Html' can access remote
+  URLs just as with local files, but it cannot make sure it keeps
+  itself up to date... yet!
+
+
+DYNAMIC INITIALIZATION
+------------------------------------------------------------------------
+
+  Using 'fetch_txt2html.py' assures that the latest program logic
+  is always used in conversions.  Another thing this approach
+  does, however, is move the processor (and memory) requirements
+  onto the gnosis.cx webserver.  The load imposed by this
+  particular process is not particularly high, but it is easy to
+  imagine other types of processes where processing on the client
+  is more efficient and desirable.
+
+  The way 'Txt2Html' is organized--like the way most programs are
+  organized--is with a couple core flow-control functions
+  assisted by a variety of utility functions.  In particular, the
+  utility functions are the ones that I update fairly frequenty;
+  the core functions ('main()' and a few others) will only be
+  touched in the event of a major rewrite.  In short, what could
+  helpfully be updated at each program run is the utility
+  functions.  Most of the time, in fact, most of the functions
+  will be fine in the main 'Txt2Html' module [dmTxt2Html].
+
+  To reflect this organization, I have pulled out -copies- of all
+  the text-manipulation utility functions into a support module
+  called [d2h_textfuncs].  The same functions still exist in the
+  primary module, but the support module might contain more
+  up-to-date versions of functions.  The [d2h_textfuncs] module
+  is mostly a skeleton right now, but it might be filled in over
+  time.  Most functions are merely commented headers, real
+  updated program logic can be filled in as needed.  The support
+  module looks like the below (abridged):
+
+      #----- 'd2h_textfuncs.py' dyanamic Txt2Html updates -----#
+      """Hot-pluggable replacement functions for Txt2Html"""
+
+      #-- Functions to massage blocks by type
+      #def Titleify(block):
+      #def Authorify(block):
+      # ... [more block massaging functions] ...
+
+      #-- Utility functions for text transformation
+      #def AdjustCaps(txt):
+      #def capwords(txt):
+      #def URLify(txt):
+      def Typographify(txt):
+          # [module] names
+          r = re.compile(r"""([\(\s'/">]|^)\[(.*?)\]([<\s\.\),:;'"?!/-])""", re.M | re.S)
+          txt = r.sub('\\1<em><code>\\2</code></em>\\3',txt)
+          # *strongly emphasize* words
+          r = re.compile(r"""([\(\s'/"]|^)\*(.*?)\*([\s\.\),:;'"?!/-])""", re.M | re.S)
+          txt = r.sub('\\1<strong>\\2</strong>\\3', txt)
+          # ... [more text massaging] ...
+          return txt
+      # ... [more text transformation functions] ...
+
+  In order to utilize the support module in its latest-and-
+  greatest incarnation, a few steps of preparation are necessary.
+  First, download the main 'Txt2Html' module to your local system
+  (this is a one-time step).  Second, create a Python script on
+  your local system that reads:
+
+      #------- 'dyn_txt2html.py' command-line converter -------#
+      from dmTxt2Html import *     # Import the body of 'Txt2Html' code
+      from urllib import urlopen
+      import sys
+
+      # Check for updated functions (fail gracefully if not fetchable)
+      try:
+          updates = urlopen('http://gnosis.cx/download/t2h_textfuncs.py').read()
+          fh = open('t2h_textfuncs.py', 'w')
+          fh.write(updates)
+          fh.close()
+      except:
+          sys.stderr.write('Cannot currently download Txt2Html updates')
+
+      # Import the updated functions (if available)
+      try:
+          from t2h_textfuncs import *
+      except:
+          sys.stderr.write('Cannot import the updated Txt2Html functions')
+
+      if len(sys.argv) == 2:
+          cfg_dict = ParseArgs(sys.argv[1:])
+          main(cfg_dict)
+      else:
+          print "Please specify URL (and options) for Txt2Html conversion"
+
+  A few comments are warranted concerning the 'dyn_txt2html.py'
+  script.  Notice that when the 'from t2h_textfuncs import *'
+  statement is executed, all the functions (like
+  'Typographify()') that were defined previously in [dmTxt2Html]
+  are replaced by the [t2h_textfuncs] version of the same-named
+  functions.  Of coure, where functions in [t2h_textfuncs] are
+  only commented-out placeholders, no replacement occurs.
+
+  One minor matter is that different systems handle
+  writes to STDERR differently.  Under Unix-like systems, you can
+  redirect STDERR when you run the script; however, under my
+  current OS/2 shell, and under Windows/DOS, the STDERR messages
+  will be appended to the console output.  You might want to
+  either write the above errors/warning to a log file, or simply
+  get in the habit of directing the STDOUT to a file (where it is
+  probably more useful anyway.  For example:
+
+      #-------- Command-line session of 'dyn_txt2html' --------#
+      G:\txt2html> python dyn_txt2html.py test.txt > test.html
+      Cannot currently download Txt2Html updates
+
+  The error goes to console, the converted output to a file.
+
+  A more interesting matter is why 'dyn_txt2html.py' does not
+  just download the whole [dmTxt2Html] module instead of the
+  support module only.  There are a few things going on here.
+  The [t2h_textfuncs] support module is significantly smaller
+  than the main [dmTxt2Html] module, especially since most of the
+  functions are stubbed/commented out.  On a modem connection
+  this could be significantly faster.  But download size is not
+  the main thing.
+
+  For 'Txt2Html' it probably does not matter if users
+  auto-download the whole latest module.  But what about a system
+  where the program logic is *distributed* -- and especially
+  where the responsibility for maintenance is distributed?  You
+  might have Alice, Bob and Charlie be responsible for modules
+  [Funcs_A], [Funcs_B] and [Funcs_C], respectively.  Each of them
+  make periodic (and independent) changes to the functions under
+  their control, and upload the latest-and-greatest to their own
+  website (such as http://alice.com/Funcs_A.py).  In this
+  scenario it is not feasable to have all three programmers make
+  changes to the same main module.  But a script similar to
+  'dyn_txt2html.py' can straightforwardly be extended to try
+  importing [Funcs_A], [Funcs_B] and [Funcs_C] all at startup
+  (and fallback to [MainProg] version if these resources cannot
+  be obtained).
+
+
+A LONG-RUNNING DYNAMIC PROCESS
+------------------------------------------------------------------------
+
+  The tools we have looked at so far get their dynamic program
+  logic by downloading updated resources at initialization.  This
+  makes a lot of sense for command-line or batch processes, but
+  what about long-running applications.  Such long-running
+  applications are most likely to be server processes that
+  respond to client requests continuously.  In our case, however,
+  we will use the 'curses_txt2html.py' script developed for a
+  previous column to illustrate Python's 'reload()' function.
+  The program 'curses_txt2html' is a wrapper for a local copy
+  of [dmTxt2Html].  Without trying to address 'curses' programming
+  a second time herein, it is enough to mention that
+  'curses_txt2html' provides a set of interactive menus to
+  configure and run multiple, sequential 'Txt2Html' conversions.
+
+  'curses_txt2html' could potentially be left running in the
+  background all the time, and we would like it to be able to
+  utilize up-to-date program logic when we switch to its session,
+  and run a conversion.  For this specific simple example, it
+  admittedly would not be difficult to close and relaunch the
+  application, and no particular disadvantages would be incurred.
+  But it is easy to imagine other processes that genuinely do
+  depend on being left running all the time, perhaps ones that
+  are stateful as to action performed in a session.
+
+  For this column, a new File/Update submenu was added.  When
+  activated, it simply calls a new function called
+  'update_txt2html()'.  Aside from the [curses] calls that relate
+  to providing some confirmation of what occurred, we have mostly
+  already seen these steps in other examples in this column:
+
+      #----- 'curses_txt2html.py' dynamic update function -----#
+      def update_txt2html():
+          # Check for updated functions (fail gracefully if not fetchable)
+          s = curses.newwin(6, 60, 4, 5)
+          s.box()
+          s.addstr(1, 2, "* PRESS ANY KEY TO CONTINUE *", curses.A_BOLD)
+          s.addstr(3, 2, "...downloading...")
+          s.refresh()
+          try:
+              from urllib import urlopen
+              updates = urlopen('http://gnosis.cx/download/dmTxt2Html.py').read()
+              fh = open('dmTxt2Html.py', 'w')
+              fh.write(updates)
+              fh.close()
+              s.addstr(3, 2, "Module [dmTxt2Html] downloaded to current directory")
+          except:
+              s.addstr(3, 2,  "Download of updated [dmTxt2Html] module failed!")
+          reload(dmTxt2Html)
+          s.addstr(4, 2, "Module [dmTxt2Html] reloaded from current directory  ")
+          s.refresh()
+          c = s.getch()
+          s.erase()
+
+  There are two significant differences between 'dyn_txthtml.py'
+  and our 'update_txt2html()' function.  One is that we go ahead
+  and import the main [dmTxt2Html] module rather than just the
+  support functions.  This is largely just to simplify the
+  import.  The issue here is that we use an 'import dmTxt2Html'
+  to access the module instead of a 'from dmTxt2Html import *'.
+  In many ways this is a safer procedure, but a consequence is
+  that it is more difficult to (accidentally or deliberately)
+  overwrite functions in [dmTxt2Html].  If we wanted to attach
+  functions from [d2h_textfuncs] we would have to do a 'dir()' on
+  the imported support module, and attach members to the
+  "dmTxt2Html" namespace in attribute fashion.  Doing this style
+  of overwriting is left as an exercise for readers.
+
+  The most significant difference introduced by the
+  'update_txt2html()' function is the use of Python's built-in
+  'reload()' function.  Just performing a brand new
+  'import dmTxt2Html' will *not* overwrite the functions
+  previously imported.  Watch out for this!  A lot of beginners
+  assume that reimporting a module will update the version in
+  memory.  It won't.  Instead, the way to update the in-memory
+  image of the functions in a module is to 'reload()' the module.
+
+  There is another small trick performed above.  The download
+  location of an updated [dmTxt2Html] module is the local working
+  directory, which may or may not be the directory where
+  [dmTxt2Html] was originally loaded from.  In fact, if it is in
+  the Python library directory, you probably will not be working
+  there (and probably don't have permissions to it as a user).
+  But the 'reload()' call tries loading from the current
+  directory first, then from the rest of Python's path.  So
+  whether or not the download succeeds, the 'reload()' should be
+  a safe operation (it may or may not load anything new though).
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  The web-proxy CGI version of 'Txt2Html':
+
+    http://gnosis.cx/cgi-bin/txt2html.cgi
+
+  Support module [t2h_textfuncs]:
+
+   http://gnosis.cx/download/t2h_textfuncs.py
+
+  Main module [dmTxt2Html]:
+
+   http://gnosis.cx/download/dmTxt2Html.py
+
+  Files used and mentioned in this article:
+
+    http://gnosis.cx/download/charming_python_7.zip
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  As David Mertz went to sleep one night after troubled
+  wakefulness, he dreamed himself transformed into a technical
+  journalist.  He needs the rest.  David may be reached at
+  mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/.  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+
+

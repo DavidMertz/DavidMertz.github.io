@@ -1,0 +1,505 @@
+CHARMING PYTHON #10 (20000097)
+Interviews with Developers of JPython and Python for .NET
+
+David Mertz, Ph.D.
+Basket weaver, Gnosis Software, Inc.
+October 2000
+
+    What most programmers probably think of when they talk about
+    "Python" is the specific implementation sometimes called
+    "CPython" (because it is implemented in C).  However, Python
+    as a language specification has been implemented several
+    times.  One such implementation is "JPython" which is written
+    in Java, which compiles Python source code to Java bytecodes,
+    and which provides transparent access to Java classes.  A
+    planned implementation is Python for .NET, Microsoft's
+    forthcoming cross-language technology platform.  This article
+    consists of annotated interviews with the developers of
+    JPython and Python for .NET.
+
+
+WHAT IS PYTHON?
+------------------------------------------------------------------------
+
+  Python is a freely available, very-high-level, interpreted
+  language developed by Guido van Rossum.  It combines a clear
+  syntax with powerful (but optional) object-oriented semantics.
+  Python is available for almost every computer platform you
+  might find yourself working on, and has strong portability
+  between platforms.
+
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  In my previous interviews with John Max Skaller and Christian
+  Tismer, I presented readers with some information--and
+  hopefully insight--into Vyper and Stackless Python.  I also
+  made some general remarks in that column about language
+  implementations, and the theoretical and historical reasons for
+  them.  I recommend readers glance at those comments, but in the
+  interest of presenting as much as possible of my conversations
+  with the developers of JPython and Python for .NET, I do not
+  wish to repeat those comment here.
+
+  Instead, let's jump into the interviews with Mark Hammond, Finn
+  Bock, and Barry Warsaw.  They are all fascinating developers
+  with a lot to say that will interest Python programmers.  I
+  thank them for their participation in these interviews.
+
+
+PYTHON FOR .NET
+------------------------------------------------------------------------
+
+  Mark Hammond is a developer most Python programmers who use
+  Windows will know something about.  Mark created, and
+  generously made available to the Python community, the
+  excellent PythonWin development environment and PythonCOM
+  extensions.  Given this background, Mark was a logical contact
+  for Microsoft to turn to in their desire to make Python
+  available for their future .NET platform.
+
+  I must confess that I have not typically understood the real
+  meat behind many of Microsoft stategic announcements.  Mark's
+  interview helps clarify this (inasmuch as he is able), but a
+  few details he was not able to discuss because of NDA
+  restrictions.  One thing I found very useful was some comments
+  made by developers of the Mercury language, which is also being
+  ported to .NET (see Resources).  The Mercury folks may have
+  been under looser NDA agreements than Mark was, and they may or
+  may not have had a similar agreement as that involved in Python
+  for .NET.  Make your own guesses.  In any case, this is nice
+  background also on .NET in general.
+
+  But let us look at what Mark Hammond has to say.  He indicated
+  that a working version of Python for .NET should be available
+  RSN (it did not seem to be as of writing).  Hopefully, by the
+  time this interview is published, some betas/alphas will be
+  available from the ActiveState link in the Resources section.
+
+    [Mertz]:  Exactly what is Python for .NET?  I guess I am
+    especially curious how Python for .NET relates to your own
+    PythonWin and PythonCOM extensions to CPython that seem to
+    already give you control of Windows' guts.
+
+    [Hammond]:  Python for .NET is a compiler and runtime that
+    implements Python on the Microsoft .NET platform.
+
+    [Hammond]:  The .NET platform provides a runtime and metadata
+    system designed to allow complete language interoperability -
+    however, to achieve that, the languages must work in that
+    runtime.
+
+    [Hammond]:  For example, if a Python class should be made
+    public so a Visual Basic programmer can inherit from it, the
+    Python class must be implemented and described in .NET terms,
+    rather than in CPython terms.
+
+    [Hammond]:  The advantage of Python .NET is simply that you
+    can interoperate with the .NET framework.  There are numerous
+    disadvantages, mainly due to the immaturity of the
+    implementation, but these will be addressed over time.
+
+    [Mertz]:  What, if any, significant incompatibilities exist
+    between Python for .NET and CPython?  How easy am I likely to
+    find moving application code between the two implementations?
+    What are the major gotchas?
+
+    [Hammond]:  Most modules have not yet been implemented.
+    Existing modules written in C can not be used.  If you are
+    not targetting the .NET framework, you would almost certainly
+    not use Python .NET.
+
+    [Mertz]:  One main advantage of Python for .NET is that it
+    will allow easy inter-language communication, and
+    multi-language application development.  Is this on target as
+    a big selling point?  If so, can you give a hypothetical
+    example for readers of why this is better than using
+    Python+C+SWIG, for example?
+
+    [Hammond]:  Your example of Python+C+SWIG should be obvious -
+    inter-language calling should not be that hard.  SWIG is a
+    great product, and has taken writing Python C extensions from
+    a black art to merely difficult :-)
+
+    [Hammond]:  Comparing .NET with COM and/or Corba would be
+    more reasonable - COM and Corba both offer a solution where
+    cross-language calling "just works", without any
+    hand-crafting or compiling necessary.  .NET takes this one
+    step further, buy offering cross-language inheritance and
+    exception capabilities, for example.
+
+    [Hammond]:  These advantages are very similar to what you
+    would find with multiple language implementations under the
+    JVM.
+
+    [Mertz]:  If I understand things correctly, it seems like
+    Python for .NET is most similar to JPython inasmuch as Python
+    for .NET will "compile" your Python scripts to the format of
+    an external VM.  Is garbage collection automated, as in JVMs?
+    Do you have any early guesses about peformance of MS's future
+    VM?  Also, will the .NET VM support some of the exotic
+    features of Stackless and/or Vyper, like continuations,
+    generators, coroutines, tail-recursion, lazy-evaluation?
+
+    [Hammond]:  Yes, in concept.  The terms of the Microsoft Beta
+    agreement prevent me from talking about performance.  We will
+    only be targetting features defined in the core Python
+    language reference.  Garbage collection is inherent as in
+    JPython and JVMs.
+
+    [Mertz]:  My column appears under a Linux category , so that
+    might suggest something about my readership:  they might tend
+    to be mistrustful of anything Microsoft has their hands in.
+    So I have a few questions closer to the politics of Python
+    for .NET.
+
+    [Mertz]:  What is Python for .NET's reason for being (other
+    than because MS wants it for their own positioning, I
+    suppose)?
+
+    [Hammond]:  So people who choose the target .NET can do so
+    using Python.  Microsoft involved Python and many other
+    languages in the early days to ensure that their VM was
+    indeed language agnostic.  Microsoft made a number of changes
+    to their VM based on feedback from the various language
+    implementors.
+
+    [Mertz]:  What is MS's financial relationship to Python for
+    .NET?  Do you pay them?  Do they pay you?  Upfront?  In some
+    sort of residuals?  What sort of license will Python for .NET
+    carry?
+
+    [Hammond]:  Microsoft entered a contract with myself and Greg
+    Stein to build Python for .NET.  The terms of that contract
+    remain confidential.  I am now employed by ActiveState Tools
+    Corporation (who did the Perl for .NET implementation), and I
+    expect they will enter a similar contract with Microsoft for
+    the completion of the port.  The source code will carry a
+    "(c) Microsoft" note, but be freely available.
+
+    [Mertz]:  Related to the license issue, but not reducible to
+    it, I cannot help but worry that MS will attempt to use
+    proprietary extensions and "enhancements" in a familiar
+    "embrace, extend, extinguish" strategy.  In other words, I
+    have a certain fear that Python for .NET might not actually
+    be very good for Python in the medium/long term.  How would
+    you address such concerns if readers share them?
+
+    [Hammond]:  If .NET becomes a significant force, then having
+    a Python implementation that targets it can only help Python
+    - much in the same way that Python is helped by having
+    JPython available to target the JVM.
+
+
+JPYTHON
+------------------------------------------------------------------------
+
+  For JPython, I was fortunate enough to get some responses from
+  both Barry Warsaw and Finn Bock.  Barry and Finn are currently
+  the two most active developers working on JPython, but it is a
+  real community effort.  It should be noted (as my interviewees
+  do), that JPython was originally developed by Jim Hugunin, who
+  is no longer able to be actively involved with maintaining it.
+
+  Between Finn and Barry I received an absolute wealth of
+  comments and responses.  Unfortunately, length constraints make
+  it impossible to include everything in this column.  I have
+  decided make available the full interview comments with Finn
+  and Barry at the link in the Resources section.  In addition, I
+  will place Christian Tismer's full comments there, which were
+  cut somewhat.  In particular, all of these interviewees had
+  some interesting remarks to make about the relation between the
+  CPython, Stackless and JPython implementations, and whether
+  insurmountable differences exist between them (and whether
+  such differences matter).  Some of this material is a bit more
+  technical, but feel free to read further at the link.
+
+    [Mertz]:  Exactly what is JPython?
+
+    [Warsaw]:  My standard marketing-speak reads:  "JPython is a
+    100% Pure Java implementation of the Python programming
+    language.  It allows users to compile Python source code to
+    Java byte codes, and run the resulting bytecodes on any Java
+    Virtual Machine.  It is a very seamless and smooth
+    integration with Java:  from Python you have complete access
+    to all Java libraries, can build applets, can integrate with
+    Java beans, and can subclass Java classes in Python and vice
+    versa.  Like Python, and unlike Java, JPython can also be
+    used interactively:  just type some JPython code at the
+    prompt and see the results immediately."
+
+    [Warsaw]:  In simple terms, it allows the Java programmer to
+    script any Java code she wants.  This translates to a 2-10
+    times fewer lines of code in JPython than in Java.  Because
+    Python is a dynamically typed language, you can develop
+    applications much faster, with many fewer bugs, and end up
+    with a much more flexible program.
+
+    [Mertz]:  What were the reasons for developing JPython in the
+    first place?  What was wrong with the original CPython that
+    required another version?
+
+    [Warsaw]:  I should point out here that JPython was invented
+    by Jim Hugunin, who is now working for Xerox PARC's Aspect
+    Oriented Programming project.  Knowing Jim, I think his
+    primary reason for creating JPython was the pure challenge.
+    At the time, many people in the Python world just didn't
+    think it could be done; Guido himself was one of the
+    skeptics.  Jim proved them wrong!
+
+    [Warsaw]:  So why continue to develop JPython now that the
+    challenge has been met?  Because it's the most valuable Java
+    tool that most Java programmers don't know about yet!
+
+    [Warsaw]:  JPython isn't a competitor to Java, it's the
+    perfect complement to it.  Java is a statically typed,
+    compiled language.  This ensures type-safety of libraries and
+    faster execution speeds.  Although it is bytecode
+    interpreted, most people view Java through the traditional
+    write-compile-run-edit programming cycle.  Of course, Java
+    leverages a huge segment of the software world, so there are
+    a lot of resources available to the Java programmer.
+
+    [Warsaw]:  But the same static typing and traditional
+    programming cycle are what increases the cost of Java
+    application development in terms of human resources.  And
+    here, Python absolutely excels.  Because Python is such a
+    simple and small language, it's very easily to learn (many
+    experienced programmers can learn enough Python to be
+    productive in about a day).  And Python was designed with the
+    observation that code is read many times more than it is
+    written, so Python source code is easy to share in a large
+    team project.
+
+    [Warsaw]:  More importantly, Python is a very high-level
+    dynamically typed language.  What this translates to is the
+    savings in amount of code needed to perform a task, as I
+    alluded to above.  With Python, because I can write many
+    fewer lines of code, I can write them faster and have fewer
+    bugs.  This is wonderful for rapid application development.
+
+    [Warsaw]:  Python also provides an interactive interpreter.
+    This means that you can sit at the interpreter prompt, import
+    Java code, create Java class instances, make method calls,
+    etc., all interactively.  This is a wonderful tool for
+    training programmers on the use of corporate Java libraries,
+    or for experimenting with new Java APIs.
+
+    [Warsaw]:  You also asked what's wrong with the original
+    CPython?  Well, nothing!  IMO, all programmers should have
+    both CPython and JPython in their arsenals :).
+
+    [Mertz]:  What strengths or advantages does JPython have over
+    CPython?
+
+    [Bock]:  JPython gives complete access to its underlaying
+    implementation language.  In most (probably all) C-based
+    script languages, a C function must be wrapped in a thin
+    layer of code that serves to expose the C function to the
+    script language.  Fine tools like SWIG exists to automate the
+    creation of this wrapper code.  JPython requires no such
+    wrapper.  All Java code ever written is directly available
+    for use from JPython.  The integration goes both ways.
+    Classes and instances defined in JPython can be passed to
+    Java code as if they were ordinary Java classes and instances
+    (which is exactly what they are).
+
+    [Bock]:  The embedding/extending API is very close to the way
+    it is exposed to Python.  It makes access to JPython objects
+    from within an application or module quite elegant.  This
+    beauty comes in part from the fact that JPython and Java are
+    both OO languages.  Jim took great advantage of this.
+
+    [Warsaw]:  What CPython lacks is access to the vast quantity
+    of Java code out in the world.  If there are Java libraries
+    you need to use, JPython is the answer.  Conversely of
+    course, JPython doesn't have easy access to any existing C
+    libraries out in the world.  Finn has done work integrating
+    things like Tkinter and a posix module through JNI, but those
+    will always be non-standard in JPython because we want to
+    retain the 100% Pure Java certification.
+
+    [Mertz]:  Similarly, what weaknesses or disadvantages does
+    JPython have?
+
+    [Bock]:  JPython only gives access to Java code.  Not to any
+    of the existing C modules.  So every Python module
+    implemented in C must be re-implented in Java.  And CPython
+    has quite a lot of modules.
+
+    [Bock]:  Also, there is almost no documentation to the
+    embedding/extending API other than the source code.
+
+    [Mertz]:  Since JPython combines Java and Python, in a
+    certain sense, what strength and advantages does JPython have
+    over Java?  Likewise, weakness and disadvantages?
+
+    [Warsaw]:  I think these have been covered above.  I'll just
+    briefly mention performance issues with JPython.  Since
+    JPython implements Python's dynamic semantics, there is a
+    fairly extensive run-time that comes with JPython.  This can
+    have a performance impact on some applications.  Standard
+    Java optimizations such as just-in-time compilers and Hotspot
+    technology can mitigate those considerably (e.g. benchmarks 8
+    months ago showed that with a JIT-enabled JVM, JPython 1.1
+    could approach and sometimes surpass CPython 1.5.2 speeds).
+    We'll be updating those benchmark results, and concentrating
+    on performance issues after we roll out JPython's successor
+    (more on that below).
+
+    [Warsaw]:  In analogy with CPython, you can always rewrite
+    performance critical sections of your application in Java.
+
+    [Mertz]:  How widely used do you think JPython is?  Are there
+    particular industries or types of problems that are a
+    particularly good match for JPython?
+
+    [Warsaw]:  I think it's becoming more and more widely used.
+    The companies that are using it find that it's a technology
+    critical to their success.  JPython is valuable to them for
+    all kinds of tasks, from providing an approachable scripting
+    environment to their end users to making it easy to create
+    testing frameworks for their Java libraries and applications.
+    JPython's biggest disadvantage at the moment is that it needs
+    more publicity.  I hope this article will help in that
+    department!
+
+    [Mertz]:  Do you feel JPython is an attempt to keep up with
+    CPython?  Or are they coequal implementations?
+
+    [Bock]:  The fact is that JPython -is- trying to catch up.
+    Almost all new features are added to CPython first.  (Well,
+    JPython did have string method before CPython did).  JPython
+    has a disadvantage here because CPython has 15 times as many
+    core developers as JPython does.  But even so, a JPython
+    version exists with almost all the new features in
+    CPython2.0.
+
+    [Bock]:  They are equal.  But in the real world one is a
+    little more equal that the other.
+
+    [Warsaw]:  I firmly believe that at the language level,
+    JPython and CPython ought to be completely compatible.  Where
+    this is impossible, Guido will decide whether the differences
+    are implementation dependent, or whether one or the other
+    implementations are "buggy".  I would eventually like to see
+    CPython and JPython become coequal, with JPython pushing
+    CPython development in certain directions as much as CPython
+    pushes JPython.
+
+    [Warsaw]:  One current example of this is in Unicode support
+    [i.e.  JPython is already all-unicode].  Another example is
+    the types/class dichotomy.  In CPython, you have built in
+    types like strings, dictionaries, lists, and numbers.  You
+    also have classes and instances.  The built in types can't be
+    inherited from, and to add more confusion, an instance has
+    both a type and a class.  It may be easier to fix this rift
+    in JPython first because of its object-oriented
+    implementation language.
+
+    [Mertz]:  What, if any, significant incompatibilities exist
+    between JPython and CPython?  How easy am I likely to find
+    moving application code between the two implementations?
+    What are the major gotchas?
+
+    [Warsaw]:  There are numerous small differences in the way
+    some things work.  These are outlined in the JPython
+    documentation.  Again, some are classified as acceptable
+    differences given the language definition, and some point out
+    places where one or the other implementation ought to be
+    fixed.  Most are quite minor.
+
+    [Bock]:  Some modules have/can not be implemented in JPython.
+    Some modules can only be implemented as JNI modules and as
+    such may not be useful in the deployment environment.
+
+    [Bock]:  Tellingly enough, the problems I encountered when
+    porting my own script and programs as well as IDLE, PySol and
+    the PMW toolkit was *not* the random reclaiming of the
+    garbage collection or the missing __del__ method.  It was
+    minor stuff that no one else had encounter before [i.e. in
+    CPython behavior].
+
+    [Warsaw]:  The next version of JPython will be compatible
+    with the Python 2.0 language definition, so the biggest
+    gotchas will be in the libraries.  Any of the standard
+    library modules from the CPython distribution that are
+    written in pure Python should be portable.  C extension
+    modules will not be, unless they are specifically integrated
+    through a JNI bridge, or re-implemented in Java.  And any
+    JPython application that extensively uses Java APIs will have
+    a hard time porting back to CPython.
+
+    [Warsaw]:  On the other hand, there is a lot of common
+    functionality in the libraries of the two systems.  With
+    sufficient foresight, compatibility layers can be built into
+    your application.
+
+    [Mertz]:  Any thoughts on future directions for JPython?
+    Anything new and different expected down the pipeline?
+
+    [Warsaw]:  In order to ensure its continued existance and
+    development, and in accordance with CNRI's JPython 1.1.x
+    license, we have created JPython's successor, which we call
+    "Jython", based on the public JPython 1.1 release.  We've
+    moved the entire development process to SourceForge and will
+    manage it using the same kind of open process that is working
+    so well for CPython.  Finn and I are obviously intimately
+    involved in Jython's future development, and Jython will be
+    released with the CPython 2.0 license, which has been OSI
+    approved.  This is as close to an "official" fork as you're
+    going to get, so the current JPython community should be
+    confident that Jython won't ever go away, and I hope they
+    will eventually migrate over to Jython.
+
+    [Warsaw]:  Right now the code should be considered in alpha
+    phase, but Finn and I will be working on several technical
+    milestones for the Jython 2.0 release.  Jython already
+    contains Finn's errata, and CPython 2.0 features such as
+    augmented assignments and extended print (with list
+    comprehensions coming soon).  We've integrated the free
+    Apache Jakarta OROMatcher code, thus eliminating the need for
+    dual licensing, and we've fixed lots of bugs, with many more
+    fixes coming.  I don't know when the first alpha release of
+    Jython 2.0 will happen, but all the code is currently
+    available in the SourceForge CVS tree.  Please visit
+    http://sourceforge.net/projects/jython for more details.
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  JPython homepage:
+
+    http://jpython.org
+
+  Development home for Python for .NET (still called Python.NET
+  at that site):
+
+    http://activestate.com/.NET
+
+  Comments by Mercury developers on just what the .NET platform
+  is, and Microsoft's financial and legal relationship to
+  developers of "little languages:"
+
+    http://www.cs.mu.oz.au/research/mercury/information/dotnet/mercury_and_dotnet.html
+
+  Extra interview comments:
+
+    http://gnosis.cx/download/charming_python_10_outtakes.html
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz writes many apocopetic articles.  David may be
+  reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/.  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+
+
+
+
+

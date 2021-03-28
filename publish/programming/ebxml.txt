@@ -1,0 +1,343 @@
+Understanding ebXML
+Untangling the Future Business Web
+
+David Mertz, Ph.D.
+Phenomenological Unifier, Gnosis Software, Inc.
+May 2001
+
+    When one reads about ebXML, evocations of a story about blind
+    men and elephants lurk in mind. ebXML is a big project with
+    a lot of pieces; it is difficult to grasp how they all fit
+    together.  This article provides an introduction to the
+    overall picture of ebXML, then looks a bit more specifically
+    at the representation of business processes which is an
+    important starting point for ebXML implementations.
+
+
+WHAT IS ebXML?
+------------------------------------------------------------------------
+
+  It is difficult to get a handle on exactly what ebXML is--and
+  on what it isn't.  On the one hand, ebXML seems to promise a
+  grand unification of everything businesses do to communicate
+  with each.  On the other hand, one could be forgiven for
+  thinking that ebXML amounts to nothing more than a pious, but
+  vacuous, declaration that existing standards are worth
+  following.  As with every "next big thing," the truth lies
+  somewhere in the middle.
+
+  Sorting out ebXML involves a few steps.  By way of background,
+  let's look at where ebXML comes from, and who supports it.
+  Perhaps the first thing we need in order to understand the
+  details of ebXML is to digest an alphabet soup of new acronyms
+  and other special terms.  With a collection of terms in mind,
+  and a bit of background on where it comes from, we can start to
+  make sense of how all the different processes in ebXML hold
+  together.
+
+  After we've sorted out what ebXML does--at least in outline--in
+  the beginning part of this paper, the last section will look in
+  some more detail at the "Business Process Specification Schema"
+  which makes up one of the most important elements of ebXML's
+  underlying infrastructure.
+
+
+BACKGROUND
+------------------------------------------------------------------------
+
+  ebXML is an initiative whose participants and endorsers consist
+  of just about every big company and government standards body
+  worldwide that you can think of.  Well, maybe not -every- one
+  you can think of, but certainly hundreds of large companies and
+  bodies. ebXML is not just endorsed by computer/technology
+  companies as you might expect; the backers include a large
+  number industrial, shipping, banking, and other general
+  interests.  The direct sponsors of ebXML are OASIS
+  (Organization for the Advancement of Structured Information
+  Standards) and UN/CEFACT (United Nations Centre for Trade
+  Facilitation and Electronic Business).  But lots of standards
+  bodies have a finger in the pie, including NIST (National
+  Institute of Standards and Technology) and W3C (World Wide Web
+  Consortium).
+
+  A short characterization can be found on the ebXML.org homepage:
+
+    ebXML is a set of specifications that together enable a
+    modular electronic business framework.  The vision of ebXML
+    is to enable a global electronic marketplace where
+    enterprises of any size and in any geographical location can
+    meet and conduct business with each other through the
+    exchange of XML based messages.
+
+  Or in other words, ebXML hopes to succeed EDI (official
+  descriptions tend to emphasize learning from EDI rather than
+  throwing it out).
+
+  With such a collection of supporters, it would seem that ebXML
+  is destined to take over the world.  I tend to have a cynical
+  attitude towards industry buzzwords and hype.  However, in the
+  case of ebXML, I mostly expect it to live up to its billing as
+  a global protocol for most business transactions within the
+  next five years.  Still, I think the way that ebXML will
+  succeed in becoming universal is as much by allowing the
+  incorporation of more-and-more of what businesses do anyway
+  into the specifications as it is by actually getting businesses
+  to do business differently.  I'm not sure if my estimation is
+  cynical or if it is encouragement at the openness of ebXML
+  specifications; but the ebXML initiative is clearly holds
+  an "embrace existing standards and methods" attitude.
+
+
+TERMS D'ART
+------------------------------------------------------------------------
+
+  There are a number of terms to keep in mind before we look at
+  the whole "vision" of ebXML interactions:
+
+    -ebXML Registry-:  A Registry is a central server that stores
+    a variety of information needed to make ebXML work.  Among
+    the information a Registry makes available in XML form are
+    Business Process & Information Meta Models, Core Library,
+    Collaboration Protocol Profiles, Business Library.
+    Basically, when a business wants to start an ebXML
+    relationship with another business, they query a Registry in
+    order to locate a suitable partner, including information
+    about requiremenets for dealing with that partner.
+
+    -Business Processes-:  A Business Process is simply an
+    activity that a business can engage in (and for which it
+    would generally want one or more partners).  A Business
+    Process is formally described by the Business Process
+    Specification Schema (a W3C XML Schema and also a DTD), but
+    may also be modeled in UML.
+
+    -CPP-:  Collaboration Protocol Profile.  A business that
+    wishes to engage in ebXML transactions will file a CPP with a
+    Registry.  The CPP will specify some Business Processes the
+    business wishes to engage in, as well as some Business
+    Service Interfaces it supports.
+
+    -Business Service Interface-:  The ways that a business is
+    able to carry out the transactions needed in its Business
+    Processes.  The kinds of Business Messages the business
+    supports, and the protocols over which these messages might
+    be carried.
+
+    -Business Messages-:  The actual information communicated as
+    part of a business transaction.  A message will contain
+    multiple layers.  At the outside layer, an actual
+    communication protocol must be used (such as HTTP or SMTP).
+    SOAP is an ebXML recommendation as an envelope for a message
+    "payload."  Other layers may deal with encryption or
+    authentication.
+
+    -Core Library-:  A set of standard "parts" that may be used
+    in larger ebXML elements.  For example, Core Processes may be
+    referenced by Business Processes.  The Core Library is
+    contributed by the ebXML initiative itself, while larger
+    elements may be contributed by specific industries or
+    businesses.
+
+    -CPA-:  Collaboration Protocol Agreement.  A contract, in
+    essence, between two or more businesses which can be derived
+    automatically from the CPP's of the respective companies.  If
+    a CPP says "I -can- do X", a CPA says "-We- -will- do X
+    together."
+
+    -SOAP-:  a W3C protocol for exchange of information in a
+    distributed environment that was endorsed by the ebXML
+    initiative.  Of interest for ebXML is its function as an
+    envelope that defines a framework for describing what is in a
+    message and how to process it.
+
+  There are more terms the fit into the whole system, but these
+  ones make a good starting point.
+
+
+PUTTING IT TOGETHER
+------------------------------------------------------------------------
+
+  An illustration used in the ebXML Technical Architecture
+  Specification will probably go a long way towards sorting out
+  what ebXML means for businesses.
+
+  {A high level overview of the interaction of two companies:
+   http://gnosis.cx/publish/programming/ebXML1.gif}
+
+  The first thing Company A in the illustration will do is review
+  the contents of an ebXML Registry, most especially the Core
+  Library that may be downloaded or viewed there.  The Core
+  Library (and maybe other registered Business Processes) will
+  allow Company A to determine what is required for their own
+  implementation of ebXML (and whether ebXML is appropriate to
+  their business needs).
+
+  Based on a review of the information available from an ebXML
+  Registry Company A can build or buy an ebXML implementation
+  suitable for its anticipated ebXML transactions.  The hope of
+  the ebXML initiative is that vendors will support all the
+  elements of ebXML. At such time an "ebXML system" might be
+  little more than a pre-packaged desktop application; or maybe
+  more realistically, the "ebXML system" will at least be as
+  manageable as something like a commercial database system
+  (which still needs a DBA).  The illustration the ebXML
+  initiative document gives suggests that the hypothetical
+  Company B uses something like this pre-packaged application.
+
+  Either way, the next step along the way is for Company A to
+  create and register a CPP with the Registry.  Company A might
+  wish to contribute new Business Processes to the Registry, or
+  simply reference available ones.  The CPP will contain the
+  information necessary for a potential partner to determine
+  the business roles Company A is interested in, and the sort of
+  protocols they are willing to engage in for these roles.
+
+  Once Company A is registered, Company B can look at Company A's
+  CPP, and determine that it is, in fact, compatible with Company
+  B's CPP and requirements.  At that point, Company B should be
+  able to negotiate automatically a CPA with Company A, based on
+  the conformance of the CPP's plus agreement protocols given as
+  ebXML standards or recommendations.
+
+  Finally, the two companies start carrying out actual
+  transactions.  These transactions are likely to involve
+  Business Messages conforming to further ebXML standards and
+  recommendations.  At some point in all this, however, certain
+  things in the "real world" are likely to happen also.  Goods
+  might get shipped from one place to another, or services might
+  be otherwise rendered.  But ebXML will have helped in agreeing
+  to, monitoring, and verifying these "real world" activities.
+  Of course, in our "information economy" a lot of what goes on
+  might stay within the realm of ebXML; maybe everything within a
+  particular business relationship.
+
+
+THE BUSINESS PROCESS SCHEMA
+------------------------------------------------------------------------
+
+  ebXML Business Processes may be modeled with the UN/CEFACT
+  Modeling Methodology (UMM), which utilizes UML.  But such
+  modeling is simply a recommendation, not a requirement.  In any
+  case, since this article is targeted toward XML developers
+  rather than to an OOD angle, it is more interesting herein to
+  look at the how models are represented in XML documents
+  conformant to the Business Process Specification DTD and XML
+  Schema.  The DTD--which is named "ebXMLProcessSpecification-
+  v1.00.dtd"--appears, at this time, to be the primary rule
+  representation.  Both this DTD and a W3C XML Schema that is,
+  presumably, semantically and syntactically compatible may be
+  found in the EbXML_BPschema_1.0 recommendation.
+
+  ebXML process specifications have a root element
+  'ProcessSpecification'.  A particular process specification
+  may contain subnode references to other process specifications,
+  as well as to document specifications and other information.
+  The DTD declaration for 'ProcessSpecification' provides an
+  overview of the structure of a Business Process document:
+
+      #---------- ProcessSpecification DTD Declaration --------#
+      <!ELEMENT ProcessSpecification
+                (Documentation*,
+                (Include* | DocumentSpecification* |
+                  ProcessSpecification* | Package |
+                  BinaryCollaboration | BusinessTransaction |
+                  MultiPartyCollaboration)*)>
+      <!ATTLIST ProcessSpecification
+                name    ID    #REQUIRED
+                version CDATA #REQUIRED
+                uuid    CDATA #REQUIRED >
+
+  The attribute 'uuid' is a globally unique identifier for a
+  process specification; the 'name' and 'version' are specific to
+  the model represented (the 'name' should not collide with
+  nested process specifications).
+
+  Within a process specification, a 'Package' defines a set of
+  collaborations, which may be either 'MultiPartyCollaboration'
+  elements or 'BinaryCollaboration' elements.  Collaborations, in
+  turn, contain a variety of roles for the parties.  An excerpt
+  from the sample process specification contained in the
+  EbXML_BPschema_1.0 recommendation is helpful in sorting out
+  this structure:
+
+      #-------------- A Package of Collborations --------------#
+      <Package name="Ordering">
+        <!-- First the overall MultiParty Collaboration -->
+        <MultiPartyCollaboration name="DropShip">
+          <BusinessPartnerRole name="Customer">
+            <Performs authorizedRole="requestor"/>
+            <Performs authorizedRole="buyer"/>
+            <Transition fromBusinessState="Catalog Request"
+                        toBusinessState="Create Order"/>
+          </BusinessPartnerRole>
+          <BusinessPartnerRole name="Retailer">
+            <Performs authorizedRole="provider"/>
+            <Performs authorizedRole="seller"/>
+            <Performs authorizedRole="Creditor"/>
+            <Performs authorizedRole="buyer"/>
+            <Performs authorizedRole="Payee"/>
+      [...]
+        <BinaryCollaboration name="Request Catalog">
+          <AuthorizedRole name="requestor"/>
+          <AuthorizedRole name="provider"/>
+          <BusinessTransactionActivity name="Catalog Request"
+                                       businessTransaction="Catalog Request"
+                                       fromAuthorizedRole="requestor"
+                                       toAuthorizedRole="provider"/>
+        </BinaryCollaboration>
+      [...]
+
+
+CONCLUSION
+------------------------------------------------------------------------
+
+  The approval of ebXML specifications is moving along at a
+  fairly rapid pace; certainly by the standards of standards
+  organizations.  My own estimation is that it will take another
+  year or two to shake out all the issues and details with such
+  an ambitious vision.  But it appears that ebXML is on the way
+  to widespread use a few years down the road; and therefore now
+  is the time for businesses to begin a serious consideration
+  of their ebXML implementation plans.
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  The sponsors of ebXML can be found at:
+
+    UN/CEFACT -- http://www.unece.org/cefact/
+
+    OASIS -- http://www.oasis-open.org
+
+  A number of specifications have been produced by the ebXML
+  initiative.  All of these specifications can be found at
+  http://ebxml.org.  As specifications proceed through their
+  approval process, their exact URLs will change, so it is best
+  simply to navigate via the ebXML homepage.  If later versions
+  of the documents mentioned here are produced, it will obviously
+  make sense to refer to those superceding versions.
+
+  The long story on "Business Processes" can be found in the
+  document:
+
+    ebXML Business Process Specification Schema Version 1.0
+    (EbXML_BPschema_1.0)
+
+  A sense of the whole ebXML system can be gleaned (with a bit of
+  work) from:
+
+    ebXML Technical Architecture Specification 1.04.
+    (ebXML_TA_v1.0.4)
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  The more David Mertz learns about business technologies, the
+  more firmly he is haunted by the spectre of Luddism.  David may
+  be reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/.  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+

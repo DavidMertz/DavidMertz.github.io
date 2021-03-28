@@ -1,0 +1,303 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>XML MATTERS #10 -- An Indexer for XML Documents -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="xml_matters_9.html" TITLE="XML MATTERS #9">
+<link REL="next" HREF="xml_matters_11.html" TITLE="XML MATTERS #11">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<h1>Xml Matters #10</h1>
+<h2>An Indexer for XML Documents</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Objectifier, Gnosis Software, Inc.<br>
+ April 2001<br>
+ <br>
+</p>
+<blockquote>
+    As XML becomes popular as a document storage format,
+    especially for prose-oriented documents, the task of locating
+    contents within XML document collections becomes more
+    difficult.  This column extends the generic full text indexer
+    presented in David's <cite>Charming Python #15</cite> to include
+    XML-specific search and indexing features.  Discussions of
+    how indexing can take advantage of the hierarchical node
+    structure of XML is addressed in the tool design and in the
+    discussion.
+</blockquote>
+<h3>Introduction</h3>
+ <p>
+  In a technical sense, XML is a simplification and
+  specialization of SGML.  At a first approximation, XML
+  documents should also be valid SGML documents.  SGML, in turn,
+  has been used extensively for large-scale documents, in both
+  corporate and government circles.  One is likely to come across
+  multi-thousand page, multi-megabyte, documents for, e.g.
+  product specifications, regulatory requirements, and computer
+  system documentation in SGML formats.
+</p>
+<p>
+  Culturally, however, XML has evolved from a different
+  direction.  In one respect, XML is a successor for EDI; in
+  another respect, a successor for HTML.  But having a different
+  cultural history than SGML, XML is undergoing its own process
+  of tool development.  And at the same time, as XML is becoming
+  more popular, expect to see more and more of both (usally)
+  informal HTML documents and (usually) formal SGML documents to
+  migrate in the direction of XML formats--particularly using XML
+  dialects like DocBook.
+</p>
+<p>
+  One tool that XML has not yet grown within its own culture is
+  one to effectively and efficiently locate content within large
+  XML documents, or within large collections of XML documents.
+  General file-search tools like <code>grep</code> on Unix, and other
+  similar tools on other platforms, are perfectly able to read
+  the plain text of XML documents (modulo possible Unicode
+  issues), but a simple <code>grep</code> search (or even a complicated one)
+  miss the <em>structure</em> of XML documents.
+</p>
+<p>
+  If files contain thousands of pages of documentation, just
+  determining that a given file contains a word, phrase, or
+  regular expression only very loosely targets what you are
+  likely to know when searching for content in them.  Just which
+  of those agriculture reports, for example, was written by Ms.
+  June Apple?  One imagines a coarse tool like <code>grep</code> would tend
+  to find a lot of things that are not the ones of interest.
+  Moreover, ad hoc tools like <code>grep</code>, while very efficient at
+  what they do, need to check the entire contents of large files
+  each time a search is performed.  For frequent searches,
+  repeated full-file searching is inefficient.
+</p>
+<h3>Extending <em><code>indexer</code></em></h3>
+ <p>
+  In response to the need outlined above, I have created the
+  public-domain utility <em><code>xml_indexer</code></em>.  This Python module can
+  both be used as a runtime utility and also easily extended by
+  custom applications that use its services.  <em><code>xml_indexer</code></em>, in
+  turn, relies on the services of two earlier public-domain
+  utilities I have written about in IBM developerWorks articles:
+  <em><code>indexer</code></em> and <em><code>xml_objectify</code></em> (see Resources).
+</p>
+<p>
+  The "trick" <em><code>xml_indexer</code></em> uses is the same one XPATH uses.
+  Rather than treat XML documents as simply <em>things</em> in the
+  filesystem, we can pretend that the hierarchical nodes of an
+  XML document themselves look much like a hierarchical
+  filesystem.  For purposes of indexing, other than a need for a
+  little syntax to distinguish an XPATH from a filesystem path,
+  we can simply treat an XML node as if it were itself a text
+  file.  Fortunately, <em><code>indexer</code></em> was designed with enough
+  flexibility to use arbitrary identifiers in indexing texts.
+  Let's look at some search results:
+</p>
+<div class="code-sample"><h4>Indexed search against XML nodes</h4><pre>
+[D:\articles] indexer ibm
+/articles/tutor/cryptology3.xml::/section[1]/panel[2]/body/text_column/p[1]
+/temp/Benchmark/Data/addr2.xml::/person[4]/contact_info/email/@address
+/temp/Benchmark/Data/addr2.xml::/person[2]/contact_info/email/@address
+/tools/addr2.xml::/person[4]/contact_info/email/@address
+/tools/addr2.xml::/person[2]/contact_info/email/@address
+
+5 file matched wordlist: ['ibm']
+Processed in 0.320 seconds (SlicedZPickleIndexer)
+
+</pre></div><p>
+  As with XPATH, attribute values are preceded by an <code>@</code> mark,
+  and sibling nodes are enumerated within square brackets.  The
+  filesystem path to an XML document acts, in this context, like
+  an XPATH axis--roughly as a namespace.  For comparison, let's
+  peform a similar indexed search against a file database (some
+  additional search terms are used to keep the result list
+  reasonable):
+</p>
+<div class="code-sample"><h4>Indexed search of email messages</h4><pre>
+[D:\articles] indexer ibm python xml indexer
+D:\archive\mail\messages\tenco.cp15.2001-03-06.13+50+35
+D:\archive\mail\messages\tenco.cp15.2001-03-01.07+57+26
+D:\archive\mail\messages\tenco.cp15.2001-02-28.23+25+26
+
+3 file matched wordlist: ['ibm', 'python', 'xml', 'indexer']
+Processed in 2.530 seconds (SlicedZPickleIndexer)
+
+</pre></div><p>
+  While the first search is against a fairly trivial amount of
+  test data, the second search uses a "production" index against
+  about 100MB of archived email messages (stored in the
+  filesystem, one message per file).  Taking just a couple
+  seconds to search 100MB of files (for multiple simultaneous
+  word occurrences) is quite fast, methinks.
+</p>
+<p>
+  Moreover, while these searches utilize different index
+  databases (because they were done during a testing stage of
+  <em><code>xml_indexer</code></em>), there is no reason that a compound index of
+  text files and XML nodes cannot be created.  In such a case, it
+  is even possible (and probably often useful) to index each XML
+  file <em>both</em> as a collection of nodes and as a plain file.
+  After doing so, search results will show both types of
+  identifier, with the filesystem identifier obviously occurring
+  in every case that an XPATH in its namespace does.  For
+  example:
+</p>
+<div class="code-sample"><h4>Indexed search of email messages</h4><pre>
+[D:\articles] indexer actresses
+/temp/Benchmark/Data/addr_break.xml
+/temp/Benchmark/Data/addr_break.xml::/person[3]/misc_info
+
+2 file matched wordlist: ['actresses']
+Processed in 0.070 seconds (SlicedZPickleIndexer)
+
+
+</pre></div><h3>Creating Indices</h3>
+ <p>
+  In the above examples, readers will have noticed that in the
+  examples <code>indexer</code> was used to perform searches, with no
+  mention of <em><code>xml_indexer</code></em>.  This is because the very same index
+  search tool is used for searching index databases created by
+  <em><code>xml_indexer</code></em> as for those create by <em><code>indexer</code></em>.  In fact
+  <code>indexer</code> is simply a call to <code>python indexer.py ...</code> with the
+  command-line arguments passed in an OS-appropriate manner.
+  Creating or enhancing text-file indexes is also performed by
+  <code>indexer</code>--run <code>indexer --help</code> or <code>indexer /?</code> to get a
+  breakdown on the needed arguments and switches.  You can
+  recurse across directories when you add files to an index, and
+  also limited filename patterns in various ways.
+</p>
+<p>
+  At least for now, XML-node index databases are created using
+  the simpler <code>xml_indexer.py</code> script.  As of this writing, just
+  a single XML document's nodes are added to an index database
+  at a time, by specifying its name as a command-line argument.
+  However, by the time you read this, the command-line syntax for
+  <code>xml_indexer.py</code> will probably be enhanced to look more like
+  that for <code>indexer.py</code>.  Take a look at the output of
+  <code>python xml_indexer.py --help</code> before using it.
+</p>
+<h3>Specifying Xpaths</h3>
+ <p>
+  In order to give search results XPATH wildcard capabilities, a
+  <code>-filter</code> option has been added to <em><code>indexer</code></em>.  XPATH functions,
+  however, are not currently supported in search results.  As a
+  transparent, and beneficial, side-effect, this same switch can
+  be used for filename globbing--just in case you are only
+  interested in matching files fulfilling some patterns.
+</p>
+<p>
+  Basically, the <code>/filter</code> option works exactly as you might
+  expect (adjust for different quoting syntax across shells).
+  You can specify that you are only interested in XPATH results
+  using the double colon in the filter.
+</p>
+<div class="code-sample"><h4>Only return XPATH search results</h4><pre>
+[D:\articles] indexer "/filter=*::*" actresses
+/temp/Benchmark/Data/addr_break.xml::/person[3]/misc_info
+
+1 file matched wordlist: ['actresses']
+Processed in 0.050 seconds (SlicedZPickleIndexer)
+</pre></div><h3></h3>
+ <div class="code-sample"><h4>Only return XML document as file</h4><pre>
+[D:\articles] indexer "/filter=*.xml" actresses
+/temp/Benchmark/Data/addr_break.xml
+
+1 file matched wordlist: ['actresses']
+Processed in 0.050 seconds (SlicedZPickleIndexer)
+
+</pre></div><p>
+  More complicated XPATH specifiers are possible by specifying
+  the subelements and order required:
+</p>
+<div class="code-sample"><h4>Show all the word matches in index</h4><pre>
+[D:\articles] indexer symmetric
+/tutor/cryptology1.xml::/section[2]/panel[8]/title
+/tutor/cryptology1.xml::/section[2]/panel[8]/body/text_column/code_listing
+/tutor/cryptology1.xml::/section[2]/panel[7]/title
+/tutor/cryptology1.xml::/section[2]/panel[7]/body/text_column/p[1]
+
+4 file matched wordlist: ['symmetric']
+Processed in 0.100 seconds (SlicedZPickleIndexer)
+</pre></div><h3></h3>
+ <div class="code-sample"><h4>Limit matches to ones in a title element</h4><pre>
+[D:\articles] indexer "-filter=*::/*/title" symmetric
+/tutor/cryptology1.xml::/section[2]/panel[8]/title
+/tutor/cryptology1.xml::/section[2]/panel[7]/title
+
+2 file matched wordlist: ['symmetric']
+Processed in 0.080 seconds (SlicedZPickleIndexer)
+
+
+</pre></div><h3>Conclusion</h3>
+ <p>
+  It turned out that the design of <em><code>xml_indexer</code></em> was aided
+  enormously by the object-oriented design principles that went
+  into <em><code>indexer</code></em> before it.  With the overriding of just a few
+  methods in the <code>GenericIndexer</code> class (actually, in its
+  descendent <code>SlicedPickleIndexer</code>--but one could just as easily
+  mix in any concrete Indexer class), the use of an entirely new
+  set of identifiers and data source was possible.
+</p>
+<p>
+  Readers who wish to use <em><code>xml_indexer</code></em> as part of their own
+  larger Python projects should find its further specialization
+  equally simple.  I look forward to seeing the uses readers are
+  able to put these helpful base index classes to.
+</p>
+<h3>Resources</h3>
+ <p>
+  The <em><code>xml_indexer</code></em> module may be downloaded from:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/download/xml_indexer.py">http://gnosis.cx/download/xml_indexer.py</a>
+</blockquote>
+<p>
+  A general background discussion of the <em><code>indexer</code></em> module is
+  contained in <cite>Charming Python #15:  Developing a Full-Text
+  Indexer in Python</cite>:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/publish/programming/charming_python_15.html">http://gnosis.cx/publish/programming/charming_python_15.html</a>
+</blockquote>
+<p>
+  The <em><code>indexer</code></em> module itself may be found at:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/download/indexer.py">http://gnosis.cx/download/indexer.py</a>
+</blockquote>
+<p>
+  In order to easily descend recursively through XML nodes, I
+  utilized the high-level Pythonic interface provided by
+  <em><code>xml_objectify</code></em>.  However, it should be noted that until
+  recently, this option would not have been practical.  Older
+  versions of <em><code>xml_objectify</code></em> used DOM to read XML files, which
+  proves embarassingly slow for large XML documents (part of the
+  blame is on the way <em><code>xml_objectify</code></em> handles this DOM).  Costas
+  Malamas has provided an alternative parsing method that uses
+  the <code>expat</code> parser and stream-oriented techniques.  This new
+  technique still has a few hickups with some complicated XML
+  documents, but in most cases works fine, and multiple orders of
+  magnitude faster.  You can find <em><code>xml_objectify</code></em> at:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/download/xml_objectify.py">http://gnosis.cx/download/xml_objectify.py</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz must have mislaid his MacGuffin in one of his other
+  articles.  It is bound to show up again soon.  David may be
+  reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+</p>
+</body></html>

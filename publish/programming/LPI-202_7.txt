@@ -1,0 +1,357 @@
+TUTORIAL FOR LPI EXAM 202: part 7
+Topic 214: Network Troubleshooting
+
+David Mertz, Ph.D.
+Professional Neophyte
+April, 2006
+
+    Welcome to "Network Troubleshooting", the final part of seven
+    tutorials on Linux networking. The material in this tutorial
+    revisits what you learned in earlier tutorials of the LPI 202
+    series. All the basic tools were covered earlier, but this tutorial
+    looks at many of them again, with a particular eye towards fixing
+    problems using those tools.
+
+BEFORE YOU START
+------------------------------------------------------------------------
+
+About this series
+
+  The Linux Professional Institute (LPI) certifies Linux system
+  administrators at junior and intermediate levels. There are two exams
+  at each certification level. This series of seven tutorials helps you
+  prepare for the second of the two LPI intermediate level system
+  administrator exams--LPI exam 202. A companion series of tutorials is
+  available for the other intermediate level exam--LPI exam 201. Both
+  exam 201 and exam 202 are required for intermediate level
+  certification. Intermediate level certification is also known as
+  certification level 2.
+
+  Each exam covers several or topics and each topic has a weight. The
+  weight indicate the relative importance of each topic. Very roughly,
+  expect more questions on the exam for topics with higher weight. The
+  topics and their weights for LPI exam 202 are:
+
+  * Topic 205: Network Configuration (8)
+  * Topic 206: Mail and News (9)
+  * Topic 207: Domain Name System (DNS) (8)
+  * Topic 208: Web Services (6)
+  * Topic 210: Network Client Management (6)
+  * Topic 212: System Security (10)
+  * Topic 214: Network Troubleshooting (1)
+
+About this tutorial
+
+  Welcome to "Network Troubleshooting", the final part of seven
+  tutorials on Linux networking. The material in this tutorial revisits
+  what you learned in earlier tutorials of the LPI 202 series. All the
+  basic tools were covered earlier, but this tutorial looks at many of
+  them again, with a particular eye towards fixing problems using those
+  tools.
+
+Prerequisites
+
+  To get the most from this tutorial, you should already have a basic
+  knowledge of Linux and a working Linux system on which you can
+  practice the commands covered in this tutorial.
+
+About network troubleshooting
+
+  To troubleshooting a network configuration, you should be aware of
+  several tools discussed in these tutorials, and also with several
+  configuration files that affect network status and behavior.  A
+  summary of the main tools and configuration files you should
+  familiarize yourself with is contained in this tutorial.  Perhaps
+  somewhat arbitrarily, the tools discussed in this troubleshooting
+  tutorial are divided according to whether a given tool applies more to
+  configuration of a network in the first place or to diagnosis of
+  network problems.  Of course, in practice, those elements are rarely
+  entirely separate.
+
+Resources
+
+  For the subjects addressed in this tutorial, possibly the best
+  resource for further information is the rest of this tutorial series
+  as a whole.  Nearly all the topics addressed here are detailed further
+  in preceding tutorials.
+
+  For thoroughly in depth information, the Linux Documentation
+  Project has a variety of useful documents, especially its HOWTOs. See
+  http://www.tldp.org/.  A variety of books on Linux networking have
+  been published; I have found O'Reilly's _TCP/IP Network
+  Administration_, by Craig Hunt to be quite helpful (find whatever
+  edition is most current when you read this).
+
+  Quite a few people have written step-by-step guides to fixing a broken
+  Linux network.  One that looks good is "Simple Network Troubleshooting"
+  at: http://www.siliconvalleyccie.com/linux-hn/network-trouble.htm.
+  Debian's similar quick guide is "How To Set Up A Linux Network" at:
+  http://www.aboutdebian.com/network.htm.  Since tutorials come and go,
+  and are updated on different schedules as distributions and commands
+  change, simply using an internet search engine to find currently
+  available sources is a good idea.
+
+NETWORK CONFIGURATION TOOLS
+------------------------------------------------------------------------
+
+'ifconfig'
+
+  The tutorial on Topic 205 (Network Configuration) discusses 'ifconfig'
+  in greater detail.  This utility will both report on the current
+  status of network interfaces, and will let you modify the
+  configuration of those interaces.  In most cases, if -something- is
+  wrong with a network--as in, a particular machine does not appear to
+  access the network at all--running 'ifconfig' with no options is
+  usually the first step you should take.  If this fails to report
+  active interfaces, you can be pretty sure that the local machine
+  itself has a configuration problem.  "Active" in this case means, at
+  minimum, that it shows an IP address assigned; and in most cases, you
+  will expect to see a number of packets in the RX and TX lines, e.g.:
+
+      eth0    Link encap:Ethernet  HWaddr 00:C0:9F:21:2F:25
+              inet addr:192.168.216.90  Bcast:66.98.217.255  Mask:255.255.254.0
+              UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+              RX packets:6193735 errors:0 dropped:0 overruns:0 frame:0
+              TX packets:6982479 errors:0 dropped:0 overruns:0 carrier:0
+
+  Attempting to activate an interface with, e.g. 'ifconfig eth0 up ...'
+  is a good first step to try to see if an interface -can- be activated
+  (filling in additional options in the line, in many cases).
+
+'route'
+
+  The tutorial on Topic 205 (Network Configuration) discusses 'route'
+  in greater detail.  There is to much to cover in detail in this
+  debugging discussion, but this utility lets you both view and modify
+  the routing tables currently in effect for a local machine and a local
+  network.  Using 'route' you may add and delete routes, set netmasks
+  and gateways, and perform various other tweaking.  For the most part,
+  calls to 'route' should be performed in initialization scripts, but in
+  attempting to diagnose and fix problems, experimenting with routing
+  options can help (successes then to be copied to appropriate
+  initialization scripts for later use).
+
+'hostname'
+
+  This utility also has aliases 'domainname', 'nodename',
+  'dnsdomainname', 'nisdomainname' and 'ypdomainname' to utilize
+  different aspects of the utility.  You may get at all these
+  capabilities with switches to 'hostname' itself.
+
+  'hostname' is used to either set or display the current host, domain
+  or node name of the system. These names are used by many of the
+  networking programs to identify the machine. The domain name is also
+  used by NIS/YP.
+
+'dmesg'
+
+  The utility 'dmesg' allows you to examine kernel log messages, and
+  works in cooperation with 'syslogd'.  Any kernel process, including
+  those related to networking are best accessed using the 'dmesg'
+  utility, often filtered using other tools such as 'grep', as well as
+  switches to 'dmesg'.
+
+Manually setting ARP
+
+  You almost never need or want to mess with automatically discovered
+  ARP records.  However, in debugging situations, you may want to
+  manually configure the ARP cache.  The utility 'arp' lets you do this.
+  The key options in the 'arp' utility '-d' for delete, '-s' for set,
+  and '-f' for set-from-file (default file is '/etc/ethers').
+
+  For example, suppose that communication with a specific IP address on
+  the local network is erratic or unreliable. One possible cause of this
+  situation is if multiple machines are incorrectly configured to use
+  the same IP address. When an ARP request is broadcast over the
+  ethernet network, it is indeterminate which machine will respond first
+  with an ARP reply. The end result might be the data packets will at
+  one time be delivered to one machine, and at a later time to a
+  different machine.
+
+  Using 'arp -n' to debug the actual IP assignment is a first step.  If
+  you can determine that the IP address at issue does not map to the
+  correct ethernet device, that is a strong clue about what is going on.
+  But beyond that somewhat random detection, you can force the right ARP
+  mapping using the 'arp -s' (or '-f') option.  Set an IP to map to the
+  actual ethernet device it should; manually configured mapping will not
+  expire unless specifically set to do so using the 'temp' flag.  If a
+  manual ARP mapping fixes the data loss problem, this is a strong sign
+  the problem is over-assigned IP addresses.
+
+NETWORK DIAGNOSTIC TOOLS
+------------------------------------------------------------------------
+
+'netstat'
+
+  The tutorial on Topic 205 (Network Configuration) discusses 'netstat'
+  in greater detail. This utility will display a variety of information
+  on network connections, routing tables, interface statitics,
+  masquerade connections, and multicast memberships.  Among other
+  things, 'netstat' will provide fairly detailed statistics on packets
+  that have been handled in various ways.
+
+  The manpage for 'netstat' provides information on the wide range of
+  swtiches and options available.  This utility is a good general
+  purpose tool for digging into details of the status of networking on
+  the local machine.
+
+'ping'
+
+  A good starting point in finding out if you can connect to a given
+  host from the current machine (by either IP number or symbolic name),
+  is the utility 'ping'.  As well as establishing that a route exists at
+  all--including the resolution of names via DNS or other means, if a
+  symbolic name is used, 'ping' gives you information on round-trip
+  times that may be informative of network congestion or routing delays.
+  Sometimes 'ping' will indicate a percentage of dropped packets, but in
+  practical use, you almost always see either 100% or 0% of packets lost
+  by 'ping' requests.
+
+'traceroute'
+
+  The utility 'traceroute' is a bit like a 'ping' "on steroids".  Rather
+  than simply report the fact that a route exists to a given host,
+  'traceroute' will report complete details on all the hops taken along
+  the way, including the timing of each router.  Routes may change over
+  time, either because of dynamic changes in the internet, or because of
+  routing changes you have implemented locally.  At a given moment
+  though, 'traceroute' shows you an actual followed path, e.g.:
+
+      $ traceroute google.com
+      traceroute: Warning: google.com has multiple addresses; using 64.233.187.99
+      traceroute to google.com (64.233.187.99), 30 hops max, 38 byte packets
+       1  ev1s-66-98-216-1.ev1servers.net (66.98.216.1)  0.466 ms  0.424 ms  0.323 ms
+       2  ivhou-207-218-245-3.ev1.net (207.218.245.3)  0.650 ms  0.452 ms  0.491 ms
+       3  ivhou-207-218-223-9.ev1.net (207.218.223.9)  0.497 ms  0.467 ms  0.490 ms
+       4  gateway.mfn.com (216.200.251.25)  36.487 ms  1.277 ms  1.156 ms
+       5  so-5-0-0.mpr1.atl6.us.above.net (64.125.29.65)  13.824 ms  14.073 ms  13.826 ms
+       6  64.124.229.173.google.com (64.124.229.173)  13.786 ms  13.940 ms  14.019 ms
+       7  72.14.236.175 (72.14.236.175)  14.783 ms  14.749 ms  14.476 ms
+       8  216.239.49.226 (216.239.49.226)  16.651 ms  16.421 ms  17.648 ms
+       9  64.233.187.99 (64.233.187.99)  14.816 ms  14.913 ms  14.775 ms
+
+'host', 'nslookup' and 'dig'
+
+  All three of the utilities 'host', 'nslookup' and 'dig' are used for
+  querying DNS entries, and largely overlap in capabilities. Generally,
+  'nslookup' enhanced 'host', and 'dig' in turn enhanced 'nslookup',
+  though none of the three are exactly backward or forward compatible
+  with each other. All the tools rely on the same underlying kernel
+  facilities, so reported results shoudl be consistent in all cases
+  (except where level of detail differs). For example, each of the three
+  is used to query "google.com"
+
+      $ host google.com
+      google.com has address 64.233.187.99
+      google.com has address 64.233.167.99
+      google.com has address 72.14.207.99
+
+      $ nslookup google.com
+      Server:         207.218.192.39
+      Address:        207.218.192.39#53
+
+      Non-authoritative answer:
+      Name:   google.com
+      Address: 64.233.167.99
+      Name:   google.com
+      Address: 72.14.207.99
+      Name:   google.com
+      Address: 64.233.187.99
+
+      $ dig google.com
+      ; <<>> DiG 9.2.4 <<>> google.com
+      ;; global options:  printcmd
+      ;; Got answer:
+      ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 46137
+      ;; flags: qr rd ra; QUERY: 1, ANSWER: 3, AUTHORITY: 0, ADDITIONAL: 0
+
+      ;; QUESTION SECTION:
+      ;google.com.                    IN      A
+
+      ;; ANSWER SECTION:
+      google.com.             295     IN      A       64.233.167.99
+      google.com.             295     IN      A       72.14.207.99
+      google.com.             295     IN      A       64.233.187.99
+
+      ;; Query time: 16 msec
+      ;; SERVER: 207.218.192.39#53(207.218.192.39)
+      ;; WHEN: Mon Apr 17 01:08:42 2006
+      ;; MSG SIZE  rcvd: 76
+
+NETWORK CONFIGURATION FILES
+------------------------------------------------------------------------
+
+'/etc/network/' and '/etc/sysconfig/network-scripts/'
+
+  The directory '/etc/network/' contains a variety of information about
+  the current network, on some Linux distributions, especially in the
+  file '/etc/network/interfaces'. Various utilities, especially 'ifup'
+  and 'ifdown' (or 'iwup' and 'iwdown' for wireless interfaces) are
+  contained in '/etc/sysconfig/network-scripts/' on some distributions
+  (but the same scripts may live elsewhere instead on your
+  distribution).
+
+'/var/log/syslog' and '/var/log/messages'
+
+  Messages logged by the kernel or the 'syslogd' facility are stored in
+  the log files '/var/log/syslog' and '/var/log/messages'.  The tutorial
+  for LPI Exam 201, Topic 211 (System Maintenance) discusses system
+  logging in greater detail.  The utility 'dmesg' is generally used to
+  examine logs.
+
+'/etc/resolv.conf'
+
+  The tutorial Topic 207 (Domain Name System) discusses
+  '/etc/resolv.conf' in greater detail.  Generally, this file simply
+  contains the information needed to find domain name servers.  It may
+  be configured either manually or via dynamic means such as RIP, DHCP
+  or NIS.
+
+'/etc/hosts'
+
+  The file '/etc/hosts' is usually the first place a Linux system looks
+  to attempt to resolve a symbolic hostname.  Adding entries can either
+  bypass DNS lookup (or sometimes YP or NIS facilities), or can be used
+  to name hosts that are not available on DNS, often because they are
+  strictly names on the local network.
+
+  For example,
+
+      $ cat /etc/hosts
+      # Set some local addresses
+      127.0.0.1         localhost
+      255.255.255.255   broadcasthost
+      192.168.2.1       artemis.gnosis.lan
+      192.168.2.2       bacchus.gnosis.lan
+      # Set undesirable site patterns to loopback
+      127.0.0.1       *.doubleclick.com
+      127.0.0.1       *.advertising.com
+      127.0.0.1       *.valueclick.com
+
+'/etc/hostname' and '/etc/HOSTNAME'
+
+  The file '/etc/HOSTNAME' (on some systems without the capitalization)
+  is sometimes used for the symbolic name of the localhost, as known on
+  the network.  However, use of this file varies between distributions,
+  and generally '/etc/hosts' is used exclusively on modern
+  distributions.
+
+'/etc/hosts.allow' and '/etc/hosts.deny'
+
+  The tutorials on Topic 209 (File Sharing Servers) and Topic 212
+  (System Security) discusses the files '/etc/hosts.allow' and
+  '/etc/hosts.deny' in greater detail. These configuration files are
+  used for positive and negative access lists by a variety of network
+  tools.  Read the manpages on these configuration files for more
+  information on the specification of wildcards, ranges, and specific
+  permissions that may be granted or denied.
+
+  Beyond initial setup to enforce system security, you often want to
+  examine the content of these is a connection that "just seems like" it
+  should be working fails to.  Generally, examining access control
+  issues will come after examining basic interface and routing
+  information in a debugging effort.  That is, if you cannot reach a
+  particular host at all (or it cannot reach you), it does not matter
+  whether the host has permissions to use the services your provide.
+  But selective failures in connections and service utilization can
+  often be because of access control issues.

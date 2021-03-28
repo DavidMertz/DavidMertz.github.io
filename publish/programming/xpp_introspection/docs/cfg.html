@@ -1,0 +1,103 @@
+<HTML>
+<HEAD><TITLE>Library - Cfg()</TITLE>
+<STYLE type="text/css">
+EM { font-weight: normal; font-style: italic; color: #000066; }
+B { color: #660000; }
+H1 { font-size: large; font-weight: bold; background-color: #DDEEFF; }
+H2 { font-size: medium; font-weight: bold; }
+P.indent { margin-left: 5%; }
+P.code { margin-left: 5%; color: #006600; font-weight: bold; font-family: MONOSPACE; font-size: small; }
+P.synopsis { margin-left: 5%; }
+DL { margin-left: 5%; }
+UL { margin-left: 3%; margin-right: 8%; text-indent: -5%; }
+P.syntax { margin-left: 15%; text-indent: -10%; margin-right: 5%; }
+</STYLE></HEAD>
+
+<BODY>
+
+<H1>Function Cfg()</H1>
+
+   <P class="synopsis">
+   Self-initializing persistent Configuration class instance
+
+<!----------------------------------------------------------------><HR>
+
+<H2>Syntax</H2>
+
+   <P class="indent">Cfg([<B>&lt;oConfig&gt;</B>]) --&gt; <B>oCfg</B></P>
+
+<H2>Arguments</H2>
+
+   <P class="indent">
+   <B>&lt;oConfig&gt;</B> If a Configuration instance is passed as an argument,
+   that instance becomes the active configuration for subsequent
+   calls to Cfg().
+
+<H2>Returns</H2>
+
+   <P class="indent">
+   An initialized Configuration instance.  If available, this instance
+   will be read from the persistent storage diskfile
+   MY_HOMEPATH+"USER.CFG".</P>
+
+<H2>Description</H2>
+
+   <P class="indent">
+   The Cfg() function can be treated as a globally available and
+   persistent Configuration instance.  Rather than worry about
+   instantiating the class and making sure an assigned variable is in
+   the proper scope, access to a module's configuration is performed
+   through the Cfg() function, called with no arguments.
+
+   <P class="indent">
+   One virtue of the Cfg() function is that it will initialize its
+   STATIC configuration variable whenever a first runtime call is made
+   to the function.  There is no need to place an special initializing
+   call to Cfg() at the beginning of module code.  If a particular
+   runtime sequence never calls the Cfg() function, that ipso facto
+   means there was no need to access configuration data or methods.
+
+   <P class="indent">
+   For flexibility, it is possible to pass as argument a specific
+   Configuration instance which is to act as the subsequent
+   configuration.  However, it is not currently anticipated that there
+   will be any need to use this parameter option, since the
+   Configuration instance accessed via Cfg() can have its data changed
+   either persistently or non-persistently by using the associated
+   class' methods and setting its instance data.
+
+<H2>Examples</H2>
+
+   <P class="code">
+   ? Cfg():className()            // Result: "Configuration"
+   <br>
+   <br>// Check a configuration value
+   <br>IF Cfg():GrayBar
+   <br> &nbsp;  DrawGraBox(22, 0, 23, 79, "FLAT_PALE_BIGTEXT", cTitle)
+   <br>ENDIF
+   <br>
+   <br>// Set, serialize, and save a configuration value
+   <br>Cfg():GrayBar := .T.
+   <br>Cfg():toDisk()
+   <br>
+   <br>// Make additional config change, but do not save to diskfile
+   <br>Cfg():ColorScheme:DialogBG := GRA_CLR_YELLOW
+
+
+<H2>Files</H2>
+
+   <P class="indent">
+   Source file is <tt>Configuration.prg</tt>
+
+<!----------------------------------------------------------------><HR>
+
+<H2>See Also:</H2>
+
+<P><A HREF="Configuration.html">CLASS Configuration</A></P>
+
+<!----------------------------------------------------------------><HR>
+
+
+</BODY>
+</HTML>
+

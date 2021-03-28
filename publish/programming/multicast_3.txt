@@ -1,0 +1,236 @@
+MULTICASTING STRATEGIES: UNDERSTANDING RELIABILITY
+
+Brad Huntting, University of Colorado
+David Mertz, Gnosis Software
+April 2003
+
+  In the first and second installments we introduced the basic
+  concepts of multicasting and issues of network topology.  In
+  this installment Brad and David discuss how the network
+  architecture of multicast can be combined with reliability
+  assurances for the transmitted datastreams.
+
+WHAT IS RELIABILITY?
+------------------------------------------------------------------------
+
+  One of the thorny issues Internet multicast faces is
+  reliability.  Reliability, in digital transmission contexts,
+  has three aspects:  Assuring the data arrives at its
+  destination:
+
+    (a) uncorrupted;
+
+    (b) in sequence;
+
+    (c) in a timely manner.
+
+  However, in the connectionless model of the Internet, packets
+  are delivered on a "best effort" basis, and there is no
+  guarantee about when, or even if, an individual packet will
+  arrive at its destination.  How can higher-layer mechanism make
+  up for the lack of reliability at lower network layers?
+
+  In reality, it is impossible to make reliability guarantees in
+  all possible network failure scenario; at base, reliability is
+  actually a question of preferred failure modes.  Which do you
+  prefer, for example:  An intact data stream with no holes, or a
+  time limit on network delay?  Do you mind if a few bits are
+  flipped, or would you rather drop a whole packet?  Do you want
+  packets delivered in order, or just delivered as fast as
+  possible?
+
+  As an example, music should be played at a constant tempo and
+  missing data should produce synchronized audio drop out.  This
+  failure mode is the most acceptable degradation of output.
+  Many common audio players, nonetheless, have improperly
+  optimized failure modes--they allow unpleasant failure
+  characteristics, such as skipping ahead when they encounter
+  holes in streaming data.
+
+
+TRANSMISSION CONTROL PROTOCOL AND REALTIME TRANSPORT PROTOCOL
+------------------------------------------------------------------------
+
+  In the unicast world, reliability is usually provided by
+  Transmission Control Protocol (TCP).  TCP provides multiple
+  coherently-ordered, error-checked datastreams between two
+  hosts.  TCP works by active acknowledgment:  each side of the
+  connection notifies the other of how much sequential data it
+  has received.  In this way, a lost packet can easily be
+  detected and retransmitted.  TCP also detects network
+  congestion, and takes steps to ensure that a socket uses only
+  its share of available bandwidth.
+
+  "Classic" multicast multimedia applications such as "vic" and
+  "vat" (multicast video and audio conferencing tools
+  respectively), use the Realtime Transport Protocol (RTP) to
+  organize their data streams.  RTP is non-reliable in the sense
+  that it has no mechanism to recover data that is lost in
+  transit.  Where TCP uses a 32 bit sequence number (i.e. a byte
+  count) to maintain the order of the packets, RTP uses a 32 bit
+  relative fixed point timestamp which can be used to ensure that
+  data is decoded in the correct order and presented at the
+  correct time.  A session-identifier field helps label disparate
+  media streams such as audio and video 'tracks', so they can be
+  grouped together and synchronized using the timestamps.  RTP is
+  typically run over User Datagram Protocol (UDP), which provides
+  a data integrity check.
+
+
+ENVIRONMENTAL REQUIREMENTS
+------------------------------------------------------------------------
+
+  Many applications require more reliability aspects than just
+  correct ordering and per packet data integrity.  Suppose a
+  daily file transfer sends a 500 megabyte file to a million
+  recipients, once a night.  To unicast such a file would require
+  around 50 Gb/s of bandwith--any way you cut it, that's
+  expensive.  With multicast this transmission could, in theory,
+  be carried on a single 64 Kb/s ISDN.  The trick is making sure
+  that the file arrives intact at every receiver.
+
+  Adapting TCP's ACK scheme has problems.  If every receiver sent
+  ACKs directly to the sender, the return ACK traffic could grow
+  linearly with the number of receivers--this is called an "ACK
+  implosion."  If the receivers were to back off, and send ACKs
+  less frequently as the number of listeners increased, then the
+  ACKs would become too spaced-out to be useful.  Having
+  receivers send negative acknowledgments (NACKs) when they
+  detected missing data is one solution.  But care must be taken
+  to ensure that a packet dropped near the root of the multicast
+  distribution tree does not create a NACK implosion, should all
+  the recipients decide to NACK simultaneously.
+
+
+RELIABLE MULTICAST TRANSPORT WORKING GROUP GUIDELINES
+------------------------------------------------------------------------
+
+  To establish a set of standard reliable multicast transport
+  protocols, the Reliable Multicast Transport Working Group (RMT)
+  of the Internet Engineering Task Force[1] created a set of
+  guidelines that developers should address in any proposed
+  protocol.  Once implemented, they will, hopefully, be of
+  general use to a wide variety of applications
+
+  It was clear from the RMT's outset that different applications
+  would require different aspects of reliability.  Unlike the
+  unicast world where TCP is nearly universal, it is unlikely
+  that any single reliable multicast transport protocol will be
+  acceptable for all applications.  So the working group has
+  focused on creating protocol modules which can be plugged
+  together to provide different forms of reliability.
+
+  The RMT's current focus is on three types of modules:
+
+    *** Nack Oriented Reliable Multicast protocol (NORM) uses
+    negative acknowledgments for reliability.  It avoids the NACK
+    implosion problem by having all recipients listen to NACKs,
+    and/or by using a probabilistic delays to void redundant
+    NACKs. NORM is capable of working over both any source and
+    single source multicast.  While NORM can carry so-called
+    non-finite data streams, it will probably be most useful in
+    batch file transfer applications.
+
+    *** TRee ACKnowledment based protocol (TRACK) uses a tree for
+    controlling feedback and repairs.  TRACK has the capability
+    of giving the sender a confirmation receipt for each
+    receiver.  This can be important, for example, in financial
+    applications in which the receivers pay for the data--the
+    sender needs confirmation that it can charge the recipients
+    for the data.  TRACK may not be a good choice for networks
+    where the return path from receiver to sender is very
+    limited, such as satellite based networks.
+
+    *** Asynchronous Layered Coding (ALC) uses forward
+    error-correction (FEC) techniques and does not require any
+    feedback.  Forward error correction is a technique wherein
+    the sender encodes a message of N symbols (such as bits or
+    packets) as N+P symbols which are transmitted to the
+    receiver.  The receiver needs only recover N of the symbols
+    to reconstruct the original message; up to P symbols may be
+    lost or corrupted in transit.  In practice, most FEC schemes
+    transmit the N original packets as-is, and create additional
+    parity packets which can be used to recover some of those
+    packets, should they be lost.
+
+
+RELAY NETWORKS AND THE THEIR SUCCESSOR
+------------------------------------------------------------------------
+
+  The currently-limited state of multicast deployment has kept
+  reliable multicast out of the limelight.  Fortunately, progress
+  on tools and standardization has continued, and is
+  accelerating.
+
+  Currently, application architects needing a mechanism to
+  reliably deliver data to a diverse group of receivers on the
+  Internet have been forced to create distribution trees using
+  unicast links between participating receivers.  This technique
+  is called "Application Multicast"; it is used by applications
+  such as Icecast, Gnutella, and Freenet[2], and packages such as
+  Xbone[3].  Application multicast usually works by creating a
+  (virtual) overlay network using unicast Internet links.  The
+  main advantage of this approach--and the reason it is used at
+  all--is that the implementation expense is borne by the users.
+  The participating nodes in the overlay network take
+  responsibility for replicating data and constructing the
+  distribution trees.
+
+  The performance of the overlay network can be severely degraded
+  when users are behind slow DSL or Cable modem links; this
+  situation is compounded by the asymmetric bandwidth
+  capabilities of such links.  Getting the topology of an overlay
+  network correct is no easy task, especially when nodes are
+  allowed to come and go frequently.  The overlay network needs
+  not be precisely homomorphic to the underlying Internet
+  topology.  But it does need to avoid network bottlenecks, and
+  at the same time avoid excessive fan-out at individual nodes.
+  These are tractable problems, but they are usually simply
+  ignored.  The problems can be demonstrated by running a
+  Gnutella client overnight on a consumer-level Internet
+  connection; by morning your Internet connection will be
+  saturated.
+
+
+REFERENCES
+------------------------------------------------------------------------
+
+  [1] Information about the Reliable Multicast Transport working
+  group as well as Drafts and RFCs on RMT, can be found at the
+  IETF web site at:
+
+    http://www.ietf.org/html.charters/rmt-charter.html
+
+  [2] Icecast was designed as a free alternative to 'real audio',
+  info can be found at:
+
+    http://www.icecast.org/
+
+  Gnutella is a free peer-to-peer file sharing database, more
+  info can be found by searching for gnutella on google.com.
+  Freenet is another, potentially more robust file sharing
+  network, more info can be found on sourceforge at:
+
+    http://freenet.sourceforge.net/
+
+  [3] Xbone, developed at ISI, creates and manages overlay
+  networks or Virtual Private Networks (VPNs) using a variety of
+  tools.  More info can be found on their web site at:
+
+    http://www.isi.edu/xbone/
+
+  Intel Executive Vice President, Leslie Vadasz, in his 2002
+  Senate Testimony made many good points about the inevitable
+  convergence of Intel PC and network technology with audio and
+  video content distribution.  From a technical perspective,
+  research and standardization of multicast protocols and
+  technologies is the essential open matter in furthering such
+  distribution.  Vadasz' very interesting statement can be found
+  at:
+
+    http://www.senate.gov/%7Ecommerce/hearings/022802vasdasz.pdf
+
+  We have mirrored this document at:
+
+    http://gnosis.cx/download/022802vasdasz.pdf
+

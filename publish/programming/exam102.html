@@ -1,0 +1,1072 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html><head><title>LPI 102 Certification Practice Test</title></head>
+<body><h1>LPI 102 Certification Practice Test</h1>
+
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.1/1/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='C'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Suppose that after installing a serial multi-port card on a
+    system, the mouse connected to a serial port on your
+    motherboard stops functioning.  Which of the following
+    commands is MOST likely to be useful in diagnosing this
+    problem?</p>
+<ul>
+<li><pre>A. setserial /dev/com1 -v auto_irq</pre></li>
+<li><pre>B. cat /dev/mouse &gt; serial-info.dump</pre></li>
+<li><pre>C. setserial -a /dev/cua0</pre></li>
+<li><pre>D. ioaddr /dev/ttyS1</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.1/2/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='A'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    To determine what SCSI devices are attached to and recognized
+    on either of the two SCSI channels by the currently running
+    system, which command line would be BEST to run?</p>
+<ul>
+<li><pre>A. cat /proc/scsi/scsi</pre></li>
+<li><pre>B. ls -l -i /dev/sd*</pre></li>
+<li><pre>C. stinit -v /dev/sda /dev/sdb</pre></li>
+<li><pre>D. scsiinfo --all --probe</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.1/2/2</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='C'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following command lines would provide the most
+    useful information in diagnosing a suspected hardware address
+    conflict between an an EISA ethernet NIC card and a video controller?</p>
+<ul>
+<li><pre>A. cat /proc/irq</pre></li>
+<li><pre>B. cat /proc/meminfo</pre></li>
+<li><pre>C. cat /proc/iomem</pre></li>
+<li><pre>D. cat /proc/modules</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.1/3/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='D'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Whick of the following Linux utilities is MOST useful in
+    determining what sort of motherboard audio support exists on
+    the current system?</p>
+<ul>
+<li><pre>A. less -f /dev/audio</pre></li>
+<li><pre>B. pnpdetect</pre></li>
+<li><pre>C. modprobe</pre></li>
+<li><pre>D. sndconfig</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.2/1/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='B'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which Linux utility would provide BEST guidance to
+    determining the relative performance characteristics of the
+    several local hard-disks installed on a system?</p>
+<ul>
+<li><pre>A. nfsstone</pre></li>
+<li><pre>B. hdparm</pre></li>
+<li><pre>C. fdisk</pre></li>
+<li><pre>D. modprobe</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.2/2/1</td><td>multiple alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='AD'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<table bgcolor="lightblue" width="100%"><tr><td>
+<pre>    boot=/dev/hda
+    map=/boot/map
+    install=/boot/boot.b
+    vga=791
+    default=redhat
+    keytable=/boot/us.klt
+    lba32
+    prompt
+    timeout=200
+    message=/boot/message
+    menu-scheme=wb:bw:wb:bw
+    image=/boot/vmlinuz-2.4.7-10
+	    label=redhat-2.4.7
+	    root=/dev/hda9
+	    read-only
+    image=/boot/vmlinuz-2.4.16
+        label=redhat
+	    alias=redhat-2.4.16
+	    root=/dev/hda9
+	    read-only
+    image=/boot/vmlinuz-2.4.8-26mdk
+	    label=mandrake81
+	    root=/dev/hda10
+	    initrd=/boot/initrd.img
+	    append=" devfs=mount"
+	    read-only
+    image=/boot/vmlinuz-2.2.15-4mdk
+	    label=mandrake71
+	    root=/dev/hda7
+	    read-only
+    other=/dev/hda2
+	    label=eComStation
+	    table=/dev/hda
+    other=/dev/fd0
+	    label=floppy
+	    unsafe
+</pre>
+</td></tr></table>
+<p>    Please examine the '/etc/lilo.conf' file listed in the
+    exhibit.  Assume for purposes of this question that this
+    configuration accurately matches the partitioning of the
+    current system, and also that 'lilo' has been run while this
+    configuration file is as listed.  Which of the following
+    statements do you know to be true?</p>
+<ul>
+<li><pre>A. lilo is installed to the master boot record of the first
+       IDE hard-disk.</pre></li>
+<li><pre>B. lilo is installed on the partition '/dev/hda9' where there is
+       a kernel image called '/boot/vmlinuz-2.4.7-10' on that
+       partition.</pre></li>
+<li><pre>C. Exactly three partitions on '/dev/hda' contain separate
+       Linux installation.</pre></li>
+<li><pre>D. The default boot kernel image is in a file named
+       'vmlinuz-2.4.16'.</pre></li>
+<li><pre>E. The kernel image /boot/vmlinuz-2.4.8-26mdk is stored on
+       the partition '/dev/hda10'.</pre></li>
+<li><pre>F. The current system contains exactly one IDE hard-disk.</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.2/3/1</td><td>mutliple alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='BC'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Suppose that you have just downloaded the application
+    'someapp' in the form of the file
+    'someapp-1.3.7.src.tar.bz2'.  You have placed this file in
+    your '~/tmp' directory.  Which of the following command
+    lines would be a reasonable first step for installation of
+    the application</p>
+<ul>
+<li><pre>A. rpm Uvh someapp-1.3.7.src.tar.bz2</pre></li>
+<li><pre>B. tar xvfj someapp-*</pre></li>
+<li><pre>C. bunzip2 someapp-1.3.7.src.tar.bz2 | tar tvf -</pre></li>
+<li><pre>D. cat someapp-1.3.7* | tar xvfz -</pre></li>
+<li><pre>E. dbkg -L someapp-1.3.7.src.tar.bz2 | less</pre></li>
+<li><pre>F. make --all someapp-1.3.7.src.tar.bz2</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.2/3/2</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='D'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following commands is frequently run first when
+    compiling an unpacked Linux application from C source code?</p>
+<ul>
+<li><pre>A. rpm Uvh *</pre></li>
+<li><pre>B. make install</pre></li>
+<li><pre>C. setup -c</pre></li>
+<li><pre>D. configure</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.2/4/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='B'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following command lines would be MOST useful in
+    determining a list of the shared libraries loaded with the
+    application '/usr/local/bin/someapp'?</p>
+<ul>
+<li><pre>A. cat /etc/ld.so.conf | grep someapp</pre></li>
+<li><pre>B. ldd -v /usr/local/bin/someapp</pre></li>
+<li><pre>C. ldconfig -l /usr/local/bin/someapp</pre></li>
+<li><pre>D. readlink /usr/local/bin/someapp</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.2/5/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='D'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Assume you are maintaining a Debian-based Linux system.
+    You wish to install the application 'someapp'.  Which of the
+    following command lines would be the most common way to
+    install the application?</p>
+<ul>
+<li><pre>A. dselect someapp</pre></li>
+<li><pre>B. apt-setup someapp</pre></li>
+<li><pre>C. dpkg --install someapp</pre></li>
+<li><pre>D. apt-get install someapp</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.2/5/2</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='C'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Assume you are maintaining a Debian-based Linux system.  You
+    find a file on your system called '/usr/local/bin/curious',
+    and are unsure why the file is present.  Which of the
+    following commands would provide you with information about
+    the Debian package from which the file was installed?</p>
+<ul>
+<li><pre>A. dpkg -s /usr/local/bin/curious</pre></li>
+<li><pre>B. dpkg -L /usr/local/bin/curious</pre></li>
+<li><pre>C. dpkg -S /usr/local/bin/curious</pre></li>
+<li><pre>D. dpkg -l /usr/local/bin/curious</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.2/6/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='B'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Assume you are maintaining a RPM-based Linux sysem. Which of
+    the following command lines would be a likely choice for
+    installing a precompiled distribution of the application
+    'someapp'</p>
+<ul>
+<li><pre>A. rpm -i someapp-1.3.7.src.rpm</pre></li>
+<li><pre>B. rpm -Uvh someapp-1.3.7.i586.rpm</pre></li>
+<li><pre>C. tar xvfz someapp-1.3.7.i386.tgz | rpm -qpl</pre></li>
+<li><pre>D. rpm -Kv someapp-1.3.7.i386.rpm</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.2/6/2</td><td>multiple alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='BDF'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Assume you are maintaining a RPM-based Linux sysem. Which of
+    the following applications can be used (if present on your
+    system) for interactive management of installed packages?</p>
+<ul>
+<li><pre>A. dselect</pre></li>
+<li><pre>B. kpackage</pre></li>
+<li><pre>C. gpackage</pre></li>
+<li><pre>D. xrpm</pre></li>
+<li><pre>E. rpmfind</pre></li>
+<li><pre>F. gnorpm</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.2/6/3</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='A'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following command lines would you use to verify
+    that a Red Hat Package for 'someapp' that you wish to
+    install has not become corrupted, or been tampered with?</p>
+<ul>
+<li><pre>A. rpm -Kv someapp-1.3.7.i586.rpm | tee someapp-1.3.7.md5</pre></li>
+<li><pre>B. md5sum someapp-1.3.7.i586.rpm | diff - someapp-1.3.7.md5</pre></li>
+<li><pre>C. gpg --verify someapp-1.3.7.i586.rpm</pre></li>
+<li><pre>D. checkrpm someapp-1.3.7.i586.rpm</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.5/1/1</td><td>multiple alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='AC'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following utilities can be used to load driver
+    support for an additional hardware device at runtime?</p>
+<ul>
+<li><pre>A. modprobe</pre></li>
+<li><pre>B. lsmod</pre></li>
+<li><pre>C. insmod</pre></li>
+<li><pre>D. chmod</pre></li>
+<li><pre>E. modules</pre></li>
+<li><pre>F. modinfo</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.5/2/1</td><td>multiple alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='BF'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<table bgcolor="lightblue" width="100%"><tr><td>
+<pre>    boot=/dev/hda
+    map=/boot/map
+    install=/boot/boot.b
+    vga=791
+    default=redhat
+    keytable=/boot/us.klt
+    lba32
+    prompt
+    timeout=200
+    message=/boot/message
+    menu-scheme=wb:bw:wb:bw
+    image=/boot/vmlinuz-2.4.7-10
+	    label=redhat-2.4.7
+	    root=/dev/hda9
+	    read-only
+    image=/boot/vmlinuz-2.4.16
+        label=redhat
+	    alias=redhat-2.4.16
+	    root=/dev/hda9
+	    read-only
+    image=/boot/vmlinuz-2.4.8-26mdk
+	    label=mandrake81
+	    root=/dev/hda10
+	    initrd=/boot/initrd.img
+	    append=" devfs=mount"
+	    read-only
+    image=/boot/vmlinuz-2.2.15-4mdk
+	    label=mandrake71
+	    root=/dev/hda7
+	    read-only
+    other=/dev/hda2
+	    label=eComStation
+	    table=/dev/hda
+    other=/dev/fd0
+	    label=floppy
+	    unsafe
+</pre>
+</td></tr></table>
+<p>    The exhibit for this question is one screen of the kernel
+    config utility at '/usr/src/linux-2.4.17/scripts/Menuconfig'.
+    Based on this screen which of the following statements
+    describe the kernel that would be created after saving the
+    listed options?</p>
+<ul>
+<li><pre>A. Multi-IO card drivers are contained in loadable modules
+       rather than in the base kernel.</pre></li>
+<li><pre>B. The compiled system supports parallel ports at a hardware
+       level, but we cannot determine whether parallel printer
+       support is installed.</pre></li>
+<li><pre>C. IEEE 1284 (enhanced parallel) mode drivers are contained
+       in loadable modules rather than in the base kernel.</pre></li>
+<li><pre>D. PCMCIA management drivers are contained in loadable
+       modules rather than in the base kernel.</pre></li>
+<li><pre>E. Kernel support for SuperIO chipsets is included in this
+       base kernel.</pre></li>
+<li><pre>F. IEEE 1284 (enhanced parallel) mode drivers are compiled
+       directly into this base kernel.</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.5/2/2</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='C'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following command lines can NOT be used to
+    configure the compilation of a new Linux kernel and kernel
+    modules?</p>
+<ul>
+<li><pre>A. make xconfig</pre></li>
+<li><pre>B. make menuconfig</pre></li>
+<li><pre>C. make kernconfig</pre></li>
+<li><pre>D. make config</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.7/1/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='C'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following key sequences will save changes made
+    during a 'vi' editing session, and end the application?</p>
+<ul>
+<li><pre>A. &lt;esc&gt;:qw</pre></li>
+<li><pre>B. &lt;esc&gt;:sx</pre></li>
+<li><pre>C. &lt;esc&gt;:wq</pre></li>
+<li><pre>D. &lt;esc&gt;:xs</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.7/2/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='B'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following utilities can be used to terminate a
+    spooled print job without printing it?</p>
+<ul>
+<li><pre>A. lpr</pre></li>
+<li><pre>B. lpc</pre></li>
+<li><pre>C. lpd</pre></li>
+<li><pre>D. lpq</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.7/3/1</td><td>multiple alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='AB'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following Linux comand lines will convert a
+    plain text file 'file.txt' to postscript for later
+    (prettified) printing or viewing?  Assume for this question
+    that any mentioned utilities are actually installed to the
+    system in question.</p>
+<ul>
+<li><pre>A. enscript -p - file.txt &gt; file.ps</pre></li>
+<li><pre>B. a2ps -o file.ps file.txt</pre></li>
+<li><pre>C. text2ps &lt; file.txt &gt; file.ps</pre></li>
+<li><pre>D. cat file.txt | lpr -P file.ps</pre></li>
+<li><pre>E. ps2ascii file.ps file.txt</pre></li>
+<li><pre>F. gs --source=file.txt --output=file.ps</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.7/4/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='B'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    There have been a number of print-spooling systems developed
+    for Linux, often offering a different range of capabilities
+    such as format conversions and job-control tools.  Which ONE
+    of the following is NOT a widely used print-spooling system?</p>
+<ul>
+<li><pre>A. CUPS</pre></li>
+<li><pre>B. GPR</pre></li>
+<li><pre>C. PDQ</pre></li>
+<li><pre>D. LPD</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.7/4/2</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='D'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    There have been a number of document-type filtering systems
+    developed for Linux, and working in cooperation with
+    print-spooling daemons.  Which ONE of the following is NOT a
+    widely used filtering tool?</p>
+<ul>
+<li><pre>A. Apsfilter</pre></li>
+<li><pre>B. Magicfilter</pre></li>
+<li><pre>C. printfilter</pre></li>
+<li><pre>D. doctype-filter</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.9/1/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='C'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<table bgcolor="lightblue" width="100%"><tr><td>
+<pre>    # head -2 /home/jdoe/.bashrc
+    PS1='From .bashrc --* '
+    export PS1
+    # head -2 /home/jdoe/.bash_login
+    PS1='From .bash_login --* '
+    export PS1
+    # head -2 .bash_profile
+    PS1='From .bash_profile --* '
+    export PS1
+    # grep 'PS1=' /etc/bashrc
+    [ "$PS1" = "\\s-\\v\\\$ " ] &amp;&amp; PS1="[\u@\h \W]\\$ "
+</pre>
+</td></tr></table>
+<p>    The exhibit for this question shows several shell
+    configuration files.  Assume for this exercise that the PS1
+    environment variable is not modified elsewhere in the
+    (partially) displayed files, nor is it set anywhere else.  If
+    user 'jdoe' opens a secure shell connection to this system
+    (named 'fury') from a remote location, what will his bash
+    prompt display?</p>
+<ul>
+<li><pre>A. From .bashrc --*</pre></li>
+<li><pre>B. From .bash_login --*</pre></li>
+<li><pre>C. From .bash_profile --*</pre></li>
+<li><pre>D. [jdoe@fury jdoe]$</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.9/1/2</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='A'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<table bgcolor="lightblue" width="100%"><tr><td>
+<pre>    # head -2 /home/jdoe/.bashrc
+    PS1='From .bashrc --* '
+    export PS1
+    # head -2 /home/jdoe/.bash_login
+    PS1='From .bash_login --* '
+    export PS1
+    # head -2 .bash_profile
+    PS1='From .bash_profile --* '
+    export PS1
+    # grep 'PS1=' /etc/bashrc
+    [ "$PS1" = "\\s-\\v\\\$ " ] &amp;&amp; PS1="[\u@\h \W]\\$ "
+</pre>
+</td></tr></table>
+<p>    The exhibit for this question shows several shell
+    configuration files on machine 'fury'.  Assume for this
+    exercise that the PS1 environment variable is not modified
+    elsewhere in the (partially) displayed files, nor is it set
+    anywhere else.  If the root user issues a 'su jdoe' command,
+    what will her bash prompt display?</p>
+<ul>
+<li><pre>A. From .bashrc --*</pre></li>
+<li><pre>B. From .bash_login --*</pre></li>
+<li><pre>C. From .bash_profile --*</pre></li>
+<li><pre>D. [jdoe@fury root]$</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.9/2/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='D'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following bash command lines could be used to
+    "run every executable file in the current directory"?</p>
+<ul>
+<li><pre>A. for i in * ; do { case [ -x $i ] ; { ./$i; } esac } done</pre></li>
+<li><pre>B. while i in * ; do { if [ -x $i ] ; then { ./$i; } fi } done</pre></li>
+<li><pre>C. foreach i in * ; do { if [ -x $i ] ; then { ./$i; } done }</pre></li>
+<li><pre>D. for i in * ; do { if [ -x $i ] ; then { ./$i; } fi } done</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.9/2/2</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='B'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    What special line is normally placed at the top of a custom
+    bash shell script?</p>
+<ul>
+<li><pre>A. #/usr/local/bin/bash</pre></li>
+<li><pre>B. #!/bin/bash</pre></li>
+<li><pre>C. #!/usr/env bash</pre></li>
+<li><pre>D. #!/bash</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.10/1/1</td><td>multiple alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='BD'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following utilities are commonly available on a
+    Linux system, and have the capability to detect chipset
+    details and installed memory on local video cards (useful
+    for configuring XFree86)?</p>
+<ul>
+<li><pre>A. XF86Config</pre></li>
+<li><pre>B. SuperProbe</pre></li>
+<li><pre>C. scanpci</pre></li>
+<li><pre>D. XConfigurator</pre></li>
+<li><pre>E. X11Setup</pre></li>
+<li><pre>F. scanvideo</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.10/1/2</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='B'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    The file '/etc/X11XF86Config' contains configuration
+    information about the local X server.  Where within this file
+    can you specify the video resolutions available when using
+    the Ctrl-Alt-(Plus/Minus) toggles?</p>
+<ul>
+<li><pre>A. Section "Device" / Subsection "Resolutions"</pre></li>
+<li><pre>B. Section "Screen" / Subsection "Display"</pre></li>
+<li><pre>C. Section "Monitor" /Subsection "Mode"</pre></li>
+<li><pre>D. Section "Video" / Subsection "ModeLine"</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.10/2/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='D'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following XFree86 tools is used to configure
+    access to remote X11 clients?</p>
+<ul>
+<li><pre>A. xf86config</pre></li>
+<li><pre>B. xeyes</pre></li>
+<li><pre>C. xaccess</pre></li>
+<li><pre>D. xdm</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.10/3/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='A'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Unfortunately, not all X11 applications are well behaved.  In
+    particular, some applications are notorious for leaving
+    behind phantom processes when an X session is exited.  Which
+    command line below might you use to make sure the application
+    'Xsomeapp' is terminated?</p>
+<ul>
+<li><pre>A. ps h -o pid -C Xsomeapp | xargs kill -9</pre></li>
+<li><pre>B. kill -1 -C Xsomeapp</pre></li>
+<li><pre>C. terminate `top -n Xsomeapp`</pre></li>
+<li><pre>D. proc -kill Xsomeapp</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.10/4/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='C'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Suppose that you would like to allow the current system to
+    act as an X client for SOME remote X servers.  Also assume
+    that the current system is configured to recognize the alias
+    TRUSTED for a corresponding IP address.  Which of the
+    following command lines would allow the machine TRUSTED to
+    run an X11 application that lives on the current system?</p>
+<ul>
+<li><pre>A. xallow -a TRUSTED</pre></li>
+<li><pre>B. addremote TRUSTED</pre></li>
+<li><pre>C. xhost +TRUSTED</pre></li>
+<li><pre>D. Xclient --allow TRUSTED</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.10/4/2</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='D'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following environment variables is used to
+    determine which workstation--local or remote--a launched X11
+    application will display on?</p>
+<ul>
+<li><pre>A. XTERM</pre></li>
+<li><pre>A. CLIENT</pre></li>
+<li><pre>A. SERVER</pre></li>
+<li><pre>D. DISPLAY</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.12/1/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='B'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    RFC 1700 defines a set of standard port numbers for TCP/IP
+    services.  Some of these ports are fairly obscure, while a
+    number are used on a daily basis by a Linux systems
+    administrator for diagnosis of network issues.  Which
+    three services are mapped to the TCP/IP ports 80, 110 and 21
+    (in the listed order)?</p>
+<ul>
+<li><pre>A. http, telnet, ssh</pre></li>
+<li><pre>B. http, pop3, ftp</pre></li>
+<li><pre>C. kerberos, smtp, ftp</pre></li>
+<li><pre>D. whois, telnet, pop3</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.12/1/2</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='A'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following files is used to define aliases for IP
+    addresses, especially within a local TCP/IP network?</p>
+<ul>
+<li><pre>A. /etc/hosts</pre></li>
+<li><pre>B. /etc/services</pre></li>
+<li><pre>C. /etc/aliases</pre></li>
+<li><pre>D. /etc/networks</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.12/3/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='D'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following statements BEST describes a reason why
+    you would want to run a DHCP server on an internal company
+    LAN network?</p>
+<ul>
+<li><pre>A. To serve as a gateway between the external internet and an
+       internal network, and to provide IP address translation of
+       packets.</pre></li>
+<li><pre>B. To filter network packets that may contain unauthorized or
+       malicious contents, such as "hacker" portscans or overly
+       large email attachments.</pre></li>
+<li><pre>C. To allow in-company machines to access a central
+       "web-services" application that is utilized in common by
+       various employees.</pre></li>
+<li><pre>D. To avoid confict between assigned IP addresses on various
+       in-company machines, especially where machines such as
+       laptops may between different ethernet hubs.</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.12/3/2</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='A'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following TCP/IP network utilities is the BEST
+    tool to use to establish if a given IP address is reachable
+    under the current network configuration?</p>
+<ul>
+<li><pre>A. ping</pre></li>
+<li><pre>B. finger</pre></li>
+<li><pre>C. route</pre></li>
+<li><pre>D. host</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.12/3/3</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='B'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following TCP/IP network utilities is BEST used
+    to determine the hardware ethernet address of the card(s)
+    installed in the current machine?</p>
+<ul>
+<li><pre>A. netstat</pre></li>
+<li><pre>B. ifconfig</pre></li>
+<li><pre>C. ethers</pre></li>
+<li><pre>D. arpwatch</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.12/3/4</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='D'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following TCP/IP network utilities is the BEST
+    tool to use in identifying bottlenecks between remote
+    machines on the network?  Specifically, assume a goal in
+    this debugging is to determine the paths travelled in the
+    forwarding of network packets, and identify intermediate
+    routers that may be dropping packets.</p>
+<ul>
+<li><pre>A. route</pre></li>
+<li><pre>B. netstat</pre></li>
+<li><pre>C. ping</pre></li>
+<li><pre>D. traceroute</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.12/3/5</td><td>multiple alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='CDF'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Suppose that you find that your ISPs DNS service is slow or
+    unreliable, and you would like to configure aliases for a
+    few frequently targetted sites directly on the machines of
+    users of the company internal network you maintain. Which of
+    the following TCP/IP network utilities could you use to
+    determine the IP address assigned to symbolic domain names
+    (e.g. "www.somehostsite.com")?</p>
+<ul>
+<li><pre>A. hostname</pre></li>
+<li><pre>B. whois</pre></li>
+<li><pre>C. host</pre></li>
+<li><pre>D. nslookup</pre></li>
+<li><pre>E. netstat</pre></li>
+<li><pre>F. ping</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.12/4/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='D'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following commands is NOT a widely used Linux
+    utility for initiating and configuring PPP connections?</p>
+<ul>
+<li><pre>A. KPPP</pre></li>
+<li><pre>B. WvDial</pre></li>
+<li><pre>C. netconf</pre></li>
+<li><pre>D. netppp</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.13/1/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='A'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following utilities is often used in conjunction
+    with inetd to log and filter incoming connection requests?</p>
+<ul>
+<li><pre>A. tcpd</pre></li>
+<li><pre>B. logwatch</pre></li>
+<li><pre>C. ipfilt</pre></li>
+<li><pre>D. xinetd</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.13/1/2</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='C'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<table bgcolor="lightblue" width="100%"><tr><td>
+<pre>    # description: the floozflam server handles
+    #              flamflooz client connections
+    service floozflam
+    {
+            disable         = yes
+            flags           = NORETRY
+            socket_type     = stream
+            wait            = yes
+            user            = root
+            server          = /usr/sbin/in.floozflamd
+            log_on_failure  += USERID
+    }
+</pre>
+</td></tr></table>
+<p>    The exhibit for this question shows the content of a
+    hypothetical '/etc/xinetd.d/floozflam' configuration file.
+    Assume that '/etc/xinetd.conf' includes the line
+    "includedir /etc/xinetd.d", and that xinetd is used on the
+    current system.  Which of the following statements can you
+    deduce from the provided information?</p>
+<ul>
+<li><pre>A. The floozflam service is carried over the UDP protocol.</pre></li>
+<li><pre>B. Multiple floozflam servers will be forked if multiple
+       incoming requests are received.</pre></li>
+<li><pre>C. The floozflam service in not activated on the current
+       system.</pre></li>
+<li><pre>D. If a floozflam connection fails, the IP address of the
+       requesting client is logged.</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.13/2/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='D'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Suppose that the 'sendmail' application is used on the
+    current system as a mail transport agent.  What file may user
+    'jdoe' modify in order to cause mail sent to him to be
+    temporarily directed to an address outside the system's
+    domain?</p>
+<ul>
+<li><pre>A. /etc/sendmail/jdoe/forward</pre></li>
+<li><pre>B. /home/jdoe/aliases</pre></li>
+<li><pre>C. /etc/mail/aliases</pre></li>
+<li><pre>D. /home/jdoe/.forward</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.13/2/2</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='C'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Suppose that the 'sendmail' application is used on the
+    current system as a mail transport agent.  If the file
+    '/etc/aliases' has been manually updated, what command needs
+    to be run in order to cause the changes to take effect?</p>
+<ul>
+<li><pre>A. sendmail -bh</pre></li>
+<li><pre>B. sendmail -ba</pre></li>
+<li><pre>C. sendmail -bi</pre></li>
+<li><pre>D. sendmail -bp</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.13/3/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='B'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following command lines can be used to determine
+    the list of modules that have been compiled into the Apache
+    web server?</p>
+<ul>
+<li><pre>A. ls /etc/httpd/modules/</pre></li>
+<li><pre>B. httpd -l</pre></li>
+<li><pre>C. apache --modules</pre></li>
+<li><pre>D. less /etc/httpd/conf/modules.conf</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.13/4/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='D'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following files or directories is used to
+    configure the local directories that are made available
+    remotely by an Network File System server?</p>
+<ul>
+<li><pre>A. /etc/fstab</pre></li>
+<li><pre>B. /mnt/nfs</pre></li>
+<li><pre>C. /etc/smb.conf</pre></li>
+<li><pre>D. /etc/exports</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.13/4/2</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='B'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following protocols/tools is MOST likely to be
+    used in integrating a Linux system into a Windows network,
+    and for accessing Windows files?</p>
+<ul>
+<li><pre>A. NFS</pre></li>
+<li><pre>B. SAMBA</pre></li>
+<li><pre>C. FTP</pre></li>
+<li><pre>D. SCP</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.13/5/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='C'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Suppose that you have configured one Linux system on an
+    internal LAN to run a DNS server.  Which of the following
+    files need to be updated on each DNS client on the LAN to get
+    them to utilize the DNS service?</p>
+<ul>
+<li><pre>A. /etc/hosts</pre></li>
+<li><pre>B. /etc/exports</pre></li>
+<li><pre>C. /etc/resolv.conf</pre></li>
+<li><pre>D. /etc/dns.conf</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.14/1/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='C'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    In performing a security audit on a Linux system, one
+    well-known security issue is applications that are configured
+    to run as root (or from other high-permission accounts) that
+    may be subject to call vulnerabilities such as buffer
+    overruns.  Which of the following command lines can be used
+    for an initial sweep in analyzing this issue?</p>
+<ul>
+<li><pre>A. suid --list /*</pre></li>
+<li><pre>B. chmod -R u-s ./*</pre></li>
+<li><pre>C. find / -perm +4000 -user root</pre></li>
+<li><pre>D. chgrp root `find / -suid`</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.14/1/2</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='A'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following protocols or tools is BEST used to
+    batch copy files between networked machines in a manner that
+    protects their contents from an intruder using a packet
+    sniffer?</p>
+<ul>
+<li><pre>A. ssh/scp</pre></li>
+<li><pre>B. httpd/SSL</pre></li>
+<li><pre>C. gpg/snmp</pre></li>
+<li><pre>D. nfs/md5sum</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.14/2/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='D'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following Linux utilities is used to update the
+    user passwords stored in '/etc/passwd' to utilize the more
+    secure "shadow password" style.</p>
+<ul>
+<li><pre>A. passwd -s</pre></li>
+<li><pre>B. mkshadow</pre></li>
+<li><pre>C. shadowpw</pre></li>
+<li><pre>D. pwconv</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.14/2/2</td><td>multiple alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='ADF'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following websites are well-known and important
+    resources for monitoring known security problems in Linux
+    distributions, and for obtaining patches and updates for
+    vulnerable applications and components?</p>
+<ul>
+<li><pre>A. http://www.securityfocus.com/</pre></li>
+<li><pre>B. http://www.bugtraq.com/</pre></li>
+<li><pre>C. http://www.securityupdate.net/</pre></li>
+<li><pre>D. http://www.cert.org/</pre></li>
+<li><pre>E. http://www.linux-bugwatch.gov/</pre></li>
+<li><pre>F. http://www.linuxsecurity.com</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.14/3/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='A'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    One danger of a poorly written (or malicious) CGI application
+    is that it can fork overly many child processes, eventually
+    swamping the host system.  Which of the following steps could
+    BEST be used to control this specific danger?</p>
+<ul>
+<li><pre>A. Include the line 'ulimit -u 512'  in the file
+       /etc/profile.</pre></li>
+<li><pre>B. For each CGI user, run the command 'edquota username', and
+       set blocks to 2048 (or other appropriate value).</pre></li>
+<li><pre>C. If a user is discovered to have an errant CGI application,
+       run the command line 'ps hU username -o pid | xargs kill -9'
+       to terminate their stray processes.</pre></li>
+<li><pre>D. Edit the file /etc/limits to include a line similar to
+       'CGI 512 2048 0 0 -' (or other appropriate values).</pre></li>
+</ul>
+<hr/><p><a href="http://validator.w3.org/check/referer">
+<img src="http://www.w3.org/Icons/valid-xhtml10"
+              alt="Valid XHTML 1.0!" height="31" width="88" /></a></p>
+</body>
+</html>

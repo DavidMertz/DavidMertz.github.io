@@ -1,0 +1,458 @@
+﻿XML MATTERS #41: Beyond the DOM
+Tips and tricks for a friendlier DOM
+
+Dethe Elza
+Senior Technical Architect, Blast Radius
+March 2005
+
+    The Document Object Model (DOM) is one of the most widely
+    implemented tools for manipulating XML and HTML data, but it is
+    rarely used to its full potential. By leveraging the DOM and
+    extending it to be even easier to use we gain a powerful tool for
+    XML applications, including dynamic web applications.
+
+  This installment introduces a guest columnist, my friend and colleague
+  Dethe Elza. Dethe is well experienced in the development of web
+  applications utilizing XML, and I appreciate his help in covering XML
+  programming with DOM and ECMAScript. Keep an eye on this column for
+  future guest installments by Dethe (David Mertz).
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  The Document Object Model is one of the standard APIs for working with
+  XML and HTML. It often gets criticized for using too much memory,
+  being too slow, and/or being too verbose. For many applications,
+  however, it is the right way to go, certainly much simpler than SAX,
+  the other major APIs for XML. The DOM is increasingly exposed in
+  tools: Web browsers, SVG browsers, OpenOffice, and others.
+
+  The DOM is good because it is standard and widely implemented, built
+  into other standards. As a standard, it works the same way regardless
+  of the programming language you use (this can be good or bad, but at
+  least it is consistent). The DOM is built into more than web browsers
+  now, and is a part of many XML-based specifications. Since it is
+  already a part of your tools, and you're using it right now, maybe
+  it's time to get comfortable with the DOM.
+
+  After using the DOM for awhile some patterns emerge, there are things
+  you want to be able to do over and over. There are shortcuts to help
+  work around the verbosity of the DOM, making code which is
+  self-explanatory and elegant. Here is a collection of some of my
+  most-used tips and tricks, with examples in Javascript.
+
+TIPS AND TRICKS
+------------------------------------------------------------------------
+
+  For the first trick, there is no trick. The DOM has two methods to add
+  child nodes to a container node (usually an 'Element', but could be a
+  'Document' or 'DocumentFragment'): 'appendChild(node)' and
+  'insertBefore(node, referenceNode)'. But something seems to be missing.
+  What if I want to insert after a reference node, or prepend a child
+  node (make the new node first in the list)? For years I wrote utility
+  functions like
+
+      #-------------- Wrong way to insert and prepend -----------------#
+      function insertAfter(parent, node, referenceNode) {
+          if(referenceNode.nextSibling) {
+              parent.insertBefore(node, referenceNode.nextSibling);
+          } else {
+              parent.appendChild(node);
+          }
+      }
+      function prependChild(parent, node) {
+          if (parent.firstChild) {
+              parent.insertBefore(node, parent.firstChild);
+          } else {
+              parent.appendChild(node);
+          }
+      }
+
+  As it turns out, the 'insertBefore()' function is already defined to
+  fall back to 'appendChild()' if the reference node is null, so instead
+  of using the above you can either use these one-liners, or skip them
+  altogether and just use the built-in functions.
+
+      #------------- Right  way to insert and prepend -----------------#
+      function insertAfter(parent, node, referenceNode) {
+          parent.insertBefore(node, referenceNode.nextSibling);
+      }
+      function prependChild(parent, node) {
+          parent.insertBefore(node, parent.firstChild);
+      }
+
+  If you are new to DOM programming it is worth pointing out that while
+  you can have several pointers to a node in your programming language
+  of choice, the node can only be in the DOM tree in one place. So if
+  you are inserting it into the tree, you don't have to remove it from
+  the tree first, that will happen automatically. This is handy when you
+  want to re-order nodes--you can just insert them into the new
+  positions.
+
+  Given the above, if you have two adjacent nodes (call them 'node1' and
+  'node2') and want to transpose them, you could use either of the
+  following:
+
+      #----------------------- Transpose Nodes ------------------------#
+      node1.parentNode.insertBefore(node2, node1);
+      // or
+      node1.parentNode.insertBefore(node1.nextSibling, node1);
+
+
+WHAT ELSE CAN YOU DO WITH THE DOM?
+------------------------------------------------------------------------
+
+  There are as many uses of the DOM as there are web pages. If you visit
+  the bookmarklets sites (see Resources) you can find several short
+  scripts which make innovative use of the DOM to reformat pages,
+  extract links, hide images or Flash advertisements, among other
+  things.
+
+  But first things first. Since Internet Explorer does not define the
+  Node interface constants, which let us easily identify the type of
+  node, one of the first things to do in a DOM script for the web is to
+  make sure we define one ourselves if it is missing.
+
+      #--------------------- Ensure Node is Defined -------------------#
+      if (!window['Node']) {
+          window.Node = new Object();
+          Node.ELEMENT_NODE = 1;
+          Node.ATTRIBUTE_NODE = 2;
+          Node.TEXT_NODE = 3;
+          Node.CDATA_SECTION_NODE = 4;
+          Node.ENTITYE_REFERENCE_NODE = 5;
+          Node.ENTITY_NODE = 6;
+          Node.PROCESSING_INSTRUCTION_NODE = 7;
+          Node.COMMENT_NODE = 8;
+          Node.DOCUMENT_NODE = 9;
+          Node.DOCUMENT_TYPE_NODE = 10;
+          Node.DOCUMENT_FRAGMENT_NODE = 11;
+          Node.NOTATION_NODE = 12;
+      }
+
+  Here is an example to extract all the text nodes contained in a node:
+
+      #------------------------- Inner Text ---------------------------#
+      function innerText(node) {
+          // is this a text or CDATA node?
+          if (node.nodeType == 3 || node.nodeType == 4) {
+              return node.data;
+          }
+          var i;
+          var returnValue = [];
+          for (i = 0; i < node.childNodes.length; i++) {
+              returnValue.push(innerText(node.childNodes[i]));
+          }
+          return returnValue.join('');
+      }
+
+SHORTCUTS
+------------------------------------------------------------------------
+
+  A common complaint about the DOM is that it is too verbose and
+  requires too much typing to do simple things. For instance, if you
+  want to create a '<div>' element containing some text, perhaps in
+  response to a button click, it might look like this.
+
+      #---------------- Create a <div> the long way -------------------#
+      function handle_button() {
+          var parent = document.getElementById('myContainer');
+          var div = document.createElement('div');
+          div.className = 'myDivCSSClass';
+          div.id = 'myDivId';
+          div.style.position = 'absolute';
+          div.style.left = '300px';
+          div.style.top = '200px';
+          var text = "This is the first text of the rest of this code";
+          var textNode = document.createTextNode(text);
+          div.appendChild(textNode);
+          parent.appendChild(div);
+      }
+
+  You can see how if you frequently create nodes this way, typing all
+  this code could get old very quickly. There must be a better way--and
+  there is. Here is a utility which helps you to create an element, set
+  its attributes, set its styles, and add a text child node. All the
+  arguments except 'name' are optional.
+
+      #----------------- Function elem() Shortcut ---------------------#
+      function elem(name, attrs, style, text) {
+          var e = document.createElement(name);
+          if (attrs) {
+              for (key in attrs) {
+                  if (key == 'class') {
+                      e.className = attrs[key];
+                  } else if (key == 'id') {
+                      e.id = attrs[key];
+                  } else {
+                      e.setAttribute(key, attrs[key]);
+                  }
+              }
+          }
+          if (style) {
+              for (key in style) {
+                  e.style[key] = style[key];
+              }
+          }
+          if (text) {
+              e.appendChild(document.createTextNode(text));
+          }
+          return e;
+      }
+
+  Armed with this shortcut, we can create the '<div>' above in a much
+  more compact way. Note that the 'attrs' and 'style' arguments are
+  given using Javascript literal objects.
+
+      #---------------- Create a <div> the short way ------------------#
+      function handle_button() {
+          var parent = document.getElementById('myContainer');
+          parent.appendChild(elem('div',
+            {class: 'myDivCSSClass', id: 'myDivId'}
+            {position: 'absolute', left: '300px', top: '200px'},
+            'This is the first text of the rest of this code'));
+      }
+
+  When you want to create many complex DHTML objects on the fly,
+  utilities like this can be real lifesavers. A pattern here is if you
+  have specific DOM structures you are going to be creating frequently,
+  make utilities to build them for you. This not only reduces the amount
+  of code you have to type, it eliminates repetitive cut-and-paste code
+  (a major source of errors), and it makes your intention clear when you
+  read the code later.
+
+WHAT'S NEXT?
+------------------------------------------------------------------------
+
+  In the DOM it isn't always straightforward to tell which is the next
+  node in document order. Here are some utilities to help move back and
+  forth between nodes.
+
+      #------------------ nextNode and prevNode -----------------#
+      // return next node in document order
+      function nextNode(node) {
+          if (!node) return null;
+          if (node.firstChild){
+              return node.firstChild;
+          } else {
+              return nextWide(node);
+          }
+      }
+      // helper function for nextNode()
+      function nextWide(node) {
+          if (!node) return null;
+          if (node.nextSibling) {
+              return node.nextSibling;
+          } else {
+              return nextWide(node.parentNode);
+          }
+      }
+      // return previous node in document order
+      function prevNode(node) {
+          if (!node) return null;
+          if (node.previousSibling) {
+            return previousDeep(node.previousSibling);
+          }
+          return node.parentNode;
+      }
+      // helper function for prevNode()
+      function previousDeep(node) {
+          if (!node) return null;
+          while (node.childNodes.length) {
+              node = node.lastChild;
+          }
+          return node;
+      }
+
+GOING FOR A WALK WITH A DOM
+------------------------------------------------------------------------
+
+  A thing we frequently want to do is traverse the DOM, either calling a
+  function on each node, or returning a value from each node. This is so
+  common in fact, that in DOM Level 2 there is an extension called DOM
+  Traversal and Range which defines objects and APIs for iterating over
+  the nodes of a DOM, walking a DOM to apply a function over its nodes,
+  and selecting ranges within the DOM. Since these functions are not
+  defined in Internet Explorerer (at least), here is how we can leverage
+  nextNode() to do something similar.
+
+  The idea here is to make some simple, general tools, then combine them
+  in different ways to get the desired results. If you are familiar with
+  functional programming, some of this will look familiar. There is a
+  library called "Beyond Javascript" (see Resources) which takes this
+  idea much further.
+
+      #------------------ Functional DOM Utilities --------------------#
+      // return an Array of all nodes, starting at startNode and
+      // continuing through the rest of the DOM tree
+      function listNodes(startNode) {
+          var list = new Array();
+          var node = startNode;
+          while(node) {
+              list.push(node);
+              node = nextNode(node);
+          }
+          return list;
+      }
+      // The same as listNodes(), but works backwards from startNode.
+      // Note that this is not the same as running listNodes() and
+      // reversing the list.
+      function listNodesReversed(startNode) {
+          var list = new Array();
+          var node = startNode;
+          while(node) {
+              list.push(node);
+              node = prevNode(node);
+          }
+          return list;
+      }
+      // apply func to each node in nodeList, return new list of results
+      function map(list, func) {
+          var result_list = new Array();
+          for (var i = 0; i < list.length; i++) {
+              result_list.push(func(list[i]));
+          }
+          return result_list;
+      }
+      // apply test to each node, return a new list of nodes for which
+      // test(node) returns true
+      function filter(list, test) {
+          var result_list = new Array();
+          for (var i = 0; i < list.length; i++) {
+              if (test(list[i])) result_list.push(list[i]);
+          }
+          return result_list;
+      }
+
+  So there we have four basic tools. The 'listNodes()' and
+  'listNodesReversed()' functions could be extended to take an optional
+  length to work more like the Array method 'slice()', but I'll leave
+  that as an exercise for the reader. One other thing to note is that
+  the 'map()' and 'filter()' functions are totally generic, working on
+  -any- list, not just lists of nodes. Now let us take a look at some of
+  the ways to combine these.
+
+      #---------------- Using the functional utilities ----------------#
+      // A list of all the element names in document order
+      function isElement(node) {
+          return node.nodeType == Node.ELEMENT_NODE;
+      }
+      function nodeName(node) {
+          return node.nodeName;
+      }
+      var elementNames = map(filter(listNodes(document),isElement), nodeName);
+      // All the text from the document (ignores CDATA)
+      function isText(node) {
+          return node.nodeType == Node.TEXT_NODE;
+      }
+      function nodeValue(node) {
+          return node.nodeValue;
+      }
+      var allText = map(filter(listNodes(document), isText), nodeValue);
+
+  You could use these to extract IDs, modify styles, find certain kinds
+  of nodes to remove, etc. Once the DOM Traversal and Range APIs are
+  widely implemented, these can be used to modify the DOM tree, without
+  necessarily building a list first. They are very powerful tools, and
+  work in ways similar to what I have outlined above.
+
+DOM Danger Zones
+------------------------------------------------------------------------
+
+  Note that the core DOM API does not give you methods to either parse
+  XML data into a DOM, or to serialize the DOM back out to XML. These
+  are defined in an extension to DOM Level 3, "Load and Save", but are
+  not implemented widely enough for you to count on them. Each platform
+  (browser or other DOM-savvy application) has its own way of getting
+  XML into and out of the DOM, but doing that in a cross-platform manner
+  is beyond the scope of this article.
+
+  The DOM is not a completely safe tool--specifically, you can use the
+  DOM APIs to create a tree which cannot be serialized as XML. Never mix
+  the DOM1 non-namespace APIs with their DOM2 namespace-aware
+  counterparts ('createElement' vs. 'createElementNS', for instance) in
+  the same program. If you do use namespaces, try to keep all your
+  namespace declarations on the root element, and do not override your
+  namespace prefixes, because that way lies madness. In general, if you
+  use common sense you won't trigger the edge cases that can get you
+  into trouble.
+
+  If you have come to rely on things like Internet Explorer's
+  'innerText' and 'innerHTML' to handle parsing for you, try using the
+  'elem()' function instead. By building a few utilities like these you
+  can get most of the convenience but retain cross-platform code. Mixing
+  these two approaches is an especially bad idea.
+
+  There are certain Unicode characters which can not be included in XML.
+  A DOM implementation may allow you to add them, but the result will
+  not be serializable. These include most control characters and single
+  characters from Unicode surrogate pairs. The only time you are likely
+  to encounter this is if you are trying to include binary data in your
+  document, but it can be another gotcha situation.
+
+CONCLUSION
+------------------------------------------------------------------------
+
+  We have covered a lot of ground, but there is much more the DOM (and
+  Javascript) can do for you. Explore, play around with the examples,
+  and see how they can be applied to solve problems that might otherwise
+  have taken client-side scripting, templating, or proprietary APIs.
+
+  The DOM has its limitations and faults, but it is built into many
+  applications, it works the same whether you're using Java, Python, or
+  Javascript, it is a lot more convenient than using SAX, and with the
+  massaging demonstrated above, it can be elegant and powerful to use.
+  More applications are beginning to support the DOM, including
+  Mozilla-based applications, OpenOffice, and XMetaL from Blast Radius
+  (the company I work for). More specifications require and extend the
+  DOM (like SVG), so it is not going to go away any time soon. It is a
+  good idea to be comfortable with this widely deployed tool.
+
+RESOURCES
+------------------------------------------------------------------------
+
+  Jesse Ruderman didn't coin the term bookmarklets, but he has one of
+  the finest collections of these short, bookmarkable Javascripts which
+  exploit the power of the DOM to help your browser help you.
+
+    http://www.squarefree.com/bookmarklets/
+
+  Sjoerd Visscher's Beyond JS library gives you far more tools to do
+  functional programming than I've presented here. If you can wrap your
+  brain around passing functions to functions, Javascript can become an
+  even more flexible tool.
+
+    http://w3future.com/html/beyondJS/
+
+  The canonical reference for the DOM API is with the W3C. Here is their
+  mapping of the DOM2 to Javascript (ECMAScript).
+
+    http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/ecma-script-binding.html
+
+  There is a bit of a buzz lately about Ajax, using asynchronous calls
+  to the server to update web applications in real time. You can use
+  many of the techniques outlined above for this, and tools for the
+  asynchronous communcation can be found here.
+
+    http://www.mod-pubsub.org/kn_docs/faq.html
+
+  The company I work for, Blast Radius, produces the XMetaL family of
+  XML editors and tools, all of which support the DOM API.
+
+    http://xmetal.com/
+
+  A Javascript library containing the scripts above, and a simple test
+  page for the scripts, are available for download.
+
+    http://livingcode.org/xmlmatters/beyondthedom/BeyondTheDom.js
+    http://livingcode.org/xmlmatters/beyondthedom/BeyondTheDomTest.html
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://livingcode.org/images/dethe.png}
+  Dethe Elza's favorite job title has been Chief Mad Scientist. Dethe
+  can be reached at delza@livingcode.org. He keeps a blog mainly about
+  Python and Mac OS X at http://livingcode.blogspot.com/ and writes
+  programs for his kids. Suggestions and recommendations on this column
+  are welcome.

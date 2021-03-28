@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article SYSTEM "article.dtd">
+<article ratings="auto" toc="auto">
+
+  <seriestitle>XML Tip</seriestitle>
+
+  <papertitle>Using CSS2 to display XML documents</papertitle>
+
+  <subtitle>A less "expensive" alternative to XSLT</subtitle>
+
+  <author company="Gnosis Software, Inc."
+          jobtitle="Examiner"
+          name="David Mertz, Ph.D."
+          email="mertz@gnosis.cx">
+    <img src="http://gnosis.cx/cgi-bin/img_dqm.cgi"/>
+    David Mertz uses a wholly unstructured brain to write about
+    structured document formats.  David may be reached at
+    mertz@gnosis.cx; his life pored over at <a
+    href="http://gnosis.cx/publish/">http://gnosis.cx/publish/</a>.
+  </author>
+
+  <date month="November" year="2001"/>
+  <zone name="xml"/>
+  <meta name="KEYWORDS" content="Mertz CSS CSS2 XML Mozilla Netscape IE"/>
+
+  <abstract miniabstract="Use CSS2 to view XML documents">
+    Outside of custom editors and viewers, reading XML data is
+    comparatively difficult.  The documents are all text, but the visual
+    arrangement of parts does not necessarily correspond well to the
+    conceptual connections between the parts.  And finding the content
+    amidst the tags makes skimming difficult.  One approach to making
+    XML readable is transforming it to other formats (like HTML) using
+    XSLT, or other techniques.  A more lightweight approach is to attach
+    a CSS2 stylesheet to XML documents, and use a recent web browser to
+    view them (Mozilla is excellent, IE often adequate).
+  </abstract>
+
+  <p>
+    XML is rarely intended primarily as a format for humans to look
+    at--at least not directly.  Most typically, an XML source is
+    transformed into something else before it becomes ready for human
+    consumption.  For prose-oriented documents, the target is usually
+    either an HTML page, or a PDF file (via Formatting Object [FO]
+    tags), or perhaps an actual printed page.  XSLT is often used to
+    peform these transformations.  For data-oriented XML documents, the
+    target is usually the data format of a DBMS or an in-memory
+    representation by an application that reads XML files.
+  </p>
+  <p>
+    Readers of developerWorks, however, are generally developers.  Our
+    lot is to look at a lot of things that end-users can and should be
+    spared.  When something doesn't work in the behind-the-scenes trail
+    of format transformations, it is our job to eyeball the intermediate
+    formats--XML included.  During the development process, it is often
+    also our responsibility to develop sample or test XML documents to
+    simulate what might come out of or go into some stage in a
+    distributed application (before the real generator or consumer
+    exists).
+  </p>
+  <p>
+    Compared to some formats, XML is somewhat manageable in its raw
+    form.  Unlike binary formats, it is not out-of-the-question to open
+    an XML document in a text editor or text viewer.  But tags can be
+    hard to parse visually, especially if the XML producer does not
+    arrange vertical and horizontal whitespace in ways that aid humans.
+    If a big part of your job is reading raw XML documents, one of the
+    XML editors I reviewed previously (see Resources) is likely to prove
+    useful.  But for someone who only occassionally views XML source
+    files--or where these files need to be viewed by a number of
+    people--XML editors are often too expensive; not just in licensing
+    dollars, but in learning curves also.
+  </p>
+
+  <heading refname="h1" type="major" toc="yes">Use your webbrowser</heading>
+
+  <p>Almost all developers have a wonderful</p>
+
+  <heading refname="code1" type="code" toc="yes">Listing 1. ... </heading>
+  <code type="section">
+    &lt;?xml version="1.0" ?&gt;
+    &lt;!DOCTYPE contacts SYSTEM "attrs.dtd" &gt;
+    &lt;contacts&gt;
+      &lt;contact
+         name="Jane Doe"
+         age="74"
+         telephone="555-3412" /&gt;
+      &lt;contact name="Chieu Win" telephone="555-8888" age="44" /&gt;
+    &lt;/contacts&gt;
+  </code>
+
+  <p>...inline code <code type="inline">code sample</code> here...</p>
+
+  <heading refname="" type="major" toc="yes">Conclusion</heading>
+
+  <resourcelist>
+    <ul>
+      <li>
+        In <a
+        href="http://www-106.ibm.com/developerworks/library/x-matters6.html">
+        <i>XML Matters</i> #6</a> I reviewed a number of custom XML
+        editors (many supporting CSS2).
+      </li>
+
+      <li>
+        Everything you really <i>need</i> to know about XML is in the
+        <a href="http://www.w3.org/TR/REC-xml">Extensible Markup
+        Language (XML) 1.0</a> W3C Recommendation.
+      </li>
+    </ul>
+  </resourcelist>
+
+</article>
+

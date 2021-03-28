@@ -1,0 +1,308 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+  <title>XML Programming Paradigms (part two) -- Event Driven Programming
+with the Simple API for XML --</title>
+                      
+  <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+             
+  <meta content="MSHTML 5.50.4207.2601" name="GENERATOR">
+</head>
+ <body>
+
+
+<h1>XML Programming Paradigms (part two)</h1>
+<h2>Event Driven Programming with the Simple API for XML </h2>
+<p>David Mertz, Ph.D. &lt;mertz@gnosis.cx&gt;<br>
+   Gnosis Software, Inc.  &lt;http://gnosis.cx/publish/&gt;<br>
+   November 2001<br>
+</p>
+<blockquote>This series looks at several distinct  conceptual models  that 
+exist for manipulation of XML    documents. The Simple API for XML (SAX) is
+a widely used, and frequently    implemented, approach to the procedural and
+sequential processing of an XML    document. We look at what it means to
+treat an XML document as a series of    events, and handled in an event-driven 
+programming context. Source code    examples of using SAX are provided, along 
+with pointers to further resources.  </blockquote>
+  <h2>About This Series</h2>
+  <p>As XML has developed into a widely used data format, a number of programming 
+  models have arisen for manipulating XML documents. Some of these models--or 
+  "paradigms"--have been enshrined as standards, while others remain only 
+ informally specified (but equally widely used nonetheless). In a general 
+way,  the several models available for manipulating XML documents closely 
+mirror the  underlying approaches and techniques that programmers in different 
+traditions  bring to the task of working with XML. It is worth noticing that 
+"models" are at  a higher level of abstraction than a particular programming 
+language; most of  the models discussed in this series are associated with 
+APIs that have been  implemented in multiple programming languages. </p>
+  <p>In part, the richness of available XML programming models simply allows 
+  programmers and projects to work in the ways that are most comfortable and
+  familiar to them. In many ways, there is overlap--at least in achievable 
+  outcomes--between all the XML programming models. However, different models 
+ also  carry with them specific pros and cons in the context of XML manipulation; 
+ and  these might urge the use of particular models for particular projects. 
+ This  series of five articles aims to provide readers with an overview of 
+ the costs,  benefits, and motivations for all of the major approaches to 
+programmatic  manipulation of XML documents (manipulation here, should be 
+understood also to  mean "using XML to drive or communicate other application 
+processes").   </p>
+  <p>This article addresses the Simple API for XML (SAX), which is an event-driven 
+  and procedural style of XML programming. The previous article, Part 1, discussed
+  the Document Object Model (DOM), which is a W3C Recommendation. Part 3
+will  look  at XSLT, which brings a declarative programming style to transformations
+ of XML  documents. In Part 4, we will see the application of full-fledged
+ Functional  Programming (FP) techniques to XML manipulation--these in some
+ ways unify the  earlier models (but are less commonly used). The final installment,
+ Part 5, will  look briefly at a number of tools and techniques that did
+not  quite fit into the  previous discussion, but that readers would do well
+to  be aware of. </p>
+  <h2>SAX's Conceptual Framework</h2>
+  <p>There are a number of ways one can think about an XML document. A DOM 
+  programmer imagines an XML document as a representation of a hierarchically 
+  branching tree. In the DOM picture, each branch-point or leaf is a Node; 
+ and  depending on exactly which type of Node it is, it gets written slightly 
+  differently. For example, element Nodes get written like  <code>&lt;elem&gt;...&lt;/elem&gt;</code>
+    , text nodes like <code>some  text</code> . But according to the Document 
+ Object Model--as the name  suggests--every XML document is simply the description 
+ of a complete object that  lives at a higher conceptual plane. </p>
+  <p>When one thinks about OOP a lot, the DOM picture looks compelling. Everything 
+  is an object, and objects do things like contain other objects and have 
+ properties. At a conceptual level, SAX appeals more to programmers who are 
+ used  to thinking about streams and sequences--events following one another 
+ in strict  synchronous order. A SAX programmer imagines an XML document as
+ a linear  sequence of discrete events, each one belonging to one of a small
+ number of  event types. </p>
+  <h3>Thinking on a Line </h3>
+  <p>There are many programming tasks that effectively impose the linear thinking
+ style of SAX. For example, readings from a physical instrument arrive in
+a  particular sequence (or at least have a <em>logical</em> sequence), each
+ corresponding to a time at which that physical state existed. A mouse or
+ keyboard, for what it is worth, are physical instruments of certain sorts. 
+ Or  financial transactions, similarly, exist as a linear sequence of events, 
+ each of  which must be independently handled (perhaps depending on a state 
+ that reflects  "past" transactions, but never on "future" ones). Processing 
+ a logfile, or other  delimited or flat line-oriented data file, is also usually
+ treated as a series  of distinct instructions or records. </p>
+  <p>Of closest similarity to SAX is a language lexer--something that takes 
+ a  sequence of symbols (bytes) from a source file, and groups them into larger
+  aggregates (<em>tokens</em> such as keywords, strings, symbols, etc). In
+ point  of fact, SAX is a <em>parser</em>, rather than merely a lexer; SAX
+ creates  events that are slightly more structured than mere aggregations 
+(but only  slightly). </p>
+  <p>One needs to distinguish between SAX itself, and a SAX application. SAX
+ (Simple API for XML) is, after all, an <em>API</em> not a tool or utility 
+ in  itself. What SAX does is read a specified bytestream, then alert its 
+controlling  application whenever one of 10 content events occur in the document. 
+Technically  things are slightly more complicated since errors, entities and
+notations can  also cause notices--but of the 10 content events only 3 are
+almost always used,  2 are sometimes needed, and the 5 remaining ones are
+largely "special purpose"  (I have never used those 5 for the practical applications
+I have programmed).  </p>
+  <h3>OOP, Structured Programming, and All That </h3>
+  <p>SAX, technically speaking, is an object-oriented programming framework. 
+ SAX  was first--and probably still most widely--implemented in Java, and 
+that  language requires a certain degree of OOP-purity (aside from some minor 
+warts  with simple types versus classes). Therefore, a SAX application will 
+implement a  custom <code>Handler</code> class that specializes the base handlers
+in the SAX  library, and provides methods corresponding to events. An instance
+of the custom  handler is passed to the previously instantiated SAX parser.
+From there, you are  "off to the races." </p>
+  <p>The    <code> startElement()</code> , <code>endElement()</code> and
+ <code>characters()</code>   methods are specialized by just about every
+SAX  application. These methods, predictably, are  called when  an open tag,
+close tag, and tag body, respectively are encountered.  Fairly  often, the
+  <code>startDocument()</code> and <code> endDocument()</code>  methods 
+are used for initialization and cleanup. But equally often, any  initialization
+ or cleanup can occur at the application level rather than at the  document
+ level (or the two are interchangeable). The remaining methods are  <code>
+  startPrefixMapping()</code>, <code>endPrefixMapping()</code>,  <code>processingInstruction()</code>
+, <code>ignorableWhitespace()</code>  and  <code>skippedEntity()</code>.
+ These each have important reasons for being there,  but in practice are
+used  less frequently. You can see that the naming  conventions use Java-style
+word capitalization. </p>
+  <p>The inheritance and interface design that goes into SAX is pretty nicely 
+  thought out. But all the OOP stuff is also fairly irrelevant to the underlying 
+  conceptual model of SAX. Having known method names, and providing abstract 
+ base  classes, makes the programming a little bit easier. But the general 
+ idea of  handing a bunch of callback operations to a parser is perfectly 
+straightforward  in a non-OOP language. As an example, the very popular  <code>
+expat</code>  XML parser is  written in C (not C++), and is  generally called
+from a C application (although  wrappers for other languages  exist too).
+  </p>
+  <p>While the function names in <code>expat</code>  do not  precisely match
+those in SAX, they are  conceptually close to each other.  Moreover, a number
+of full-fledged SAX  libraries are built on top of the  underlying <code>
+expat</code>  parser; the extra layer is fairly transparent  in this case.
+As the  example below demonstrates, there is nothing stopping  a programmer
+from using  the exact same names for callback functions with <code>expat</code>
+     as she would  use for handler methods in SAX. In fact, doing this is
+good  practice, in  general. </p>
+  <p>At its heart, SAX is a structured programming style of thinking that 
+ just  happens to have been implemented in an OOP language. </p>
+  <h2>SAX At Work</h2>
+  <p>Let us look at the same trivial XML processing application written in 
+ several  programming languages. The first of these is Python. This version 
+ is probably  the most readable (I like Python), and follows SAX OOP patterns 
+ and naming accurately. A Java  version would look almost  identical. All
+this application does--in all three  implementations--is write  out a canonical
+version of the same XML document it  reads in. Sort of an  imperfect   <code>
+cat</code>. The output might differ from  the input in respect to some whitespace
+around attributes, and the loss of  comments and processing instructions.
+Some character entities can become  confused also. It is not trying to be
+a great application; but a better  application will   <em>look</em>   quite
+similar to this simple one. </p>
+  <div align="Center">
+  <h3>dumbsax.py</h3>
+  </div>
+  <table class="code-sample" cellpadding="0" width="80%" align="Center" bgcolor="#e0e0e0" border="0">
+    <tbody>
+      <tr>
+        <td>
+        <pre><font color="#3333cc"><b>from</b></font> xml.sax <font color="#3333cc"><b>import</b></font> make_parser,handler<br><font color="#3333cc"><b>import</b></font> sys<br><br><font color="#3333cc"><b>class</b></font><a name="DumbHandler"><font color="#cc0000"><b> DumbHandler</b></font></a>(handler.ContentHandler):<br>    <font color="#3333cc"><b>def</b></font><a name="startElement"><font color="#cc0000"><b> startElement</b></font></a>(self, name, attrs):<br>        sys.stdout.write(<font color="#115511">'&lt;'</font> + name)<br>        <font color="#3333cc"><b>for</b></font> name, value <font color="#3333cc"><b>in</b></font> attrs.items():<br>            sys.stdout.write(<font color="#115511">' %s="%s"'</font> % (name, value))<br>        sys.stdout.write(<font color="#115511">'&gt;'</font>)<br>    <font color="#3333cc"><b>def</b></font><a name="endElement"><font color="#cc0000"><b> endElement</b></font></a>(self, name):<br>        sys.stdout.write(<font color="#115511">'&lt;/%s&gt;'</font> % name)<br>    <font color="#3333cc"><b>def</b></font><a name="characters"><font color="#cc0000"><b> characters</b></font></a>(self, content):<br>        sys.stdout.write(content)<br>    <font color="#3333cc"><b>def</b></font><a name="endDocument"><font color="#cc0000"><b> endDocument</b></font></a>(self):<br>        sys.stdout.write(<font color="#115511">'\n'</font>)<br><br>parser = make_parser()<br>parser.setContentHandler(DumbHandler())<br>parser.parse(sys.argv[1])<br></pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <p>Call this application with: </p>
+  <table class="code-sample" cellpadding="0" width="80%" align="Center" bgcolor="#e0e0e0" border="0">
+    <tbody>
+      <tr>
+        <td>
+        <pre>% python dumbsax.py myfile.xml &gt; new.xml</pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <p>A Perl version is largely similar. One thing to notice is that the Perl 
+  implementation is, in a sense, not really SAX. That is,  <code>XML::Parser::PerlSAX</code>
+    does not choose to use exactly the method  names defined by SAX proper. 
+ Moreover, OOP in Perl is slightly circuitous  compared to languages that 
+started out as object oriented. Nonetheless, it  should be clear that this 
+version closely matches the Python one. </p>
+  <div align="Center">
+  <h3>dumbsax.pl</h3>
+  </div>
+  <table class="code-sample" cellpadding="0" width="80%" align="Center" bgcolor="#e0e0e0" border="0">
+    <tbody>
+      <tr>
+        <td>
+        <pre>use XML::Parser::PerlSAX;<br>my $handler = DumbHandler-&gt;new();<br>my $parser = XML::Parser::PerlSAX-&gt;new(Handler =&gt; $handler);<br>$parser-&gt;parse(Source =&gt; {SystemId =&gt; shift @ARGV});<br><br>package DumbHandler;<br>use strict;<br>sub new {<br>    my $type = shift;<br>    return bless {}, $type;<br>}<br>sub start_element {<br>    my ($self, $element) = @_;<br>    my %attrs = %{$element-&gt;{Attributes}};<br>    my $key;<br>    print  "&lt;$element-&gt;{Name}";<br>    foreach $key (keys %attrs) {<br>        print " $key='$attrs{$key}'";<br>    }<br>    print "&gt;";<br>}<br>sub end_element {<br>    my ($self, $element) = @_;<br>    print "&lt;/$element-&gt;{Name}&gt;";<br>}<br>sub characters {<br>    my ($self, $characters) = @_;<br>    my $text = $characters-&gt;{Data};<br>    print $text;<br>}<br>sub end_document { print "\n"; }<br>1;</pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <p>Call this application with: </p>
+  <table class="code-sample" cellpadding="0" width="80%" align="Center" bgcolor="#e0e0e0" border="0">
+    <tbody>
+      <tr>
+        <td>
+        <pre>% perl dumbsax.pl myfile.xml &gt; new.xml</pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <p>Finally, to round out our view of SAX-like XML processing, let us look 
+ at a  completely non-OOP application in C, and using <code> expat</code>
+ as its parser.  The most notable feature of the  C <code>expat</code>  
+  version is  that is looks almost exactly the same as the object oriented 
+ SAX versions. Some  custom functions are used to setup callback functions 
+ rather than calling a  method of a parser instance. But that is a very minor 
+ spelling variant. </p>
+  <div align="Center">
+  <h3><strong>dumbexpat.c</strong></h3>
+  </div>
+  <table class="code-sample" cellpadding="0" width="80%" align="Center" bgcolor="#e0e0e0" border="0">
+    <tbody>
+      <tr>
+        <td>
+        <pre>#include &lt;stdio.h&gt;<br>#include &lt;expat.h&gt;<br>#define BUFFSIZE        8192<br><br>static void startElement(void *cargo, const char *el,<br>                                      const char **attr) {<br>   int i;<br>   printf("&lt;%s", el);<br>   for (i=0; attr[i]; i+=2)<br>      printf(" %s='%s'", attr[i], attr[i+1]);<br>   printf("&gt;");<br>}<br>static void endElement(void *cargo, const char *el) {<br>   printf("&lt;/%s&gt;", el);<br>}<br>static void characters(void *cargo, const char *ch, int len) {<br>   int i;<br>   for (i=0; i &lt; len; i++) printf("%c", ch[i]);<br>}<br>int main(int argc, char *argv[]) {<br>   char Buff[BUFFSIZE];<br>   XML_Parser parser = XML_ParserCreate(NULL);<br>   XML_SetElementHandler(parser, startElement, endElement);<br>   XML_SetCharacterDataHandler(parser, characters);<br>   for (;;) {<br>      int len  = fread(Buff, 1, BUFFSIZE, stdin);<br>      int done = feof(stdin);<br>      if (! XML_Parse(parser, Buff, len, done))<br>        exit(-1);<br>      if (done) break;<br>   }<br>   printf("\n");<br>   return 0;<br>}<br></pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <p>Compile and call this application with: </p>
+  <table class="code-sample" cellpadding="0" width="80%" align="Center" bgcolor="#e0e0e0" border="0">
+    <tbody>
+      <tr>
+        <td>
+        <pre>% gcc dumbexpat.c -lexpat -o dumbexpat<br>% ./dumbexpat &lt; myfile.xml &gt; new.xml<br></pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h2>The Good <big>a</big>nd The Bad Of SAX</h2>
+  <p>There are some technologies, certainly, that have a good concept but 
+ a weak  implementation. SAX is not one of them; the design of SAX is a clean 
+ and direct  approach to the problem it solves, and really cannot be significantly 
+ improved  upon. Both the strengths and weaknesses of SAX (or, likewise, of
+ <code>expat</code>   ) come directly  out of its paradigmatic model. </p>
+  <p>The thing to emphasize about SAX is that it has no concept of an XML 
+  document, as such. SAX knows about the small parts that make up an XML 
+document--tags, attributes, bodies, etc.--but simply does not conceive of
+ an XML  document as a unified thing, a single <em> data structure</em>.
+DOM,  by  contrast, has a whole model of Nodes, children, values, and all
+sorts  of useful  structural relations in an XML document. Likewise, the
+declarative  statements  about   <em> documents</em> that we will see in
+later installments  about XSLT and  functional programming techniques, conceive
+of an XML document  as a data  structure to operate upon holistically. The
+contrast between SAX  and these other  paradigms is really quite stark. </p>
+  <p>Although SAX does allow one to specify validation of an input document, 
+  validity is not really treated as a  <em>document</em> property. Instead, 
+ the  violation of a validity constraint is just an event, not fundamentally 
+ different  from a <code>startElement</code> event of a <code>character</code>
+    event (this  event, however, is handled by means of an error or exception--but 
+ that is an  implementational strategy, not paradigmatic). A SAX application 
+ can do whatever  it wants with an "invalidity" event, including ignore it 
+ entirely or infer a  valid variant. </p>
+  <p>There are a couple situations where SAX (or a similar event-driven parser) 
+ is  pretty well the <em>only</em> reasonable approach. Two clear cases are: 
+ (1) When  an input XML document is sufficiently large (e.g., megabytes or 
+ gigabytes; but  maybe mere kilobytes in embedded contexts) that creating 
+an in-memory  representation of the entire document is infeasible. Moreover, 
+ it should be  noted that a DOM representation of an XML document is generally 
+ several times  the size of the underlying document. (2) When an input XML 
+ document is not even  available all-at-once, but rather arrives over a channel 
+ during a duration of  time (but you want to process the content as each portion
+ is available). The  nice thing about SAX is that it can operate in a space-
+ and time-constrained  context. Each sequential event can be processed as
+it "occurs", with no  necessary reliance on future events (nor even necessarily
+ on past events). There  is no need to read in an entire file at once for
+SAX processing, nor does one  need to await the completion of a stream. </p>
+  <p>The downside of SAX is also sometimes an upside. Since there is no data 
+  structure of an XML document provided by SAX, if one <em>wants</em> to represent
+  the document--or even just parts of it--in a SAX application, it is necessary
+ to  allocate and create a custom data structure. DOM, by contrast, just
+gives  you  the whole structure, along with a number of convenient methods
+for operating  on  it. Building and populating a custom data structure is
+generally much  more work  than is simply working with a DOM tree. At both
+a design and an  implementation  stage there is a lot that can go wrong in
+a large and complex  data structure  (DOM implementations have already been
+debugged for you).    </p>
+  <p>The SAX examples in the above source code were unrealistic in this 
+respect--all  they  did was read  events then write them back out; most real-world
+SAX applications will  accumulate various information contained in the various
+events. Even something  as simple as the relative nesting of <code>startElement</code>
+  events needs to  be kept in application-defined data structures (whether
+this will be a stack,  tree, hash or something else depends on the requirement).
+But there is a plus to  creating custom data structures in a SAX application--namely,
+ they are  <em>custom</em> . A large amount of the time, a DOM-style tree
+structure is the  relevant way to look at an XML document/stream. But not
+always--at other times  what the application is interested in about an XML
+stream is not its tree, but  some different aggregation of the information
+in the event stream. In such  cases--even apart from the memory and latency
+issues--SAX is the right approach,  precisely <em>because</em> one needs
+to build a custom data structure. Under a  DOM approach, what a programmer
+winds up doing is first building a DOM tree,  than "walking" that tree to
+extract a brand new data structure with the needed  characteristics. SAX
+bypasses the extra step.   </p>
+  <h2>Resources</h2>
+  <p>Like a lot of open source projects, the official website for SAX is hosted
+by  SourceForge: </p>
+  <blockquote><a href="http://sax.sourceforge.net/">http://sax.sourceforge.net/</a></blockquote>
+    <p>An apparently identical page can also be found at: </p>
+    <blockquote><a href="http://www.saxproject.org/">http://www.saxproject.org/</a></blockquote>
+      <p>The  <code>expat</code>  parser can also be found at a SourceForge
+page. </p>
+      <blockquote><a href="http://expat.sourceforge.net/">http://expat.sourceforge.net/</a></blockquote>
+        </body>
+        </html>

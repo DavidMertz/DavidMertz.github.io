@@ -1,0 +1,866 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html><head><title>LPI 101 Certification Practice Test</title></head>
+<body><h1>LPI 101 Certification Practice Test</h1>
+
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.3/1/1</td><td>multiple alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='CE'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Suppose that you have an application whose behavior depends
+    on the environment variable BAR.  Which of the following
+    command lines may be used in a bash shell to configure the
+    application?</p>
+<ul>
+<li><pre>A. export $BAR=baz; echo $BAR</pre></li>
+<li><pre>B. set BAR=baz</pre></li>
+<li><pre>C. BAR=baz ; export BAR</pre></li>
+<li><pre>D. echo $BAR=baz</pre></li>
+<li><pre>E. declare -x BAR=baz</pre></li>
+<li><pre>F. echo BAR=baz</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.3/1/2</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='B'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following commands can be used to assure that a
+    file 'myfile' exists?</p>
+<ul>
+<li><pre>A. cp myfile /dev/null</pre></li>
+<li><pre>B. touch myfile</pre></li>
+<li><pre>C. create myfile</pre></li>
+<li><pre>D. mkfile myfile</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.3/2/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='B'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following command lines can be used to convert a
+    file containing DOS-style CR-LF line endings into Unix-style
+    LF line endings?  Assume for this question that the DOS-style
+    file is called 'dosfile', and we want the modified contents
+    in 'unixfile'</p>
+<ul>
+<li><pre>A. sed 's/\n//' dosfile &gt; unixfile</pre></li>
+<li><pre>B. tr -d '\r' &lt; dosfile &gt; unixfile</pre></li>
+<li><pre>C. dos2unix dosfile unixfile</pre></li>
+<li><pre>D. strip '\r' &lt; dosfile &gt; unixfile</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.3/2/2</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='A'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Suppose for this question that you have a file called
+    'wordlist' that contains a number of words, one per line.
+    You would like to produce an ad-hoc report that contains a
+    numbered list of the first five words, according to
+    alphabetical order.  Which of the following command lines can
+    be used to produce this report to the console?</p>
+<ul>
+<li><pre>A. sort wordlist | nl | head -5</pre></li>
+<li><pre>B. split -1 wordlist ; cat xa? | head -5</pre></li>
+<li><pre>C. nl wordlist | sort | sed '/^     [^12345]/d'</pre></li>
+<li><pre>D. nl wordlist | sort | head -5</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.3/2/3</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='D'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    The command 'ps -A' displays an ordered list of all running
+    processes, with the right-justifed process ID in the first
+    space-separated field.  Suppose you would like to display to
+    screen a list of the five most recently launched processes
+    (those with the highest process IDs).  Which of the following
+    commands will display the desired items?</p>
+<ul>
+<li><pre>A. ps -A | tail -5 | cut -f 1 -d " "</pre></li>
+<li><pre>B. ps -A | tail -5 | sed 's/[ ]*[0-9]*//'</pre></li>
+<li><pre>C. ps -A | head -5 | nl</pre></li>
+<li><pre>D. ps -A | tac | head -5 | cut -b 1-5</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.3/2/4</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='D'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Suppose that a file 'names' contains a list of names in the
+    form, "firstname lastname", one per line.  These names are
+    unsorted, and you would like them sorted by lastname;
+    however, the format of names on each line should remain the
+    same.  Which ONE of the following commands will NOT output an
+    appropriately sorted list of names to the console?</p>
+<ul>
+<li><pre>A. cut -f 2 -d " " names | paste names - | sort -k 3 | cut -f 1</pre></li>
+<li><pre>B. sort -k 2 names</pre></li>
+<li><pre>C. sed 's/\(\w*\) \(\w*\)/\2 \1 \2/' names | sort | cut -f 2-3 -d " "</pre></li>
+<li><pre>D. cut -f 2 -d " " names | sort</pre></li>
+<li><pre>E. cut -f 2 -d " " names | paste - names | sort | cut -f 2</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.3/3/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='B'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Assume that your current working directory is '/tmp'
+    and your home directory is '/home/jane'.  Which of the below
+    commands will copy all the content of '/tmp/test/' to
+    a 'test' subdirectory of your home directory?</p>
+<ul>
+<li><pre>A. cp -r test/* /home/jane</pre></li>
+<li><pre>B. cp -r ./test ~</pre></li>
+<li><pre>C. cp -r ~/test .</pre></li>
+<li><pre>D. cp -r /tmp/test /home/jane/test</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.3/4/1</td><td>multiple alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='ABDE'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Suppose that you have several files matching the filename
+    pattern 'file[0-9]'.  You would like to visually compare the
+    contents of all such files, in a side-by-side fashion.  Which
+    of the following commands would let you view the desired ad
+    hoc report?</p>
+<ul>
+<li><pre>A. ls file[0-9] | xargs paste | less</pre></li>
+<li><pre>B. paste `ls file[0-9]` &gt; report ; vi report ; rm report</pre></li>
+<li><pre>C. cat file[0-9] | paste - | more | less</pre></li>
+<li><pre>D. ls file[0-9] | tee fnames | paste `cat fnames`</pre></li>
+<li><pre>E. ls file[0-9] | tee fnames | xargs paste | more</pre></li>
+<li><pre>F. ls *word* &gt; fnames ; paste &lt; xargs `cat fnames` | vi</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.3/5/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='C'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following Linux utilities does NOT include the
+    capability to list the process IDs of running applications?</p>
+<ul>
+<li><pre>A. jobs</pre></li>
+<li><pre>B. ps</pre></li>
+<li><pre>C. nice</pre></li>
+<li><pre>D. top</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.3/5/2</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='B'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<table bgcolor="lightblue" width="100%"><tr><td>
+<pre>    # jobs -l
+    [1]   5110 Running                 kedit &amp;
+    [2]-  5382 Stopped (signal)        pine
+    [3]+  5457 Stopped (tty output)    vi
+</pre>
+</td></tr></table>
+<p>    Given the 'jobs' display in the exhibit, which command could
+    you use to switch display focus to the application 'vi'?</p>
+<ul>
+<li><pre>A. bg %3</pre></li>
+<li><pre>B. fg %3</pre></li>
+<li><pre>C. top -p 5457</pre></li>
+<li><pre>D. switch %5457</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.3/5/3</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='B'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<table bgcolor="lightblue" width="100%"><tr><td>
+<pre>    # jobs -l
+    [1]   5110 Running                 kedit &amp;
+    [2]-  5382 Stopped (signal)        pine
+    [3]+  5457 Stopped (tty output)    vi
+</pre>
+</td></tr></table>
+<p>    Given the 'jobs' display in the exhibit, which command could
+    you use to terminate the application 'vi'?</p>
+<ul>
+<li><pre>A. bg %3</pre></li>
+<li><pre>B. kill -9 5457</pre></li>
+<li><pre>C. term -i %3</pre></li>
+<li><pre>D. fg 5457</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.3/6/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='D'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Suppose you have a running program called 'myprog', that is a
+    child of the current shell.  You would like to decrease the
+    CPU usage of this program.  Which of the following command
+    lines can you use to make 'myprog' yield more CPU resources?</p>
+<ul>
+<li><pre>A. nice +1 myprog</pre></li>
+<li><pre>B. ps h -o pid -C myprog | xargs nice +1 -</pre></li>
+<li><pre>C. renice +1 -u `whoami` myprog</pre></li>
+<li><pre>D. renice +1 -p `ps -a | grep myprog | cut -b 1-6`</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.3/7/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='A'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<table bgcolor="lightblue" width="100%"><tr><td>
+<pre>    int double(int n)
+    { /* int arg, int return */
+       return n*2;
+    }
+    char hello(int n)
+    { /* int arg, char return */
+       printf("hello %i\n", n);
+    }
+    int five()
+    { /* no args, int return */
+       return 5;
+    }
+    int        triple(int n, int other, char nonsense)
+    { /* int arg, int return */
+       return n*3;
+    }
+</pre>
+</td></tr></table>
+<p>    Correctly parsing a C source file requires a full-fledged
+    parser (such as that built into a C compiler).  Nonetheless,
+    regular expressions can be used to provide a pretty good
+    approximate descriptions of many program constructs. Which of
+    the following searches will locate at least most of the C
+    functions that accept an int as a first argument, and return
+    an int (and will not produce false positives very often).
+    The exhibit contains a fragment of C code with several
+    annotated matching and non-matching functions (for non-C
+    programmers).</p>
+<ul>
+<li><pre>A. grep -E "int[ \t]+\w+[ \t]*\([ \t]*int" *.c</pre></li>
+<li><pre>B. grep -E "^int\w+[A-Za-z_]+\w*\(\w*int" *.c</pre></li>
+<li><pre>C. grep -E "int.+\([ \t]+int.*\) " *.c</pre></li>
+<li><pre>D. grep -E "int[ \t]+[A-Za-z_][ \t]+\(int" *.c</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.3/7/2</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='C'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Some tools that use regular expressions support so-called
+    "extended" regular expressions.  For example, GNU 'grep' with
+    the '-E' option uses extended regular expressions.  Other
+    tools like 'sed' only support "basic" regular expressions.
+    As a consequence, one must be careful in selecting the right
+    regular expression syntax.  Which of the following characters
+    have a special meaning in extended regular expressions, but
+    not in basic regular expressions.  That is, which of the
+    following is an extended regular expression "meta-character",
+    but only a regular character in basic regular expressions?</p>
+<ul>
+<li><pre>A. ^</pre></li>
+<li><pre>B. [</pre></li>
+<li><pre>C. +</pre></li>
+<li><pre>D. *</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.4/1/1</td><td>multiple alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='CF'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Based on Linux' partition naming system, which of the
+    following device names point to "logical" partitions
+    (assuming the corresponding partitions exist at all on the
+    system in question)?</p>
+<ul>
+<li><pre>A. /dev/sda3</pre></li>
+<li><pre>B. /dev/fd0</pre></li>
+<li><pre>C. /dev/hdb7</pre></li>
+<li><pre>D. /dev/hda4</pre></li>
+<li><pre>E. /dev/fd7</pre></li>
+<li><pre>F. /dev/sdc11</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.4/1/2</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='A'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following command lines can (possibly) be used
+    to format a partition? Assume required partitions exist, and
+    also that logical partitioning is used on each hard-disk.</p>
+<ul>
+<li><pre>A. mkfs -t msdos /dev/sda1</pre></li>
+<li><pre>B. mkfs.ext2 /dev/null</pre></li>
+<li><pre>C. mkfs -t ext2 /dev/hda4</pre></li>
+<li><pre>D. mkfs --type=ext2 /dev/hdb7</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.4/2/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='C'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which Linux command can be used to repair improperly
+    shutdown, or otherwise potentially corrupt partitions?</p>
+<ul>
+<li><pre>A. chkdsk</pre></li>
+<li><pre>B. scandisk</pre></li>
+<li><pre>C. fsck</pre></li>
+<li><pre>D. fdisk</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.4/2/2</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='D'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following command lines will produce an ad hoc
+    report on the total disk space used personally by the current
+    user?</p>
+<ul>
+<li><pre>A. fsck ~</pre></li>
+<li><pre>B. df ~/.</pre></li>
+<li><pre>C. quota --used</pre></li>
+<li><pre>D. du -hs ~</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.4/2/3</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='B'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which Linux command can be used to determine the available
+    space on local hard-disk partitions?</p>
+<ul>
+<li><pre>A. free</pre></li>
+<li><pre>B. df</pre></li>
+<li><pre>C. du</pre></li>
+<li><pre>D. fdisk</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.4/3/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='C'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Please examine the exhibit for this question which displays
+    the actual '/etc/fstab' file for the system on which this
+    exam was created.  Which of the following lines in the file
+    causes a fixed and user-writeable partition to be mounted?</p>
+<ul>
+<li><pre>A. Line 5</pre></li>
+<li><pre>B. Line 11</pre></li>
+<li><pre>C. Line 9</pre></li>
+<li><pre>D. Line 7</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.4/4/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='A'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which Linux command can be used to limit the disk space
+    usage allowance of a particular user? Assume for this
+    question that quotas are enabled for the filesystem(s) in use
+    on the system in question.</p>
+<ul>
+<li><pre>A. edquota</pre></li>
+<li><pre>B. setquota</pre></li>
+<li><pre>C. quotaon</pre></li>
+<li><pre>D. repquota</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.4/5/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='A'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Suppose you have created a new application 'myapp', and
+    copied it to the directory '/usr/local/bin'.  You would like
+    all the users of the system to be able to run your
+    application.  Which of the following command lines would
+    allow the appropriate access?</p>
+<ul>
+<li><pre>A. chmod o+x /usr/local/bin/myapp</pre></li>
+<li><pre>B. chgrp bin /usr/local/bin/myapp</pre></li>
+<li><pre>C. umask 0022 /usr/local/bin/myapp</pre></li>
+<li><pre>D. chown 755 /usr/local/bin/myapp</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.4/5/2</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='C'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Proper file security is particularly important for CGI
+    applications invoked over the web, given the diversity of
+    users.  Which of the command lines setup reasonable file
+    permissions for a CGI applications? Even though particular
+    web servers may require slightly different configurations,
+    you should be able to rule out all the wrong answers below.</p>
+<ul>
+<li><pre>A. chmod a-x ~/www/cgi-bin/myapp.cgi</pre></li>
+<li><pre>B. chmod 075 ~/www/cgi-bin/myapp.cgi</pre></li>
+<li><pre>C. chmod 711 ~/www/cgi-bin/myapp.cgi</pre></li>
+<li><pre>D. chmod o+w ~/www/cgi-bin/myapp.cgi</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.4/6/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='B'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which Linux command is used to assign privileges over a
+    particular file to a designated user</p>
+<ul>
+<li><pre>A. chroot</pre></li>
+<li><pre>B. chown</pre></li>
+<li><pre>C. assign</pre></li>
+<li><pre>D. chgrp</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.4/7/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='B'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    One advantage of hard links over symbolic links is:</p>
+<ul>
+<li><pre>A. A hard link can span different filesystems</pre></li>
+<li><pre>B. A hard link does not become disconnected from the
+       underlying file if the file is moved.</pre></li>
+<li><pre>C. You can determine the inode used by a hard link, but not
+       for a symbolic link.</pre></li>
+<li><pre>D. A hard link allows you to change the permissions on the
+       underlying file.</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.4/8/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='C'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    According to the Linux filesystem hierarchy standard, which
+    of the following directories would be an appropriate location
+    for a user to install a shared application to?</p>
+<ul>
+<li><pre>A. /sbin</pre></li>
+<li><pre>B. /dev/user/bin</pre></li>
+<li><pre>C. /usr/local/bin</pre></li>
+<li><pre>D. /etc/bin</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.6/1/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='A'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following Linux command lines can be used to
+    examine kernel bootup messages after boot time?</p>
+<ul>
+<li><pre>A. dmesg | less</pre></li>
+<li><pre>B. less /proc/kmsg</pre></li>
+<li><pre>C. bootlog -v</pre></li>
+<li><pre>D. vi /var/log/messages</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.6/1/2</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='B'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<table bgcolor="lightblue" width="100%"><tr><td>
+<pre>    boot=/dev/hda
+    map=/boot/map
+    install=/boot/boot.b
+    vga=791
+    default=redhat
+    keytable=/boot/us.klt
+    lba32
+    prompt
+    timeout=200
+    message=/boot/message
+    menu-scheme=wb:bw:wb:bw
+    image=/boot/vmlinuz
+            label=failsafe
+            root=/dev/hda10
+            initrd=/boot/initrd.img
+            append=" devfs=mount failsafe"
+            read-only
+    image=/boot/vmlinuz-2.4.16
+            label=redhat
+            alias=redhat-2.4.16
+            root=/dev/hda9
+            read-only
+    image=/boot/vmlinuz-2.4.8-26mdk
+            label=mandrake81
+            root=/dev/hda10
+            initrd=/boot/initrd.img
+            append=" devfs=mount"
+            read-only
+    other=/dev/hda2
+            label=eComStation
+            table=/dev/hda
+    other=/dev/fd0
+            label=floppy
+            unsafe
+</pre>
+</td></tr></table>
+<p>    Please examine the exhibit for this question which displays
+    the file '/etc/lilo.conf'.  Assume that the 'lilo' command
+    has been run while this configuration file is as listed.
+    Which of the following statements correctly describes what
+    happens when this machine boots up?</p>
+<ul>
+<li><pre>A. The system boots after a 20 second delay, and absent user
+       intervention the root filesystem is on /dev/hda10.</pre></li>
+<li><pre>B. The system boots after a 20 second delay, and absent user
+       intervention the root filesystem is on /dev/hda9.</pre></li>
+<li><pre>C. The system boots after 2 seconds delay, and absent user
+       intervention the root filesystem is on /dev/hda9.</pre></li>
+<li><pre>D. The system boots after a 200 second delay, and absent user
+       intervention the floppy disk is a fallback boot device.</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.6/2/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='D'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which command line can be used to restart a running Linux
+    system immediately?</p>
+<ul>
+<li><pre>A. restart --delay=0</pre></li>
+<li><pre>B. reboot -w</pre></li>
+<li><pre>C. halt -p</pre></li>
+<li><pre>D. shutdown -r now</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.8/1/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='C'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Suppose that you know that a task deals with the general
+    concept "floozflam", but you are not certain what Linux
+    command(s) are available for working with floozflams.  Which
+    of the following Linux command lines would be the BEST first
+    step in finding out about available tools?</p>
+<ul>
+<li><pre>A. man floozflam</pre></li>
+<li><pre>B. locate floozflam</pre></li>
+<li><pre>C. apropos floozflam</pre></li>
+<li><pre>D. whatis floozflam</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.8/1/2</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='B'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Suppose you know that an application 'someapp' is installed
+    on the current system.  You have already examine the man and
+    info pages for 'someapp', but are trying to find additional
+    information about 'someapp'.  Which of the following
+    directories is the BEST first place to look for further
+    documentation files?</p>
+<ul>
+<li><pre>A. /usr/local/doc/someapp-2.37</pre></li>
+<li><pre>B. /usr/share/doc/someapp-2.37</pre></li>
+<li><pre>C. /etc/someapp-2.37/doc</pre></li>
+<li><pre>D. /etc/doc/someapp-2.37</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.8/1/3</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='A'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following Linux commands are you likely to use
+    to display hypertextual documentation on a command?</p>
+<ul>
+<li><pre>A. info</pre></li>
+<li><pre>B. man</pre></li>
+<li><pre>C. whatis</pre></li>
+<li><pre>D. locate</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.8/2/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='D'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following URLs is a BEST first internet site to
+    go to for information about how to perform an unfamiliar
+    Linux task?</p>
+<ul>
+<li><pre>A. http://www.linuxman.com/</pre></li>
+<li><pre>B. http://www.linuxhowto.net/</pre></li>
+<li><pre>C. http://www.linuxtoday.com/</pre></li>
+<li><pre>D. http://www.linuxdoc.org/</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>1.8/3/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='B'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Suppose you have created an application that you wish to
+    distribute to other users and system.  Your application
+    archive already contains the necessary executables, source
+    code, and configuration files.  But you would like to provide
+    user with a quick explanation of the purpose and requirements
+    of your application.  Which of the following filenames BEST
+    matches users' expectations about where first to look for
+    application documentation</p>
+<ul>
+<li><pre>A. START</pre></li>
+<li><pre>B. README</pre></li>
+<li><pre>C. FIRST</pre></li>
+<li><pre>D. MAKEFILE</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.11/1/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='A'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following Linux commands can be used to set an
+    expiration date for a user's password?</p>
+<ul>
+<li><pre>A. chage</pre></li>
+<li><pre>B. vipw</pre></li>
+<li><pre>C. passwd</pre></li>
+<li><pre>D. usermod</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.11/1/2</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='B'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<table bgcolor="lightblue" width="100%"><tr><td>
+<pre>    jdoe:x:502:1000:John Doe:/home/jdoe:/bin/bash
+</pre>
+</td></tr></table>
+<p>    The exhibit for this question contains a line from the file
+    '/etc/passwd'.  Which of the following statements is true,
+    based on the information in the exhibit?</p>
+<ul>
+<li><pre>A. User John Doe belongs to the group with groupID 502.</pre></li>
+<li><pre>B. Shadow passwords are used on the current system.</pre></li>
+<li><pre>C. The username 'jdoe' belongs to the group 'jdoe'.</pre></li>
+<li><pre>D. Members of groupID 1000 can read directory /home/jdoe.</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.11/1/3</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='B'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which Linux command can be used to create a new user account?</p>
+<ul>
+<li><pre>A. newuser</pre></li>
+<li><pre>B. useradd</pre></li>
+<li><pre>C. mkuser</pre></li>
+<li><pre>D. usercfg</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.11/1/4</td><td>multiple alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='AD'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which Linux command(s) can be used to modify the list of
+    groups a user belongs to?</p>
+<ul>
+<li><pre>A. usermod</pre></li>
+<li><pre>B. groupadd</pre></li>
+<li><pre>C. groups</pre></li>
+<li><pre>D. gpasswd</pre></li>
+<li><pre>E. chgrp</pre></li>
+<li><pre>F. userinfo</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.11/2/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='C'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which Linux file can be used to configure the default bash
+    shell behavior for EVERY users on a system?</p>
+<ul>
+<li><pre>A. /etc/skel/.bashrc</pre></li>
+<li><pre>B. /home/.bash_profile</pre></li>
+<li><pre>C. /etc/profile</pre></li>
+<li><pre>D. /etc/passwd</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.11/2/2</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='C'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following BEST describes the purpose of the
+    '/etc/skel' directory?</p>
+<ul>
+<li><pre>A. The contents of the directory control the initialization of
+       the shell environment during each login.</pre></li>
+<li><pre>B. The contents of the directory determine the actions
+       performed during the system boot process.</pre></li>
+<li><pre>C. The contents of the directory provide a default
+       environment for newly created users.</pre></li>
+<li><pre>D. The contents of the directory list the background
+       processes that run during a user's session.</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.11/3/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='D'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following command lines would allow you to
+    examine how many times remote users have opened secure shells
+    into the current system?</p>
+<ul>
+<li><pre>A. dmesg | less</pre></li>
+<li><pre>B. less /proc/kmsg</pre></li>
+<li><pre>C. sshd --log | more</pre></li>
+<li><pre>D. vi /var/log/messages</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.11/4/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='B'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<table bgcolor="lightblue" width="100%"><tr><td>
+<pre>    SHELL=/bin/bash
+    PATH=/sbin:/bin:/usr/sbin:/usr/bin
+    MAILTO=root
+    HOME=/
+    # run-parts
+    01 * * * * root run-parts /etc/cron.hourly
+    02 4 * * * root run-parts /etc/cron.daily
+    22 4 * * 0 root run-parts /etc/cron.weekly
+    42 4 1 * * root run-parts /etc/cron.monthly
+    23 4 * 1,6 1 root run-parts /etc/cron.special
+</pre>
+</td></tr></table>
+<p>    Refer to the '/etc/crontab' file listed in the exhibit for
+    this question.  Which of the following statements is true?</p>
+<ul>
+<li><pre>A. The script file '/etc/cron.special is run once a week, on
+       Mondays.</pre></li>
+<li><pre>B. The contents of the '/etc/cron.special directory are run
+       during January and June.</pre></li>
+<li><pre>C. During some parts of the year '/etc/cron.special' is run
+       one minute after '/etc/cron.weekly'.</pre></li>
+<li><pre>D. During the month of March, '/etc/cron.special' is run on
+       Mondays.</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.11/4/2</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='D'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<table bgcolor="lightblue" width="100%"><tr><td>
+<pre>    # cat /etc/cron.daily/slocate.cron
+    #!/bin/sh
+    renice +19 -p $$ &gt;/dev/null 2&gt;&amp;1
+    /usr/bin/updatedb -f "nfs,smbfs,ncpfs,proc,devpts" -e "/tmp,/var/tmp,/usr/tmp"
+</pre>
+</td></tr></table>
+<p>    Based on the what the exhibit shows, which of the following
+    statements is the BEST assumption?</p>
+<ul>
+<li><pre>A. When cron runs updatedb, confirmations are logged to the
+       root console.</pre></li>
+<li><pre>B. The /etc/crontab file is configured to automatically index
+       remote filesystems.</pre></li>
+<li><pre>C. cron runs updatedb at a high processor priority in
+       order to complete it quickly.</pre></li>
+<li><pre>D. The locate database is automatically refreshed on a daily
+       basis.</pre></li>
+</ul>
+<table border="1" width="100%" bgcolor="lightgray"><tr>
+<td>2.11/5/1</td><td>alphabetic</td>
+<td><textarea rows="1" cols="20" 
+     onfocus="this.value='C'" 
+     onblur="this.value='SELECT FOR ANSWER'">
+SELECT FOR ANSWER</textarea></td>
+</tr></table>
+<p>    Which of the following Linux commands can be used to
+    create backups of filesystems and directories?</p>
+<ul>
+<li><pre>A. backup</pre></li>
+<li><pre>B. gzip</pre></li>
+<li><pre>C. tar</pre></li>
+<li><pre>D. archive</pre></li>
+</ul>
+<hr/><p><a href="http://validator.w3.org/check/referer">
+<img src="http://www.w3.org/Icons/valid-xhtml10"
+              alt="Valid XHTML 1.0!" height="31" width="88" /></a></p>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>PRODUCT REVIEW: -- Idle 0.6 -- </title>
+<style>
+             {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+em           {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt}
+ul, ol, li   {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+tt           {font-family: mono, courier}
+pre          {font-family: mono; font-size: 9pt}
+th           {font-family: mono, courier; font-size: 8pt}
+
+.code-sample {background-color: #CCCCCC}
+.sidebar     {background-color: #FFFFCC}
+.title       {font-size: medium; color: #3333CC}
+.subtitle    {font-size: 9pt; color: #3333CC}
+.subhead     {font-size: 12pt}
+.input       {background: #FFFFFF; color: #000000; font-weight: normal}
+</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<p><strong class="title">Product Review:</strong><br>
+<strong class="subtitle">Idle 0.6</strong></p>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Gnosis Software, Inc.<br>
+ January 2001<br>
+ <br>
+</p>
+<p><strong class="subhead">At A Glance</strong></p>
+ <p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>Creator: Guido van Rossum
+Price/License: Free Software (Python License)
+Home Page: http://python.org/
+Requirements: Platform with Python and TCL/TK
+
+
+</pre>
+</td></tr></table></p>
+<p><strong class="subhead">Background</strong></p>
+ <p>  Webreview readers who have followed my reviews of text editors
+  have probably noticed that I frequently worry about enhanced
+  modes for Python.  I am one of those converts who just simply
+  believes that Python is one of the best languages out there for
+  doing web-development programming in a variety of areas; and
+  what I want in a text editor is, in large part, a good way to
+  write Python source code.
+</p>
+<p>  If a text editor is a good way to develop Python code, maybe a
+  dedicated "integrated development environment (IDE)" is even
+  better. With the near explosion of the Python community in the
+  last couple years, a number of really fabulous IDEs have
+  followed.  Some of these simultaneously support development in
+  other programming languages, but all of them provide
+  programmers with an enhanced environment for application
+  development that goes beyond what a "mere" text editor does.
+</p>
+<p>  In this first of a series of reviews of Python IDEs, I look at
+  the IDE that almost every Python distribution includes right
+  there in the standard bundle.  If an IDE wants to sell itself
+  (either in reputational terms, or for actual money) to
+  developers, the first thing it needs to do is provide something
+  more than users get "automatically" with Idle.  Guido van
+  Rossum has given IDE developers a good challenge to meet when
+  he wrote Idle.
+</p>
+<p><strong class="subhead">About Idle</strong></p>
+ <p>  First thing, Idle requires Python, since it is written entirely
+  in Python.  Next thing--possibly a slightly more stringent
+  requirement--Idle also requires TCL/TK, and Python's <em><code>Tkinter</code></em>
+  module to access it.  Many or most Python distribution include
+  TCL/TK in their package, and TCL/TK is in turn available for
+  most operating environments: Win32, Win16, Linux/X11, other
+  Unix-like OS's, BeOS, etc.  Fortunately, Python 2.0
+  distributions like ActiveWorks' and PythonLabs' automatically
+  give you everything you need, including Idle itself.
+</p>
+<p><strong class="subhead">Cool Stuff</strong></p>
+ <p>  Idle provides everything you would expect in a basic IDE (it
+  is largely comparable to Perl Builder, which was reviewed for
+  WR previously; except for the target language).  When you start
+  Idle you get a shell window much like the interactive shell
+  that Python provides; from here you can type any Python code
+  you might want to try out, and get interactive results on what
+  the code does.  Combined with importing modules as you go
+  along, this interactive session can provide a surprisingly
+  robust test environment.  Still, other than a slightly enhanced
+  cut-and-paste and scrollback capability, so far we are not much
+  beyond the Python shell itself.
+</p>
+<p>  From the Idle interactive shell, menus let you open modules and
+  scripts in a Python-aware editor, open class browsers and an
+  environment path browser, perform a syntax check, run a script,
+  view the stack, and open an interactive debugger.  Many of
+  those functions are only relevant once a script has been
+  opened, of course.  The menus are TK "tear-off" style; that is,
+  clicking on the dashed line at the top of any pull-down menu
+  will promote that menu to its own persistent window.  The
+  "Edit" menu in particular is nice if kept "docked" at the side
+  of your desktop.  Also consistent with its TK heritage, Idle
+  utilizes a XWindow-ish multi-window interface; each function is
+  opened in its own toplevel window rather than using MDI or pane
+  styles.
+</p>
+<p>  The Idle editor has some nice customizations for Python work.
+  Syntax highlighting is of good quality (it recognizes triple
+  quote strings, which confuse many generic editors).  Functions
+  like tabify/untabify and comment/uncomment are Python-aware.
+  Find and replace functions are well done, and fully
+  regular-expression cognizant.  One nifty extra is
+  code-completion; the way code-completion is handled is not
+  quite as ambitious as some IDEs and editors: you must press a
+  keystroke to trigger it, and only defined names are completed,
+  not whole code structures.  But it is still a handy shortcut.
+  Built-in, local and imported functions all provide you with a
+  template pop-up as soon as you get to the opening parenthesis
+  (which helps a lot in remembering parameters).
+</p>
+<p>  The rest of Idle's functionality is solid and workable, but
+  unspectacular.  There is nothing in the way of RAD or visual
+  design.  For CGI work, I cannot imagine what one would do with
+  such things; but for client applications, a GUI designer can
+  be useful.  The browsers and debugger do what you expect.  When
+  browsing classes/methods/etc, clicking on something in the tree
+  jumps you to the relevant source code.  The debugger provides
+  breakpoints, stepping, and variable watches; but nothing so
+  fancy as poking at memory locations and variable contents, or
+  performing timings and other analyses.  Truth be told, however,
+  my own idea of Python debugging is usually throwing in a few
+  extra <code>print</code> statements at strategic points, and seeing what
+  makes it to screen.  It depends on the type of application
+  though, naturally.
+</p>
+<p><strong class="subhead">Glitches</strong></p>
+ <p>  A few glitches jump out in Idle--at least as of 0.6.  At least
+  on my Win95r2 machine (where I have been playing with it),
+  pop-up templates have an annoying habit of staying on screen
+  and blocking what you are trying to type.  You can get rid of
+  this by clicking the mouse somewhere, but doing so slows down
+  your work, and breaks concentration.
+</p>
+<p>  Probably more important is that it is really easy to freeze up
+  Idle by running an errant script.  For example, the code
+  <code>while 1: x=1</code> winds up requiring a forced-close of Idle
+  itself, not just of that script's execution.  Obviously, one
+  prefers not to write such code in the first place, but even the
+  plain-old Python interactive session lets you kill it with a
+  Ctrl-C (and the session with it, admittedly).  But having to
+  kill a whole working arrangement of windows/files/breakpoints/
+  etc. just to end some bad code is an annoyance.
+</p>
+<p>  While not quite a glitch, per se, it would be nice if Idle had
+  a concept of projects (or related files), or at very least a
+  list of recently opened files.  It is just too much work
+  remembering and opening each seperate script/module you are
+  interested in for a given context.
+</p>
+<p><strong class="subhead">About The Author</strong></p>
+ <p>  David Mertz hopes in earnest that the next buzzword for the web
+  will be "gnostic," its cognates, and related neologisms.  Try
+  out, "let's go gnosticate on the project," for euphony; perhaps
+  it works.  He hopes further that his prior art will support his
+  linguistic patent.  You can reach him at mertz@gnosis.cx, and
+  find copious biographical details by rooting around at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>
+</p>
+</body></html>

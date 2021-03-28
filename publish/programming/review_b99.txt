@@ -1,0 +1,155 @@
+PRODUCT REVIEW:
+Boxer 99 (v 8.01)
+
+David Mertz, Ph.D.
+Gnosis Software, Inc.
+January 2001
+
+AT A GLANCE
+------------------------------------------------------------------------
+
+      Creator: David Hamel <sp@gjt.org>
+      Price/License: $59. Close-source, commercial.
+      Home Page: http://www.boxersoftware.com
+      Requirements: Win32
+
+BACKGROUND
+------------------------------------------------------------------------
+
+  Attentive readers of Webreview.com will have noticed that I
+  have reviewed quite a few text editors in the last six months.
+  A certain bias has been evident in my reviews:  I prefer
+  multi-platform (because I work on numerous platforms myself);
+  and I prefer open-source (purely as a political matter, I am
+  not likely to modify the source code personally).  Of course,
+  even stronger than those biases is my preference for a text
+  editor that is powerful, flexible, and friendly.
+
+  Boxer 99 is an editor that falls on the negative side of the
+  above biases.  In fact, even though it is not all that
+  expensive, its $59 cost crosses my mental threshold between the
+  "insignificant" $20-30 of some shareware editors, and the
+  "should I really buy this?" doubts of more expensive products.
+
+  With so much going against it, what can I write about Boxer 99?
+  Just this:  Boxer is the editor *I* actually launch when I want
+  to get work done as quickly, efficiently, and with as little
+  effort as possible (i.e.  when I am not trying something else
+  out just to see what it can do).  At least when I am working on
+  a Win32 platform; or on OS/2 and running Boxer/2 (similar
+  features, but not specifically reviewed here).  Boxer just
+  simply works the way I want an editor to, with no surprises or
+  bugs, and with an amazingly well-designed interface.
+
+
+WHAT IS BOXER 99?
+------------------------------------------------------------------------
+
+  Boxer 99 is a Win32 GUI text editor designed both for writing
+  programming code and for writing prose (like this article, or
+  README's, HOWTO's, etc). Older companion versions of Boxer
+  exist for DOS and OS/2. Boxer 99 includes many features that
+  programmers expect in a text editor.
+
+
+AN EDITOR TO LOVE
+------------------------------------------------------------------------
+
+  What really sets Boxer apart from many editors is how well
+  arranged its features are.  Boxer 99 supports many configurable
+  key-bindings, but I prefer to stick with the default one.  With
+  other editors, a feature might be present, but hidden and/or
+  require too many keystrokes.  With Boxer, every feature is in
+  the menu I expect, and the CUA-ish keystrokes are logically
+  organized and intuitive.  Moreover, configuration of Boxer is
+  fiendly and done entirely within dialogs and menus (no arcane
+  configuration files)
+
+  Beyond good organization, the interface has the right elements:
+  optional filetabs, syntax hightlighting, optional toolbar,
+  optional line numbers, visible bookmarks.  The appearance is
+  clean, but at the same time presents all the information needed
+  for working with complex projects of related files.
+
+  Easy to find are a number of sophisticated features (each
+  individually found in other editors I have reviewed, but not in
+  combination).  Let's just list a few.  *Templates* are kept in
+  a popup window that allows selection of template sets and
+  individual items.  Generally this is useful for insertion of
+  code constructs or other blocks that tend to get re-used.
+  *Spell checker* with dictionaries available for the main
+  Western European languages.  *Multiple clipboards* act as an ad
+  hoc template area, and are definitely better than just one
+  clipboard.  *Bookmarks* have already been mentioned, they are a
+  way to quickly jump between areas of interest.
+
+  For working with text, Boxer offers a number of things many
+  editors lack.  *Columnar selection* is a must for playing with
+  tables and end-line comment blocks.  The set of *block
+  operations* in Boxer is particularly rich:  Change case (upper,
+  lower, proper, sentence); indent/unindent; sort; do math
+  calculations on blocks with numbers; do a block wordcount;
+  comment/uncomment; etc.  In addition, a nice feature most
+  editors lack is the ability to search across all buffers and in
+  disk files (with flexible selection of file patterns).  Sure
+  you could use an external program like 'grep', but the
+  integration is nice.
+
+  The thing that -really- sells me on Boxer above other editors
+  is that Boxer handles indentation and word wrapping *right*.
+  Boxer knows when you have started an indented paragraph
+  (including hanging or right shifted first line); it lets you
+  wrap different paragraphs to their own widths; it handles email
+  quoting; and right/left/center/justified paragraph formats.
+  Every other editor I have looked at has at least one subtle
+  glitch (or big ones) in formatting paragraphs -- they are OK
+  for code, but no good for prose.  Boxer does it right!
+
+
+IT CAN'T BE *THAT* GOOD!
+------------------------------------------------------------------------
+
+  As much as I like Boxer 99, there are still a few things I
+  could wish were better.  Some are small, some more fundamental.
+  First some small ones:  I have grown to like onscreen
+  hightlighting of matching open/close blocks (parens, brackets,
+  etc).  Boxer lets you jump to a "mate," but doesn't highlight
+  it automatically.  A few editors have a "hypersearch" type
+  feature that displays all matches to a given pattern.  FTE does
+  this with an onscreen highlight, jEdit with a navigable results
+  window -- either way is nice, and would be useful in Boxer.
+
+  Second, some bigger things:  In a bad decision, the quite
+  effective macro capability of earlier Boxer versions was
+  dropped from Boxer 99.  The documentation claims that templates
+  fulfill most of the same requirement; maybe true, but most is
+  not all.  Also, although the search/replace engine handles
+  regular expressions to a certain degree, it lacks back
+  references in either search or replace patterns.  Without this,
+  regular expressions are missing one of their best aspects.
+  Still another complaint I would have is that the syntax
+  highlighting modes are not quite powerful enough.
+  Specifically, Python uses triple quotes for multi-line strings,
+  but Boxer 99 cannot highlight these (because the plain quote
+  already marks single-line strings).  A bit more powerful
+  highlighter could handle this better.
+
+  If I had my complete wish list, I would want two more features
+  in Boxer 99.  These are not widely supported in other editors,
+  so these are not really complaints.  But my ideal would still
+  have them.  *Folding* is hugely useful for dealing with long
+  and hierarchical text files (programming code, HTML, even prose
+  with sections).  *Workspaces/projects* would be a nice addition
+  for opening and shutting a collection of related files (and
+  maybe preserving window options for an editing session).
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  There is hardly anything David Mertz feels more strongly about
+  than text-editors.  It stands to reason after a tally of the
+  hours and minutes of his days.  You can find out copious
+  biographical details by rooting around at
+  http://gnosis.cx/publish/.
+

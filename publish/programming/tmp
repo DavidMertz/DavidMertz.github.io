@@ -1,0 +1,4 @@
+$ ./dumpOO.py simple.sxw | fmt
+ Minimal document with bold and italics .
+-
+ New paragraph with underline .

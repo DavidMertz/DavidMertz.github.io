@@ -1,0 +1,265 @@
+<HTML>
+<HEAD><TITLE>Library - CLASS Configuration</TITLE>
+<STYLE type="text/css">
+EM { font-weight: normal; font-style: italic; color: #000066; }
+B { color: #660000; }
+H1 { font-size: large; font-weight: bold; background-color: #DDEEFF; }
+H2 { font-size: medium; font-weight: bold; }
+P.indent { margin-left: 5%; }
+P.code { margin-left: 5%; color: #006600; font-weight: bold; font-family: MONOSPACE; font-size: small; }
+P.synopsis { margin-left: 5%; }
+DL { margin-left: 5%; }
+UL { margin-left: 3%; margin-right: 8%; text-indent: -5%; }
+P.syntax { margin-left: 15%; text-indent: -10%; margin-right: 5%; }
+</STYLE></HEAD>
+
+<BODY>
+
+<H1>CLASS Configuration FROM Persistent</H1>
+
+   <P class="synopsis">
+   Contains (persistent) module configuration info
+
+<!----------------------------------------------------------------><HR>
+
+<H2>Super classes</H2>
+
+   <P class="indent">
+   <A HREF="Persistent.html">Persistent</A>
+
+<H2>Return</H2>
+
+   <P class="indent">
+   The function Configuration() returns the class object of the
+   Configuration class.
+
+<H2>Description</H2>
+
+   <P class="indent">
+   The Configuration class provides a means of bundling together all
+   the data associated with configurable aspects of modules.  As well,
+   the class provides mechanisms for persistent storage of its instances
+   via serialization and diskfile storage.  As an adjunct to the
+   persistence mechanism, the Configuration class has methods for
+   handling the anticipatable event that the Configuration class is
+   updated, which would cause the library version to differ from
+   previously stored persistent instances.
+
+   <P class="indent">
+   The canonical method of accessing an instance of the Configuration
+   class is via the Library Cfg() function (See the "Life Cycle" section
+   of this page, and the Cfg() function documentation).
+
+   <P class="indent">
+   Each instance of the Configuration class contains a member :version
+   that is used to indicate the currentness of the (possibly persistent)
+   instance.  The methods :uptoDate(), :verUpdate() and :antiquated()
+   utilize the :version instance data member for comparison with the
+   class :C_version data member
+
+   <P class="indent">
+   The Configuration instance member :savedCfg is always initialized as
+   false; by definition, at time of creation an instance has not been
+   read from persistent storage.  The only action that can change the
+   value of :savedCfg is reading back a serialized instance with the
+   :fromDisk() method.  The :toDisk() does not modify the value of
+   :savedCfg (however, an instance serialized by :toDisk() will not
+   normally become a runtime instance except when instantiated with
+   :fromDisk()).
+
+   <P class="indent">
+   The Configuration class supports introspection via the standard data
+   members :_data and :_methods.
+
+<H2>Class Data</H2>
+
+   <P class="indent">
+   The class data associated with persistence and versioning is
+   declared in the parent class Persistent.  See its documentation
+   for details on those data members.
+
+<H2>Class Methods</H2>
+
+   <DL>
+   <DT><A HREF="Configuration_new.html"><b>:new()</b></A>
+   <DD>Creates an instance of the Configuration class.
+
+   <DT><b>:exposeSelf()</b> <em>[implementation]</em>
+   <DD>When implemented in a child class (of Persistent), :exposeSelf()
+       is responsible for setting the child class' introspection and
+       version data. All of the exposable data and method members <u>of
+       the child</u> should be listed in :C_data and :C_methods,
+       respectively. However, the exposed members declared in Class
+       Persistent itself, will be added to the introspection data by
+       :exposeParent().
+
+   <DT><b>:initClass()</b>
+   <DD>Initializes class data to default values.  By contract with its
+       parent, Persistent, :initClass() must call ::exposeSelf(), then
+       ::exposeParent()
+   </DL>
+
+<H2>Life Cycle</H2>
+
+   <P class="indent">
+   A Configuration instance comes into existence immediately upon its
+   assignment with the Configuration():new() method.  No seperate
+   :create() method is required to request system resources.
+
+   <P class="indent">
+   A Configuration instance is destroyed when its variable falls out of
+   its declaration scope.  In principle, the variable containing a
+   Configuration instance can be declared LOCAL to a function, and
+   the exit condition of the controlling function will preform all
+   necessary destruction of the instance.
+
+   <P class="indent">
+   However, in practical use, each module will access a single STATIC
+   instance of the Configuration class via the Cfg() function.  The
+   instance managed by the Cfg() function is self-initializing and will
+   de-serialize itself from diskfile if one is available.  In other
+   words, the Cfg() function can be treated as a globally available and
+   persistent Configuration instance.
+
+   <P class="indent">
+   While the Cfg() function's Configuration instance will de-serialize
+   itself from diskfile automatically, it will only be serialized
+   with calls to the :toDisk() method.  When changes are made to
+   Configuration data that the programmers desires to be persistent,
+   it is necessary to "commit" the changes with the :toDisk() method.
+
+
+<H2>Instance Data</H2>
+
+   <P class="indent">
+   The instance data associated with persistence and versioning is
+   declared in the parent class Persistent.  See its documentation
+   for details on those data members.
+
+   <DL>
+   <DT><b>:Font_Alert</b> <em>[EXPORTED; Character ("10.Arial")] </em>
+   <DD>What font to use in Alert/Inform dialogs?
+
+   <DT><b>:ButtonLabels</b> <em>[EXPORTED; Boolean (.F.)] </em>
+   <DD>Display text labels on (most) buttons?
+
+   <DT><b>:GrayBar</b> <em>[EXPORTED; Boolean (.F.)] </em>
+   <DD>Display an "Outlook-style" gray bar with screen title?
+
+   <DT><b>:ColorScheme</b> <em>[EXPORTED; Object (ColorScheme():new())]</em>
+   <DD>What color scheme to use? Since the :ColorScheme data member is
+       itself an object, it will usually be necessary to refer to the
+       nested data or methods of this data.  E.g.
+       oCfg:ColorScheme:Titlebar
+
+   <DT><b>:MY_Date</b> <em>[EXPORTED; Date (DATE())]</em>
+   <DD>What posting date to use in entry? See Functions PostDate()
+       and Change_Postdate() also.
+
+   </DL>
+
+<H2>Instance Methods</H2>
+
+   <DL>
+   <DT><b>:init()</b> <em>[implementation]</em>
+   <DD>Set introspection data members and default values for exposed
+       data members (see Class method :new() for a discussion of the
+       special initializiation procedure of this class)
+
+   <DT><b>:toDisk(&lt;cFile&gt;)</b> <em>[implementation]</em>
+   <DD>Writes a serialized copy of the instance to a diskfile.  If no
+       parameter is passed as a filename specification, the file
+       MY_HOMEPATH+"USER.CFG" is used.
+
+   <DT><b>:fromDisk(&lt;cFile&gt;)</b> <em>[implementation]</em>
+   <DD>Reads a serialized copy of a Configuration instance from diskfile.
+       (if possible).  If no file is specified, or if the file specified
+       does not exist, ::savedCfg is simply set to .F., and a reference
+       to the original instance is returned.  Otherwise, the serialized
+       data is read in, ::savedCfg is set to .T., and the read instance
+       is returned.
+
+       <P>
+       Since XBase++ does not allow redefinition of self, the methods
+       :fromDisk() and :verUpdate() return the modified Configuration
+       instance, but do not update the existing instance in-place.
+
+   <DT><b>:antiquated()</b> <em>[implementation]</em>
+   <DD>Return a character string report of the differences (if any)
+       between the calling instance's and the Class' introspection data
+       and version number.
+
+   <DT><b>:verUpdate()</b> <em>[implementation]</em>
+   <DD>Returns an updated copy of an instance.  Any data members of the
+       current Class' instrospection data that are also present in the
+       instance are copied into a new instance of the Configuration class.
+       All other data members, and all methods, are defined according
+       to the definition and initialization values of the most current
+       version.
+
+       <P>
+       Two data members, however, will be given Library/Class default
+       values rather than the values existing in the calling instance.
+       These are :version, which is not changed because all
+       version-specific structure is updated in the returned instance; and
+       :ColorScheme, which reinitialized under the (paranoid) assumption
+       that the Class ColorScheme might have changed structure also.
+
+       <P>
+       Since XBase++ does not allow redefinition of self, the methods
+       :fromDisk() and :verUpdate() return the modified Configuration
+       instance, but do not update the existing instance in-place.
+
+   <DT><b>:uptoDate()</b> <em>[implementation]</em>
+   <DD>Returns a boolean value indicating whether the calling instance
+       is current with the Class definition in the Library.
+
+   </DL>
+
+<H2>Examples</H2>
+
+   <P class="code">
+   ? Cfg():className()            // Result: "Configuration"
+   <br>
+   <br>// Check a configuration value
+   <br>IF Cfg():GrayBar
+   <br> &nbsp;  DrawGraBox(22, 0, 23, 79, "FLAT_PALE_BIGTEXT", cTitle)
+   <br>ENDIF
+   <br>
+   <br>// Set, serialize, and save a configuration value
+   <br>Cfg():GrayBar := .T.
+   <br>Cfg():toDisk()
+   <br>
+   <br>// Operate on instance via variable name
+   <br>oCfg := Cfg()
+   <br>oCfg:GrayBar := .F.
+   <br>oCfg:toDisk("Temp.CFG")
+   <br>
+   <br>// Read a serialized instance from a diskfile
+   <br>oCfg := Configuration():new():fromDisk("MyFile.CFG")
+   <br>
+   <br>// Check what is out-of-date in the restored instance
+   <br>MsgBox( oCfg:antiquated() )
+   <br>
+   <br>// Update the configuration to match current class definition
+   <br>oCfg := oCfg:verUpdate()
+
+<H2>Files</H2>
+
+   <P class="indent">
+   Source file is <tt>Configuration.prg</tt>
+
+<!----------------------------------------------------------------><HR>
+
+<H2>See Also:</H2>
+
+<P><A HREF="cfg.html">Cfg()</A></P>
+<P><A HREF="ColorScheme.html">Class ColorScheme</A></P>
+
+<!----------------------------------------------------------------><HR>
+
+
+</BODY>
+</HTML>
+
+

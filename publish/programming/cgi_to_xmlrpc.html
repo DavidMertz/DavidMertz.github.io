@@ -1,0 +1,207 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>XML ZONE TIP: Make your CGI scripts available via XML-RPC -- Providing a programmatic interface to web services -- </title>
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Xml Zone Tip: Make Your Cgi Scripts Available Via Xml-rpc</h1>
+<h2>Providing a programmatic interface to web services</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Interfacer, Gnosis Software, Inc.<br>
+ April, 2003<br>
+ <br>
+</p>
+<blockquote>
+    For this large class of CGI scripts, it is both easy and
+    useful to provide an alternate XML-RPC interface to the same
+    calculation or lookup.  If you do this, other developers can
+    quickly utilize the information you provide within their own
+    larger applications.
+</blockquote>
+<h3>Introduction</h3>
+ <p>
+  Many CGI scripts are, at their heart, just a form of remote
+  procedure call.  A user specifies some information--perhaps in
+  an HTML form--and your web server returns a formatted page that
+  contains an answer to their inquiry.  The data on such a return
+  page is surrounded in some prettifying HTML markup, but
+  basically it is the data that is of interest.  Examples of
+  data-oriented CGI interfaces are search engines, stock price
+  checks, weather reports, personal information lookup, catalog
+  inventory, and so on.
+</p>
+<p>
+  A web browser is a fine interface human eyeballs; but a returned
+  HTML page is far from an optimal form for integration within
+  custom applications.  What programmers often do to utilize the
+  data that comes from CGI queries is "screen-scraping" of
+  returned pages--that is, look for identifiable markup and
+  contents, and pull data elements from the texts.  But
+  screen-scraping is error-prone:  page layout may change over
+  time and/or be dependent on the specific results.  A more
+  formal API is better for programmatic access to your CGI
+  functionality.
+</p>
+<p>
+  XML-RPC is exactly intended to enable application access to
+  queryable results over an HTTP channel.  Its big sibling SOAP
+  can do a similar job, but the XML format of the SOAP is more
+  complicated than is needed for most purposes.  An ideal system
+  is one where people can make queries in a web browser,
+  while custom applications can make the same queries via
+  XML-RPC.  The underlying server can do almost exactly the same
+  thing in either case.
+</p>
+<h3>An Example</h3>
+ <p>
+  I have created a service within my website that enables users
+  to send email to anonymized recipients.  You can read about the
+  goals and architecture of Gnosis-Anon at its home page (see
+  Resources).  At the same URL, you can enter a query into
+  an HTML form, and in return be presented with an HTML page
+  informing you of an anonym.  From there, you need to use a
+  pencil to write the information down, or perhaps use
+  cut-and-paste into something besides your web browser.
+</p>
+<p>
+  Suppose you wanted to utilize the anonym automatically in an
+  application--e.g. a Mail User Agent (MUA) or Mail Transport
+  Agent (MTA).  You might do some screen-scraping like:
+</p>
+<div class="code-sample"><h4>get-anonym-cgi.py</h4><PRE><FONT COLOR=#1111CC>#!/usr/bin/env python</FONT>
+<FONT COLOR=#3333CC><B>from</B></FONT> urllib <FONT COLOR=#3333CC><B>import</B></FONT> urlencode, urlopen
+<FONT COLOR=#3333CC><B>from</B></FONT> sys <FONT COLOR=#3333CC><B>import</B></FONT> argv
+base_url = <FONT COLOR=#115511>'http://gnosis.cx/cgi-bin/encode_address.cgi'</FONT>
+query = urlencode({<FONT COLOR=#115511>'duration'</FONT>:argv[1], <FONT COLOR=#115511>'email'</FONT>:argv[2]})
+html_answer = urlopen(base_url+<FONT COLOR=#115511>'?'</FONT>+query).readlines()
+result = <FONT COLOR=#115511>"NO ANONYM FOUND!"</FONT>
+<FONT COLOR=#3333CC><B>for</B></FONT> line <FONT COLOR=#3333CC><B>in</B></FONT> html_answer:
+    <FONT COLOR=#3333CC><B>if</B></FONT> line.find(<FONT COLOR=#115511>"&lt;dt&gt;Anonym:&lt;/dt&gt;"</FONT>) &gt;= 0:
+        start = line.find(<FONT COLOR=#115511>'&lt;dd&gt;'</FONT>)+4
+        end = line.find(<FONT COLOR=#115511>'&lt;/dd&gt;'</FONT>)
+        result = line[start:end]
+        <FONT COLOR=#3333CC><B>break</B></FONT>
+<FONT COLOR=#3333CC><B>print</B></FONT> result</PRE></div><p>
+  You can run this with a command line like:
+</p>
+<div class="code-sample"><h4>Running get-anonym-cgi</h4><pre>
+% get-anonym-cgi.py perm mertz@gnosis.cx
+.rNCOolqsVQYu@gnosis.cx
+
+</pre></div><p>
+  This works if I do not change the format of the HTML.  That is
+  a big if.  A more robust (and simpler) client application might
+  look like:
+</p>
+<div class="code-sample"><h4>get-anonym-xmlrpc.py</h4><PRE><FONT COLOR=#1111CC>#!/usr/bin/env python</FONT>
+<FONT COLOR=#3333CC><B>import</B></FONT> sys, xmlrpclib
+server = xmlrpclib.Server(<FONT COLOR=#115511>"http://gnosis.cx:8000"</FONT>)
+<FONT COLOR=#3333CC><B>print</B></FONT> server.anonym(sys.argv[1], sys.argv[2])</PRE></div><p>
+  This XML-RPC application behaves exactly the same as the CGI
+  based one.
+</p>
+<h3>Setting Up The Xml-rpc Server</h3>
+ <p>
+  There is not much difference between writing an XML-RPC server
+  and writing a CGI script.  The actual calculation or lookup
+  code is identical--the only thing you need to change is the
+  format of the output, and a little extra work parsing the
+  inputs for CGI.  My CGI script looks something like:
+</p>
+<div class="code-sample"><h4>encode_address.py</h4><PRE><FONT COLOR=#1111CC>#!/usr/bin/env python</FONT>
+<FONT COLOR=#3333CC><B>import</B></FONT> cgi
+query = cgi.FieldStorage()
+email = query.getvalue(<FONT COLOR=#115511>'email'</FONT>,<FONT COLOR=#115511>'test@test.lan'</FONT>)
+duration = query.getvalue(<FONT COLOR=#115511>'duration'</FONT>, <FONT COLOR=#115511>'Unknown'</FONT>)
+anonym = FIND_THE_ANONYM(duration, email)
+html_template = open(<FONT COLOR=#115511>'template'</FONT>).read()
+html = html_template % (email, anonym, duration)
+<FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"Content-Type: text/html"</FONT>
+<FONT COLOR=#3333CC><B>print</B></FONT>
+<FONT COLOR=#3333CC><B>print</B></FONT> html</PRE></div><p>
+  This leaves out the details of how <code>FIND_THE_ANONYM()</code> works,
+  and what the HTML template looks like; but those details are
+  unimportant here.
+</p>
+<div class="code-sample"><h4>anonym-xmlrpc-server.py</h4><PRE><FONT COLOR=#3333CC><B>from</B></FONT> SimpleXMLRPCServer <FONT COLOR=#3333CC><B>import</B></FONT> SimpleXMLRPCServer
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="Anonym"><FONT COLOR=#CC0000><B> Anonym</B></FONT></A>:
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="anonym"><FONT COLOR=#CC0000><B> anonym</B></FONT></A>(self, duration, email):
+        <FONT COLOR=#3333CC><B>return</B></FONT> FIND_THE_ANONYM(duration, email)
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="container_test"><FONT COLOR=#CC0000><B> container_test</B></FONT></A>(self):
+        <FONT COLOR=#3333CC><B>return</B></FONT> {<FONT COLOR=#115511>'spam'</FONT>:<FONT COLOR=#115511>'eggs'</FONT>, <FONT COLOR=#115511>'bacon'</FONT>:<FONT COLOR=#115511>'toast'</FONT>}
+server = SimpleXMLRPCServer((<FONT COLOR=#115511>''</FONT>, 8000))
+server.register_instance(Anonym())
+server.serve_forever()</PRE></div><p>
+  As you see, the self-same lookup function is used; its return
+  value is what is returned to a remote call to the <code>.anonym()</code>
+  method.  On the wire, return values are encoded as XML-RPC, but
+  Python's <em><code>xmlrpclib</code></em> module, as do analogous libraries in other
+  languages, automatically translates XML-RPC encoded structures
+  back into native data structures.  The method
+  <code>.container_test()</code> above can be called remotely as well, what
+  the client will see is a Python dictionary.
+</p>
+<h3>Notes</h3>
+ <p>
+  The code examples given use Python, but implementations of both
+  XML-RPC clients and servers exist for a large number of
+  programming languages.  Moreover, XML-RPC itself is completely
+  language-neutral:  multiple clients written in different
+  languages can call the same server, and none of them care what
+  language the server was written in.
+</p>
+<p>
+  There <em>is</em> a difference in the way that a CGI script runs and
+  the way an XML-RPC server runs.  The XML-RPC server is its own
+  process (and uses its own port); CGI scripts, on the other
+  hand, are automatically spawned by a general HTTPd server.  But
+  both still travel over HTTP (or HTTPS) layers, so any issues
+  with firewalls, statefulness, and the like remain identical.
+  Some general-purpose HTTPd servers, moreover, support XML-RPC
+  internally.  But if like me, you do not control the
+  configuration of your web host, it is easiest to write a
+  standalone XML-RPC server like the 8-line version above.
+</p>
+<h3>Resources</h3>
+ <p>
+  Dave Winer has created an XML-RPC interace to Google.  It can
+  be found, along with usage examples, at:
+</p>
+<blockquote>
+   <a href="http://www.xmlrpc.com/googleGateway">http://www.xmlrpc.com/googleGateway</a>
+</blockquote>
+<p>
+  Google themselves choose to implement a programmatic API in the
+  somewhat heavier-weight XML dialect of SOAP.  The principle is
+  the same as the XML-RPC version:
+</p>
+<blockquote>
+   <a href="http://www.google.com/apis/">http://www.google.com/apis/</a>
+</blockquote>
+<p>
+  A prior article by the author looks at the data model of
+  XML-RPC:
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/xml/library/x-matters15.html">http://www-106.ibm.com/developerworks/xml/library/x-matters15.html</a>
+</blockquote>
+<p>
+  Information and lookups for the Gnosis-Anon Mail Transport
+  Agent can be found at:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/cgi-bin/encode_address.cgi">http://gnosis.cx/cgi-bin/encode_address.cgi</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz knows a little bit about a lot of things, but a lot
+  about fewer things than he once did.  The smooth overcomes the
+  striated.  David can be reached at mertz@gnosis.cx; his life
+  pored over at<a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>
+</p>
+</body></html>

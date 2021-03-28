@@ -1,0 +1,81 @@
+#!/usr/bin/env python2.3
+
+import glob, os, time
+from gnosis.xml.objectify import make_instance, tagname, dumps
+day = 60*60*24
+recent = time.time()-(90*day)
+
+header = '''<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns="http://purl.org/rss/1.0/"
+
+  <channel rdf:about="http://gnosis.cx/">
+    <title>Gnosis Software</title>
+    <link>http://gnosis.cx/publish</link>
+    <description>All the publications of David Mertz, with a sprinkling of free software, and occasional extra goodies. </description>
+    <items>
+      <rdf:Seq>
+      %s
+      </rdf:Seq>
+    </items>
+    <image rdf:resource="http://gnosis.cx/home/hugo.gif"/>
+  </channel>
+  <image rdf:about="http://gnosis.cx/home/hugo.gif">
+    <title>Gnosis Software</title>
+    <link>http://gnosis.cx/publish</link>
+    <url>http://gnosis.cx/home/hugo.gif</url>
+  </image>
+
+<!-- insert -->
+'''
+root = 'http://gnosis.cx/'
+item = '''
+  <item rdf:about="%s">
+    <title>%s</title>
+    <link>%s</link>
+    <description>%s</description>
+    <dc:date>%s</dc:date>
+  </item>
+'''
+urls = []
+itags = []
+root = 'www/publish/programming/'
+# Look for regular articles
+for fname in glob.glob(root+'*.txt'):
+    ts = os.stat(fname).st_mtime
+    if ts > recent:
+        url = fname.replace('www/', root).replace('.txt','.html')
+        urls.append(url)
+        txt = open(fname).read().replace('\r\n','\n')
+        paras = txt.split('\n\n')
+        title, author, abstract = paras[:3]
+        date = author.split('\n')[-1]
+        itags.append(item % (title, url, abstract, date))
+
+# Look for tutorials
+for fname in glob.glob(root+'*.xml'):
+    ts = os.stat(fname).st_mtime
+    if ts > recent:
+        tut = make_instance(fname)
+        if tagname(tut) != 'tutorial':
+            continue
+        url = fname.replace('www/', root).replace('.xml','.html')
+        urls.append(url)
+        itags.append(item % (tut.title, url, tut.abstract, time.ctime(ts)))
+
+# Look for announcements
+for fname in glob.glob('announce/*.txt'):
+    ts = os.stat(fname).st_mtime
+    if ts > recent:
+        ann = make_instance(fname)
+        urls.append(ann.url)
+        itags.append(item % (ann.title, ann.url, ann.abstract.PCDATA, ann.date))
+
+items = '\n      '.join(['<rdf:li rdf:resource="%s"/>'%u for u in urls])
+
+fp = open('www/rss.xml','w')
+print >> fp, header % items
+print >> fp, ''.join(itags)
+print >> fp, '</rdf:RDF>'
+

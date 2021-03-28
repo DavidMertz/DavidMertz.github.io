@@ -1,0 +1,423 @@
+XML MATTERS #3
+Getting Started with the DocBook XML Dialect
+
+David Mertz, Ph.D.
+Archivist, Gnosis Software, Inc.
+September 2000
+
+    Getting started with working with DocBook.  Why to use
+    DocBook.  Planning a large project.  Modularizing your
+    documentation.
+
+
+WHAT IS XML?
+------------------------------------------------------------------------
+
+  XML is a simplified dialect of the Standard Generalized Markup
+  Language (SGML).  Many readers will be most familiar with SGML
+  via one particular document type, HTML.  XML documents are
+  similar to HTML in being composed of text interspersed with and
+  structured by markup tags in angle-brackets.  But XML
+  encompasses many systems of tags that allow XML documents to be
+  used for many purposes:  magazine articles and user
+  documentation, files of structured data (like CSV or EDI
+  files), messages for interprocess communication between
+  programs, architectural diagrams (like CAD formats), and many
+  other purposes.  A set of tags can be created to capture any
+  sort of structured information one might want to represent,
+  which is why XML is growing in popularity as a common standard
+  for representing diverse information.
+
+
+INTRODUCTION
+-------------------------------------------------------------------
+
+  This column arises out of a very practical personal concern of
+  its author.  Electronic document formats are a mess.  Over the
+  years, your author has written a fairly large number of
+  academic papers (mostly in Humanities topics), and I now wish
+  to make all these papers available on my web-site (or even just
+  be able to read them myself).  Unfortunately, over the years
+  my wordprocessors and platforms have changed numerous times,
+  and I have many documents on disk that were composed using
+  programs that I no longer own, could probably not obtain if I
+  wanted to, and are unlikely to run on current computers.  In
+  the best of cases, I have been able to locate conversion
+  programs that perform a moderately adequate job of converting
+  to a program I can currently run; and failing that, in some
+  other cases the original wordprocessor format is mostly ASCII,
+  with only a moderate amount typographic fluff interspersed.
+
+  In other words, my electronic archives are a mess.  Many
+  individuals and organizations are in even worse shape.  For
+  corporations and agencies especially, truly massive numbers of
+  important archival documents are being lost to changes in
+  technologies.  And these losses only get worse with time.
+
+  On the plus side, the means are available to create documents
+  that will age much better than those I have accumulated.  There
+  are (at least) two keys to creating electronic textual
+  documents that are resistent to changes in technology.
+  XML/SGML generally, and DocBook specifically, provide both
+  keys.  The first (and more important, ultimately) key to
+  time-resistent documents is open standards for document
+  formats.  There are two elements to these open standards:
+  syntax and semantics (or, "what must a document look like?" and
+  "what does a document mean?").  The syntax of a DocBook
+  document is wholly contained in the simple rules of XML markup,
+  and in the DocBook DTD that is inherent to every DocBook
+  document.  The semantics are slightly less distinct.  Certain
+  semantic features are contained in a DTD (what elements are the
+  type of thing that can/must occur inside other elements?).  And
+  the DocBook tags are chosen in such a way as to have a certain
+  "common-sense" semantic content, at least to English speakers.
+  But some more detailed semantic issues must rely on background
+  documentation like that in the Resources section, and on
+  traditions of use and editorial judgements (e.g. what type of
+  list is appropriate here?).
+
+  The second key is of less theoretic importance, but still of
+  considerable practical significance.  How easy is a document
+  format to interpret and use outside of formal specifications?
+  An old binary stream format is difficult to make sense of using
+  a text viewer.  An XML document is usually pretty reasonable
+  looking to a human reader even without formal validation and
+  processing (of course, plain ASCII is even better for casual
+  eyeballs).  Furthermore, some formats are simply a lot easier
+  to reconstruct than others, even apart from the presence of
+  formal specification.  Imagine an historian 100 years in the
+  future who finds two documents: one in MS-Word 97 accompanied
+  by an MSDN file-format specification CD, and one in an XML
+  format (even one missing a DTD).  This hypothetical historian
+  has a lot less work in front of her to reconstruct the XML
+  document's contents (look at the many vendors--including
+  Microsoft themselves with later versions--that have done a
+  poor-to-mediocre job of writing converters even with specs).
+  For that matter, imagine yourself five years in the future,
+  after your employer has "upgraded" all your workstations to
+  MS-Office 2005.
+
+  As a result of considerations of portability and technological
+  change, I've decided to start a project of getting my past
+  academic writing into DocBook format.  I believe this project
+  will help in preserving my writing, as well as in making it
+  easier to make it available in current and future popular
+  document formats (via conversions).
+
+
+WHAT IS DOCBOOK?
+------------------------------------------------------------------------
+
+  DocBook is an SGML dialect developed by O'Reilly and HaL
+  Computer Systems in 1991.  It is currently maintained by the
+  Organization for the Advancement of Structured Information
+  Standards (OASIS).  The purpose of DocBook is to describe the
+  content of articles, books, technical manuals, and other prose
+  documents.  DocBook has a focus on technical writing styles,
+  but is general enough to describe everything that goes into
+  most styles of prose writing.  An XML variant of the DocBook
+  DTD is also available (and is the one that will be discussed in
+  this article, inasmuch as small details differ).
+
+  The most important thing to keep in mind in understanding
+  DocBook is that what is annotated in a DocBook document is
+  entirely the *semantics* of the document, not its typography or
+  appearance.  This focus on document semantics stands in
+  contrast to wordprocessors, HTML, and even TeX. Wordprocessor
+  often allow style-sheets that mark conceptual categories like
+  "Header, Level 2"--but increasingly most of what they do is
+  attempt to deliver "what you see is what you get" (WYSIWYG).
+  And even where style-sheets are used, they are not usually
+  uniform across documents.  Doing this brings in all sorts of
+  assumptions such as page size and layout, available fonts,
+  typestyles of elements, etc.  Most of these assumptions have
+  little to do with the actual *concepts* addressed in the
+  writing, and almost all of them make it more difficult to adapt
+  the document to a different format (whether a different printed
+  layout, onscreen display, speech-synthesized versions, indexes
+  for web-robots, or whatever).  HTML started out close to
+  DocBook (albeit simpler), but increasingly has added
+  more-and-more typographic tags; what exists is a hodge-podge of
+  semantics and typography ('<h2>' versus '<b>', for example).
+
+  As an easy to understand example, many different conceptual
+  elements are frequently rendered with italics in printed books.
+  Different books use different conventions, but any of these
+  DocBook tags might get rendered as italics when actually
+  typeset:  '<emphasis>', '<abbrev>', '<citetitle>',
+  '<foreignphrase>', '<classname>', '<email>' (and numerous other
+  DocBook tags).  Of course, any one of them might -not- get
+  rendered in this manner.  The decision how to render these, and
+  other, elements is really accidental to the nature of the
+  document considered as concepts; these decisions are the
+  business of publishers and book-designers, not of authors (or
+  at least they should be).  DocBook gives you the essential
+  concepts that go into composition of a prose work, not the
+  accidents of how the work is finally rendered (which might be
+  many different ways, in fact).  Another advantage to DocBook
+  style conceptual markup, besides the seperation of content and
+  appearance, is that is lets us do things systematically on
+  element types.  For example, you could quickly identify a list
+  of every foreign phrase used in a document by searching for all
+  occurrences of the tag '<foreignphrase>' (perhaps you decide a
+  glossary is needed for such phrases).  Just looking for
+  everything marked as italics in a wordprocessor is much less
+  effective in this goal.
+
+
+READY, SET, MARK UP!
+------------------------------------------------------------------------
+
+  My first DocBook project will be a big one, but I'll do it in
+  increments:  convert my doctoral dissertation to DocBook.
+  Besides being rather long as dissertations go, the specific
+  document poses several challenges for a documentation system.
+  It contains a number of names that require roman diacritics
+  (but no non-European character sets); it has footnotes,
+  cross-references, page numbering, multiple section levels; it
+  uses some diagrams; there is a need to approximate some
+  original typography for commentary, and it uses some unusual
+  layout for specific effect; it has epigrams, a bibliography,
+  appendices, a dedication, an abstract; it uses limited, but
+  required, mathematical notations; it references not just books,
+  but also URLs and email addresses.  Overall, I happen to have
+  written something that will provide a good workout a large
+  portion of all the tags in DocBook.  The whole dissertation is
+  already available in its original WordPerfect 7 format, and in
+  two differently formatted PDF versions.  But none of the
+  versions of all that portable or flexible.  DocBook will
+  improve things on all grounds (of course, for this article, we
+  will only get as far as the markup, not the processing into
+  target formats; but eventually everything will be in order).
+
+  Enough prefacing, let us create the document:
+
+      #----------- Mertz Dissertation XML Document ------------#
+      <?xml version="1.0"?>
+      <!-- David Mertz Dissertation -->
+      <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+                     "http://gnosis.cx/download/docbook/4.12/docbookx.dtd" [
+          <!ENTITY bookinfo SYSTEM "bookinfo.sgm">
+              <!ENTITY abstract SYSTEM "abstract.sgm">
+          <!ENTITY chap1 SYSTEM "chap1.sgm">
+          <!ENTITY chap2 SYSTEM "chap2.sgm">
+          <!ENTITY chap3 SYSTEM "chap3.sgm">
+          <!ENTITY chap4 SYSTEM "chap4.sgm">
+          <!ENTITY chap5 SYSTEM "chap5.sgm">
+              <!ENTITY chap5_1 SYSTEM "chap5_1.sgm">
+              <!ENTITY chap5_2 SYSTEM "chap5_2.sgm">
+              <!ENTITY chap5_3 SYSTEM "chap5_3.sgm">
+          <!ENTITY chap6 SYSTEM "chap6.sgm">
+          <!ENTITY chap7 SYSTEM "chap7.sgm">
+          <!ENTITY chap8 SYSTEM "chap8.sgm">
+          <!ENTITY appendix1 SYSTEM "appendix1.sgm">
+          <!ENTITY appendix2 SYSTEM "appendix2.sgm">
+          <!ENTITY biblio SYSTEM "biblio.sgm">
+
+          <!ENTITY Zizek "&Zcaron;i&zcaron;ek">
+          <!ENTITY Mocnik "Mo&ccaron;nik">
+
+      ]>
+      <book>
+      &bookinfo;
+      &chap1;
+      &chap2;
+      &chap3;
+      &chap4;
+      &chap5;
+      &chap6;
+      &chap7;
+      &chap8;
+      &appendix1;
+      &appendix2;
+      &biblio;
+      </book>
+
+  This first step is mostly planning, obviously.  Creating the
+  contents of the component-level elements (e.g. chapters) will
+  be the real work.  But by creating entity references to these
+  component-level elements, we have divided the creation into more
+  manageable chunks (and also made it easier to publish/export
+  the individual chapters as their own documents).  What we have
+  indicated so far is that the type of document being created is
+  a -book-, and that it will include set of component level
+  elements pulled in from external files.
+
+  Some entities defined at this top level are not used
+  immediately, but only within the included files.  For example,
+  the entity '&abstract;' is only inserted within the
+  'bookinfo.sgm' document.  Similarly with the sections inside
+  Chapter 5.  It is a judgement call about what to divide out;
+  but my criterion was that I wanted to break into separate files
+  the documents I might publish separately.  I will probably make
+  adjustments as I extend this DocBook project.  The other type
+  of entity I decided to define at this point were some names
+  that do not fit in US-ASCII that I know I mention.  I cannot
+  type the diacritics directly, but typing e.g.  '&Zizek;' is an
+  inconspicuous approximation of what I actually want.  You could
+  also use abbreviations of whole phrases and the like, if you
+  wished.
+
+
+INCLUSIONS
+------------------------------------------------------------------------
+
+  The files that are included using the above master document
+  setup will consist of bare document root tags and their
+  contents.  No document type declarations or processing
+  instructions will be included in the included files (this is
+  required).  The document type is already declared in the book
+  master document, so we can keep it in one place.  For example,
+  the file 'bookinfo.sgm' contains just the following:
+
+      #------------ Included XML/SGML Subdocument -------------#
+      <bookinfo>
+        <title>The Speculum and The Scalpel</title>
+        <subtitle>The Politics of Impotent Representation and
+                  Non-Represenational Terrorism</subtitle>
+        <author><firstname>David</firstname><surname>Mertz</surname></author>
+        &abstract;
+      </bookinfo>
+
+  Similarly, the chapter files each resepectively start and end
+  with the '<chapter>' and '</chapter>' tags.
+
+  One advantage of the modular structure laid out is that it is
+  easy to pull out individual components for separate
+  publication.  For example, I intend to first convert (and
+  separately distribute) versions of Chapter 5.  In anticipation
+  of doing so, I have created a smaller wrapper for the chapter
+  alone:
+
+      #---------- Chapter Level Subdocument Wrapper -----------#
+      <?xml version="1.0"?>
+      <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+                     "file://g:/articles/scratch/docbook/4.12/docbookx.dtd" [
+        <!ENTITY chap5_1 SYSTEM "chap5_1.sgm">
+        <!ENTITY chap5_2 SYSTEM "chap5_2.sgm">
+        <!ENTITY chap5_3 SYSTEM "chap5_3.sgm">
+      ]>
+      <chapter>
+        <title>Hegemony, and Other Passing Fads</title>
+        <epigraph>
+          <attribution>Gould, 1987b, quoting Gunnar Myrdal, <citetitle>An
+            American Dilemma</citetitle> (1944)</attribution>
+          <para>But there must be still other countless errors of the same
+            sort that no living man can yet detect, because of the fog within which
+            our type of Western culture envelops us.  Cultural influences have set
+            up the assumptions about the mind, the body, and the universe with which
+            we begin; pose the questions we ask; influence the facts we seek;
+            determine the interpretations we give these facts; and direct our
+            reaction to these interpretations and conclusions.</para>
+        </epigraph>
+      &chap5_1;
+      &chap5_2;
+      &chap5_3;
+      </chapter>
+
+  The bulk of the marked-up content is in the three sections
+  (each with a top-level 'sect1' as their root).  But I have the
+  option of processing the same section content as part of either
+  the book-level or chapter-level wrapper (and I will probably
+  also pull out Section 2 as an 'article' by itself, which obeys
+  the same structure as a 'chapter').
+
+
+CONTINUING...
+------------------------------------------------------------------------
+
+  What this column has begun is only enough for readers (and its
+  author) to get a general sense of DocBook.  Subsequent columns
+  will address some greater details of the DocBook tags, and how
+  they are structured.  In addition, we have yet to get around to
+  discussing how to convert DocBook documents to more directly
+  readable formats, how to validate them, and how to perform
+  processing operations on them.  Stay tuned.
+
+  In the meanwhile, it is a good idea to start skimming through
+  some of the DocBook reference material in the Resources.
+  DocBook has a lot of tags available--probably more than anyone
+  is going to remember.  But once you get a sense of what types
+  of tags to look for, and how to put them together, the going
+  gets easier.  It probably will not hurt to keep a reference on
+  your lap while you work with DocBook (even if you use
+  specialized tools to help with the editing)
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  By all means, the best place to get started in a more detailed
+  understanding of DocBook is.  The ink-on-paper version is:
+
+    _DocBook:  The Definitive Guide_, Norman Walsh & Leonard
+    Muellner, O'Reilly, Cambridge, MA 1999.
+
+  If you wish to use an electronic version, refer to:
+
+    http://www.docbook.org/tdg/index.html
+
+  Organization for the Advancement of Structured Information
+  Standards (OASIS) home page:
+
+    http://www.oasis-open.org/
+
+  In some respect, a format even more portable and time-protected
+  than DocBook is plain ASCII--or "smart ASCII" that incorporates
+  simple style annotations (in the way evolved on Usenet).  Of
+  course, ASCII will not be able to capture all the semantic
+  structure of DocBook, but a lot of times you do not need to.
+  Project Gutenberg is an example of attempts to preserve and
+  utilize texts in this neutral manner:
+
+    http://www.gutenberg.net/
+
+  For an important tool with a somewhat overlapping purpose to
+  DocBook, TeX is a tool worth learning about.  The focus of TeX
+  is closer to typography, but TeX also has many elements of
+  semantic markup (especially for mathematics).  A good starting
+  point is:
+
+    http://www.tug.org/
+
+  My own articles (including the draft of this one) have used a
+  similar "smart ASCII" format for their originals.  Markup is
+  be automated using the tool Txt2Html (also see the ASCII
+  version of this article):
+
+    http://gnosis.cx/cgi-bin/txt2html.cgi
+    http://gnosis.cx/publish/programming/xml_matters_3.txt
+
+  The obscure philosophy dissertation I have undertaken to
+  convert will probably have minimal interest to most XML
+  developers (or even make much sense).  But the actual formats
+  used might be of some interest.  The document was written
+  originally in WordPerfect 7 (with portions imported from other
+  wordprocessor format along the way).  A moderate effort was
+  made to use stylesheets for significant elements to make global
+  changes easier.  As one prior attempt at (web) publication, I
+  output the document to PDF format in a style that
+  typographically resembles a printed magazine/journal articles
+  more than a submitted thesis.  PDF is not a bad format, but it
+  fails to seperate content from layout (or merely does not
+  attempt to):
+
+    http://gnosis.cx/publish/mertz/Dissertation_PageFormat.pdf
+    http://gnosis.cx/publish/mertz/master.dis
+
+  Files used and mentioned in this article:
+
+    http://gnosis.cx/download/xml_matters_3.zip
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author:  http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  It might be catachretic, but it is not a malapropism to describe
+  David Mertz juxtopositions of interests herein as sylleptic.  Words
+  is words.  David may be reached at mertz@gnosis.cx; his life pored
+  over at http://gnosis.cx/publish/.  Suggestions and recommendations
+  on this, past, or future, columns are welcomed.
+
+

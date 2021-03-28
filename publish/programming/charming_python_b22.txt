@@ -1,0 +1,369 @@
+CHARMING PYTHON #B22: A New PEAK
+Generic functions and predicative dispatch
+
+David Mertz, Ph.D.
+Your Obedient Writer, Gnosis Software, Inc.
+April, 2005
+
+    The Python Enterprise Application Kit (PEAK) is a Python framework
+    for rapidly developing and reusing application components. While
+    Python itself is already a very-high-level language, PEAK provides
+    even higher abstractions. One fairly recent capability added to PEAK
+    is the capability to create -generic functions-, and specifically to
+    dispatch them on predicates, not simply on type. Sounds mysterious?
+    Read on.
+
+THE LABYRINTHINE MIND OF PHILLIP J EBY
+------------------------------------------------------------------------
+
+  The easiest way to describe PEAK is as "whatever wild ideas Phillip J.
+  Eby has studied most recently."  Despite the tone, I am only half
+  joking in that characterization.  While PEAK attracts about as many
+  contributors as other Free Software Python projects of moderate size,
+  at heart the direction of PEAK is driven by the evolving goals and
+  interests of its original creator.
+
+  The obvious consequence of PEAK following evolving interest is that it
+  will probably be somewhat "experimental" for the forseeable future.
+  That said, do not worry too much about the issue--every version of
+  PEAK I have tried has been stable, and has provided concretely useful
+  features.  Moreover, you can now obtain an automatically updated
+  tarball of the latest PEAK snapshot, complete with a friendly
+  [disutils] installation script, with little fuss (see Resources)
+
+  In the year since I last looked at PEAK, the most interesting new idea
+  introduced in PEAK is -generic functions-. This article will look at
+  this capability, even though it forms just one corner of PEAK as a
+  whole. Still, given the natural association of this idea with my own
+  multiple dispatch module, [multimethods], I am excited to look at
+  PEAK's extensions to dispatch styles. But before proceeding to the
+  discussion of generic functions, it is worth glancing at the diagram
+  of the components of PEAK given on the PEAK Wiki front page (check
+  that page for latest status, see Resources).
+
+  {Peak at a Glance:
+   http://gnosis.cx/publish/programming/peak-at-a-glance.png}
+
+PREDICATIVE DISPATCH
+------------------------------------------------------------------------
+
+  A quick note: the term "predicate dispatch" is used more often than
+  "predicative" despite being less grammatically accurate. If you do a
+  web or library search, try the shorter version.
+
+Type-Based Dispatch
+
+  Readers who read my earlier installment on the Gnosis Utilities module
+  'gnosis.magic.multimethods' have had an introduction to the idea of
+  multiple dispatch. In recap, most OOP programming is single dispatch;
+  that is, just one designated object determines which code path is
+  taken. In a call like 'foo.doIt(other,args,here))' the class of
+  argument before the dot--say 'Foo'--determines which code is run; the
+  types of 'other', etc. might be tested in 'if' blocks of 'Foo.doIt()'
+  but are not directly involved in code dispatch.
+
+  Conceptually, a more general technique is to allow all of the
+  arguments to a function/method to determine its specialization in
+  equal measure. Under a multiple dispatch system, a generic function
+  like 'doIt()' can be specialized to handle various type signatures, of
+  various specificity. In the 'gnosis.magic.multimethods()' API this
+  might look like:
+
+      #-------- Multiple dispatch on type w/ multimethods.py ----------#
+      doIt.add_rule((Foo1, Other2, int), func1)
+      doIt.add_rule((Foo2, Other1, str), func2)
+      doIt.add_rule((Foo1, Other1, float), func3)
+      doIt(foo, other, args)  # 'foo' is just one co-equal specializer
+
+  PEAK's module [dispatch] also has a type-based dispatcher, but it is
+  somewhat trivial currently since it only handles single dispatch--the
+  'dispatch.on()' wrapper gives you exceedingly little beyond normal
+  Python class-based dispatch.  Nonetheless, looking at PEAK's
+  type-based dispatch warms us up to the syntax for full predicative
+  dispatch.  Note here that the examples all take advantage of Python
+  2.4's new decorator syntax which is used to modify defined functions
+  or methods.  You -can- use PEAK generic functions with earlier
+  versions of Python, but the syntax accomodation is less elegant:
+
+      #----- Single dispatch on type w/ PEAK dispatch package ---------#
+      import dispatch
+      @dispatch.on('foo')
+      def doIt(foo, other, args):
+          "Base generic function of 'doIt()'"
+      @doIt.when(int)
+      def doIt(foo, other, args):
+          print "foo is an int |", other, args
+      @doIt.when(str)
+      def doIt(foo, other, args):
+          print "foo is a str |", other, args
+      doIt( 1, 'this','that')  # -> foo is an int | this that
+      doIt('x','this','that')  # -> foo is a str | this that
+
+  It is true enough that 'dispatch.on()' generic function signatures for
+  new types can be added without changing the prior code. For example, I
+  could add a '@doIt.when(float)' or '@doIt.when(MyClass)' to
+  the prior code, and later calls would utilize this if relevant. But
+  there are a number of ways to accomplish largely the same thing
+  without the PEAK [dispatch] package.
+
+What Is Typing?
+
+  Types are a funny thing. What most programmers think about when they
+  think about variable or object type owes a lot to the vagaries of
+  computer CPUs--even among programmers of high level languages like
+  Python. The difference between an int, float, and long are not
+  compelling distinctions among the numbers themselves, but simply
+  accidents of how chip designers have used registers and operands. But
+  at a theoretical level the -type- of integers between 3 and 17 is just
+  as sound as the type of integers between '-2^31' and '2^31-1' (the
+  latter being what the type 'int' is in Python, on 32-bit machines at
+  least). In fact, it makes sense to call 'IntBetween3And17' a -subtype-
+  of 'int', at least informally, whether or not the inheritance tree
+  matches that.
+
+  We can, of course, create our own types in Python by means of the
+  'class' statement, and arrange our types in whatever hierarchies we
+  like.  But then, we can also enforce the collection of values that a
+  particular class may hold.  The class 'IntBetween3And17' is not too
+  difficult to implement in Python; nor is, for example, returning an
+  instance of the more general 'IntBetween0And1000' in case you try to
+  add 100 to an object of the more restrictive class.
+
+  What PEAK's [dispatch] module has done--though Eby and other
+  contributors may or may not think of it this way--is create a rich
+  parametric type system to enhance the relatively meager built-in types
+  in raw Python.  However, rather than provide wrappers for creating
+  various restricted-membership values of other classes--builtin or user
+  defined--[dispatch] provides a way for generic functions to do their
+  own fine-tuned "duck typing."  The phrase "duck typing" is often used
+  in Python (and Ruby) circles in reference to the expression: "If it
+  walks like a duck and quacks like a duck, let's treat it like a duck":
+  We do not generally care what an object -is-. As long as it tastes as
+  good as a duck, Python will happily swallow it when in a mood for
+  duck.
+
+  Let us take a look at our simple 'doIt()' example with a bit of
+  parametric typing thrown in:
+
+      #------- Predicative dispatch w/ PEAK dispatch package ----------#
+      import dispatch
+      @dispatch.generic()
+      def doIt(foo, other):
+          "Base generic function of 'doIt()'"
+      @doIt.when("isinstance(foo,int) and isinstance(other,str)")
+      def doIt(foo, other):
+          print "foo is an unrestricted int |", foo, other
+      @doIt.when("isinstance(foo,str) and isinstance(other,int)")
+      def doIt(foo, other):
+          print "foo is str, other an int |", foo, other
+      @doIt.when("isinstance(foo,int) and 3<=foo<=17 and isinstance(other,str)")
+      def doIt(foo, other):
+          print "foo is between 3 and 17 |", foo, other
+      @doIt.when("isinstance(foo,int) and 0<=foo<=1000 and isinstance(other,str)")
+      def doIt(foo, other):
+          print "foo is between 0 and 1000 |", foo, other
+      doIt( 1, 'this')  # -> foo is between 0 and 1000 | 1 this
+      doIt('x', 1234)   # -> foo is str, other an int | x 1234
+      doIt(10, 'this')  # -> foo is between 3 and 17 | 10 this
+      doIt(20, 'this')  # -> foo is between 0 and 1000 | 20 this
+      doIt(-7, 'this')  # -> foo is an unrestricted int | -7 this
+      try: doIt(2222, 66)
+      except dispatch.interfaces.NoApplicableMethods:
+          print "No Applicable Methods" # -> No Applicable Methods
+
+  Notice that the predicates you can specify (as strings) in
+  '@doIt.when()' conditions are exactly the same Python code you might
+  use an 'if' block had you written the logic procedurally. However,
+  generic functions are much better; generic functions will order
+  themselves from more to less specific, so there is no question of
+  putting an 'elif' in the wrong place. And perhaps most powerful of
+  all, you can add more '@doIt.when()' conditions in any subsequent
+  code, and 'doIt()' will thereafter begin evaluating that new condition
+  as a candidate to fulfill a particular call.
+
+Avoiding Ambiguity
+
+  Unfortunately, once you start writing general predicates describing
+  the values you would like to handle within a particular function body,
+  it becomes easy to create amiguous conditions.  Or at least that is
+  exactly what I did quite innocently in trying to write the above
+  example.  For example, as a first brush, I naively wrote:
+
+      #------------ Ambiguous predicates describing 'foo' -------------#
+      @doIt.when("isinstance(foo,int) and isinstance(other,str)")
+      def doIt(foo, other):
+          print "foo is an unrestricted int |", foo, other
+      @doIt.when("3<=foo<=17 and isinstance(other,str)")
+      def doIt(foo, other):
+          print "foo is between 3 and 17 |", foo, other
+
+  Each condition is perfectly reasonable in itself.  But then, both are
+  equally true for the call 'doIt(10,"flaz")'.  Rather than guess what
+  you might have meant, PEAK raises the exception
+  'dispatch.interfaces.AmbiguousMethod'.
+
+  Fair enough, we might say.  After all, we really ought to specify
+  unique conditions, or at least conditions that can be arranged by
+  specificity.  But I can very easily imagine a collection of defined
+  predicative generic functions working happily for a long time before
+  the ambiguous case is encountered.  PEAK only complains when a
+  particular call creates amibiguity, not when the potentially ambiguous
+  functions are defined.
+
+  Moroever, even though the above example seems easy to catch, it can
+  get worse. After all, we are just stating two overlapping conditions
+  about 'foo'. But ambiguity need not be restricted to conditions of one
+  variable. They can be about multiple variables, and the ambiguity
+  might only exist with particular combinations of values. For example:
+
+      #----------- Ambiguity in interaction of conditions -------------#
+      @doIt.when('foo < 10 and bar < 100')
+      def doIt(foo, bar):
+          print "Condition 1 |", foo, bar
+      @doIt.when('foo < 100 and bar < 10')
+      def doIt(foo, bar):
+         print "Condition 2 |", foo, bar
+      doIt(50,5)  # -> Condition 2 | 50 5
+      doIt(5,50)  # -> Condition 1 | 5 50
+      doIt(5,5)   # -> raises dispatch.interfaces.AmbiguousMethod
+
+  It starts to look, potentially, like difficult program logic to debug.
+
+WRAPPING DISPATCHED FUNCTIONS
+
+  One way to ease the possible pain of predicate ambiguity is by
+  breaking down applications of conditions into separate generic
+  functions.  PEAK [dispatch] gives you a similar ability to explicitly
+  dispatch to a 'next_method' as [gnosis.magic.multimethods] or CLOS
+  has.
+
+  We will not go into the details of 'next_method' here; instead, let us
+  focus on the more general techniques of wrapping the -primary- generic
+  functions in pre-conditions and/or post-conditions--methods that are
+  called before or after a primary function. Moreover, unlike with
+  primary conditions, 'doIt.before()' and 'doIt.after()' conditions are
+  happy to execute multiple satisfied predicates. This matches our
+  concept of a number of pre-conditions we want to make sure of before
+  calling the main code.  In case of ambiguity, order of execution is
+  essentially arbitrary (it uses the order of definition).
+
+  A variation on our little 'doIt()' example makes this more clear:
+
+      #------------ Dispatching on pre- and post-conditions -----------#
+      import dispatch
+      @dispatch.generic()
+      def doIt(foo, other):
+          "Base generic function of 'doIt()'"
+      @doIt.before("isinstance(foo,int)")
+      def sayType_int(foo, other):
+          print "foo is an int |",
+      @doIt.before("isinstance(foo,float)")
+      def sayType_float(foo, other):
+          print "foo is a float |",
+      @doIt.when("3<=foo<=17")
+      def doIt(foo, other):
+          print "foo is between 3 and 17 |",
+      @doIt.when("0<=foo<=1000")
+      def doIt(foo, other):
+          print "foo is between 0 and 1000 |",
+      @doIt.when(dispatch.strategy.default)
+      def doNothing(foo, other):
+          pass
+      @doIt.after("True")
+      def sayValues(foo, other):
+          print foo, other
+      doIt(-17, 'x') # -> foo is an int | -17 x
+      doIt(1.1, 'x') # -> foo is a float | foo is between 0 and 1000 | 1.1 x
+      doIt( 9,  'x') # -> foo is an int | foo is between 3 and 17 | 9 x
+
+  If you are able to state invariant pre- and post-conditions, you can
+  greatly reduce the danger of ambiguity sneaking in.
+
+  There is one more thing to notice in this last example. In prior
+  examples, we always used the same 'doIt()' name to define
+  specializations of the generic function 'doIt()' However, there is no
+  requirement for that naming pattern. Each specialization may be named
+  however you like, and descriptive names are a good idea when
+  applicable. The generic function itself must be named in the
+  decorators to specialization and in the ultimate call that gets
+  dispatched. Moreover, specialization functions are perfectly well
+  usable outside of the generic framework. For example, if you like, you
+  may call 'sayValues("blah","bloo")' by itself; in this case, the
+  effect is the same as calling 'doIt("blah","bloo")' (but only because
+  neither pre-condition nor primary conditions are satisfied by these
+  arguments.
+
+WHY THIS MATTERS
+------------------------------------------------------------------------
+
+  Generic functions--especially the wild idea of predicatively
+  dispatched functions--can be a little hard to reason about at first.
+  But predicative dispatch is a very elegant extension of multiple
+  dispatch on (narrow) types alone.
+
+  The greatest benefit in PEAK's [dispatch] package is the possibility
+  it offers for a much more accurate and concise modularization of code.
+  Once you define a generic function and a collection of
+  specializations, you remain free to add as many additional
+  specializations as you want later on--all without so much as touching
+  the original (hopefully well-tested) code. For large scale
+  collaboration, or simply for applications that are adjusted for a
+  family of related versions, this package looks extremely promising.
+
+  I have not written about it here, but Phillip J. Eby has put
+  considerable work into optimizing this dispatch framework; so you need
+  not worry about these powerful facilities significantly impacting the
+  speed of your programs that use them.  You just get cleaner code, for
+  free.
+
+RESOURCES
+------------------------------------------------------------------------
+
+  For the latest installable snapshot of the PEAK system in CVS, simply
+  download:
+
+    http://cvs.eby-sarna.com/PEAK/PEAK.tar.gz?tarball=1
+
+  Officially stable versions lag, but the snapshots seem eminently
+  usable.
+
+  The home page for PEAK itself is the place to start for an
+  introduction to the library as a whole.
+
+    http://peak.telecommunity.com/
+
+  The front page of the PEAK Wiki contains, among other things, a very
+  nice diagram laying out the components of PEAK, along with their
+  statuses:
+
+    http://peak.telecommunity.com/DevCenter/FrontPage
+
+  Phillip J. Eby gave a nice summary presentation on generic functions
+  at PYCON '05.  The slides are available at:
+
+    http://peak.telecommunity.com/PyCon05Talk/PyCon05Talk.html
+
+  A prior _Charming Python_ developed and presented a library to enable
+  multiple dispatch.
+
+    http://www-106.ibm.com/developerworks/linux/library/l-pydisp.html
+
+  The module [gnosis.magic.multimethods] is perfectly usable by itself if
+  you wish to download it from:
+
+    http://gnosis.cx/download/gnosis/magic/multimethods.py
+
+  However, [multimethods] can also be obtained as part of the overall
+  Gnosis Utilities package, see:
+
+    http://gnosis.cx/download/Gnosis_Utils.ANNOUNCE
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz programs generically and is dispatched multiply. David may
+  be reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/. Check out David's book _Text Processing in
+  Python_ (http://gnosis.cx/TPiP/).
+

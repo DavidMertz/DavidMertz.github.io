@@ -1,0 +1,467 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>CHARMING PYTHON #13 (20000155) -- Functional Programming in Python -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="charming_python_12.html" TITLE="CHARMING PYTHON #12">
+<link REL="next" HREF="charming_python_14.html" TITLE="CHARMING PYTHON #14">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Charming Python #13 (20000155)</h1>
+<h2>Functional Programming in Python</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Applied Metaphysician, Gnosis Software, Inc.<br>
+ January, 2001<br>
+ <br>
+</p>
+<blockquote>
+    Although users usually think of Python has a procedural and
+    object oriented language, it actually contains everything one
+    needs for a completely functional approach to programming.
+    This article discusses general concepts of functional
+    programming, and illustrates ways of implementing functional
+    techniques in Python.
+</blockquote>
+<h3>What Is Python?</h3>
+ <p>
+  Python is a freely available, very-high-level, interpreted
+  language developed by Guido van Rossum.  It combines a clear
+  syntax with powerful (but optional) object-oriented semantics.
+  Python is available for almost every computer platform you
+  might find yourself working on, and has strong portability
+  between platforms.
+</p>
+<h3>What Is Functional Programming?</h3>
+ <p>
+  We better start with the hardest question:  "What is functional
+  programming (FP), anyway?"  One approach would be to say that
+  FP is what you do when you program in languages like Lisp,
+  Scheme, Haskell, ML, OCAML, Clean, Mercury or Erlang (or a few
+  others).  That is a safe answer, but not one that clarifies
+  very much.  Unfortunately, it is hard to get a consistent
+  opinion on just what FP is, even from functional programmers
+  themselves.  A story about elephants and blind men seems
+  apropos here.  It is also safe to contrast FP with "imperative
+  programming" (what one does in languages like C, Pascal, C++,
+  Java, Perl, Awk, TCL, and most others, at least for the most
+  part).
+</p>
+<p>
+  While the author by all means welcomes the advice of those who
+  know better, he would roughly characterize functional
+  programming as having at least several of the following
+  characteristics.  Languages that get called functional make
+  these things easy, and other things either hard or disallowed:
+</p>
+<blockquote>
+    * Functions are first class (objects).  That is, everything
+      you can do with "data" can be done with functions
+      themselves (such as passing a function to another
+      function).
+</blockquote>
+<blockquote>
+    * Use of recursion as a primary control structure.  In some
+      languages, no other "loop" construct exists other than
+      recursion.
+</blockquote>
+<blockquote>
+    * Focus on LISt Processing (e.g. the name <code>Lisp</code>).  Lists are
+      often used with recursion on sub-lists as a substitute for
+      loops.
+</blockquote>
+<blockquote>
+    * "Pure" functional languages eschew side-effects.  This
+      excludes the almost ubiquitous pattern in imperative
+      languages of assigning first one, then another value, to
+      the same variable to track program state.
+</blockquote>
+<blockquote>
+    * FP either discourages or outright disallows <em>statements</em>,
+      and instead works with the evaluation of expressions (i.e.
+      functions plus arguments).  In the pure case, one program
+      is one expression (plus supporting definitions).
+</blockquote>
+<blockquote>
+    * FP worries about <em>what</em> is to be computed rather than <em>how</em>
+      it is to be computed.
+</blockquote>
+<blockquote>
+    * Much FP utilizes "higher order" functions (i.e. functions
+      that operate on functions that operate on functions).
+</blockquote>
+<p>
+  Advocates of functional programming argue that all these
+  characteristic make for more rapidly developed, shorter, and
+  less bug-prone code.  Moreover, high theorists of computer
+  science, logic, and math find it a lot easier to prove formal
+  properties of functional languages and programs than of
+  imperative languages and programs.
+</p>
+<h3>Inherent Python Functional Capabilities</h3>
+ <p>
+  Python has had most of the characteristics of FP listed above
+  since Python 1.0.  But as with most Python features, they have
+  been present in a very mixed language.  Much as with Python's
+  OOP features, you can use what you want and ignore the rest
+  (until you need it later).  With Python 2.0, a <em>very</em> nice bit
+  of "syntactic sugar" was added with <em>list comprehensions</em>.
+  While list comprehensions add no entirely new capability, they
+  make a lot of the old capabilities look <em>a lot</em> nicer.
+</p>
+<p>
+  The basic elements of FP in Python are the functions <code>map()</code>,
+  <code>reduce()</code> and <code>filter()</code>, and the operator <code>lambda</code>.  In
+  Python 1.x, the <code>apply()</code> function also comes in handy for
+  direct application of one function's list return value to
+  another function.  Python 2.0 provides an improved syntax for
+  this purpose.  Perhaps surprisingly, these very few functions
+  (and the basic operators), are almost sufficient to write any
+  Python program; specifically, the flow control statements
+  (<code>if</code>, <code>elif</code>, <code>else</code>, <code>assert</code>, <code>try</code>, <code>except</code>, <code>finally</code>,
+  <code>for</code>, <code>break</code>, <code>continue</code>, <code>while</code>, <code>def</code>) can all be handled
+  in a functional style using exclusively the FP functions and
+  operators.  While actually eliminating all flow control
+  commands in a program is probably only useful for entering an
+  "obfuscated Python" contest (with code that will look a lot
+  like Lisp), it is worth understanding how FP expresses flow
+  control with functions and recursion.
+</p>
+<h3>Eliminating Flow Control Statements</h3>
+ <p>
+  The first thing to think about in our elimination exercise is
+  the fact that Python "short circuits" evaluation of boolean
+  expressions.  This turns out to provide an expression version
+  of <code>if</code>/ <code>elif</code>/ <code>else</code> blocks (assuming each block calls one
+  function, which is always possible to arrange).  Here is how:
+</p>
+<div class="code-sample"><h4>"Short-circuit" conditional calls in Python</h4><PRE><FONT COLOR=#1111CC># Normal statement-based flow control</FONT>
+<FONT COLOR=#3333CC><B>if</B></FONT> &lt;cond1&gt;:   func1()
+<FONT COLOR=#3333CC><B>elif</B></FONT> &lt;cond2&gt;: func2()
+<FONT COLOR=#3333CC><B>else</B></FONT>:         func3()
+
+<FONT COLOR=#1111CC># Equivalent "short circuit" expression</FONT>
+(&lt;cond1&gt; <FONT COLOR=#3333CC><B>and</B></FONT> func1()) <FONT COLOR=#3333CC><B>or</B></FONT> (&lt;cond2&gt; <FONT COLOR=#3333CC><B>and</B></FONT> func2()) <FONT COLOR=#3333CC><B>or</B></FONT> (func3())
+
+<FONT COLOR=#1111CC># Example "short circuit" expression</FONT>
+&gt;&gt;&gt; x = 3
+&gt;&gt;&gt; <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="pr"><FONT COLOR=#CC0000><B> pr</B></FONT></A>(s): <FONT COLOR=#3333CC><B>return</B></FONT> s
+&gt;&gt;&gt; (x==1 <FONT COLOR=#3333CC><B>and</B></FONT> pr(<FONT COLOR=#115511>'one'</FONT>)) <FONT COLOR=#3333CC><B>or</B></FONT> (x==2 <FONT COLOR=#3333CC><B>and</B></FONT> pr(<FONT COLOR=#115511>'two'</FONT>)) <FONT COLOR=#3333CC><B>or</B></FONT> (pr(<FONT COLOR=#115511>'other'</FONT>))
+<FONT COLOR=#115511>'other'</FONT>
+&gt;&gt;&gt; x = 2
+&gt;&gt;&gt; (x==1 <FONT COLOR=#3333CC><B>and</B></FONT> pr(<FONT COLOR=#115511>'one'</FONT>)) <FONT COLOR=#3333CC><B>or</B></FONT> (x==2 <FONT COLOR=#3333CC><B>and</B></FONT> pr(<FONT COLOR=#115511>'two'</FONT>)) <FONT COLOR=#3333CC><B>or</B></FONT> (pr(<FONT COLOR=#115511>'other'</FONT>))
+<FONT COLOR=#115511>'two'</PRE></FONT></div><p>
+  Our expression version of conditional calls might seem to be
+  nothing but a parlor trick; however, it is more interesting
+  when we notice that the <code>lambda</code> operator must return an
+  expression.  Since--as we have shown--expressions can contain
+  conditional blocks via short circuiting, a <code>lambda</code> expression
+  is fully general in expressing conditional return values.
+  Building on our example:
+</p>
+<div class="code-sample"><h4>Lambda with short-circuiting in Python</h4><PRE>&gt;&gt;&gt; pr = <FONT COLOR=#3333CC><B>lambda</B></FONT> s:s
+&gt;&gt;&gt; namenum = <FONT COLOR=#3333CC><B>lambda</B></FONT> x: (x==1 <FONT COLOR=#3333CC><B>and</B></FONT> pr(<FONT COLOR=#115511>"one"</FONT>)) \
+...                  <FONT COLOR=#3333CC><B>or</B></FONT> (x==2 <FONT COLOR=#3333CC><B>and</B></FONT> pr(<FONT COLOR=#115511>"two"</FONT>)) \
+...                  <FONT COLOR=#3333CC><B>or</B></FONT> (pr(<FONT COLOR=#115511>"other"</FONT>))
+&gt;&gt;&gt; namenum(1)
+<FONT COLOR=#115511>'one'</FONT>
+&gt;&gt;&gt; namenum(2)
+<FONT COLOR=#115511>'two'</FONT>
+&gt;&gt;&gt; namenum(3)
+<FONT COLOR=#115511>'other'</PRE></FONT></div><h3>Functions As First Class Objects</h3>
+ <p>
+  The above examples have already witnessed the first class
+  status of functions in Python, but in a subtle way.  When we
+  create a <em>function object</em> with the <code>lambda</code> operation we have
+  something entirely general.  As such, we were able to bind our
+  objects to the names "pr" and "namenum", in exactly the same
+  way we might have bound the number 23 or the string "spam" to
+  those names.  But just like we can use the number 23 without
+  binding it to any name (i.e. as a function argument), we can
+  use the function object we created with <code>lambda</code> without
+  binding it to any name.  A function is simply another value we
+  might do something with in Python.
+</p>
+<p>
+  The main thing we do with our first class objects, is pass them
+  to our FP builtin functions <code>map()</code>, <code>reduce()</code> and <code>filter()</code>.
+  Each of these functions accepts a function object as its first
+  argument.  <code>map()</code> performs the passed function on each
+  corresponding item in the specified list(s), and returns a list
+  of results.  <code>reduce()</code> performs the passed function on each
+  subsequent item and an internal accumulator of a final result;
+  for example, <code>reduce(lambda n,m:n*m, range(1,10))</code> means
+  "factorial of 10" (i.e. multiply each item by the product of
+  previous multiplications).  <code>filter()</code> uses the passed function
+  to "evaluate" each item in a list, and return a winnowed list
+  of the items that pass the function test.  We also often pass
+  function objects to our own custom functions, but usually those
+  amount to combinations of the mentioned builtins.
+</p>
+<p>
+  By combining these three FP builtin functions, a surprising
+  range of "flow" operations can be performed (all without
+  statements, only expressions).
+</p>
+<h3>Functional Looping In Python</h3>
+ <p>
+  Replacing loops is as simple as was replacing conditional
+  blocks.  <code>for</code> can be directly translated to <code>map()</code>.  As with
+  our conditional execution, we will need to simplify statement
+  blocks to single function calls (we are getting close to being
+  able to generally):
+</p>
+<div class="code-sample"><h4>Functional 'for' looping in Python</h4><PRE><FONT COLOR=#3333CC><B>for</B></FONT> e <FONT COLOR=#3333CC><B>in</B></FONT> lst:  func(e)      <FONT COLOR=#1111CC># statement-based loop</FONT>
+map(func,lst)               <FONT COLOR=#1111CC># map()-based loop</PRE></FONT></div><p>
+  By the way, a similar technique is available for a functional
+  approach to sequential program flow.  That is, imperative
+  programming mostly consists of statements that amount to "do
+  this, then do that, then do the other thing."  <code>map()</code> lets us
+  do just this:
+</p>
+<div class="code-sample"><h4>Functional sequential actions in Python</h4><PRE><FONT COLOR=#1111CC># let's create an execution utility function</FONT>
+do_it = <FONT COLOR=#3333CC><B>lambda</B></FONT> f: f()
+
+<FONT COLOR=#1111CC># let f1, f2, f3 (etc) be functions that perform actions</FONT>
+map(do_it, [f1,f2,f3])    <FONT COLOR=#1111CC># map()-based action sequence</PRE></FONT></div><p>
+  In general, the whole of our main program can be a <code>map()</code>
+  expression with a list of functions to execute to complete the
+  program.  Another handy feature of first class functions is
+  that you can put them in a list.
+</p>
+<p>
+  Translating <code>while</code> is slightly more complicated, but is still
+  possible directly:
+</p>
+<div class="code-sample"><h4>Functional 'while' looping in Python</h4><PRE><FONT COLOR=#1111CC># statement-based while loop</FONT>
+<FONT COLOR=#3333CC><B>while</B></FONT> &lt;cond&gt;:
+    &lt;pre-suite&gt;
+    <FONT COLOR=#3333CC><B>if</B></FONT> &lt;break_condition&gt;:
+        <FONT COLOR=#3333CC><B>break</B></FONT>
+    <FONT COLOR=#3333CC><B>else</B></FONT>:
+        &lt;suite&gt;
+
+<FONT COLOR=#1111CC># FP-style recursive while loop</FONT>
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="while_block"><FONT COLOR=#CC0000><B> while_block</B></FONT></A>():
+    &lt;pre-suite&gt;
+    <FONT COLOR=#3333CC><B>if</B></FONT> &lt;break_condition&gt;:
+        <FONT COLOR=#3333CC><B>return</B></FONT> 1
+    <FONT COLOR=#3333CC><B>else</B></FONT>:
+        &lt;suite&gt;
+    <FONT COLOR=#3333CC><B>return</B></FONT> 0
+
+while_FP = <FONT COLOR=#3333CC><B>lambda</B></FONT>: (&lt;cond&gt; <FONT COLOR=#3333CC><B>and</B></FONT> while_block()) <FONT COLOR=#3333CC><B>or</B></FONT> while_FP()
+while_FP()</PRE></div><p>
+  Our translation of <code>while</code> still requires a <code>while_block()</code>
+  function that may itself contain statements rather than just
+  expressions.  But we might be able to apply further
+  eliminations to that function (such as short circuiting the
+  <code>if/else</code> in the template.  Also, it is hard for &lt;cond&gt; to be
+  useful with the usual tests, such as <code>while myvar==7</code>, since
+  the loop body (by design) cannot change any variable values
+  (well, globals could be modified in <code>while_block()</code>).  One way
+  to add a more useful condition is to let <code>while_block()</code> return
+  a more interesting value, and compare that return for a
+  termination condition.  It is worth looking at a concrete
+  example of eliminating statements:
+</p>
+<div class="code-sample"><h4>Functional 'echo' loop in Python</h4><PRE><FONT COLOR=#1111CC># imperative version of "echo()"</FONT>
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="echo_IMP"><FONT COLOR=#CC0000><B> echo_IMP</B></FONT></A>():
+    <FONT COLOR=#3333CC><B>while</B></FONT> 1:
+        x = raw_input(<FONT COLOR=#115511>"IMP -- "</FONT>)
+        <FONT COLOR=#3333CC><B>if</B></FONT> x == <FONT COLOR=#115511>'quit'</FONT>:
+            <FONT COLOR=#3333CC><B>break</B></FONT>
+        <FONT COLOR=#3333CC><B>else</B></FONT>:
+            <FONT COLOR=#3333CC><B>print</B></FONT> x
+echo_IMP()
+
+<FONT COLOR=#1111CC># utility function for "identity with side-effect"</FONT>
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="monadic_print"><FONT COLOR=#CC0000><B> monadic_print</B></FONT></A>(x):
+    <FONT COLOR=#3333CC><B>print</B></FONT> x
+    <FONT COLOR=#3333CC><B>return</B></FONT> x
+
+<FONT COLOR=#1111CC># FP version of "echo()"</FONT>
+echo_FP = <FONT COLOR=#3333CC><B>lambda</B></FONT>: monadic_print(raw_input(<FONT COLOR=#115511>"FP -- "</FONT>))==<FONT COLOR=#115511>'quit'</FONT> <FONT COLOR=#3333CC><B>or</B></FONT> echo_FP()
+echo_FP()</PRE></div><p>
+  What we have accomplished is that we have managed to express a
+  little program that involves I/O, looping, and conditional
+  statments as a pure expression with recursion (in fact, as a
+  function object that can be passed elsewhere if desired).  We
+  <em>do</em> still utilize the utility function <code>monadic_print()</code>, but
+  this function is completely general, and can be reused in every
+  functional program expression we might create later (it's a
+  one-time cost).  Notice that any expression containing
+  <code>monadic_print(x)</code> <em>evaluates</em> to the same thing as if it had
+  simply contained <code>x</code>.  FP (particularly Haskell) has the notion
+  of a "monad" for a function that "does nothing, and has a side
+  effect in the process."
+</p>
+<h3>Eliminating Side-effects</h3>
+ <p>
+  After all this work in getting rid of perfectly sensible
+  statements and substituting obscure nested expressions for
+  them, a naturaly question is "Why?!"  Reading over my
+  descriptions of FP, we can see that all of them are achieved in
+  Python.  But the most important characteristic--and the one
+  likely to be concretely useful--is the elimination of
+  side-effects (or at least their containment to special areas
+  like monads).  A very large percentage of program errors--and
+  the problem that drives programmers to debuggers--occur because
+  variables obtain unexpected values during the course of program
+  execution.  Functional programs bypasses this particular issue
+  by simply not assigning values to variables at all.
+</p>
+<p>
+  Let's look at a fairly ordinary bit of imperative code.  The
+  goal here is to print out a list of pairs of numbers whose
+  product is more than 25.  The numbers that make up the pairs
+  are themselves taken from two other lists.  This sort of thing
+  is moderately similar to things that programmers actually do in
+  segments of their programs.  An imperative approach to the goal
+  might look like:
+</p>
+<div class="code-sample"><h4>Imperative Python code for "print big products"</h4><PRE><FONT COLOR=#1111CC># Nested loop procedural style for finding big products</FONT>
+xs = (1,2,3,4)
+ys = (10,15,3,22)
+bigmuls = []
+<FONT COLOR=#1111CC># ...more stuff...</FONT>
+<FONT COLOR=#3333CC><B>for</B></FONT> x <FONT COLOR=#3333CC><B>in</B></FONT> xs:
+    <FONT COLOR=#3333CC><B>for</B></FONT> y <FONT COLOR=#3333CC><B>in</B></FONT> ys:
+        <FONT COLOR=#1111CC># ...more stuff...</FONT>
+        <FONT COLOR=#3333CC><B>if</B></FONT> x*y &gt; 25:
+            bigmuls.append((x,y))
+            <FONT COLOR=#1111CC># ...more stuff...</FONT>
+<FONT COLOR=#1111CC># ...more stuff...</FONT>
+<FONT COLOR=#3333CC><B>print</B></FONT> bigmuls</PRE></div><p>
+  This project is small enough that nothing is likely to go
+  wrong.  But perhaps our goal is embedded in code that
+  accomplishes a number of other goals at the same time.  The
+  sections commented with "more stuff" are the places where
+  side-effects are likely to lead to bugs.  At any of these
+  points, the variables <code>xs</code>, <code>ys</code>, <code>bigmuls</code>, <code>x</code>, <code>y</code> might
+  acquire unexpected values in the hypothetical abbreviated code.
+  Futhermore, after this bit of code is done, all the variables
+  have values that may or may not be expected and wanted by later
+  code.  Obviously, encapsulation in functions/instances and care
+  as to scoping can be used to guard against this type of error.
+  And you can always <code>del</code> your variables when you are done with
+  them.  But in practice, the types of errors pointed to are
+  common.
+</p>
+<p>
+  A functional approach to our goal eliminates these side-effect
+  errors altogether.  A possible bit of code is:
+</p>
+<div class="code-sample"><h4>Functional Python code for "print big products"</h4><PRE>bigmuls = <FONT COLOR=#3333CC><B>lambda</B></FONT> xs,ys: filter(<FONT COLOR=#3333CC><B>lambda</B></FONT> (x,y):x*y &gt; 25, combine(xs,ys))
+combine = <FONT COLOR=#3333CC><B>lambda</B></FONT> xs,ys: map(None, xs*len(ys), dupelms(ys,len(xs)))
+dupelms = <FONT COLOR=#3333CC><B>lambda</B></FONT> lst,n: reduce(<FONT COLOR=#3333CC><B>lambda</B></FONT> s,t:s+t, map(<FONT COLOR=#3333CC><B>lambda</B></FONT> l,n=n: [l]*n, lst))
+<FONT COLOR=#3333CC><B>print</B></FONT> bigmuls((1,2,3,4),(10,15,3,22))</PRE></div><p>
+  We bind our anonymous (<code>lambda</code>) function objects to names in
+  the example, but that is not strictly necessary.  We could
+  instead simply nest the definitions.  For readability we do it
+  this way; but also because <code>combine()</code> is a nice utility
+  function to have anyway (produce a list of all pairs of
+  elements from two input lists).  <code>dupelms()</code> in turn is mostly
+  just a way of helping out <code>combine()</code>.  Even though this
+  functional example is more verbose than the imperative example,
+  once you consider the utility functions for reuse, the new code
+  in <code>bigmuls()</code> itself is probably slightly less than in the
+  imperative version.
+</p>
+<p>
+  The real advantage of this functional example is that
+  absolutely no variables change any values within it.  There are
+  no <strong>possible</strong> unanticipated side-effects on later code (or from
+  earlier code).  Obviously, the lack of side-effects, in itself,
+  does not guarantee that the code is <em>correct</em>, but it is
+  nonetheless an advantage.  Notice, however, that Python (unlike
+  many functional languages) does <em>not</em> prevent rebinding of the
+  names <code>bigmuls</code>, <code>combine</code> and <code>dupelms</code>.  If <code>combine()</code>
+  starts meaning something different later in the program, all
+  bets are off.  One could work up a Singleton class to contain
+  this type of immutable bindings (as, say, <code>s.bigmuls</code> and so
+  on); but this column does not have room for that.
+</p>
+<p>
+  One thing distinctly worth noticing is that our particular goal
+  is one tailor-made for a new feature of Python 2.  Rather than
+  either the imperative or functional examples given, the best
+  (and functional) technique is:
+</p>
+<div class="code-sample"><h4>List-comprehension Python code for "bigmuls"</h4><PRE><FONT COLOR=#3333CC><B>print</B></FONT> [(x,y) <FONT COLOR=#3333CC><B>for</B></FONT> x <FONT COLOR=#3333CC><B>in</B></FONT> (1,2,3,4) <FONT COLOR=#3333CC><B>for</B></FONT> y <FONT COLOR=#3333CC><B>in</B></FONT> (10,15,3,22) <FONT COLOR=#3333CC><B>if</B></FONT> x*y &gt; 25]</PRE></div><h3>Closure</h3>
+ <p>
+  This column has demonstrated ways to replace just about every
+  Python flow-control construct with a functional equivalent
+  (sparing side effects in the process).  Translating a
+  particular program efficiently takes some additional thinking,
+  but we have seen that the functional built-ins are general and
+  complete.  In subsequent columns, we will look at more advanced
+  techniques for functional programming; and hopefully we will be
+  able to explore some more of the pros and cons of functional
+  styles.
+</p>
+<h3>Resources</h3>
+ <p>
+  Bryn Keller's "xoltar toolkit" which includes the module
+  <em><code>functional</code></em> adds a large number of useful FP extensions to
+  Python.  Since the <em><code>functional</code></em> module is itself written
+  entirely in Python, what it does was already possible in Python
+  itself.  But Keller has figured out a very nicely integrated
+  set of extensions, with a lot of power in compact definitions.
+  The toolkit can be found at:
+</p>
+<blockquote>
+   <a href="http://sourceforge.net/projects/xoltar-toolkit">http://sourceforge.net/projects/xoltar-toolkit</a>
+</blockquote>
+<p>
+  Peter Norvig has written an interesting article, <cite>Python for
+  Lisp Programmers</cite>.  While the focus there is somewhat the
+  reverse of my column, it provides very good general comparisons
+  between Python and Lisp:
+</p>
+<blockquote>
+   <a href="http://www.norvig.com/python-lisp.html">http://www.norvig.com/python-lisp.html</a>
+</blockquote>
+<p>
+  A good starting point for functional programming is the
+  <cite>Frequently Asked Questions for comp.lang.functional</cite> :
+</p>
+<blockquote>
+   <a href="http://www.cs.nott.ac.uk/~gmh//faq.html#functional-languages">http://www.cs.nott.ac.uk/~gmh//faq.html#functional-languages</a>
+</blockquote>
+<p>
+  The author has found it much easier to get a grasp of
+  functional programming via the language Haskell than in
+  Lisp/Scheme (even though the latter is probably more widely
+  used, if only in Emacs).  Other Python programmers might
+  similarly have an easier time without quite so many parentheses
+  and prefix (Polish) operators.
+</p>
+<blockquote>
+   <a href="http://www.haskell.org/">http://www.haskell.org/</a>
+</blockquote>
+<p>
+  An excellent introductory book is:
+</p>
+<blockquote>
+    Haskell:  The Craft of Functional Programming (2nd Edition),
+    Simon Thompson, Addison-Wesley (1999).
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  Since conceptions without intuitions are empty, and intutions
+  without conceptions, blind, David Mertz wants a cast sculpture
+  of Milton for his office.  Start planning for his birthday.
+  David may be reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+</p>
+</body></html>

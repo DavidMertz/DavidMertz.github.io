@@ -1,0 +1,474 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>CHARMING PYTHON #B23: Hatching Eggs -- A PEAK at improved installation and package management -- </title>
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Charming Python #b23: Hatching Eggs</h1>
+<h2>A PEAK at improved installation and package management</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Fat fingered juggler, Gnosis Software, Inc.<br>
+ May, 2006<br>
+ <br>
+</p>
+<blockquote>
+    An interesting side project of the Python Enterprise Application Kit
+    (PEAK) is the <code>setuptools</code> framework. Using <code>setuptools</code> replaces
+    the standard library <code>disutils</code> as well as adding versioned package
+    and dependency management to Python. Perl users will be familiar
+    with CPAN, and Ruby users with Gems: The tool <code>ez_setup</code> that
+    bootstraps <code>setuptools</code> and the expanded <code>easy_install</code> that comes
+    with it act in conjunction with "Cheeseshot" (the Python Package
+    Index, also called "PyPI") to achieve the same thing. Moreover,
+    <code>setuptools</code> lets you package your libraries in a single-file
+    archive called an "egg"--which is a lot like a Java jar, just for
+    Python.
+</blockquote>
+<h3>Getting Started</h3>
+ <p>
+  The <code>setuptools</code> module does a really good job of "getting out of the
+  way". For example, if you download a package that was built using
+  <code>setuptools</code> rather than <code>disutils</code>, installation should work just as
+  you are used to: the usual dance of <code>python setup.py install</code>. In
+  order to accomplish this, a package bundled using <code>setuptools</code>
+  includes the small bootstrap module <code>ez_setup.py</code> in the archive. The
+  only caveat here is that <code>ez_setup.py</code> tries to download and install
+  the necessary <code>setuptool</code> package in the background--which depends, of
+  course, on having a networked machine. If <code>setuptools</code> is already
+  installed on the local machine, this background step is not necessary;
+  but if it needs to be installed manually, that loses much of the
+  transparency.  Still, most systems nowadays have an internet
+  connection; and taking a few special steps for non-networked machines
+  is not necessarily unduly burdensome.
+</p>
+<p>
+  The real benefits of <code>setuptools</code> is not in doing roughly what
+  <code>distutils</code> does, even though it <em>does</em> enhance the capabilities of
+  <code>distutils</code> and simplify what goes into a <code>setup.py</code> script.  The
+  greatest gain is <code>setuptools</code> enhancement of package management
+  capabilities.  In a rather transparent way, you can find, download and
+  install dependencies; you can switch between multiple versions of a
+  package, all of which are installed on the same system; you can
+  declare requirements for specific versions of packages; and you can
+  update to the latest versions of packages you use with a simple
+  command.  The most impressive part of all this is perhaps that fact
+  that you can even utilize packages whose developers have done nothing
+  whatsoever to consider <code>setuptools</code> compatibility.  Let's take a look.
+</p>
+<h3>Bootstrapping</h3>
+ <p>
+  The utility <code>ez_setup.py</code> is a simple script that will bootstraps the
+  rest of <code>setuptools</code>.  Slightly confusingly, the <code>easy_install</code> script
+  that comes with the full <code>setuptools</code> package does the same thing as
+  <code>ez_setup.py</code>.  The former assumes <code>setuptools</code> is already installed,
+  however, so skips the behind-the-scenes installation.  Both versions
+  accept the same arguments and switches.
+</p>
+<p>
+  The first step in the process is simply downloading the small script
+  <code>ez_setup.py</code>, e.g.:
+</p>
+<div class="code-sample"><h4>Downloading the bootstrap script</h4><pre>
+% wget -q http://peak.telecommunity.com/dist/ez_setup.py
+
+</pre></div><p>
+  From there, you may run the script without any arguments to install
+  the rest of <code>setuptools</code> (if you do not do this as a separate step, it
+  will stil get done the first time you install some other package).
+  You should see something similar to:
+</p>
+<div class="code-sample"><h4>Bootstrapping setuptools</h4><pre>
+% python ez_setup.py
+Downloading http://cheeseshop.python.org/packages/2.4/s/É
+  Ésetuptools/setuptools-0.6b1-py2.4.egg#md5=b79a8a403e4502fbb85ee3f1941735cb
+Processing setuptools-0.6b1-py2.4.egg
+creating /sw/lib/python2.4/site-packages/setuptools-0.6b1-py2.4.egg
+Extracting setuptools-0.6b1-py2.4.egg to /sw/lib/python2.4/site-packages
+Removing setuptools 0.6a11 from easy-install.pth file
+Adding setuptools 0.6b1 to easy-install.pth file
+Installing easy_install script to /sw/bin
+Installing easy_install-2.4 script to /sw/bin
+
+Installed /sw/lib/python2.4/site-packages/setuptools-0.6b1-py2.4.egg
+Processing dependencies for setuptools
+
+</pre></div><p>
+  All done.  That's all you need to do to make sure <code>setuptools</code> is
+  installed on your system.
+</p>
+<h3>Installing Packages</h3>
+ <p>
+  For many Python packages, all you need to do so install them is pass
+  their name as a parameter to <code>ez_setup.py</code> or <code>easy_install</code>.  Now
+  that we have bootstrap loaded <code>setuptools</code>, we might as well use the
+  internally simpler <code>easy_install</code> (though it makes little difference
+  which you choose to use in practice).
+</p>
+<p>
+  For example, let us say you want to install the package SQLObject.
+  This can be as simple as the following.  Notice in the below messages
+  that SQLObject turned out to depend on a package FormEncode; luckily,
+  it is all taken care of for us:
+</p>
+<div class="code-sample"><h4>Installing a typical package</h4><pre>
+% easy_install SQLObject
+Searching for SQLObject
+Reading http://www.python.org/pypi/SQLObject/
+Reading http://sqlobject.org
+Best match: SQLObject 0.7.0
+Downloading http://cheeseshop.python.org/packages/2.4/S/É
+  ÉSQLObject/SQLObject-0.7.0-py2.4.egg#md5=71830b26083afc6ea7c53b99478e1b6a
+Processing SQLObject-0.7.0-py2.4.egg
+creating /sw/lib/python2.4/site-packages/SQLObject-0.7.0-py2.4.egg
+Extracting SQLObject-0.7.0-py2.4.egg to /sw/lib/python2.4/site-packages
+Adding SQLObject 0.7.0 to easy-install.pth file
+Installing sqlobject-admin script to /sw/bin
+
+Installed /sw/lib/python2.4/site-packages/SQLObject-0.7.0-py2.4.egg
+Processing dependencies for SQLObject
+Searching for FormEncode&gt;=0.2.2
+Reading http://www.python.org/pypi/FormEncode/
+Reading http://formencode.org
+Best match: FormEncode 0.5.1
+Downloading http://cheeseshop.python.org/packages/2.4/F/É
+  ÉFormEncode/FormEncode-0.5.1-py2.4.egg#md5=f8a19cbe95d0ed1b9d1759b033b7760d
+Processing FormEncode-0.5.1-py2.4.egg
+creating /sw/lib/python2.4/site-packages/FormEncode-0.5.1-py2.4.egg
+Extracting FormEncode-0.5.1-py2.4.egg to /sw/lib/python2.4/site-packages
+Adding FormEncode 0.5.1 to easy-install.pth file
+
+Installed /sw/lib/python2.4/site-packages/FormEncode-0.5.1-py2.4.egg
+
+</pre></div><p>
+  As you can see from the messages, <code>easy_install</code> looks for metadata
+  information about the package at the <code>www.python.org/pypi</code> site, then
+  finds the location for the actual download (in this case the <code>egg</code>
+  archive lives right at <code>cheeseshop.python.org</code>; more on eggs soon).
+</p>
+<p>
+  You can do more than just install the latest version of a package, as
+  is default.  If you like, you can give <code>easy_install</code> specific version
+  requirements.  Let us try to install a post-beta version of SQLObject:
+</p>
+<div class="code-sample"><h4>Installing a minimum version of a package </h4><pre>
+% easy_install 'SQLObject&gt;=1.0'
+Searching for SQLObject&gt;=1.0
+Reading http://www.python.org/pypi/SQLObject/
+Reading http://sqlobject.org
+No local packages or download links found for SQLObject&gt;=1.0
+error: Could not find suitable distribution for É
+  ÉRequirement.parse('SQLObject&gt;=1.0')
+
+</pre></div><p>
+  At least at the time this article was written, SQLObject only exists
+  up to version 0.7.0, so there is nothing to install.
+</p>
+<h3>Installing "naive" Packages</h3>
+ <p>
+  The package SQLObject is already "setuptools aware"; but what if we
+  want to install a package whose author has not given thought to
+  <code>setuptools</code>? For example, before this article, I never used
+  <code>setuptools</code> with my "Gnosis Utilities". Still, let us try installing
+  the package, knowing only the HTTP (or FTP, SVN, CVS) location where
+  it lives (<code>setuptools</code> knows all these protocols).  My download
+  website has archives of the various Gnosis Utilities versions, named
+  in a usual versioning fashion:
+</p>
+<div class="code-sample"><h4>Installing a setuptools unaware package</h4><pre>
+% easy_install -f http://gnosis.cx/download/Gnosis_Utils.More/ Gnosis_Utils
+Searching for Gnosis-Utils
+Reading http://gnosis.cx/download/Gnosis_Utils.More/
+Best match: Gnosis-Utils 1.2.1
+Downloading http://gnosis.cx/download/Gnosis_Utils.More/É
+  ÉGnosis_Utils-1.2.1.zip
+Processing Gnosis_Utils-1.2.1.zip
+Running Gnosis_Utils-1.2.1/setup.py -q bdist_egg --dist-dir É
+  É/tmp/easy_install-CCrXEs/Gnosis_Utils-1.2.1/egg-dist-tmp-Sh4DW1
+zip_safe flag not set; analyzing archive contents...
+gnosis.__init__: module references __file__
+gnosis.magic.__init__: module references __file__
+gnosis.xml.objectify.doc.__init__: module references __file__
+gnosis.xml.pickle.doc.__init__: module references __file__
+gnosis.xml.pickle.test.test_zdump: module references __file__
+Adding Gnosis-Utils 1.2.1 to easy-install.pth file
+
+Installed /sw/lib/python2.4/site-packages/Gnosis_Utils-1.2.1-py2.4.egg
+Processing dependencies for Gnosis-Utils
+
+</pre></div><p>
+  Happily for us, <code>easy_install</code> figured everything out for us.  It
+  looked in the given download directory, identified the highest
+  available version number, unpackaged the archive, and repackaged it as
+  an "egg" that was installed.  Importing <code>gnosis</code> now works fine in an
+  script.  But suppose I now I need to test a script against a specific
+  earlier version of Gnosis Utilities? Easy enough:
+</p>
+<div class="code-sample"><h4>Installing a particular version of a "naive" package</h4><pre>
+% easy_install -f http://gnosis.cx/download/Gnosis_Utils.More/ É
+  É"Gnosis_Utils==1.2.0"
+Searching for Gnosis-Utils==1.2.0
+Reading http://gnosis.cx/download/Gnosis_Utils.More/
+Best match: Gnosis-Utils 1.2.0
+Downloading http://gnosis.cx/download/Gnosis_Utils.More/É
+  ÉGnosis_Utils-1.2.0.zip
+[...]
+Removing Gnosis-Utils 1.2.1 from easy-install.pth file
+Adding Gnosis-Utils 1.2.0 to easy-install.pth file
+
+Installed /sw/lib/python2.4/site-packages/Gnosis_Utils-1.2.0-py2.4.egg
+Processing dependencies for Gnosis-Utils==1.2.0
+
+</pre></div><p>
+  There are actually two versions of Gnosis Utilities installed now,
+  with 1.2.0 the active version.  Switching the active version back to
+  1.2.1 is also easy:
+</p>
+<div class="code-sample"><h4>Changing the "active" version system-wide</h4><pre>
+% easy_install "Gnosis_Utils==1.2.1"
+Searching for Gnosis-Utils==1.2.1
+Best match: Gnosis-Utils 1.2.1
+Processing Gnosis_Utils-1.2.1-py2.4.egg
+Removing Gnosis-Utils 1.2.0 from easy-install.pth file
+Adding Gnosis-Utils 1.2.1 to easy-install.pth file
+
+Using /sw/lib/python2.4/site-packages/Gnosis_Utils-1.2.1-py2.4.egg
+Processing dependencies for Gnosis-Utils==1.2.1
+
+</pre></div><p>
+  Of course, this only makes one version active at a time.  But an
+  individual script can choose the version it wants to use it it likes
+  by putting two lines at the top of your script, e.g.:
+</p>
+<div class="code-sample"><h4>Using a package version within a script</h4><pre>
+from pkg_resources import require
+require("Gnosis_Utils==1.2.0")
+
+</pre></div><p>
+  With this stated requirement, <code>setuptools</code> will add the specific
+  version (or the latest available, if the greater-than comparison is
+  specified) when an <code>import</code> statement is run.
+</p>
+<h3>Making A Package More Aware Of Setuptools</h3>
+ <p>
+  We would like to let users install Gnosis Utilities without even
+  knowing it's download directory. This <em>almost</em> works simply because
+  Gnosis Utilities has an information listing at the Python Cheeseshop.
+  Unfortunately, not having considered <code>setuptools</code>, I had created a
+  slight "impedence mismatch" in my entry for Gnosis Utilities at
+  &lt<a href="http://www.python.org/pypi/Gnosis%20Utilities/1.2.1&gt;.">http://www.python.org/pypi/Gnosis%20Utilities/1.2.1&gt;.</a> Specifically,
+  the archives are named on a pattern like <code>Gnosis_Utils-N.N.N.tar.gz</code>
+  (also archived as <code>.zip</code> and <code>.tar.bz2</code>, and the last few versions as
+  win32.exe installers, all of which <code>setuptools</code> is equally happy
+  with). But the project name on Cheeseshop is spelled slightly
+  differently as "Gnosis Utilities". Oh well, a quick administrative
+  version change at Cheeseshop created
+  &lt<a href="http://www.python.org/pypi/Gnosis_Utils/1.2.1-a&gt;">http://www.python.org/pypi/Gnosis_Utils/1.2.1-a&gt;</a> as a post-release
+  version. Nothing was changed in the distribution archives themselves,
+  just a little bit of metadata at Cheeseshop. With the slight tweak, we
+  might use an even simpler install (note that for testing purposes I
+  ran an intervening <code>easy_install -m</code> to remove the installed package).
+</p>
+<div class="code-sample"><h4>Easy addition of setuptools awareness</h4><pre>
+% easy_install Gnosis_Utils
+Searching for Gnosis-Utils
+Reading http://www.python.org/pypi/Gnosis_Utils/
+Reading http://www.gnosis.cx/download/Gnosis_Utils.ANNOUNCE
+Reading http://gnosis.cx/download/Gnosis_Utils.More/
+Best match: Gnosis-Utils 1.2.1
+Downloading [...]
+
+</pre></div><p>
+  I omit the completion of the process, since it is identical to what we
+  have seen.  The only change is that <code>easy_install</code> looks on Cheeseshop
+  (i.e. <code>www.python.org/pypi/</code>) for metadata about a package matching
+  the name specified, and uses that to look for an actual download
+  location.  In this case, the listed <code>.ANNOUNCE</code> file does not contain
+  anything helpful, but <code>easy_install</code> is happy to keep looking at the
+  other listed URL as well, which proves to be a download directory.
+</p>
+<h3>All About Eggs</h3>
+ <p>
+  An egg is a bundle that contains all the package data.  In the ideal
+  case, an egg is a zip-compressed file with all the necessary package
+  files.  But in some cases, <code>setuptools</code> decides (or is told by
+  switches) that a package should not be zip-compressed.  In those
+  cases, an egg is simply an uncompressed subdirectory instead, but with
+  the same contents.  The single file version is handy for transporting,
+  and saves a little bit of disk-space, but an egg directory is
+  functionally and organizationally identical.  Java users who have
+  worked with jars will find eggs very familiar.
+</p>
+<p>
+  You may use an egg simply by pointing <code>PYTHONPATH</code> or <code>sys.path</code> at
+  it, then importing as you normally would, thanks to the import hook
+  changes in recent versions of Python (you need 2.3.5+ or 2.4). If you
+  wish to take this approach, you do not need to bother with
+  <code>setuptools</code> or <code>ez_setup.py</code> at all. For example, I put an egg for
+  the PyYAML package in a working directory that I used for this
+  article. I can utilize the package as easily as:
+</p>
+<div class="code-sample"><h4>Eggs on the PYTHONPATH</h4><pre>
+% export PYTHONPATH=~/work/dW/PyYAML-3.01-py2.4.egg
+% python -c 'import yaml; print yaml.dump({"foo":"bar",1:[2,3]})'
+1: [2, 3]
+foo: bar
+
+</pre></div><p>
+  However, this sort of manipulation of the <code>PYTHONPATH</code> (or of
+  <code>sys.path</code> within a script or Python shell session) is a bit fragile.
+  Discovery of eggs is probably best handled within some newish magic
+  <code>.pth</code> files.  Any <code>.pth</code> files found in <code>site-packages/</code> or on the
+  <code>PYTHONPATH</code> are parsed for additional imports to perform, in a very
+  similar manner to the way directories in those locations that might
+  contain packages are examined.  If you handle package management with
+  <code>setuptools</code>, a file called <code>easy-install.pth</code> is modified when
+  packages are installed, upgraded, removed, etc.  But you may call your
+  <code>.pth</code> files whatever you like (as long as they have the extension).
+  For example, here is my <code>easy-install.pth</code>:
+</p>
+<div class="code-sample"><h4>Pth files as configuration of Egg locations</h4><pre>
+% cat /sw/lib/python2.4/site-packages/easy-install.pth
+import sys; sys.__plen = len(sys.path)
+setuptools-0.6b1-py2.4.egg
+SQLObject-0.7.0-py2.4.egg
+FormEncode-0.5.1-py2.4.egg
+Gnosis_Utils-1.2.1-py2.4.egg
+import sys; new=sys.path[sys.__plen:]; del sys.path[sys.__plen:];É
+  Ép=getattr(sys,'__egginsert',0); sys.path[p:p]=new;É
+  Ésys.__egginsert = p+len(new)
+
+</pre></div><p>
+  The format is a bit peculiar: it is almost, but not quite, a Python
+  script.  Suffice it to say that you may add additional listed eggs in
+  there; or better yet, <code>easy_install</code> will do it for you when it runs.
+  You may also create as many other <code>.pth</code> files as you like under
+  <code>site-packages/</code> and each may simply list the eggs to make available.
+</p>
+<h3>Enhancing Setup Scripts</h3>
+ <p>
+  The magic I showed off above of installing a <code>setuptools</code> naive
+  package actually only sort-of worked in the example I showed you. That
+  is, the package Gnosis_Utils got installed, but not quite completely.
+  All the general functionality works, but a variety of supporting files
+  were omitted when the egg was automatically generated--mostly
+  documentation files with a <code>.txt</code> extension and test files with <code>.xml</code>
+  extensions (but also some miscellaneous <code>README</code>, <code>.rnc</code>, <code>.rng</code>,
+  <code>.xsl</code>, and whatnot scattered around the subpackages).  As it happens,
+  all of these supporting files are "nice-to-have" more than they are
+  strictly required.  Still, we would like to include all the supporting
+  files.
+</p>
+<p>
+  The <code>setup.py</code> script for Gnosis_Utils is quite complex, actually. As
+  well as list basic metadata, in 467 lines of code, it performs a whole
+  bunch of testing for Python version capabilities and bugs; works
+  around glitches in old versions of <code>disutils</code>; falls back to skipping
+  installation of non-supported parts (e.g. if <code>pyexpat</code> is not included
+  in your Python distribution); handles OS line-ending convention
+  conversion; creates multiple archive/installer types; and rebuilds the
+  <code>MANIFEST</code> file in response to these tests.  Doing all this work is
+  mostly thanks to the package co-maintainer, Frank McIngvale; and it
+  lets Gnosis_Utils successfully install as far back as Python 1.5.1, if
+  necessary (with reduced capabilities in earlier versions). The quick
+  moral here is that what I am about to show you does not do as much as
+  the complex <code>distutils</code> script: it simply assumes a "normal" looking
+  and recent version of Python is installed. That said, it is still
+  impressive just how easy <code>setuptools</code> can make an installation script.
+</p>
+<p>
+  As a first try, let us create a <code>setup.py</code> script borrowing from the
+  <code>setuptools</code> manual, and try creating an egg using it:
+</p>
+<div class="code-sample"><h4>A setuptools 'setup.py' script</h4><PRE>% cat setup.py
+<FONT COLOR=#3333CC><B>from</B></FONT> setuptools <FONT COLOR=#3333CC><B>import</B></FONT> setup, find_packages
+setup(
+    name = <FONT COLOR=#115511>"Gnosis_Utils"</FONT>,
+    version = <FONT COLOR=#115511>"1.2.2"</FONT>,
+    packages = find_packages(),
+)
+% python setup.py -q bdist_egg
+zip_safe flag <FONT COLOR=#3333CC><B>not</B></FONT> set; analyzing archive contents...
+gnosis.__init__: module references __file__
+gnosis.doc.__init__: module references __file__
+gnosis.magic.__init__: module references __file__
+gnosis.xml.objectify.doc.__init__: module references __file__
+gnosis.xml.pickle.doc.__init__: module references __file__
+gnosis.xml.pickle.test.test_zdump: module references __file__</PRE></div><p>
+  This little effort works; or it sort-of works.  We really do create an
+  egg with these few lines, but the egg has the same shortcoming as the
+  version <code>easy_install</code> created: it lacks the support files that are
+  not named <code>.py</code>.  So let us try only slightly harder:
+</p>
+<div class="code-sample"><h4>Adding the missing package_data</h4><pre>
+from setuptools import setup, find_packages
+setup(
+    name = "Gnosis_Utils",
+    version = "1.2.2",
+    package_data = {'':['*.*']},
+    packages = find_packages(),
+)
+
+</pre></div><p>
+  It turns out that is all we need to do.  Of course, in practice you
+  will often want to fine tune this a bit.  For example, more
+  realistically, this might list, e.g.:
+</p>
+<div class="code-sample"><h4></h4><pre>package_data = {'doc':['*.txt'], 'xml':['*.xml', 'relax/*.rnc']}
+
+</pre></div><p>
+  Which would mean to include the <code>.txt</code> files under the <code>doc/</code>
+  subpackage, all the <code>.xml</code> files under the <code>xml/</code> subpackage, and all
+  the <code>.rnc</code> files under the <code>xml/relax/</code> subpackage.
+</p>
+<h3>Conclusion</h3>
+ <p>
+  I really only scratched the surface of the customization you can
+  perform with <code>setuptools</code> aware distributions. For example, once you
+  have a distribution (either the preferred egg format, or another
+  archive type), you may automatically upload the archive and metadata
+  to Cheeseshop with a single command.  Obviously, a complete
+  <code>setup.py</code> script should contain the same detailed metadata that your
+  old <code>distutils</code> scripts contained--I skipped that just for ease of
+  presentation, but the argument names are compatible with <code>distutils</code>.
+  It takes a little while to become fully comfortable with <code>setuptools</code>
+  large set of capabilities, but it really makes both maintaining your
+  own packages and installing outside packages much easier than the
+  <code>distutils</code> baseline.  And if all you care about is installing
+  packages, pretty much everything you need to know is contained in this
+  introduction; the complexity only comes with describing your own
+  packages, and that complexity is still less than required to "grok"
+  <code>distutils</code>.
+</p>
+<h3>Resources</h3>
+ <p>
+  The latest version of <code>setuptools</code> can be found on Cheeseshop, at:
+</p>
+<blockquote>
+   <a href="http://cheeseshop.python.org/pypi/setuptools/">http://cheeseshop.python.org/pypi/setuptools/</a>
+</blockquote>
+<p>
+  The home page for PEAK itself is the place to start for an
+  introduction to the library as a whole.
+</p>
+<blockquote>
+   <a href="http://peak.telecommunity.com/">http://peak.telecommunity.com/</a>
+</blockquote>
+<p>
+  The full manual for <code>setuptools</code> is at:
+</p>
+<blockquote>
+   <a href="http://peak.telecommunity.com/DevCenter/setuptools">http://peak.telecommunity.com/DevCenter/setuptools</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author"> David Mertz
+  has many versions of each of his thoughts, and overall lacks any unity
+  of ego. David may be reached at mertz@gnosis.cx; his life pored over
+  at<a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a> Check out David's book <cite>Text Processing
+  in Python</cite> (http://gnosis.cx/TPiP/).
+</p>
+</body></html>

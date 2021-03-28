@@ -1,0 +1,506 @@
+XML MATTERS #5
+Transforming DocBook Documents Using XSLT
+
+David Mertz, Ph.D.
+Transformer, Gnosis Software, Inc.
+October 2000
+
+    Extensible Stylesheet Language Transformations (XSLT) are a
+    standard way in the XML world to transform XML documents into
+    other formats. A number of tools are available for XSLT
+    processing, and more will be available as the standard
+    coalesces. This article uses the DocBook XML document
+    developed in previous columns as an example XML source
+    document, and walks readers through a transformation of this
+    source into an HTML output document. In addition to the
+    actual creation of an XSL document, processing tool usage is
+    discussed.
+
+
+ARTICLE BACKGROUND
+------------------------------------------------------------------------
+
+  Welcome to the world of XML transformations! I am afraid that
+  you are in for a rocky ride: standards are coalescing and
+  undergoing revision, tools are immature and often buggy,
+  implementations are inconsistent, and choices are just plain
+  confusing.  Nonetheless, don't panic.  Your author will lead
+  you through at least one path out of the labyrinth.  And things
+  will inevitably get better with time, albeit always more slowly
+  than we want them to.
+
+  The last two issues of "XML Matters" discussed the author's
+  personal project for converting his own academic writings to XML,
+  and specifically to the DocBook DTD.  Those columns will
+  hopefully provide readers a good starting point for writing
+  their own DocBook documents.
+
+  From the point-of-view of this column, let us just assume that
+  we have some nicely structured, well-formed, and valid DocBook
+  XML documents lying around.  It is nice to have them in the
+  first place, but the next step is to transform them into more
+  conventional end-user formats: things like HTML pages, PDF
+  files, and printed pages (the things readers actually read).
+  This is exactly the problem I faced after converting a portion
+  of my archival writing to DocBook, and this article presents my
+  own solution.
+
+  My main goal--at least for now--is a good transformation to
+  HTML.  But I don't want to forclose other output formats in my
+  efforts.  A few smaller goals enter also.  I would like to have
+  some control over the precise output without doing a lot of
+  work, and without having to learn a lot of new languages and
+  techniques.  I would also like to use tools that are free (as
+  in speech, and as in beer), and tools that are cross-platform.
+  Furthermore, a large number of complex dependencies are a
+  disadvantage, even if all the needed contributions are
+  themselves free and cross-platform.  Basically, my ideal is a
+  standalone executable that just runs, runs reliably, and
+  converts my DocBook documents to HTML in just the style I want.
+  Lofty dreams, but why not?
+
+
+APPROACHES TO TRANSFORMATIONS
+------------------------------------------------------------------------
+
+  At least four approaches are possible for transforming a
+  DocBook document--or most any XML document--into end-user
+  formats.  Only the last will be discussed in detail in this
+  column, but all are worth keeping in mind as you plan a project
+  that involves repeated transformations.  Certainly, all of
+  these approaches were ones I seriously considered for my own
+  little project.
+
+  (1) Write custom transformation code.  Ideally, it would be
+  nice to start with a programming language that has some
+  libraries for basic XML interfaces like SAX and DOM.  But even
+  assuming the basic parsing is a black box, custom code can do
+  whatever you want with the parsed elements.  Ultimately, this
+  is the most flexible and powerful approach; but it is also
+  likely to take more work, both up front and in maintenance.
+
+  (2) Use Cascading Stylesheets with your DocBook document.  It's
+  a thought.  It would be nice to keep the typographic
+  specifications completely separate from the structural markup,
+  and just simply have the client device (e.g. browser) render
+  things nicely.  That might yet happen, but as of right now
+  there seems to be only limited support, and only in IE5.5,
+  Opera 4 and in some of the latest Mozilla developer releases.
+  Things just do not seem to the point where one can count on
+  end-users making this work for them.
+
+  (3) Use Document Style Semantics and Specification Language
+  (DSSSL) to specify transformations into target formats.  On the
+  plus side, a number of DSSSL stylesheets already exist for
+  DocBook (and for other formats).  DSSSL is basically a whole
+  new programming language to learn, and a functional Lisp-like
+  language to boot.  In order to utilize DSSL, you need to start
+  with the tool Jade or OpenJade; but those are complex enough
+  themselves that many people have written wrappers to them (such
+  as SGML-tools Lite).  In order to get a working system--albeit
+  by reports a very nicely working system--you really need to
+  satisfy all sorts of system dependencies, and install all sorts
+  of tools and libraries.  On some well-intentioned, although
+  perhaps not sufficiently dedicated, attempts, your author did
+  not manage to get Jade-related tools smoothly functioning on
+  his system.  Obviously, a lot of other folks use these systems
+  every day, so a little more work would have surely put things
+  in order. (If readers can point me to a quick, simple
+  all-in-one DSSSL processor, I would love to try it).
+
+  Even more than the setup difficulties, however, DSSSL simply
+  feels like it comes out of different traditions--and ways of
+  thinking--than do XML techniques.  By contrast, the final
+  approach is basically pure XML, and comes out of official
+  (working) specifications of the W3C.
+
+  (4) Use eXtensible Stylesheet Language Transformations (XSLT).
+  XSLT is actually, in one sense, a specification for a class of
+  XML documents.  That is, an XSLT stylesheet is itself a
+  well-formed XML document with some specialized contents that
+  let you "templatize" the output format you are looking for
+  (we'll see what this means).  There are a large number of tools
+  that (at least nominally) support XSLT; my own hunch is that
+  this really is the direction technologies are going for XML
+  transforms--either because of, or in spite of, its "official"
+  status with the W3C.
+
+  XSLT is capable of specifying transforms to any target format,
+  but the general feeling I have picked up is that most
+  developers find it easiest to work with where the target format
+  is another XML format, such as XHTML.
+
+
+PICKING AN XSLT TOOL
+------------------------------------------------------------------------
+
+  The Resources section contains a nice link to descriptions of
+  quite a number of XSLT tools.  I tried a number of them, but
+  found Sabletron most to my preferences.  It is free software
+  (GNU).  It is multiplatform.  It has a standalone executable
+  that is simple to run from the command-line.  And most
+  important, it appears to *work* correctly, at least for my
+  simple test cases (not all those I tried do so).
+
+  A number of the other XSLT tools listed by XSLT.com are also
+  free software (see Resources).  Most of those, however, are
+  Java programs, and also depend on various extra Java libraries.
+  A number of the Java tools appear to be positively evaluated by
+  users, so these may be good choices for you.  But I liked
+  Sabletron both for the greater speed of compiled C, and for the
+  simplicity of installing and using it.
+
+  Normal Walsh has created a set of -complete- XSLT stylesheets
+  for DocBook.  Unfortunately, Sabletron simply crashes on them,
+  and XML Spy fails to match anything in a valid DocBook document
+  when using them (these were my main attempts).  This is more
+  likely a limitation in the tools than in Walsh's stylesheets;
+  you might have better luck with other tools.  Still, the
+  problem gives us the opportunity to develop our own (less
+  complete) XSLT stylesheets, which is what we really want
+  anyway.
+
+  Use of Sabletron is quite simple.  The basics are:
+
+      X:\mydocs> x:\sabl\bin\sabcmd mystyle.xsl mydoc.xml mydoc.html
+
+  What this says is: use the rules in 'mystyle.xsl' to transform
+  'mydoc.xml' into 'mydoc.html'.  You can also use pipes and
+  redirection if you wish.  Adjust paths and filenames as needed
+  for your environment; setting up Sabletron is as easy as
+  unpacking its archive (it also provides libraries you can call
+  from your programs, but the command-line utility is a good way
+  to get started).  On moderate-sized documents, Sabletron is
+  fast enough to be used in a CGI context, if desired.
+
+
+WRITING OUR XSLT SPECIFICATION
+------------------------------------------------------------------------
+
+  For the real blood and guts of XSLT, read the W3C's official
+  recommendation (see Resources).  For this column, we will aim
+  at more informal details of getting it working.
+
+  The specific DocBook document we developed in the last columns,
+  'chap5.xml' was a 'chapter'.  Only a fairly small subset of all
+  the possible DocBook tags were used in the chapter.  So for
+  now, all we really need is a 'chapter.xsl' file that will do
+  something useful with every tag actually used in 'chap5.xml'.
+  This is a modest start, but one that is quite easy to build on
+  because of the open and extensible nature of XSLT.  Let us take
+  a look.
+
+  Let us start with a skeleton of 'chapter.xsl'--our "how to
+  convert a DocBook chapter to HTML--template:
+
+      #--------- Skeleton XSLT Document (empty.xls) -----------#
+      <xsl:stylesheet version="1.0"
+           xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+           xmlns="http://www.w3.org/TR/xhtml1/strict">
+        <xsl:output method="html" indent="yes" encoding="UTF-8"/>
+      </xsl:stylesheet>
+
+  As you can see, 'chapter.xsl' is an well-formed XML file.  As
+  you will also notice, many of the tags in an XSLT document are
+  named with the namespace pattern '<xsl:*>'.  In fact, all the
+  tags that are -instructions- look like this.  In transforming
+  to XML-like formats (such as HTML), you will see various other
+  tags, but those other tags belong to the target format and will
+  occur only within an '<xsl:*>' element.
+
+  Basically, you should use exactly the namespace attributes
+  ('xmlns:xsl' and 'xmlns') that are indicated above.  The output
+  line is probably what you want to keep also; you might use the
+  'xml' or 'text' methods though.  The default namespace (all the
+  elements that -do not- have a prefix) will allow use of XHTML
+  tags.  Notice that you must close all your XHTML tags, but the
+  'html' output method will strip out some of the close tags
+  where HTML does not use them (for example '<img>' and '<hr>').
+
+  The above XSLT file is perfectly good to use as a processing
+  template.  It might not do exactly what you expect though.  One
+  might assume that since no output was specified, nothing get
+  output.  That turns out not to be exactly correct:  all the
+  text nodes are still caught, and using the above stylesheet
+  will get you a plain ASCII version of your chapter.  If you
+  really -do- want to output nothing at all here is what you want
+  for an XSLT document:
+
+      #--------- Null-Output XSLT Document (null.xls) ---------#
+      <xsl:stylesheet version="1.0"
+           xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+           xmlns="http://www.w3.org/TR/xhtml1/strict">
+        <xsl:output method="html" indent="yes" encoding="UTF-8"/>
+
+        <xsl:template match="*">
+        </xsl:template>
+
+      </xsl:stylesheet>
+
+  Our null-outputter moves us in the direction of a useful
+  transform.  A real stylesheet is really just a description of a
+  set of patterns to try to match, and a templates inside each
+  '<xsl:template>' element that provides a template for what to
+  output.  As the example shows, "*" can match any pattern; our
+  example just does not happen to -do- anything inside the
+  template, but it still manages to match any element that might
+  occur in our source XML/DocBook document.
+
+
+MATCHING BY DESCENT
+------------------------------------------------------------------------
+
+  The power of XSLT templates lie mainly in their ability to
+  pass matching in one element to whatever subelements happen to
+  match other templates.  Expanding on our null-outputter, let us
+  create a semi-meaningful stylesheet.  The important tag for
+  allowing descent into subelements is '<xsl:apply-templates>'.
+  Generally, every template will include this tag somewhere in
+  its body:
+
+      #----- Minimal Chapter XSLT Document (minimal.xls) ------#
+      <xsl:stylesheet version="1.0"
+           xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+           xmlns="http://www.w3.org/TR/xhtml1/strict">
+        <xsl:output method="html" indent="yes" encoding="UTF-8"/>
+
+        <xsl:template match="chapter">
+          ----- Start of Chapter -----
+          <xsl:apply-templates/>
+        </xsl:template>
+
+        <xsl:template match="*">
+          ##### Unmatched Element in Source #####
+        </xsl:template>
+
+      </xsl:stylesheet>
+
+  When we run an XSLT processor using this stylesheet and a
+  DocBook chapter, we get something like:
+
+      ----- Start of Chapter -----
+      ##### Unmatched Element in Source #####
+      ##### Unmatched Element in Source #####
+      ##### Unmatched Element in Source #####
+
+  This output is not all that useful, but it lets us see what the
+  stylesheet is doing.  The root element of a chapter is the
+  '<chapter>' tag.  That matches, and announces the chapter
+  starts.  Within the '<chapter>' element various children occur,
+  each such child is called something other than 'chapter', and
+  so will pass matching to the "*" template.
+
+  For developing your own XSLT stylesheet, leaving in some
+  obvious flag like the above for unmatched elements will let you
+  quickly see what templates you need to develop.  Let us look at
+  a version with some real templates:
+
+      #-------- Valid HTML Outputter XSLT Document ------------#
+      <xsl:stylesheet version="1.0"
+           xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+           xmlns="http://www.w3.org/TR/xhtml1/strict">
+
+        <xsl:output method="html" indent="yes" encoding="UTF-8"/>
+
+        <xsl:template match="chapter">
+          <html>
+            <head>
+              <title>
+                <xsl:value-of select="title"/>
+              </title>
+            </head>
+            <body>
+              <xsl:apply-templates/>
+            </body>
+          </html>
+        </xsl:template>
+
+        <xsl:template match="chapter/title">
+          <hr></hr>
+          <h1><xsl:apply-templates/></h1>
+        </xsl:template>
+
+        <xsl:template match="para">
+          <p><xsl:apply-templates/></p>
+        </xsl:template>
+
+        <xsl:template match="*">
+           ##### Unmatched Element in Source #####
+        </xsl:template>
+
+      </xsl:stylesheet>
+
+  This HTML-outputter shows some realistic features of an XSLT
+  stylesheet.  Inside the 'chapter' match template, we lay out
+  the HTML document we want to produce.  There is little special
+  about the XHTML tags inside the template match; any text we put
+  there will appear in the output (but we cannot include tags
+  that are not in the 'xsl' or default XHTML namespace).  Within
+  the HTML '<title>' element, we use the '<xsl:value-of>'
+  instruction to insert the '<title>' subelement required inside
+  a '<chapter>' in DocBook.  In the HTML '<body>' element, we
+  pass control on to other templates (presumably quite a few for
+  all of DocBook).
+
+  The next template after 'chapter' is 'chapter/title'.  This
+  means to match a '<title>' element, but only if it occurs
+  directly inside a '<chapter>'.  If we had wanted we could have
+  simply matched 'title' and thereby specified the output format
+  of every '<title>' element in the source document.  But we want
+  to format chapter titles differently from '<sect1>' titles,
+  '<sect2>' titles, and so on.  We perform a general match with
+  'para' in the example (but it never actually matches, because
+  '<para>' can only occur inside tags we have not yet matched).
+  For good measure, we still match "*" which lets us see that our
+  stylesheet is not complete when we examine its output.
+
+
+REPEATED CHILDREN
+------------------------------------------------------------------------
+
+  Matching templates by descent is not the only trick XSLT can
+  do.  You can also do conditional outputting, sorting, pull out
+  source attributes, and looping over children.  For this column,
+  let us look at looping:
+
+      #------ XSLT template for looping over subelements ------#
+      <xsl:template match="simplelist">
+        <ul>
+          <xsl:for-each select="member">
+            <li><xsl:apply-templates/></li>
+          </xsl:for-each>
+        </ul>
+      </xsl:template>
+
+  Rather than descend to every subelement in a 'simplelist', we
+  just assume subelements are all '<member>' elements.  The
+  '<xsl:for-each>' works much like a nested template, and also
+  much like a programming-language loop construct.  The contents
+  of the '<xsl:for-each>' element will go to the output for every
+  subelement that matches the 'select' attribute.  Within the
+  loop, the contents of the current '<member>' element become the
+  active node that descends down to the '<xsl:apply-templates/>'
+  tag we find inside the loop.  That is, each thing in the list
+  might have further markup inside it, and we pass formatting of
+  those elements to their appropriate templates (for text nodes,
+  they are just ouput in literal form).
+
+
+EVERMORE
+------------------------------------------------------------------------
+
+  This column has not done more than scratch the surface of XSLT.
+  But it should have given the reader a sense of working with
+  stylesheets and transforms.  The Resources provide many places
+  to read further on related matters.  In particular, you might
+  benefit from looking through the more complete XML and XSLT
+  examples in this article's archive file.  Stay tuned, this
+  column is bound to come back to XSLT in numerous ways.
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  The World Wide Web Consortium (W3C) XSLT Recommendation 1.0:
+
+    http://www.w3.org/TR/xslt#section-Stylesheet-Structure
+
+  The World Wide Web Consortium (W3C) XSL Homepage:
+
+    http://www.w3.org/Style/XSL/
+
+  XSLT.com's survey of XSLT tools:
+
+    http://www.xslt.com/xslt_tools.htm
+
+  Sabletron XSL Processor (open source):
+
+    http://www.gingerall.com/charlie-bin/get/webGA/act/sablotron.act
+
+  Normal Walsh's XSL stylesheets:
+
+    http://www.nwalsh.com/docbook/xsl/index.html
+
+  Joe Brockmeier's "A gentle guide to DocBook" is a nice
+  introduction to the use of SGML-tools Lite.  This is another
+  approach--using DSSSL--to go for formatting DocBook documents
+  that is different from XSLT approaches:
+
+    http://www-4.ibm.com/software/developer/library/l-docbk.html?dwzone=linux
+
+  A good place to start if you would like to know more about
+  Document Style Semantics and Specification Language (DSSSL):
+
+    http://www.jclark.com/dsssl/
+
+  OASIS's recommendations on XML tools:
+
+    http://www.oasis-open.org/docbook/tools/index.html
+
+  IBM alphaWorks' Xeena free-of-cost XML Editor is a good Java
+  application for editing and validating XML documents:
+
+    http://www.alphaworks.ibm.com/tech/xeena
+
+  Icon Information-Systems' XML Spy is a commercial Win32
+  application for editing and validating XML documents, and for
+  performing XSLT operations:
+
+    http://www.xmlspy.com/
+
+  David Mertz XML Spy Review:
+
+    http://webreview.com/wr/pub/2000/09/01/feature/index04.html
+
+  SoftQuad's XMetal (commercial XML editor) is yet another Win32
+  application for editing and validating XML documents.  The
+  author plans to review this product for Webreview.com in the
+  near future:
+
+    http://softquad.com/index_main.html
+
+  Extensibility's XML Instance is a commercial XML editor
+  available for multimple platforms.  The author also plans to
+  review this product for Webreview.com:
+
+    http://www.extensibility.com/products/xml_instance/index.htm
+
+  Scholarly Technology Group's Web-based XML Validation (source
+  available and liberally licensed):
+
+    http://www.stg.brown.edu/service/xmlvalid/
+
+  By all means, the best place to get started in a more detailed
+  understanding of DocBook is.  The ink-on-paper version is:
+
+    _DocBook:  The Definitive Guide_, Norman Walsh & Leonard
+    Muellner, O'Reilly, Cambridge, MA 1999.
+
+  If you wish to use an electronic version, refer to:
+
+    http://www.docbook.org/tdg/index.html
+
+  The Organization for the Advancement of Structured Information
+  Standards (OASIS) home page is probably the widest reaching
+  place to find information on XML in general, and about DocBook
+  specifically:
+
+    http://www.oasis-open.org/
+
+  Files used and mentioned in this article:
+
+    http://gnosis.cx/download/xml_matters_5.zip
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author:  http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz must have mislaid his MacGuffin in one of his
+  other articles.  It is bound to show up again soon. David may
+  be reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/.  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+
+
+

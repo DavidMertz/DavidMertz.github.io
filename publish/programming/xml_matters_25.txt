@@ -1,0 +1,443 @@
+XML MATTERS #25: RELAX NG
+Doing Better than W3C XML Schemas
+
+David Mertz, Ph.D.
+Idempotentate, Gnosis Software, Inc.
+January 2003
+
+    RELAX NG Schemas provide a more powerful, more concise, and
+    semantically more straightforward means of describing classes
+    of valid XML instances than do W3C XML Schemas.  The virtue
+    of RELAX NG is that it extends the well proven semantics of
+    DTDs while allowing orthogonally extensible datatypes and
+    easy composition of related instance models.
+
+WISHES AND FISHES
+------------------------------------------------------------------------
+
+  I have long been wary of W3C XML Schema, and to some extent of
+  XML itself. A jumble of companies and groups with divergent
+  interests and backgrounds cobbled together W3C XML Schema by
+  throwing in a little bit of everything each party wanted,
+  creating a typical designed-by-committee, difficult to
+  understand, standard. In fact, my reservations have been
+  sufficient that I generally recommend sticking with DTDs for
+  validation needs, and filling any gaps strictly at an application
+  level.
+
+  About a month ago, however, I started taking a serious look at
+  RELAX NG. Like many readers, I had heard of this alternative
+  schema language before that, but I had assumed that RELAX NG
+  would be pretty much more of the same, with slightly different
+  spellings.  How wrong I was.  RELAX NG is simply better than
+  either W3C XML Schemas or DTDs in nearly every way! In fact,
+  RELAX NG's ability to support unordered (or semi-ordered)
+  content models answers most of my prior concerns about the
+  mismatch between the semantic models of OOP datatypes and the
+  linearity of XML elements.
+
+  This article is the first of three _XML Matters_ installments
+  discussing RELAX NG.  This installment will look at the general
+  semantics of RELAX NG, and touch on datatyping.  The next
+  installment will look at tools and libraries for working with
+  RELAX NG.  The final installment will discuss the RELAX NG
+  compact syntax in more detail.
+
+SEMANTIC MODEL
+------------------------------------------------------------------------
+
+  The semantics of RELAX NG are enormously straightforward--in this
+  respect, they are a natural extension of DTD semantics. What a
+  RELAX NG schema describes is -patterns- consisting of
+  quantifications, orderings, and alternations. As well, RELAX NG
+  introduces a pattern for unordered collection, which neither DTDs
+  nor W3C XML Schemas support (SGML does, but less flexibly than
+  RELAX NG). Moreover, RELAX NG treats elements and attributes in
+  an almost uniform manner. Element/attribute uniformity
+  corresponds much better with the conceptual space of XML than
+  does the rigid separation in both DTDs and W3C XML Schemas.  In
+  actual design, the choice between use of an attribute and an
+  element body is frequently underdetermined by design
+  considerations and/or is contextually sensitive.
+
+  The quantifications available to RELAX NG are identical to those
+  in DTDs. Any pattern may be conditioned as '<oneOrMore>,
+  '<zeroOrMore>', or '<optional>'; these correspond to the DTD
+  quantifiers '+', '*' and '?' (also used in regular expressions
+  and elsewhere). In fact, the RELAX NG compact syntax are the very
+  same quantifiers as used in DTDs. Admittedly, these very general
+  quantifiers make it more difficult to state specific cardinality
+  constraints, as you can with W3C XML Schema 'minOccurs' and
+  'maxOccurs' attributes. I would not mind seeing a later revision
+  of RELAX NG that incorporated more flexible cardinality
+  constraints. However, it is easier to work around these limits
+  using named patterns than it is to do so in DTDs.
+
+  Ordering multiple patterns is just a matter listing the patterns
+  in an order. But a sequence of patterns at the same level can be
+  given a different semantics using the '<choice>', '<group>' or
+  '<interleave>' elements. The '<group>' tag is used in just the
+  same way that parentheses are in DTDs. By itself, a '<group>'
+  element doesn't mean anything, but when used inside '<choice>' or
+  '<interleave>' elements, a "group" acts as one pattern rather
+  than several. The '<choice>' element expresses simple alternation
+  between contained patterns. The '<interleave>' element, however,
+  lets you intersperse patterns, while obeying the cardinality of
+  each contained pattern. For example, suppose a library patron has
+  a name, id number, and possibly some checked out books--for these
+  purposes, we do not care which order the features are listed in.
+  A book, in turn, can be identified by either title or ISBN (but
+  not both, perhaps an unrealistic example) . A RELAX NG
+  description could look like:
+
+      #-------------- Libary Patron Schema ---------------------#
+      <element name="patron"
+               xmnln="http://relaxng.org/ns/structure/1.0">
+        <interleave>
+          <element name="name"><text/></element>
+          <element name="id-num"><text/></element>
+          <zeroOrMore>
+            <element name="book">
+              <choice>
+                <attribute name="isbn"/>
+                <attribute name="title"/>
+              </choice>
+            </element>
+          </zeroOrMore>
+        </interleave>
+      </element>
+
+  Understanding this schema is almost just a matter of reading it
+  aloud.  But let us first look at the compact syntax that
+  corresponds to this XML syntax:
+
+      #-------------- Libary Patron Compact Syntax--------------#
+      element patron {
+        element name { text }   &
+        element id-num { text } &
+        element book {
+          (attribute isbn { text } |
+           attribute title { text } )
+        }*
+      }
+
+  You actually *cannot* describe the valid partron records using
+  either DTDs or W3C XML Schemas, at least not without elaborate
+  contortions and/or compromises in precision.  For example, here
+  are two valid records:
+
+      #--------------- Valid Patron Records --------------------#
+      <patron>
+        <book isbn="0-528-84460-X"/>
+        <name>John Doe</name>
+        <id-num>12345678</id-num>
+        <book title="Why RELAX is Clever"/>
+      </patron>
+      <patron>
+        <id-num>09876545</id-num>
+        <name>Jane Moe</name>
+      </patron>
+
+  But the below is invalid in a way that other schemata cannot
+  generically describe (attributes can only be optional or
+  required in DTDs/W3C Schema, not interrelated):
+
+      #--------------- Invalid Patron Records ------------------#
+      <patron>
+        <name>John Doe</name>
+        <id-num>12345678</id-num>
+        <book title="Why RELAX is Clever" isbn="0-528-84460-X"/>
+        <book/>
+      </patron>
+
+  Moreover, the ability of a RELAX NG schema to define an unordered
+  collection of name, id number, and book(s) answers my
+  complaint--when discussing YAML, and elsewhere--that XML imposes
+  arbitrary order on data that is not inherently sequential.
+
+  An interesting upshot of the general behavior of interleaving is
+  that you can mix text/PCDATA sections with subelements, and
+  control the number (cardinality) of text blocks allowed.  For
+  example you could allow only one continguous flow of PCDATA to
+  occur -anywhere- among some optional or required tags.
+
+UNIFORMITY OF ATTRIBUTES AND ELEMENTS
+------------------------------------------------------------------------
+
+  A quite common usage scenario for XML is a element that can
+  contain -either- a special attribute -or- a collection of
+  subelements (or a PCDATA content), but not both (all).  For
+  example, the [gnosis.xml.pickle] serialization format defines
+  heterogeneous lists similar to:
+
+      #-------- gnosis.xml.pickle-ish list fragment ------------#
+      <list>
+        <item type="string" value="Bar"/>
+        <item type="list">
+          <item type="numeric" value="17"/>
+          <item type="None"/> <!-- None is singleton w/o value -->
+        </item>
+      </list>
+
+  A given '<item>' contains subelements only if it does not
+  contain a 'value' attribute, and vice versa.  Using a DTD, we
+  could approximate the rule as:
+
+      #--------------- Approximate DTD for pickle --------------#
+      <!ELEMENT list (item+)>
+      <!ELEMENT item (item*)>
+      <!ATTLIST item
+          type  (None | string | numeric | list) #REQUIRED
+          value CDATA #IMPLIED >
+
+  That DTD will match the prior XML instance document, but it
+  will also falsely match:
+
+      #------------- Invalid false-match to DTD ----------------#
+      <list>
+        <item type="None" value="Some">
+          <item type="string" value="More"/>
+        </item>
+        <item type="list"/>
+      </list>
+
+  A W3C XML Schema is enormously arcane to start with, but in the
+  end has no ability to describe anything more specific than the
+  DTD does, for this case.  For example, the following is a
+  schema for the simplified case where an '<item>' may simply
+  contain PCDATA, rather than subelements:
+
+        #------------ Approximate W3C XML Schema ---------------#
+        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <xsd:element name="list">
+          <xsd:element name="item" minOccurs="1" maxOccurs="unbounded">
+            <xsd:complexType>
+              <xsd:simpleContent>
+                <xsd:extension base="xsd:string">
+                  <xsd:attribute name="type" type="xsd:string"/>
+                  <xsd:attribute name="value" type="xsd:string"
+                                 use="xsd:optional"/>
+                </xsd:extension>
+              </xsd:simpleContent>
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:element>
+
+  The problem here with both DTDs and W3C XML Schemas is that
+  they make attibutes too special, and treat them very
+  differently from elements.  RELAX NG, on the other hand is
+  uniform (the simplified case of PCDATA is presented here to
+  skip named patterns, for now):
+
+      #---------- RELAX NG XML syntax for pickle ---------------#
+      <element name="list" xmlns="http://relaxng.org/ns/structure/1.0>
+        <oneOrMore>
+          <element name="item">
+            <choice>
+              <text/>
+              <attribute name="value"/>
+            </choice>
+          </element>
+        </oneOrMore>
+      </elment>
+
+  In compact syntax, we could write:
+
+      #---------- RELAX NG compact syntax for pickle -----------#
+      element list { element item { attribute type {text},
+                            (attribute value {text} | {text}) }+ }
+
+NAMED PATTERNS
+------------------------------------------------------------------------
+
+  Nested (and context sensitive) definitions of subpatterns are
+  only one style available in RELAX NG.  You may also work with
+  named patterns within a grammar.  Moreover, by using a grammar,
+  a RELAX NG schema can explicitly indicate a root element for
+  validation.  A grammar contains a root '<grammar>' element, a
+  single '<start>' element, and zero or more '<define>' elements.
+  Notably, '<define>' elements can contain recursive elements.
+
+  A sample grammar illustrates how definitions and references are
+  used.  Let uso define the nested '<item>' tags that were
+  skipped over in the above examples:
+
+      #------- Improved RELAX NG grammer for pickle ------------#
+      <grammar xmlns="http://relaxng.org/ns/structure/1.0>
+        <start>
+          <element name="list">
+            <ref name="items"/>
+          </element>
+        </start>
+        <define name="items">
+          <oneOrMore>
+            <element name="item">
+              <choice>
+                <ref name="items"/>
+                <attribute name="value"/>
+              </choice>
+            </element>
+          </oneOrMore>
+        </define>
+      </grammar>
+
+  And this finally gives us an accurate validation constraint for
+  the attribute-or-subelements serialization form described
+  above.  For a real-life case, we would typically define more
+  named patterns than this; each can freely refer to others
+  (within quantifications, choices, and so on).
+
+DATATYPES
+------------------------------------------------------------------------
+
+  While W3C XML Schemas have a complex collection of datatypes
+  built in, and DTDs effectively have no datatyping at all, RELAX
+  NG allows a completely modular and expandable datatyping system.
+  Most commonly, RELAX NG users will simply use the entire
+  collection of datatypes that accompany W3C XML Schemas.  As
+  with a specification of a namespace, a datatype library is
+  found in the most immediate surrounding element that defines
+  the attribute 'datatypeLibrary'.  So, for example, you -could-
+  define the datatype library with every data value:
+
+      #---------- Verbose specification of datatypes -----------#
+      <element name="foo">
+        <choice>
+          <data type="integer"
+            datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          <data type="float"
+            datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </choice>
+      </element>
+
+  A more parsimonious approach is to indicate a datatype library
+  at the top level.  If a specific data value needs to follow a
+  different datatype library, you can override that within that
+  individual '<data>' tag.  E.g.
+
+      #---------- Concise specification of datatypes -----------#
+      <element name="foo">
+            datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        <choice>
+          <data type="integer"/>
+          <data type="float"/>
+        </choice>
+      </element>
+
+  A nice feature that you have already seen is that defining
+  compound datatypes uses the exact same patterns as definitions
+  of elements and attributes.  A choice is the most generally
+  applicable pattern element, but others--including '<list>'
+  which is discussed below--are sometimes applicable.
+
+  Enumerations may be specified using the '<value>' element
+  instead of a '<data>' element.  For example:
+
+      #----------- Enumerated values using choice --------------#
+      <element name="foo">
+        <choice>
+          <value type="integer">1</value>
+          <value type="integer">2</value>
+          <value type="integer">3</value>
+          <value type="string">infinity</value>
+        </choice>
+      </element>
+
+  Some datatypes in libraries can allow parameterization.  If
+  this option exists, you can narrow the range of acceptable
+  values (without limiting all the way to an explicit
+  enumeration).  The power is identical to that in a
+  library--i.e. to what W3C XML Schema allows.  For example:
+
+      #------- Parametric specification of datatype  -----------#
+      <element name="foo">
+        <data type="string">
+          <param name="maxLength">10</param>
+        </data>
+      </element>
+
+  When you utilize a datatype library, you can still construct
+  somewhat customized datatypes using the '<list>' element.  A
+  list is simply a whitespace separated sequence of tokens, each
+  matching some datatype.  As elsewhere, lists can describe
+  either element or attribute contents.  For example, suppose you
+  would like an attribute to contain a collection of one or more
+  integer values:
+
+      #------- Compound specification of datatype  -------------#
+      <element name="foo">
+        <attribute name="numbers">
+          <list>
+            <oneOrMore>
+              <data type="integer"/>
+            </oneOrMore>
+          </list>
+        </attribute>
+      </element>
+
+  A matching document is:
+
+      <foo numbers="1 2 3 988765"/>
+
+  An invalid document example is:
+
+      <foo numbers="word"/>
+
+WHAT NEXT
+------------------------------------------------------------------------
+
+  There is a bit more to RELAX NG than this article has touched
+  on, but surprisingly little.  It is quite remarkable just how
+  much power can be had with so few simple concepts.  The next
+  installments will touch on some matters like merging grammars,
+  infoset augmentation (or lack thereof), fudging cardinality
+  constraints, and a few other semantic concepts.  But for the
+  most part, we will move on to tools and the compact syntax in
+  the next two _XML Matters_ installments.
+
+RESOURCES
+------------------------------------------------------------------------
+
+  The home page for RELAX NG is at the below URL.  This website
+  contains numerous useful links to links, articles, tools, and
+  so on.  Of particular note is the excellent tutorial written by
+  two great luminaries of XML technologies, James Clark and
+  Murata Makoto.
+
+    http://www.oasis-open.org/committees/relax-ng/
+
+  Eric van der Vlist has written a nice comparison of RELAX NG
+  with W3C XML Schemas for XML.com.  On a few minor issues, the
+  RELAX NG specification has changed since Eric's article, but
+  his discussion remains useful:
+
+    http://www.xml.com/lpt/a/2002/01/23/relaxng.html
+
+  Eric also has a book in progress on RELAX NG, and it is
+  available under an open content license:
+
+    http://books.xmlschemata.org/relaxng/
+
+  Background on the relative merits of DTDs and W3C XML Schemas
+  can be found in _XML Matters #7_:
+
+    http://gnosis.cx/publish/programming/xml_matters_7.html
+
+  For some thoughts on the semantic limits of XML, see my
+  discussion of YAML in _XML Matters #23_.  Since I discovered
+  RELAX NG, however, many of my concerns have been assuaged:
+
+    http://gnosis.cx/publish/programming/xml_matters_23.html
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author:  http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz, in his gnomist aspirations, wishes he had coined
+  the observation that the great thing about standards is that
+  there are so many to choose from.  But then, he is also fuzzy
+  on OS design.  David may be reached at mertz@gnosis.cx; his
+  life pored over at http://gnosis.cx/publish/. Suggestions and
+  recommendations on this, past, or future, columns are welcomed.
+

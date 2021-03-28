@@ -1,0 +1,384 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>CHARMING PYTHON #2 -- A Closer Look at Python's [xml.dom] Module -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="charming_python_1.html" TITLE="CHARMING PYTHON #1">
+<link REL="next" HREF="charming_python_3.html" TITLE="CHARMING PYTHON #3">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<h1>Charming Python #2</h1>
+<h2>A Closer Look at Python's <em><code>xml.dom</code></em> Module</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ President, Gnosis Software, Inc.<br>
+ May 2000<br>
+ <br>
+</p>
+<blockquote>
+    This article examines in greater detail the use of the
+    high-level <em><code>xml.dom</code></em> module for Python discussed in <cite>Charming
+    Python #1.</cite> Working with <em><code>xml.dom</code></em> is illustrated by means of
+    clarifying code samples and explanations of how to code many
+    of the elements that will go into a complete XML document
+    processing system.
+</blockquote>
+<h3>What Is Python? What Is Xml?</h3>
+ <p>
+  Python is a freely available, very-high-level, interpreted
+  language developed by Guido van Rossum.  It combines a clear
+  syntax with powerful (but optional) object-oriented semantics.
+  Python is available for almost every computer platform you
+  might find yourself working on, and has strong portability
+  between platforms.
+</p>
+<p>
+  XML is a simplified dialect of the Standard Generalized Markup
+  Language (SGML).  Many readers will be most familiar with SGML
+  via one particular document type, HTML.  XML documents are
+  similar to HTML in being composed of text interspersed with and
+  structured by markup tags in angle-brackets.  But XML
+  encompasses many systems of tags that allow XML documents to be
+  used for many purposes:  magazine articles and user
+  documentation, files of structured data (like CSV or EDI
+  files), messages for interprocess communication between
+  programs, architectural diagrams (like CAD formats), and many
+  other purposes.  A set of tags can be created to capture any
+  sort of structured information one might want to represent,
+  which is why XML is growing in popularity as a common standard
+  for representing diverse information.
+</p>
+<h3>Introduction</h3>
+ <p>
+  The <em><code>xml.dom</code></em> module is probably the most powerful tool
+  available to a Python programmer for working with XML
+  documents.  Unfortunately, the documentation provided by the
+  XML-SIG is currently a bit sparse.  Some of this gap is filled
+  in by the W3C's language-neutral DOM specification.  But it
+  would be nice for Python programmers to have a quick-start
+  guide to the DOM that is specific to the Python language.  This
+  article aims to provide such a guide.  As with "Charming Python
+  #1," the sample <code>quotations.dtd</code> files are used in some of the
+  samples, and are available with the article code-sample
+  archive.
+</p>
+<p>
+  It is worth getting a sense of exactly what DOM is.  The
+  official explanation is a good one.
+</p>
+<blockquote>
+    The Document Object Model is a platform- and language-neutral
+    interface that will allow programs and scripts to dynamically
+    access and update the content, structure and style of
+    documents.  The document can be further processed and the
+    results of that processing can be incorporated back into the
+    presented page.  (World Wide Web Consortium DOM Working
+    Group)
+</blockquote>
+<p>
+  The way DOM works is by converting an XML document to a
+  tree--or forest--representation.  The W3C specification gives
+  as an illustration a DOM version of an HTML table.
+</p>
+<p>
+  <img src="http://www.w3.org/TR/1998/REC-DOM-Level-1-19981001/images/table.gif" alt="DOM Tree">
+</p>
+<p>
+  DOM defines a set of methods to traverse, prune, reorganize,
+  output, and manipulate a tree such as this at a level of
+  abstraction higher, and more convenient, than the underlying
+  linearity of an XML document.
+</p>
+<h3>Convert Html To Xml</h3>
+ <p>
+  Valid HTML is almost, but not quite, valid XML.  The two main
+  differences are that XML tags are case-sensitive, and that all
+  XML tags require an explicit close (as a closing tag, which is
+  optional for some HTML tags; or e.g., <code>&lt;img src="X.png" /&gt;</code>).
+  A simple example of using <em><code>xml.dom</code></em> is to utilize the
+  <code>HtmlBuilder()</code> class to convert HTML to XML.
+</p>
+<div class="code-sample"><h4>File: try_dom1.py</h4><PRE><FONT COLOR=#115511>"""Convert a valid HTML document to XML
+   USAGE: python try_dom1.py &lt; infile.html &gt; outfile.xml
+"""</FONT>
+<FONT COLOR=#3333CC><B>import</B></FONT> sys
+<FONT COLOR=#3333CC><B>from</B></FONT> xml.dom <FONT COLOR=#3333CC><B>import</B></FONT> core
+<FONT COLOR=#3333CC><B>from</B></FONT> xml.dom.html_builder <FONT COLOR=#3333CC><B>import</B></FONT> HtmlBuilder
+
+<FONT COLOR=#1111CC># Construct an HtmlBuilder object and feed the data to it</FONT>
+b = HtmlBuilder()
+b.feed(sys.stdin.read())
+
+<FONT COLOR=#1111CC># Get the newly-constructed document object</FONT>
+doc = b.document
+
+<FONT COLOR=#1111CC># Output it as XML</FONT>
+<FONT COLOR=#3333CC><B>print</B></FONT> doc.toxml()</PRE></div><p>
+  The HtmlBuilder() class is kind enough already to implement
+  some of the underlying <em><code>xml.dom.builder</code></em> template functionality
+  it inherits, and its source is worth looking at.  However, even
+  where we implement template functions ourselves, the outlines
+  of a DOM program will be similar.  In the general case, we will
+  build a DOM instance by some means, and then operate on that
+  instance.  The <code>.toxml()</code> method of a DOM instance is a simple
+  way to produce a string representation of the DOM instance (in
+  the above case, simply to print it out once generated).
+</p>
+<h3>Convert A Python Object To Xml</h3>
+ <p>
+  A Python programmer can achieve a great deal of power and
+  generality by exporting an arbitrary Python object instance as
+  XML.  This allows us to handle Python objects in exactly the
+  manner we are accustomed to, with the option of eventually
+  using our instance attributes as tags in the generated XML.
+  With just a few lines (derived from the <code>building.py</code> example)
+  we can convert Python "native" objects to DOM objects, with
+  recursion on those attributes that are contained objects.
+</p>
+<div class="code-sample"><h4>File: try_dom2.py</h4><PRE><FONT COLOR=#115511>"""Build a DOM instance from scratch, write it to XML
+   USAGE: python try_dom2.py &gt; outfile.xml
+"""</FONT>
+<FONT COLOR=#3333CC><B>import</B></FONT> types
+<FONT COLOR=#3333CC><B>from</B></FONT> xml.dom <FONT COLOR=#3333CC><B>import</B></FONT> core
+<FONT COLOR=#3333CC><B>from</B></FONT> xml.dom.builder <FONT COLOR=#3333CC><B>import</B></FONT> Builder
+
+<FONT COLOR=#1111CC># Recursive function to build DOM instance from Python instance</FONT>
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="object_convert"><FONT COLOR=#CC0000><B> object_convert</B></FONT></A>(builder, inst):
+    <FONT COLOR=#1111CC># Put entire object inside an elem w/ same name as the class.</FONT>
+    builder.startElement(inst.__class__.__name__)
+
+    <FONT COLOR=#3333CC><B>for</B></FONT> attr <FONT COLOR=#3333CC><B>in</B></FONT> inst.__dict__.keys():
+        <FONT COLOR=#3333CC><B>if</B></FONT> attr[0] == <FONT COLOR=#115511>'_'</FONT>:      <FONT COLOR=#1111CC># Skip internal attributes</FONT>
+            <FONT COLOR=#3333CC><B>continue</B></FONT>
+        value = getattr(inst, attr)
+        <FONT COLOR=#3333CC><B>if</B></FONT> type(value) == types.InstanceType:
+            <FONT COLOR=#1111CC># Recursively process subobjects</FONT>
+            object_convert(builder, value)
+        <FONT COLOR=#3333CC><B>else</B></FONT>:
+            <FONT COLOR=#1111CC># Convert anything else to string, put it in an element</FONT>
+            builder.startElement(attr)
+            builder.text(str(value))
+            builder.endElement(attr)
+
+    builder.endElement(inst.__class__.__name__)
+
+<FONT COLOR=#3333CC><B>if</B></FONT> __name__ == <FONT COLOR=#115511>'__main__'</FONT>:
+    <FONT COLOR=#1111CC># Create container classes</FONT>
+    <FONT COLOR=#3333CC><B>class</B></FONT><A NAME="quotations"><FONT COLOR=#CC0000><B> quotations</B></FONT></A>: <FONT COLOR=#3333CC><B>pass</B></FONT>
+    <FONT COLOR=#3333CC><B>class</B></FONT><A NAME="quotation"><FONT COLOR=#CC0000><B> quotation</B></FONT></A>: <FONT COLOR=#3333CC><B>pass</B></FONT>
+
+    <FONT COLOR=#1111CC># Create an instance, fill it with hierarchy of attributes</FONT>
+    inst = quotations()
+    inst.title = <FONT COLOR=#115511>"Quotations file (not quotations.dtd conformant)"</FONT>
+    inst.quot1 = quot1 = quotation()
+    quot1.text = <FONT COLOR=#115511>"""'"is not a quine" is not a quine' is a quine"""</FONT>
+    quot1.source = <FONT COLOR=#115511>"Joshua Shagam, kuro5hin.org"</FONT>
+    inst.quot2 = quot2 = quotation()
+    quot2.text = <FONT COLOR=#115511>"Python is not a democracy. Voting doesn't help. "</FONT>+\
+                 <FONT COLOR=#115511>"Crying may..."</FONT>
+    quot2.source = <FONT COLOR=#115511>"Guido van Rossum, comp.lang.python"</FONT>
+
+    <FONT COLOR=#1111CC># Create the DOM Builder</FONT>
+    builder = Builder()
+    object_convert(builder, inst)
+    <FONT COLOR=#3333CC><B>print</B></FONT> builder.document.toxml()</PRE></div><p>
+  The function <code>object_convert()</code> has a few limitations.  For
+  example, it is impossible to produce a <code>quotations.dtd</code>
+  conformant XML document with the above procedure:  #PCDATA text
+  cannot be placed directly inside a <code>quotation</code> class, but only
+  within an attribute of the class (such as <code>.text</code>).  One simple
+  workaround would be to have <code>object_convert()</code> handle an
+  attribute named, e.g., <code>.PCDATA</code> in a special manner.  The
+  conversion to DOM could be made more sophisticated in various
+  ways, but the beauty of the approach is that we can start with
+  entirely "Pythonic" objects, and convert them in a
+  straightforward manner to XML documents.
+</p>
+<p>
+  It is also worth noting that elements at the same level in the
+  produced XML document will not occur in any obvious order.  For
+  example, on the author's system, using the particular version
+  of Python he does, the second quotation defined in the source
+  appears first in the output.  But this could change between
+  versions and systems.  Attributes of Python objects are not
+  inherently ordered to start with, so this behavior makes sense.
+  This behavior is what we want and expect for data relating to a
+  database-system, but is obviously not what we would want for a
+  novel we marked up as XML (unless, perhaps, we wanted an update
+  on William Burroughs' "cut-up" method).
+</p>
+<h3>Convert An Xml Document To A Python Object</h3>
+ <p>
+  It is just as easy to generate a Python object out of an XML
+  document as the reverse process was.  In many cases, we might
+  well be satisfied with using <em><code>xml.dom</code></em> methods.  But in other
+  situations, it is nice to use identical techniques with objects
+  generated from XML documents as with all our "generic" Python
+  objects.  In the below code, for example, the function
+  <code>pyobj_printer()</code> might have been a function we already used
+  to handle an arbitrary Python object.
+</p>
+<div class="code-sample"><h4>File: try_dom3.py</h4><PRE><FONT COLOR=#115511>"""Read in a DOM instance, convert it to a Python object
+"""</FONT>
+<FONT COLOR=#3333CC><B>from</B></FONT> xml.dom.utils <FONT COLOR=#3333CC><B>import</B></FONT> FileReader
+
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="PyObject"><FONT COLOR=#CC0000><B> PyObject</B></FONT></A>: <FONT COLOR=#3333CC><B>pass</B></FONT>
+
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="pyobj_printer"><FONT COLOR=#CC0000><B> pyobj_printer</B></FONT></A>(py_obj, level=0):
+    <FONT COLOR=#115511>"""Return a "deep" string description of a Python object"""</FONT>
+    <FONT COLOR=#3333CC><B>from</B></FONT> string <FONT COLOR=#3333CC><B>import</B></FONT> join, split
+    <FONT COLOR=#3333CC><B>import</B></FONT> types
+    descript = <FONT COLOR=#115511>''</FONT>
+    <FONT COLOR=#3333CC><B>for</B></FONT> membname <FONT COLOR=#3333CC><B>in</B></FONT> dir(py_obj):
+        member = getattr(py_obj,membname)
+        <FONT COLOR=#3333CC><B>if</B></FONT> type(member) == types.InstanceType:
+            descript = descript + (<FONT COLOR=#115511>' '</FONT>*level) + <FONT COLOR=#115511>'{'</FONT>+membname+<FONT COLOR=#115511>'}\n'</FONT>
+            descript = descript + pyobj_printer(member, level+3)
+        <FONT COLOR=#3333CC><B>elif</B></FONT> type(member) == types.ListType:
+            descript = descript + (<FONT COLOR=#115511>' '</FONT>*level) + <FONT COLOR=#115511>'['</FONT>+membname+<FONT COLOR=#115511>']\n'</FONT>
+            <FONT COLOR=#3333CC><B>for</B></FONT> i <FONT COLOR=#3333CC><B>in</B></FONT> range(len(member)):
+                descript = descript+(<FONT COLOR=#115511>' '</FONT>*level)+str(i+1)+<FONT COLOR=#115511>': '</FONT>+ \
+                           pyobj_printer(member[i],level+3)
+        <FONT COLOR=#3333CC><B>else</B></FONT>:
+            descript = descript + membname+<FONT COLOR=#115511>'='</FONT>
+            descript = descript + join(split(str(member)[:50]))+<FONT COLOR=#115511>'...\n'</FONT>
+    <FONT COLOR=#3333CC><B>return</B></FONT> descript
+
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="pyobj_from_dom"><FONT COLOR=#CC0000><B> pyobj_from_dom</B></FONT></A>(dom_node):
+    <FONT COLOR=#115511>"""Converts a DOM tree to a "native" Python object"""</FONT>
+    py_obj = PyObject()
+    py_obj.PCDATA = <FONT COLOR=#115511>''</FONT>
+    <FONT COLOR=#3333CC><B>for</B></FONT> node <FONT COLOR=#3333CC><B>in</B></FONT> dom_node.get_childNodes():
+        <FONT COLOR=#3333CC><B>if</B></FONT> node.name == <FONT COLOR=#115511>'#text'</FONT>:
+            py_obj.PCDATA = py_obj.PCDATA + node.value
+        <FONT COLOR=#3333CC><B>elif</B></FONT> hasattr(py_obj, node.name):
+            getattr(py_obj, node.name).append(pyobj_from_dom(node))
+        <FONT COLOR=#3333CC><B>else</B></FONT>:
+            setattr(py_obj, node.name, [pyobj_from_dom(node)])
+    <FONT COLOR=#3333CC><B>return</B></FONT> py_obj
+
+<FONT COLOR=#1111CC># Main test</FONT>
+dom_obj = FileReader(<FONT COLOR=#115511>"quotes.xml"</FONT>).document
+py_obj = pyobj_from_dom(dom_obj)
+<FONT COLOR=#3333CC><B>if</B></FONT> __name__ == <FONT COLOR=#115511>"__main__"</FONT>:
+    <FONT COLOR=#3333CC><B>print</B></FONT> pyobj_printer(py_obj)</PRE></div><p>
+  The focus here should be on the function <code>pyobj_from_dom()</code>,
+  and specifically on the <em><code>xml.dom</code></em> method <code>.get_childNodes()</code>
+  which is where the real work happens.  In <code>pyobj_from_dom()</code>,
+  we extract any text directly wrapped by a tag, and put it in
+  the reserved attribute <code>.PCDATA</code>.  For any nested tags
+  encountered, we create a new attribute with a name matching the
+  tag, and assign a list to the attribute so we can potentially
+  include multiple occurances of the tag within the parent block.
+  By using a list, of course, we maintain the order in which tags
+  were encountered within the XML document.
+</p>
+<p>
+  Aside from using our old <code>pyobj_printer()</code> generic function (or
+  more likely, something more sophisticated and robust), we can
+  now access elements of <code>py_obj</code> using normal attribute
+  notations, e.g.
+</p>
+<div class="code-sample"><h4>Python Interactive Session</h4><PRE>&gt;&gt;&gt; <FONT COLOR=#3333CC><B>from</B></FONT> try_dom3 <FONT COLOR=#3333CC><B>import</B></FONT> *
+&gt;&gt;&gt; py_obj.quotations[0].quotation[3].source[0].PCDATA
+<FONT COLOR=#115511>'Guido van Rossum, '</PRE></FONT></div><h3>Rearrange A Dom Tree</h3>
+ <p>
+  One of the great virtues of DOM is that it allows a programmer
+  to manipulate an XML document in a non-linear fashion.  Each
+  block surrounded by matching open/close tags is simply a "node"
+  in the DOM tree.  While the nodes are maintained in a list-like
+  fashion to preserve order information, there is nothing special
+  or immutable about the order.  We can easily prune off a node,
+  and graft it back in somewhere else in the DOM tree (even at a
+  different level, if the DTD allows this).  Or add new nodes,
+  delete existing nodes, etc.
+</p>
+<div class="code-sample"><h4>File: try_dom4.py</h4><PRE><FONT COLOR=#115511>"""Manipulate the arrangment of nodes in a DOM object
+"""</FONT>
+<FONT COLOR=#3333CC><B>from</B></FONT> try_dom3 <FONT COLOR=#3333CC><B>import</B></FONT> *
+
+<FONT COLOR=#1111CC>#-- Var 'doc' will hold the single &lt;quotations&gt; "trunk"</FONT>
+doc = dom_obj.get_childNodes()[0]
+
+<FONT COLOR=#1111CC>#-- Pull off all the nodes into a Python list</FONT>
+<FONT COLOR=#1111CC># (each node is a &lt;quotation&gt; block, or a whitespace text node)</FONT>
+nodes = []
+<FONT COLOR=#3333CC><B>while</B></FONT> 1:
+    <FONT COLOR=#3333CC><B>try</B></FONT>: node = doc.removeChild(doc.get_childNodes()[0])
+    <FONT COLOR=#3333CC><B>except</B></FONT>: <FONT COLOR=#3333CC><B>break</B></FONT>
+    nodes.append(node)
+
+<FONT COLOR=#1111CC>#-- Reverse the order of the quotations using a list method</FONT>
+<FONT COLOR=#1111CC># (we could also perform more complicated operations on the list:</FONT>
+<FONT COLOR=#1111CC># delete elements, add new ones, sort on complex criteria, etc.)</FONT>
+nodes.reverse()
+
+<FONT COLOR=#1111CC>#-- Fill 'doc' back up with our rearranged nodes</FONT>
+<FONT COLOR=#3333CC><B>for</B></FONT> node <FONT COLOR=#3333CC><B>in</B></FONT> nodes:
+    <FONT COLOR=#1111CC># if second arg is None, insert is to end of list</FONT>
+    doc.insertBefore(node, None)
+
+<FONT COLOR=#1111CC>#-- Output the manipulated DOM</FONT>
+<FONT COLOR=#3333CC><B>print</B></FONT> dom_obj.toxml()</PRE></div><p>
+  Performing the rearrangement of quotations in the above few
+  lines would have posed a considerable problem if we viewed an
+  XML document as simply a text file, or even if we used a
+  sequential-oriented module like <em><code>xmllib</code></em> or <em><code>xml.sax</code></em>.  With
+  DOM, the problem is not much more difficult than any other
+  operation we might perform on a Python list.
+</p>
+<h3>Resources</h3>
+ <p>
+  Charming Pytyon #1: An Introduction to XML Tools for Python
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/publish/programming/charming_python_1.html">http://gnosis.cx/publish/programming/charming_python_1.html</a>
+</blockquote>
+<p>
+  The Python Special Interest Group on XML:
+</p>
+<blockquote>
+   <a href="http://www.python.org/sigs/xml-sig/">http://www.python.org/sigs/xml-sig/</a>
+</blockquote>
+<p>
+  The World Wide Web Consortium's DOM page.
+</p>
+<blockquote>
+   <a href="http://www.w3.org/DOM/">http://www.w3.org/DOM/</a>
+</blockquote>
+<p>
+  The DOM Level 1 Recommendation.
+</p>
+<blockquote>
+   <a href="http://www.w3.org/TR/1998/REC-DOM-Level-1-19981001/">http://www.w3.org/TR/1998/REC-DOM-Level-1-19981001/</a>
+</blockquote>
+<p>
+  Files used and mentioned in this article:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/download/charming_python_2.zip">http://gnosis.cx/download/charming_python_2.zip</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz has, by this time, been writing software for a
+  couple decades, but has spent that same time generally writing
+  <strong>about</strong> quite different matters.  Roads come together.  The
+  main thing that has attracted him to Python is that in
+  comparison to most other programming languages it is both
+  aposiopetic and aphaeretic.  You can just write what you mean
+  without the language making extra demands of your fingers.
+  David may be reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+</p>
+</body></html>

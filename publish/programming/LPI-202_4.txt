@@ -1,0 +1,482 @@
+TUTORIAL FOR LPI EXAM 202: part 4
+Topic 208: Web Services
+
+David Mertz, Ph.D.
+Professional Neophyte
+November, 2005
+
+    Welcome to "Web Services", the fourth of seven tutorials covering
+    intermediate network administration on Linux. In this tutorial, we
+    discuss how to configure and run the Apache HTTPd server, and some
+    ancillary servers like the Squid Web Proxy Cache.
+
+BEFORE YOU START
+------------------------------------------------------------------------
+
+About this series
+
+  The Linux Professional Institute (LPI) certifies Linux system
+  administrators at junior and intermediate levels. There are two exams
+  at each certification level. This series of seven tutorials helps you
+  prepare for the second of the two LPI intermediate level system
+  administrator exams--LPI exam 202. A companion series of tutorials is
+  available for the other intermediate level exam--LPI exam 201. Both
+  exam 201 and exam 202 are required for intermediate level
+  certification. Intermediate level certification is also known as
+  certification level 2.
+
+  Each exam covers several or topics and each topic has a weight. The
+  weight indicate the relative importance of each topic. Very roughly,
+  expect more questions on the exam for topics with higher weight. The
+  topics and their weights for LPI exam 202 are:
+
+  * Topic 205: Network Configuration (8)
+  * Topic 206: Mail and News (9)
+  * Topic 207: Domain Name System (DNS) (8)
+  * Topic 208: Web Services (6)
+  * Topic 210: Network Client Management (6)
+  * Topic 212: System Security (10)
+  * Topic 214: Network Troubleshooting (1)
+
+About this tutorial
+
+  Welcome to "Web Services", the fourth of seven tutorials covering
+  intermediate network administration on Linux. In this tutorial, we
+  discuss how to configure and run the Apache HTTPd server, and some
+  ancillary servers like the Squid Web Proxy Cache.  It is worth noting
+  some of what is -not- covered in this tutorial: designing and
+  modifying HTML pages; writing CGI scripts; analyzing security issues
+  (beyond some very basics); accessing backend databases; and generally
+  everything about "web programming".  For this tutorial, we just want
+  you to learn how to get a web server running, not how to provide
+  useful content on that web server.
+
+Prerequisites
+
+  To get the most from this tutorial, you should already have a basic
+  knowledge of Linux and a working Linux system on which you can
+  practice the commands covered in this tutorial.
+
+About Apache
+
+  Apache is the predominant web server on the internet as a whole, and
+  is even more predominant when only Linux servers are under discussion.
+  A few more special purpose--and occassionally higher performance for
+  specific tasks--web servers are available, but Apache is nonetheless
+  always your default choice.  Apache comes pre-installed by most Linux
+  distributions, and in fact is often already running after being
+  launched during initialization, even if you have not specifically
+  configured a web server.  If Apache is not installed, use the normal
+  installation system of your distribution to install it; or download
+  the latest source from <http://httpd.apache.org/download.cgi>.  Many
+  extra capabilities are provided by modules, many distributed with
+  Apache itself, others available from third parties.
+
+  The latest Apache has been at the 2.x level since 2001, however,
+  Apache 1.3.x is still in widespread usage, and the 1.3.x series
+  continues to be maintained for bugfixes and security updates. Some
+  minor configuration difference exist between 1.3 and 2.x version, and
+  a few modules are available for 1.3 that are not available for 2.x.
+  The latest releases as of this writing are 1.3.34 (stable), 2.0.55
+  (stable) and 2.1.9 (beta).
+
+  As a rule, a new server should use the latest stable version in the
+  2.x series. Unless you have a specific need for an unusual older
+  module, 2.x provides good stability, more capabilities, and overall
+  mostly better peformance (in some tasks, such as in PHP support, 1.3
+  still peforms better).  Moving forward, new features will certainly be
+  better supported in 2.x than in 1.3.x.
+
+About Sqid
+
+  Squid is a proxy caching server for web clients, supporting the
+  protocols HTTP, FTP, TLS, SSL, and HTTPS. By running a cache on a
+  local network, or at least closer to your network than the resources
+  queries, speed can be improved and network bandwidth reduced.  When
+  the same resource is requested multiple times by machines served by
+  the same Squid server, the resources is delivered from a server-local
+  copy rather than requiring the request go out over multiple network
+  routers, and to potentially slow or overloaded destination servers.
+
+  It is possible to configure Squid either as an explicit proxy that
+  must be configured in each web client (browser), or to intercept all
+  web requests out of a LAN and cache all such traffic. Squid may be
+  configured with various options about how long, and under what
+  conditions, to keep pages cached.
+
+Other resources
+
+  As with most Linux tools, it is always useful to examine the manpages
+  for any utilities discussed. Versions and switches might change
+  between utility or kernel version, or with different Linux
+  distributions. For more in depth information, the Linux Documentation
+  Project has a variety of useful documents, especially its HOWTOs. See
+  http://www.tldp.org/.  A variety of books on Linux networking have
+  been published; I have found O'Reilly's _TCP/IP Network
+  Administration_, by Craig Hunt to be quite helpful (find whatever
+  edition is most current when you read this).
+
+  A large number of good books have been written on working with Apache.
+  Some are concerned with general administration, while others cover
+  particular modules or special configurations of Apache.  Check your
+  local bookseller for a range of available titles.  Out of the dozens
+  of titles available, none stand out to this writer for special
+  mention, though many of them are quite excellent.
+
+RUNNING APACHE
+------------------------------------------------------------------------
+
+A swarm of daemons
+
+  Launching Apache is similar to launching any other daemon. Usually you
+  wish to put its launch in your system initialization scripts, but in
+  principle you may launch Apache at any time. On most systems, the
+  Apache server is called 'httpd', though it may be called 'apache2'
+  instead. The server is probably installed in '/usr/sbin/', but other
+  locations are possible, depending on distribution and how you
+  installed the server.
+
+  Most of the time you will launch Apache with no options, but the '-d
+  serverroot' and '-f config' options are worth keeping in mind. The
+  first lets you specify a location on the local disks where content
+  will be served from; the second lets you specify a non-default
+  configuration file. A configuration file may override the '-f' option
+  using the 'ServerRoot' directive (most do).  By default, configuration
+  files are either 'apache2.conf' or 'httpd.conf', depending on
+  compilation options; these files might live at '/etc/apache2/',
+  '/etc/apache/', '/etc/httpd/conf/', '/etc/httpd/apache/conf' or a few
+ other locations, depending on version, Linux distribution, and how you
+ installed of compiled Apache.  Checking 'man apache2' or 'man httpd'
+ should give you system-specific details.
+
+ The Apache daemon is unusual when compared with other servers in that
+ it usually creates several running copies of itself. The primary copy
+ simply spawns the others, while these secondary copies service the
+ actual incoming requests.  The goal in having multiple running copies
+ is to act as a "pool" for requests that may arrive in bundles;
+ additional copies of the daemon are launched as needed, according to
+ several configuration parameters.  The primary copy usually runs as
+ 'root', but the other copies as a more restricted user for security
+ reasons.  E.g.:
+
+     # ps axu | grep apache2
+     root      6620     Ss   Nov12   0:00 /usr/sbin/apache2 -k start -DSSL
+     www-data  6621     S    Nov12   0:00 /usr/sbin/apache2 -k start -DSSL
+     www-data  6622     Sl   Nov12   0:00 /usr/sbin/apache2 -k start -DSSL
+     www-data  6624     Sl   Nov12   0:00 /usr/sbin/apache2 -k start -DSSL
+     dqm        313     S+   03:44   0:00 man apache2
+     root       637     S+   03:59   0:00 grep apache2
+
+  On many systems, the restricted user will be 'nobody'.  In the example
+  above it is 'www-data'.
+
+Including configuration files
+
+  As mentioned in the last panel, the behavior of Apache is affected by
+  directives in its configuration file. For Apache2 systems, the main
+  configuration file is likely to reside at '/etc/apache2/apache2.conf';
+  but often this file will contain multiple "Include" statements to add
+  configuration information from other files, possibly by wildcard
+  pattern. Overall, an Apache configuration is likely to contain
+  hundreds of directives and options (most not specifically documented
+  in this tutorial).
+
+  I few files are particularly like to be included. You might see
+  'httpd.conf' for "user" settings, and to utilize prior Apache 1.3
+  configuration files that use that name.  Virtual hosts are typically
+  specified in separate configuration files, matched on a wildcard,
+  e.g.:
+
+      # Include the virtual host configurations:
+      Include /etc/apache2/sites-enabled/[^.#]*
+
+  With Apache 2.x, modules are typically specified in separate
+  configuration files as well (more often in the same file in 1.3.x).
+  For example, a system of mine includes:
+
+      #------------- From '/etc/apache2/apache2.conf' -----------------#
+      # Include module configuration:
+      Include /etc/apache2/mods-enabled/*.load
+      Include /etc/apache2/mods-enabled/*.conf
+
+  Actually using a module in a running Apache requires two steps in the
+  configuration file, both loading it and enabling it, e.g.:
+
+      #--------------- Loading an option Apache module ----------------#
+      # cat /etc/apache2/mods-enabled/userdir.load
+      LoadModule userdir_module /usr/lib/apache2/modules/mod_userdir.so
+      # cat /etc/apache2/mods-enabled/userdir.conf
+      <IfModule mod_userdir.c>
+          UserDir public_html
+          UserDir disabled root
+
+          <Directory /home/*/public_html>
+              AllowOverride FileInfo AuthConfig Limit
+              Options MultiViews Indexes SymLinksIfOwnerMatch IncludesNoExec
+          </Directory>
+      </IfModule>
+
+  The wildcards in the 'Include' lines will insert all the '.load' and
+  '.conf' files in the '/etc/apache2/mods-enabled/' directory.
+
+  One thing to notice here is a general pattern: basic directives are
+  one line commands with some options; more complex directives nest
+  commands using an XML-like open/close tag. You just have to know for
+  each directive whether it is one-line or open/close style, you cannot
+  choose among styles at will.
+
+Log files
+
+  An important class of configuration directives concern logging of
+  Apache operations.  A lot of different types of information, and
+  degree of detail, can be maintained for Apache operations.  An error
+  log is always a good thing to keep, and you can specify it with the
+  single directive:
+
+      # Global error log.
+      ErrorLog /var/log/apache2/error.log
+
+  Other logs of server access, referrers, of other information, can be
+  customized to fit your individual setup.  A logging operation is
+  configured with two directives.  First a 'LogFormat' directive uses a
+  set of special variables to specify what goes in the log file; second a
+  'CustomLog' directive tells Apache to actually record events in the
+  specified format.  An unlimited number of formats may be specified,
+  whether or not each one is actually used.  This allows you to switch
+  on and off logging details based on evolving needs.
+
+  Variables in a 'LogFormat' are similar to shell variables, but with a
+  leading '%'.  Some variables have single-letter while others have long
+  names surrounded by brackets.  For example:
+
+      LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
+      CustomLog /var/log/apache2/referer_log combined
+
+  Consult a book or full Apache documentation for the list of variables.
+  Commonly used ones include '%h' for IP address of requesting client,
+  '%t' for datetime of the request, '%>s' for HTTP status code, and the
+  mispelled '%{Referer}' for the referring site that led to the served
+  page.
+
+  The name used in the 'LogFormat' and 'CustomLog' directives is
+  arbitrary.  In the example, the name 'combined' was used, but it could
+  just as well be 'myfoobarlog'.  However, a few names are commonly
+  used and come with sample configuration files, such as 'combined',
+  'common', 'referer', 'agent'.  These specific formats are typically
+  supported directly by log-analyzer tools.
+
+Virtual hosts, multi-homing, and per-directory options
+
+  Individual directories served by an Apache server may have their own
+  configuration options. However, the main configuration may limit which
+  options can be configured locally. If per-directory configuration is
+  desired, use the 'AccessFileName' directive, and typically specify
+  the local configuration filename of '.htaccess'.  The limitations of
+  local configuration are specified within a '<Directory>' directive.
+  For example:
+
+      #----------------- Example of Directory directive ---------------#
+      #Let's have some Icons, shall we?
+      Alias /icons/ "/usr/share/apache2/icons/"
+      <Directory "/usr/share/apache2/icons">
+            Options Indexes MultiViews
+            AllowOverride None
+            Order allow,deny
+            Allow from all
+      </Directory>
+
+  Often working in conjunction with per-directory options, Apache can
+  service "virtual hosts".  What this means is that multiple domain
+  names may be served from the same Apache process, each accessing an
+  appropriate directory.  Defining virtual hosts is done with the
+  '<VirtualHost>' directive.  This may be done by placing configuration
+  files in an included directory, such as '/etc/apache2/sites-enabled/',
+  or it may be contained directly in a main configuration file.  In use,
+  you might specify, e.g.:
+
+      #------------------ Configuring virtual hosts -------------------#
+      <VirtualHost "foo.example.com">
+          ServerAdmin webmaster@foo.example.com
+          DocumentRoot /var/www/foo
+          ServerName foo.example.com
+          <Directory /var/www/foo>
+                Options Indexes FollowSymLinks MultiViews
+                AllowOverride None
+                Order allow,deny
+                allow from all
+          </Directory>
+          ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
+          <Directory "/usr/lib/cgi-bin">
+                AllowOverride None
+                Options ExecCGI -MultiViews +SymLinksIfOwnerMatch
+                Order allow,deny
+                Allow from all
+          </Directory>
+          CustomLog /var/log/apache2/foo_access.log combined
+      </VirtualHost>
+      <VirtualHost "bar.example.org">
+          DocumentRoot /var/www/bar
+          ServerName bar.example.org
+      </VirtualHost>
+      <VirtualHost *>
+          DocumentRoot /var/www
+      </VirtualHost>
+
+  The final '*' option picks up any HTTP requests that are not directed
+  to one of the explicitly specified names (e.g. addressed by IP
+  address, or as an unspecified symbolic domain which also resolves to
+  the server machine).  For virtual domains to work, DNS must define
+  each alias with a CNAME record.
+
+  Multi-homed servers sound similar to virtual hosting, but the concept
+  is different. Using multi-homing, you may configure which IP addresses
+  that a machine is connected to allow web requests. For example, you
+  might provide HTTP access only to the local LAN, but not to the
+  outside world. If you specify an address to listen on, you may also
+  indicate a non-default port. The default value for 'BindAddress' is
+  '*', which means to accept requests on every IP address under which
+  the server may be reched. A mixed example might look like:
+
+      #------------------- Configuring multi-homing -------------------#
+      BindAddress 192.168.2.2
+      Listen 192.168.2.2:8000
+      Listen 64.41.64.172:8080
+
+  In this case, we will accept all client requests from the local LAN
+  (i.e. that use the 192.168.2.2 address) on the default port 80, and on
+  the special port 8000. This Apache installation will also monitor
+  client HTTP requests from the WAN address, but only on port 8080.
+
+Limiting web access
+
+  You may enable per-directory server access with the 'Order', 'Allow
+  from' and 'Deny from' commands, within a '<Directory>' directive.
+  Denied or allowed addresses may be specified by full or partial
+  hostnames or IP addresses. 'Order' lets you give precedence between
+  the accept list and the deny list.
+
+  In many cases, you would like more fine-tuned control than simply
+  allowing particular hosts to access your web server.  To enable user
+  login requirements, you may use the 'Auth*' family of commands, again
+  within the '<Directory>' directive.  For example, to setup Basic
+  Authentication, you might use a directive like:
+
+      #--------------- Configuring Basic Authentication ---------------#
+      <Directory "/var/www/baz">
+          AuthName "Baz"
+          AuthType Basic
+          AuthUserFile /etc/apache2/http.passwords
+          AuthGroupFile /etc/apache2/http.groups
+          Require john jill sally bob
+      </Directory>
+
+  You may also specify Basic Authentication within a per-directory
+  '.htaccess' file. Digest Authentication is more secure than Basic, but
+  is less widely implemented in browsers. However, the weakness of Basic
+  (that it transmits passwords in clear-text) is better solved with an
+  SSL layer anyway.
+
+  Support for SSL encryption of web traffic is provided by the module
+  'mod_ssl'. When SSL is used, data transmitted between server and
+  client is encrypted with a dynamically negotiated password that is
+  resistent to interception. All major browsers support SSL. For more
+  information on configuring Apache 2.x with 'mod_ssl' see
+  <http://httpd.apache.org/docs/2.0/mod/mod_ssl.html>.
+
+RUNNING SQUID
+------------------------------------------------------------------------
+
+Installing and running Squid
+
+  In most distributions, you should be able to install Squid using the
+  normal installation procedures.  You may obtain the source verion of
+  Squid from <http://www.squid-cache.org/>.  Building from source uses
+  the basic './configure; make; make install' sequence.
+
+  Once installed, you may simply run, as 'root', '/usr/sbin/squid' (or
+  whatever location your distribution uses, perhaps '/usr/local/sbin/').
+  Of course, to do much useful, you will want to configure the Squid
+  configuration file at '/etc/squid/squid.conf',
+  '/usr/local/squid/etc/squid.conf', or wherever precisely your system
+  locates 'squid.conf'. As with almost all daemons, you may use a
+  different configuration file, in this case with the '-f' option.
+
+Ports, IP addresses, http_access and ACLs
+
+  The most important configuration option for Squid is the 'http_port'
+  options you select.  You may monitor whichever ports you wish,
+  optionally attaching each one to a particular IP address or hostname.
+  The default port for Squid is 3128, allowing any IP address that
+  connects to the Squid server.  To cache only for a LAN, you want to
+  specify the local IP address instead, e.g.:
+
+      # default (disabled)
+      # http_port 3128
+      # LAN only
+      http_port 192.168.2.2:3128
+
+  You may also enable caching via other Squid servers using the
+  'icp_port' and 'htcp_port'.  The IPC and HTCP protocols are used for
+  caches to communicate between themselves, rather than by web servers
+  and clients themselves. To cache multicasts, use 'mcast_groups'.
+
+  To let clients connect to your Squid server, you need to give them
+  permission to do so.  Unlike a Web server, Squid is typically not
+  entirely generous with its resources.  In the simple case, we can just
+  use a couple 'subnet/netmask' or CIDR (Classless Internet Domain
+  Routing) patterns to control permissions, e.g.:
+
+      #---------------- Simple Squid access permissions ---------------#
+      http_access deny 10.0.1.0/255.255.255.0
+      http_access allow 10.0.0.0/8
+      icp_access allow 10.0.0.0/8
+
+  The 'acl' directive can be used to name access control lists (ACLs).
+  You can name 'src' ACLs that simply specify address ranges as in the
+  above example; but you can also create other types of ACLs.  For
+  example:
+
+      #----------------- Fine tuned access permissions ----------------#
+      acl mynetwork     src             192.168/16
+      acl asp           urlpath_regex   \.asp$
+      acl bad_ports     port            70 873
+      acl javascript    rep_mime_type -i ^application/x-javascript$
+      # what HTTP access to allow classes
+      http_access deny asp          # don't cache active server pages
+      http_access deny bad_ports    # don't cache gopher or rsync
+      http_access deny javascript   # don't cache javascript content
+      http_access allow mynetwork   # allow LAN everything not denied
+
+  This example gives only a small subset of the available ACL types. See
+  a sample 'squid.conf' for example of many others. Or take a look at
+  the documentation at <http://squid-docs.sourceforge.net/latest/html/c1389.html>.
+  In this case, we decide not to cache URLs that end with '.asp'
+  (probably dynamic content), not to cache ports 70 and 873, and not to
+  cache returned javascript objects. Other than what is denied, machines
+  on the LAN (the /16 range given) will have all their requests cached.
+  Notice that each ACL defined has a unique, but arbitrary, name (use
+  names that make sense, but the names are not reserved).
+
+Caching modes
+
+  The simplest way to run Sqid is in proxy mode.  If you do this,
+  clients will need to be explicitly configured to use the cache.  Web
+  browser clients have configuration screens that allow them to specify
+  a proxy address and port rather than a direct HTTP connection.  This
+  setup makes configuring Squid very simple, but makes clients do some
+  setup work if they want to benefit from the Squid cache.
+
+  You may also configure Squid to run as a transparent cache. To do this
+  you need to either configure policy based routing (outside of Squid
+  itself, using 'ipchains' or 'ipfilter') or use your Squid server as a
+  gateway. Assuming you can direct external requests via the Squid
+  server, Squid needs to be configured as follows. You may need to
+  recompile Squid with the '--enable-ipf-transparent' option; however,
+  in most Linux installations this should already be fine. To configure
+  the server for transparent caching (once it gets the redirected
+  packets), add something like the below to your 'squid.conf':
+
+      httpd_accel_host virtual
+      httpd_accel_port 80
+      httpd_accel_with_proxy on
+      httpd_accel_uses_host_header on

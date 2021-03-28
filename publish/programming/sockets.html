@@ -1,0 +1,722 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Programming IP Sockets on Linux, Part One</title>
+<body>
+<h1>Programming IP Sockets on Linux, Part One</h1>
+<p>by David Mertz, Ph.D. &lt;mertz@gnosis.cx&gt;</p>
+<hr/>
+<h2 align='center'>Before you start</h2><hr/>
+
+<p>(see also <a href="sockets2.html">Part Two</a> of this tutorial)</p>
+
+<h3>About this tutorial</h3>
+
+<p> IP sockets are the lowest level layer upon which high level
+          internet protocols are built--every thing from HTTP, to SSL, to
+          POP3, to Kerberos, to UDP-Time. To implement custom protocols, or
+          to customize implementation of well-known protocols, a programmer
+          needs a working knowledge of the basic socket infrastructure. A
+          similar API is available in many languages; this tutorial focuses
+          primarily on C programming, but it also uses Python as a
+          representative higher-level language for examples. </p>
+<p> Readers of this tutorial will be introduced to the basics of
+          programming custom network tools using the cross-platform Berkeley
+          Sockets Interface.  Almost all network tools in Linux and other
+          Unix-based operating systems rely on this interface. </p>
+
+<h3>Prerequisites</h3>
+
+<p> This tutorial requires a minimal level of knowledge of C, and
+          ideally of Python also (mostly for part two). However, readers who
+          are not familiar with either programming language should be able
+          to make it through with a bit of extra effort; most of the
+          underlying concepts will apply equally to other programming
+          languages, and calls will be quite similar in most high-level
+          scripting languages like Ruby, Perl, TCL, etc. </p>
+<p> While this tutorial introduces the basic concepts behind IP
+          (internet protocol) networks, it certainly does not hurt readers
+          to have some prior acquaintance with the concept of network
+          protocols and layers. </p>
+
+<h3>About the author</h3>
+
+<p> David Mertz is a writer, a programmer, and a teacher, who
+          always endeavors to improve his communication to readers (and
+          tutorial takers).  He welcomes any comments, please direct
+          them to  <a>&lt;mertz@gnosis.cx&gt;</a> . </p>
+<p> David also wrote the book  <a>Text Processing in Python</a>  which readers can read online at
+           <a>http://gnosis.cx/TPiP/</a> </p>
+<hr/>
+<h2 align='center'>Understanding IP Networks and Network Layers</h2><hr/>
+
+
+<h3>What is a network?</h3>
+
+<p> What we usually call a computer network is composed of a number
+          of  <a>"network layers"</a> , each providing a different restriction and/or
+          guarantee about the data at that layer.  The protocols at each
+          network layer generally have their own packet formats, headers,
+          and layout. </p>
+<p> The seven traditional layers of a network are divided into two
+          groups: upper layers and lower layers.  The sockets interface
+          provides a uniform API to the lower layers of a network, and
+          allows you to implement upper layers within your sockets
+          application.  Further, application data formats may themselves
+          constitute further layers, e.g. SOAP is built on top of XML, and
+          ebXML may itself utilize SOAP.  In any case, anything past layer 4
+          is outside the scope of this tutorial. </p>
+<img src="network-layers.png">
+
+<h3>What do sockets do?</h3>
+
+<p> While the sockets interface theoretically allows access to
+           <i>protocol families</i>  other than IP, in practice, every network
+          layer you use in your sockets application will use IP. For this
+          tutorial we only look at IPv4; in the future IPv6 will become
+          important also, but the principles are the same. At the transport
+          layer, sockets support two specific protocols: TCP (transmission
+          control protocol) and UDP (user datagram protocol). </p>
+<p> Sockets cannot be used to access lower (or higher) network
+          layers; for example, a socket application does not know whether it
+          is running over ethernet, token ring, or a dialup connection. Nor
+          does the sockets pseudo-layer know anything about higher-level
+          protocols like NFS, HTTP, FTP, and the like (except in the sense
+          that you might yourself write a sockets application that
+          implements those higher-level protocols).  </p>
+<p> At times, the sockets interface is not your best choice
+          for a network programming API.  Specifically, many excellent
+          libraries exist (in various languages) to use higher-level
+          protocols directly, without having to worry about the details of
+          sockets--the libraries handle those details for you.  While there
+          is nothing wrong with writing your own SSH client, for example,
+          there is not need to do so simply to let an application transfer
+          data securely.  Lower-level layers than those sockets address fall
+          pretty much in the domain of device driver programming. </p>
+
+<h3>IP, TCP and UDP</h3>
+
+<p> As the last panel indicated, when you program a sockets
+           application, you have a choice to make between using TCP and
+           using UDP.  Each has its own benefits and disadvantages. </p>
+<p> TCP is a stream protocol, while UDP is a datagram protocol.
+           That is to say, TCP establishes a continuous open connection
+           between a client and a server, over which bytes may be
+           written--and correct order guaranteed--for the life of the
+           connection.  However, bytes written over TCP have no built-in
+           structure, so higher-level protocols are required to delimit any
+           data records and fields within the transmitted bytestream. </p>
+<p> UDP, on the other hand, does not require that any connection
+           be established between client and server, it simply transmits a
+           message between addresses. A nice feature of UDP is that its
+           packets are self-delimiting--each datagram indicates exactly
+           where it begins and ends. A possible disadvantage of UDP,
+           however, is that it provides no guarantee that packets will
+           arrive in-order, or even at all.  Higher-level protocols built on
+           top of UDP may, of course, provide handshaking and
+           acknowledgements. </p>
+<p> A useful analogy for understanding the difference between TCP
+           and UDP is the difference between a telephone call and posted
+           letters. The telephone call is not active until the caller "rings"
+           the receiver and the receiver picks up. The telephone channel
+           remains alive as long as the parties stay on the call--but they
+           are free to say as much or as little as they wish to during the
+           call. All remarks from either party occur in temporal order. On
+           the other hand, when you send a letter, the post office starts
+           delivery without any assurance the recipient exists, nor any
+           strong guarantee about how long delivery will take. The recipient
+           may receive various letters in a different order than they were
+           sent, and the sender may receive mail interspersed in time with
+           those she sends.  Unlike with the USPS, undeliverable mail
+           always goes to the dead letter office, and is not returned to
+           sender. </p>
+
+<h3>Peers, ports, names, and addresses</h3>
+
+<p> Beyond the protocol--TCP or UDP--there are two things a peer (a
+         client or server) needs to know about the machine it communicates
+         with: An IP address and a port. An IP address is a 32-bit data
+         value, usually represented for humans in "dotted quad" notation,
+         e.g.,  <code>64.41.64.172</code> . A port is a 16-bit data value,
+         usually simply represented as a number less than 65536--most often
+         one in the tens or hundreds range.  An IP address gets a packet
+          <i>to</i>  a machine, a port lets the machine decide which
+         process/service (if any) to direct it to.  That is a slight
+         simplification, but the idea is correct. </p>
+<p> The above description is almost right, but it misses something.
+         Most of the time when humans think about an internet host (peer),
+         we do not remember a number like  <code>64.41.64.172</code> , but
+         instead a name like  <code>gnosis.cx</code> .  To find the IP address
+         associated with a particular host name, usually you use a Domain
+         Name Server, but sometimes local lookups are used first (often via
+         the contents of  <code>/etc/hosts</code> ).  For this tutorial, we
+         will generally just assume an IP address is available, but the next
+         panel discusses coding name/address lookups. </p>
+
+<h3>Host name resolution</h3>
+
+<p> The command-line utility  <code>nslookup</code>  can be used to
+          find a host IP address from a symbolic name.  Actually, a number
+          of common utilities, such as  <code>ping</code>  or network
+          configuration tools, do the same thing in passing.  But it is
+          simple to do the same thing programmatically. </p>
+<p> In Python or other very-high-level scripting languages, writing
+          a utility program to find a host IP address is trivial: </p>
+<pre> 
+          #!/usr/bin/env python
+          "USAGE: nslookup.py &lt;inet_address&gt;"
+          import socket, sys
+          print socket.gethostbyname(sys.argv[1])
+           </pre>
+<p> The trick is using a wrapped version of the same
+           <code>gethostbyname())</code>  function we also find in C.  Usage
+          is as simple as: </p>
+<pre> 
+          $ ./nslookup.py gnosis.cx
+          64.41.64.172
+           </pre>
+
+<h3>Host name resolution, continued</h3>
+
+<p> In C, that standard library call  <code>gethostbyname()</code> 
+          is used for name lookup. The below is a simple implementation of
+           <code>nslookup</code>  as a command-line tool; adapting it for use
+          in a larger application is straightforward.  Of course, C is a
+          bit more finicky than Python is. </p>
+<pre> 
+          /* Bare nslookup utility (w/ minimal error checking) */
+          #include &lt;stdio.h&gt;          /* stderr, stdout */
+          #include &lt;netdb.h&gt;          /* hostent struct, gethostbyname() */
+          #include &lt;arpa/inet.h&gt;      /* inet_ntoa() to format IP address */
+          #include &lt;netinet/in.h&gt;     /* in_addr structure */
+
+          int main(int argc, char **argv) {
+            struct hostent *host;     /* host information */
+            struct in_addr h_addr;    /* internet address */
+            if (argc != 2) {
+              fprintf(stderr, "USAGE: nslookup &lt;inet_address&gt;\n");
+              exit(1);
+            }
+            if ((host = gethostbyname(argv[1])) == NULL) {
+              fprintf(stderr, "(mini) nslookup failed on '%s'\n", argv[1]);
+              exit(1);
+            }
+            h_addr.s_addr = *((unsigned long *) host-&gt;h_addr_list[0]);
+            fprintf(stdout, "%s\n", inet_ntoa(h_addr));
+            exit(0);
+          }
+           </pre>
+<p> Notice that the returned value from  <code>gethostbyname()</code> 
+          is a  <code>hostent</code>  structure that describes the names host.
+          The member  <code>host-&gt;h_addr_list</code>  contains a list of
+          addresses, each of which is a 32-bit value in "network byte
+          order"--i.e. the endianness may or may not be machine native
+          order.  In order to convert to dotted-quad form, use the function
+           <code>inet_ntoa()</code> . </p>
+<hr/>
+<h2 align='center'>Writing a Client Application in C</h2><hr/>
+
+
+<h3>The steps in writing a socket client</h3>
+
+<p> My examples for both clients and servers will use one of the
+          simplest possible applications: one that sends data and receives
+          the exact same thing back. In fact, many machines run an "echo
+          server" for debugging purposes; this is convenient for our initial
+          client, since it can be used before we get to the server portion
+          (assuming you have a machine with  <code>echod</code>  running). </p>
+<p> I would like to acknowledge the book  <i>TCP/IP Sockets in C</i> 
+          by Donahoo and Calvert (see Resources). I have adapted several
+          examples that they present. I recommend the book--but admittedly,
+          echo servers/clients will come early in most presentations of
+          sockets programming.  </p>
+<p> The steps involved in writing a client application differ
+          slightly between TCP and UDP clients. In both cases, you first
+          create the socket; in the TCP case only, you next establish a
+          connection to the server; next you send some data to the server;
+          then receive data back; perhaps the sending and receiving
+          alternates for a while; finally, in the TCP case, you close the
+          connection.  </p>
+
+<h3>A TCP echo client (client setup)</h3>
+
+<p> First we will look at a TCP client, in the second part of the
+          tutorial we will make some adjustments to do (roughly) the same
+          thing with UDP.  Let's look at the first few lines--some
+          includes, and creating the socket: </p>
+<pre> 
+          #include &lt;stdio.h&gt;
+          #include &lt;sys/socket.h&gt;
+          #include &lt;arpa/inet.h&gt;
+          #include &lt;stdlib.h&gt;
+          #include &lt;string.h&gt;
+          #include &lt;unistd.h&gt;
+          #include &lt;netinet/in.h&gt;
+
+          #define BUFFSIZE 32
+          void Die(char *mess) { perror(mess); exit(1); }
+           </pre>
+<p> There is not too much to the setup. A particular buffer size is
+          defined, which limits the amount of data echo'd at each pass
+          (but we loop through multiple passes, if needed). . A small error
+          function is also defined. </p>
+
+<h3>A TCP echo client (creating the socket)</h3>
+
+<p> The arguments to the  <code>socket()</code>  call decide the type
+          of socket:  <code>PF_INET</code>  just means it uses IP (which you
+          always will);  <code>SOCK_STREAM</code>  and  <code>IPPROTO_TCP</code> 
+          go together for a TCP socket. </p>
+<pre> 
+          int main(int argc, char *argv[]) {
+            int sock;
+            struct sockaddr_in echoserver;
+            char buffer[BUFFSIZE];
+            unsigned int echolen;
+            int received = 0;
+
+            if (argc != 4) {
+              fprintf(stderr, "USAGE: TCPecho &lt;server_ip&gt; &lt;word&gt; &lt;port&gt;\n");
+              exit(1);
+            }
+            /* Create the TCP socket */
+            if ((sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) &lt; 0) {
+              Die("Failed to create socket");
+            }
+           </pre>
+<p> The value returned is a socket handle, which is similar to a
+          file handle; specifically, if the socket creation fails, it will
+          return -1 rather than a positive numbered handle. </p>
+
+<h3>A TCP echo client (establish connection)</h3>
+
+<p> Now that we have created a socket handle, we need to establish a
+          connection with the server.  A connection requires a
+           <code>sockaddr</code>  structure that describes the server.
+          Specifically, we need to specify the server and port to connect to
+          using  <code>echoserver.sin_addr.s_addr</code>  and
+           <code>echoserver.sin_port</code> .  The fact we are using an IP
+          address is specified with  <code>echoserver.sin_family</code> , but
+          this will always be set to  <code>AF_INET</code> .
+           </p>
+<pre> 
+            /* Construct the server sockaddr_in structure */
+            memset(&amp;echoserver, 0, sizeof(echoserver));       /* Clear struct */
+            echoserver.sin_family = AF_INET;                  /* Internet/IP */
+            echoserver.sin_addr.s_addr = inet_addr(argv[1]);  /* IP address */
+            echoserver.sin_port = htons(atoi(argv[3]));       /* server port */
+            /* Establish connection */
+            if (connect(sock,
+                        (struct sockaddr *) &amp;echoserver,
+                        sizeof(echoserver)) &lt; 0) {
+              Die("Failed to connect with server");
+            }
+           </pre>
+<p> As with creating the socket, the attempt to establish a
+          connection will return -1 if the attempt fails. Otherwise, the
+          socket is now ready to accept sending and receiving data.  </p>
+
+<h3>A TCP echo client (send/receive data)</h3>
+
+<p> Now that the connection is established, we are ready to send
+          and receive data. A call to  <code>send()</code>  takes as 
+          arguments the socket handle itself, the string to send, the 
+          length of the sent string, and a flag argument. Normally the
+          flag is the default value 0. The return value of the
+           <code>send()</code>  call is the number of bytes successfully
+          sent. </p>
+<pre> 
+            /* Send the word to the server */
+            echolen = strlen(argv[2]);
+            if (send(sock, argv[2], echolen, 0) != echolen) {
+              Die("Mismatch in number of sent bytes");
+            }
+            /* Receive the word back from the server */
+            fprintf(stdout, "Received: ");
+            while (received &lt; echolen) {
+              int bytes = 0;
+              if ((bytes = recv(sock, buffer, BUFFSIZE-1, 0)) &lt; 1) {
+                Die("Failed to receive bytes from server");
+              }
+              received += bytes;
+              buffer[bytes] = '\0';        /* Assure null terminated string */
+              fprintf(stdout, buffer);
+            }
+           </pre>
+<p> The  <code>rcv()</code>  call is not guaranteed to get
+          everything in-transit on a particular call--it simply blocks until
+          it gets  <i>something</i> .  Therefore, we loop until we have gotten
+          back as many bytes as were sent, writing each partial string as we
+          get it.  Obviously, a different protocol might decide when to
+          terminate receiving bytes in a different manner (perhaps a
+          delimiter within the bytestream).  </p>
+
+<h3>A TCP echo client (wrapup)</h3>
+
+<p> Calls to both  <code>send()</code>  and  <code>recv()</code>  block
+          by default, but it is possible to change socket options to allow
+          non-blocking sockets. However, this tutorial will not cover details
+          of creating non-blocking sockets, nor such other details used in
+          production servers as forking, threading, or general asynchronous
+          processing (built on non-blocking sockets).  </p>
+<p> At the end of the process, we want to call  <code>close()</code> 
+          on the socket, much as we would with a file handle </p>
+<pre> 
+           fprintf(stdout, "\n");
+           close(sock);
+           exit(0);
+          }
+          </pre>
+<hr/>
+<h2 align='center'>Writing a Server Application in C</h2><hr/>
+
+
+<h3>The steps in writing a socket server</h3>
+
+<p> A socket server is a bit more complicated than is a client,
+          mostly because a server usually needs to be able to handle
+          multiple client requests.  Basically, there are two aspects to a
+          server: handling each established connection, and listening for
+          connections to establish. </p>
+<p> In our example, and in most cases, you can split the handling
+          of a particular connection into support function--which looks
+          quite a bit like a TCP client application does. We name that
+          function  <code>HandleClient()</code> .  </p>
+<p> Listening for new connections is a bit different from client
+          code. The trick is that the socket you initially create and bind
+          to an address and port is not the actually connected socket. This
+          initial socket acts more like a socket factory, producing new
+          connected sockets as needed. This arrangement has an advantage in
+          enabling fork'd, threaded, or asynchronously dispatched handlers
+          (using  <code>select()</code> ); however, for this first tutorial we
+          will only handle pending connected sockets in synchronous order.
+           </p>
+
+<h3>A TCP echo server (application setup)</h3>
+
+<p> Our echo server starts out with pretty much the same few
+           <code>#include</code> s as the client did, and defines some
+          constants and an error handling function: </p>
+<pre> 
+          #include &lt;stdio.h&gt;
+          #include &lt;sys/socket.h&gt;
+          #include &lt;arpa/inet.h&gt;
+          #include &lt;stdlib.h&gt;
+          #include &lt;string.h&gt;
+          #include &lt;unistd.h&gt;
+          #include &lt;netinet/in.h&gt;
+
+          #define MAXPENDING 5    /* Max connection requests */
+          #define BUFFSIZE 32
+          void Die(char *mess) { perror(mess); exit(1); }
+           </pre>
+<p> The  <code>BUFFSIZE</code>  constant limits the data sent per
+          loop. The  <code>MAXPENDING</code>  constant limits the number of
+          connections that will be queued at a time (only one will be
+           <i>serviced</i>  at a time in our simple server). The
+           <code>Die()</code>  function is the same as in our client. </p>
+
+<h3>A TCP echo server (the connection handler)</h3>
+
+<p> The handler for echo connections is straightforward.  All it
+          does is receive any initial bytes available, then cycle through
+          sending back data and receiving more data.  For short echo strings
+          (particularly if less than  <code>BUFFSIZE</code> ) and typical
+          connections, only one pass through the  <code>while</code>  loop
+          will occur.  But the underlying sockets interface (and TCP/IP)
+          does not make any guarantees about how the bytestream will be
+          split between calls to  <code>recv()</code> . </p>
+<pre> 
+          void HandleClient(int sock) {
+            char buffer[BUFFSIZE];
+            int received = -1;
+            /* Receive message */
+            if ((received = recv(sock, buffer, BUFFSIZE, 0)) &lt; 0) {
+              Die("Failed to receive initial bytes from client");
+            }
+            /* Send bytes and check for more incoming data in loop */
+            while (received &gt; 0) {
+              /* Send back received data */
+              if (send(sock, buffer, received, 0) != received) {
+                Die("Failed to send bytes to client");
+              }
+              /* Check for more data */
+              if ((received = recv(sock, buffer, BUFFSIZE, 0)) &lt; 0) {
+                Die("Failed to receive additional bytes from client");
+              }
+            }
+            close(sock);
+          }
+           </pre>
+<p> The socket that is passed in to the handler function is one
+          that already connected to the requesting client.  Once we are done
+          with echoing all the data, we should close this socket; the parent
+          server socket stays around to spawn new children, like the one
+          just closed. </p>
+
+<h3>A TCP echo server (configuring the server socket)</h3>
+
+<p> As we outlined before, creating a socket has a bit different
+          purpose for a server than for a client. Creating the socket has
+          the same syntax it did in the client; but the structure
+           <code>echoserver</code>  is setup with information about the server
+          itself, rather than about the peer it wants to connect to.
+          You usually want to use the special constant
+           <code>INADDR_ANY</code>  to enable receiving client request on any
+          IP address the server supplies; in principle, such as in a
+          multi-hosting server, you could specify a particular IP address
+          instead. </p>
+<pre> 
+          int main(int argc, char *argv[]) {
+            int serversock, clientsock;
+            struct sockaddr_in echoserver, echoclient;
+
+            if (argc != 2) {
+              fprintf(stderr, "USAGE: echoserver &lt;port&gt;\n");
+              exit(1);
+            }
+            /* Create the TCP socket */
+            if ((serversock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) &lt; 0) {
+              Die("Failed to create socket");
+            }
+            /* Construct the server sockaddr_in structure */
+            memset(&amp;echoserver, 0, sizeof(echoserver));       /* Clear struct */
+            echoserver.sin_family = AF_INET;                  /* Internet/IP */
+            echoserver.sin_addr.s_addr = htonl(INADDR_ANY);   /* Incoming addr */
+            echoserver.sin_port = htons(atoi(argv[1]));       /* server port */
+           </pre>
+<p> Notice that both IP address and port are converted to network
+          byte order for the  <code>sockaddr_in</code>  structure. The reverse
+          functions to return to native byte order are  <code>ntohs()</code> 
+          and  <code>ntohl()</code> . These functions are no-ops on some
+          platforms, but it is still wise to use them for cross-platform
+          compatibility. </p>
+
+<h3>A TCP echo server (binding and listening)</h3>
+
+<p> Whereas the client application  <code>connect()</code> 'd to a
+          server's IP address and port, the server  <code>bind()</code> 's to
+          its own address and port: </p>
+<pre> 
+          /* Bind the server socket */
+          if (bind(serversock, (struct sockaddr *) &amp;echoserver,
+                                       sizeof(echoserver)) &lt; 0) {
+            Die("Failed to bind the server socket");
+          }
+          /* Listen on the server socket */
+          if (listen(serversock, MAXPENDING) &lt; 0) {
+            Die("Failed to listen on server socket");
+          }
+           </pre>
+<p> Once the server socket is bound, it is ready to
+           <code>listen()</code> .  As with most socket functions, both
+           <code>bind()</code>  and  <code>listen()</code>  return -1 if they
+          have a problem.  Once a server socket is listening, it is ready to
+           <code>accept()</code>  client connections, acting as a factory for
+          sockets on each connection. </p>
+
+<h3>A TCP echo server (socket factory)</h3>
+
+<p> Creating new sockets for client connections is the crux of a
+          server.  The function  <code>accept()</code>  does two important
+          things: it returns a socket pointer for the new socket; and it
+          populates the  <code>sockaddr_in</code>  structure pointed to,
+          in our case, by  <code>echoclient</code> . </p>
+<pre> 
+            /* Run until cancelled */
+            while (1) {
+              unsigned int clientlen = sizeof(echoclient);
+              /* Wait for client connection */
+              if ((clientsock =
+                   accept(serversock, (struct sockaddr *) &amp;echoclient,
+                          &amp;clientlen)) &lt; 0) {
+                Die("Failed to accept client connection");
+              }
+              fprintf(stdout, "Client connected: %s\n",
+                              inet_ntoa(echoclient.sin_addr));
+              HandleClient(clientsock);
+            }
+          }
+           </pre>
+<p> We can see the populated structure in  <code>echoclient</code> 
+          with the  <code>fprintf()</code>  call that accesses the client IP
+          address.  The client socket pointer is passed to
+           <code>HandleClient()</code> , which we saw at the start of this
+          section. </p>
+<hr/>
+<h2 align='center'>Writing Socket Applications in Python</h2><hr/>
+
+
+<h3>The socket and SocketServer module</h3>
+
+<p> Python's standard module  <code>socket</code>  provides almost
+          exactly the same range of capabilities you would find in C
+          sockets.  However, the interface is generally more flexible,
+          largely because of the benefits of dynamic typing.  Moreover, an
+          object-oriented style is also used.  For example, once you create
+          a socket object, methods like  <code>.bind()</code> ,
+           <code>.connect()</code> , and  <code>.send()</code>  are methods of
+          that object, rather than global functions operating on a socket
+          pointer. </p>
+<p> At a higher level than  <code>socket</code> , the module
+           <code>SocketServer</code>  provides a framework for writing
+          servers.  This is still relatively low level, and higher-level
+          interfaces are available for server of higher-level protocols,
+          e.g.  <code>SimpleHTTPServer</code> ,  <code>DocXMLRPCServer</code> ,
+          or  <code>CGIHTTPServer</code> . </p>
+
+<h3>A Python TCP echo client</h3>
+
+<p> Let us just look at the complete client, then make a few
+          remarks: </p>
+<pre> 
+          #!/usr/bin/env python
+          "USAGE: echoclient.py &lt;server&gt; &lt;word&gt; &lt;port&gt;"
+          from socket import *    # import *, but we'll avoid name conflict
+          import sys
+          if len(sys.argv) != 4:
+              print __doc__
+              sys.exit(0)
+          sock = socket(AF_INET, SOCK_STREAM)
+          sock.connect((sys.argv[1], int(sys.argv[3])))
+          message = sys.argv[2]
+          messlen, received = sock.send(message), 0
+          if messlen != len(message):
+              print "Failed to send complete message"
+          print "Received: ",
+          while received &lt; messlen:
+              data = sock.recv(32)
+              sys.stdout.write(data)
+              received += len(data)
+          print
+          sock.close()
+           </pre>
+<p> At first brush, we seem to have left out some of the error
+          catching code from the C version.  But since Python raises
+          descriptive errors for every situation that we checked for in the
+          C echo client, we can let the built-in exceptions do our work for
+          us.  Of course, if we wanted the precise wording of errors that we
+          had before, we would have to add a few
+           <code>try</code> / <code>except</code>  clauses around the calls to
+          methods of the socket object. </p>
+
+<h3>A Python TCP echo client, continued</h3>
+
+<p> While shorter, the Python client is somewhat more powerful.
+          Specifically, the address we feed to a  <code>.connect()</code> 
+          call can be either a dotted-quad IP address or a symbolic name,
+          without need for extra lookup work, e.g.: </p>
+<pre> 
+          $ ./echoclient.py 192.168.2.103 foobar 7
+          Received: foobar
+          $ ./echoclient.py fury.gnosis.lan foobar 7
+          Received: foobar
+           </pre>
+<p> We also have a choice between the methods  <code>.send()</code> 
+          and  <code>.sendall()</code> .  The former sends as many bytes as it
+          can at once, the latter sends the whole message (or raises an
+          exception if it cannot).  For this client, we indicate if the
+          whole message was not sent, but proceed with getting back as much
+          as actually was sent. </p>
+
+<h3>A Python TCP echo server (SocketServer)</h3>
+
+<p> The simplest way to write a echo server in Python is using the
+           <code>SocketServer</code>  module.  It is so easy as to almost seem
+          like cheating.  In later panels, we will spell out the lower-level
+          version, that follows the C implementation.  For now, let us see
+          just how quick it can be: </p>
+<pre> 
+          #!/usr/bin/env python
+          "USAGE: echoserver.py &lt;port&gt;"
+          from SocketServer import BaseRequestHandler, TCPServer
+          import sys, socket
+
+          class EchoHandler(BaseRequestHandler):
+              def handle(self):
+                  print "Client connected:", self.client_address
+                  self.request.sendall(self.request.recv(2**16))
+                  self.request.close()
+
+          if len(sys.argv) != 2:
+              print __doc__
+          else:
+              TCPServer(('',int(sys.argv[1])), EchoHandler).serve_forever()
+           </pre>
+<p> The only thing we need to provide is a child of
+           <code>SocketServer.BaseRequestHandler</code>  that has a
+           <code>.handle()</code>  method. The  <code>self</code>  instance has
+          some useful attributes, such as  <code>.client_address</code> , and
+           <code>.request</code>  which is itself a connected socket object.
+           </p>
+
+<h3>A Python TCP echo server (socket)</h3>
+
+<p> If we wish to do it "the hard way"--and gain a bit more
+          fine-tuned control, we can write almost exactly our C echo server
+          in Python (but in fewer lines): </p>
+<pre> 
+          #!/usr/bin/env python
+          "USAGE: echoserver.py &lt;port&gt;"
+          from socket import *    # import *, but we'll avoid name conflict
+          import sys
+
+          def handleClient(sock):
+              data = sock.recv(32)
+              while data:
+                  sock.sendall(data)
+                  data = sock.recv(32)
+              sock.close()
+
+          if len(sys.argv) != 2:
+              print __doc__
+          else:
+              sock = socket(AF_INET, SOCK_STREAM)
+              sock.bind(('',int(sys.argv[1])))
+              sock.listen(5)
+              while 1:    # Run until cancelled
+                  newsock, client_addr = sock.accept()
+                  print "Client connected:", client_addr
+                  handleClient(newsock)
+           </pre>
+<p> In truth, this "hard way" still isn't very hard.  But as in the
+          C implementation, we manufacture new connected sockets using
+           <code>.listen()</code> , and call our handler for each such
+          connection. </p>
+<hr/>
+<h2 align='center'>Summary and resources</h2><hr/>
+
+
+<h3>Summary</h3>
+
+<p> The server and client presented in this tutorial are simple,
+          but they show everything essential to writing TCP sockets
+          applications.  If the data transmitted is more complicated, or the
+          interaction between peers (client and server) is ore sophisticated
+          in your application, that is just a matter of additional
+          application programming.  The data exchanged will still follow the
+          same pattern of  <code>connect()</code>  and  <code>bind()</code> ,
+          then  <code>send()</code> 's and  <code>recv()</code> 's. </p>
+<p> One thing this tutorial did not get to, except in brief
+          summary at the start, is usage of UDP sockets.  TCP is more
+          common, but it is important to also understand UDP sockets as an
+          option for your application.  Part two of this tutorial will look
+          at UDP, as well as implementing sockets applications in Python,
+          and some other intermediate topics. </p>
+
+<h3>Resources</h3>
+
+<p> A good introduction to sockets programming in C, is Michael J.
+          Donahoo and Kenneth L. Calvert,  <i>TCP/IP Sockets in C</i> ,
+          Morgan-Kaufmann, 2001; ISBN: 1-55860-826-5. </p>
+
+<h3>Feedback</h3>
+
+<p> Please let us know whether this tutorial was helpful to you and
+          how we could make it better. We'd also like to hear about other
+          tutorial topics you'd like to see covered. </p>
+<p> For questions about the content of this tutorial, contact the
+          author, David Mertz, at  <a>mertz@gnosis.cx</a> . </p>
+
+</body>
+</html>

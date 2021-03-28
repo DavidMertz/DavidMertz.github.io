@@ -1,0 +1,344 @@
+Pippy: Python for the PalmOS
+
+David Mertz, Ph.D.
+Reducing Agent, Gnosis Software, Inc.
+June, 20001
+
+
+    Pippy is a port of (a subset of) Python to the PalmOS.  With
+    Pippy, Python programmers can create custom applications to
+    run on Palm devices, as well as use Pippy as an interactive
+    environment directly on the Palm.  David evaluates the
+    stengths and limitations of Pippy as a means of implementing
+    Palm applications.
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  Let me introduce Pippy in the style of a good news/bad news
+  joke.  The good news about Pippy is that it allows a Python
+  programmer to write and run programs right on the Palm.
+  Moreover, with version 0.7, Pippy has gotten faster, more
+  stable, and easier to use.  The bad news is that, so far, Pippy
+  is still fairly "bleeding edge" software; and a lot of the
+  things one would want in a development environment are only
+  planned for later versions, not available today.  Still, Pippy
+  gives you enough to play with now, and even to do some useful
+  things without too much effort.
+
+
+INSTALLING PIPPY
+------------------------------------------------------------------------
+
+  The first thing to do when installing Pippy is download its
+  executables and/or source archives.  The source archive is
+  available as a tarball, called 'pippy-0.7-src.tar.gz', while
+  the executable-only distribution is called 'pippy_0_7.zip' (or
+  the same name with a '.tar.gz', '.sit' or 'hqx' extension,
+  depending on your platform).  The easiest thing is probably to
+  stick with the executable distribution, for most users.  Let's
+  look at that first.
+
+  Within a Pippy executable archive, you'll find a relative
+  directory called './pippy_0_7'.  Inside this directory are five
+  files.  Read the 'README'--as always--and check out the
+  'LICENSE' and 'NEWS' files for the expected topics.  But the
+  main thing that will interest you is the files 'pippy.prc' and
+  'pylib.prc'.  These are the ones that you want to upload to
+  your PalmOS device.
+
+  The way you'll upload these to your handheld will vary
+  depending on the desktop OS that you are running.  However,
+  users who have ever installed any additional applications to
+  their PalmOS handheld will be familiar with the procedure.
+  Under Windows and MacOS environments, you will usually use the
+  "Palm Desktop" and its "Install" button.  Under Linux or other
+  Unix-like platforms or OS/2, you will probably use the
+  'pilot-link' utilities--specifically the 'pilot-xfer' program.
+  This might look something like:
+
+      #----- Transfering Pippy and PythonLib to the Palm ------#
+      $ pilot-xfer /dev/cua1 -i pippy.prc
+      $ pilot-xfer /dev/cua1 -i pylib.prc
+
+  Once both the PRCs are on you PalmOS handheld, all you'll need
+  to do is run 'Pippy' (I like to move it to a "Programming"
+  Applications category, but this is a small convenience).
+
+  Compiling Pippy is a lot more work than is just downloading the
+  executables.  There are two programming environments under
+  which you might build Pippy.  One involves getting PRC-Tools
+  set up on your machine, and also Python 1.5.2 (exactly that
+  version).  Installing PRC-Tools itself is a complex game of
+  chasing down library and compiler dependencies, and finding
+  exactly the right version of everything.  All the details of
+  doing that are not covered in this article.
+
+  For Win32 and MacOS environments, you might have an easier
+  route to compiling Pippy.  First you'll need to shell out some
+  money for CodeWarrior.  Next you'll need to download and
+  successfully install the free tools Cygwin, PilRC, and Python
+  1.5.2 (a higher version of Python might work).  While possibly
+  less work than the PRC-Tools route, this route to compiling
+  Pippy yourself is also not pain-free unless you happen to
+  already have a system with all the prerequisites.
+
+  If you do manage to build Pippy from source, you'll have the
+  option of compiling in your own Python extension modules, and
+  you will be able to import them by default. For this article,
+  we'll just assume you are using the distributed executable
+  version of Pippy.  Fortunately, as of version 0.7, running
+  custom code in the precompiled environment is a lot easier.
+
+
+WORKING WITH PIPPY
+------------------------------------------------------------------------
+
+  Pippy is an interactive environment, similar to the Python
+  interactive shell, but owing even more to another PalmOS
+  language/environment called LispMe (see Resources).  For now,
+  Pippy is -just- this interactive environment, not a way of
+  creating standalone applications (unless you want to delve
+  deeper into the source than I was able to go).  That makes a
+  good start though.  Let's see what it looks like:
+
+  {A PalmOS handheld running Pippy:
+   http://gnosis.cx/publish/programming/pippy1.gif}
+
+  Using Pippy is simply a matter of entering Python commands.
+  The picture illustrates this, but you can also create larger
+  scale constructs like function definitions and classes.
+
+  One thing to watch out for in the interactive environment is
+  that you need to 'eval' each statement suite as soon as you
+  write it.  This can get a bit confusing, unfortunately, since
+  some statements can get ignored in the interactive environment.
+  For example, if you enter the below statements then press
+  'eval', you would almost certainly expect to see "4" printed:
+
+  {A Pippy session with multiple statements at once:
+   http://gnosis.cx/publish/programming/pippy_multi_eval.gif}
+
+      #---- Pippy session with multiple statements at once ----#
+      x = 3
+      x = 4
+      print x
+
+  What happens instead is that nothing gets printed, and 'x' is
+  left equal to 3.  Hopefully, this behavior will be improved for
+  later versions.
+
+
+USING STORED PROGRAMS WITH PIPPY
+------------------------------------------------------------------------
+
+  Fortunately, there is a much more practical and useful way to
+  work with Pippy than simply entering statements into the
+  interactive environment.  That way is using the "Memo Pad"
+  application to store Python programs you wish to run later.
+  All there is to this is just creating a Memo Pad category
+  called "Python" (case is important), then storing Python
+  programs as memos therein.  The one rule you'll need to follow
+  is that each memo should start with a pound sign followed by
+  the name of the Python script/module being implemented.  For
+  example, the below is a simple program I wrote (entirely on the
+  Palm, without touching a desktop computer):
+
+      #----- A simple Python program written on the Palm ------#
+      #go2.py
+      def go(data):
+          from string import split
+          add=lambda i,j: i+j
+          lines=split(data,'\012')
+          rows=[]
+          for line in lines:
+              fs=split(line)
+              for i in range(len(fs)):
+                  fs[i]=int(fs[i])
+              if fs: rows.append(fs)
+          print 'Records:',len(rows)
+          print '-----------------',
+          i=1
+          for row in rows:
+              print '\nROW',i,
+              cnt=len(row)
+              print ' -count:',cnt,
+              tot=reduce(add,row)
+              print ' -tot:',tot,
+              avg=tot/cnt
+              print ' -avg:',avg,
+              i=i+1
+
+  You may notice that I have used somewhat short variable names,
+  and done a few other things to keep code lines short.  I find
+  it distracting when lines wrap on the Palm screen, since it
+  makes it difficult to see which lines are wrapped for display,
+  and which for program structure.  But basically, this is a
+  perfectly normal (albeit simple and boring) Python program.
+  Let's look at an interactive session that uses this program.
+
+      #----- Pippy Interactive Session using Memo imports -----#
+      Python 1.5.2+ (#1, Jun 11 2001, 15:41:50)  [GCC 2.95.2-kgpd 19991024 (release)]
+      Copyright 1991-1995 Stichting Mathematisch Centrum, Amsterdam
+
+      import memoimp; memoimp.install()
+
+      from go2 import go
+      from data import data
+      go(data)
+      Records: 4
+      -----------------
+      ROW 1  -count: 5  -tot: 288  -avg: 57
+      ROW 2  -count: 4  -tot: 193  -avg: 48
+      ROW 3  -count: 7  -tot: 64  -avg: 9
+      ROW 4  -count: 4  -tot: 398  -avg: 99
+      from data2 import data
+      go(data)
+      Records: 2
+      -----------------
+      ROW 1  -count: 4  -tot: 173  -avg: 43
+      ROW 2  -count: 8  -tot: 45  -avg: 5
+
+  Notice the first line in particular.  Before you can import
+  from the Memo Pad, you need to import the [memoimp] module, and
+  run its '.install()' method.  I think the developers should
+  make this the default for later versions, but in the meanwhile,
+  it is handy to keep the first line in the clipboard (and in a
+  memo to copy it there easily).
+
+  For completeness, let's take a look at what one of these "data"
+  modules might look like:
+
+  {A Memo Pad data file module:
+   http://gnosis.cx/publish/programming/pippy_data_file.gif}
+
+  It is easy enough to imagine that this little memo could be
+  used to collect some sort of field data for which a handheld
+  was ideal: count bird distributions for ornithological
+  research; count widgets on each of the warehouse shelves; etc.
+  One could easily enough add some more structure and formatting
+  to the data, and parse out that structure accordingly.  The
+  example just produces some simplistic statistical data.
+
+
+THAT's WHY THEY CALL IT A BETA
+------------------------------------------------------------------------
+
+  Like I wrote at the beginning, Pippy is still living at the
+  bleeding edge.  The stability is actually great, it is the
+  features that are missing.  Even some pretty basic ones.  All
+  things will come with time.
+
+  The first thing an astute reader will have noticed is that my
+  sample application went through some slightly odd contortions
+  to get its input data.  Why not just set up an 'input()' or
+  'raw_input()' loop, and collect the data there--maybe
+  processing it with each entry.  The problem is, the PalmOS has
+  no concept of a file; in particular, it has no concept of
+  STDIN, STDOUT or STDERR.  The 'print' statment doesn't really
+  go to STDOUT, but rather to the special console.  But the
+  interactive input just isn't there at all.
+
+  One developer has suggested to me that it was -possible- to
+  call custom forms from Pippy, where these forms were themselves
+  created by other development systems.  But using forms this way
+  would be rather roundabout, and is not documented yet in any
+  case.  Look for something better in future versions--maybe a
+  simulation of STDIN and STDERR and/or some tools to easily
+  produce Pippy-specific Palm GUI forms.  For now, however, Pippy
+  is most useful for batch processing (reminding me of my
+  early--and quite pleasant in retrospect--experiences with
+  IBM 360 punchcard queus).
+
+  Beyond interactive input, a number of modules and capabilities
+  are still in the planning stages.  The most important of these
+  is probably *floating point numbers*!  Unfortunately, this
+  rather important basic type is still on the drawing board.  I
+  would guess the reason has something to do with the
+  floating-point architecture of the Dragonball processor.  But
+  this is just a guess, I could be wrong.
+
+  Of significant, but not quite as critical, importance are
+  various missing modules.  [re] isn't there, which would be a
+  nice one.  [os] is also missing, but there might actually be
+  some good reasons for that one.  Some other modules that are
+  pretty standard are also gone.
+
+  Moreover, there are some additional goals for Pippy by its
+  developers.  Updating Pippy to the newest Python versions would
+  be nice--especially to include list comprehensions for
+  conciseness.  As well, Pippy developers want to include
+  Christian Tismer's Stackless Python patches to Pippy.  This
+  should improve performance quite a bit for the PalmOS hardware
+  (and would be just plain cool).
+
+
+CONCLUSION
+------------------------------------------------------------------------
+
+  The last portion of this writeup pointed to some fairly stark
+  limitations of Pippy 0.7.  One might read that as a criticism,
+  but that is not at all the author's intent.  I find Pippy to be
+  one of the most exciting Python projects I have looked at.
+  While Pippy is certainly not yet complete, it is proceeding in
+  exactly the right way.  The intermediate versions (like 0.7)
+  are stable, and are improving in speed.  Things are left
+  out--but they -are- called betas--but what gets in there is
+  well thought out and well implemented.  This is the Python
+  philosophy in action:  first get it right, then add the
+  bells-and-whistles.  Still... maybe it is not too much to wish
+  for a few bells in the near future.
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  Pippy's homepage is at:
+
+    http://www.endeavors.com/pippy/
+
+  To jump straigt to downloading Pippy, go to:
+
+    http://www.endeavors.com/pippy/download.html
+
+  PRC-Tools is the Linux (and other OS's) way of building C/C++
+  PalmOS applications.  It consists of a bunch of related free
+  software tools, that let you target the Palm's 68k (Dragonball)
+  CPU and hardware environment. If you want to take a try at
+  installing PRC-Tools, its home is at:
+
+    http://sourceforge.net/projects/prc-tools/
+
+  _Metrowerks CodeWarrior for Palm OS Platform_ is an excellent
+  IDE and compiler for PalmOS development, at least if you use a
+  Win32 or MacOS machine.  CodeWarrior is pretty much the
+  "standard" development tool for PalmOS, being the tool that
+  Palm Computing uses to develop the OS, for example.  If you'd
+  like to obtain a copy, take a look below.  CodeWarrior is a
+  commercial product, and you will probably have to pay money to
+  get it (the amount depends on the license details):
+
+    http://metrowerks.com/products/palm/
+
+  Another language available for the PalmOS provided an
+  inspiration for Pippy's interactive interface.  You can read
+  more about LispMe at:
+
+    http://www.lispme.de/lispme/
+
+  An interview with Christian Tismer on Stackless Python was run
+  in one of my Charming Python columns:
+
+    http://gnosis.cx/publish/programming/charming_python_8.html
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi/img_dqm.cgi}
+  David Mertz enjoys writing about everything that can be written
+  at the margins of popular computer technology.  David may be
+  reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/.  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+

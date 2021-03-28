@@ -1,0 +1,234 @@
+AN INTRODUCTION TO MULTICASTING STRATEGIES
+
+Brad Huntting, University of Colorado
+David Mertz, Gnosis Software
+March 2003
+
+    How is the Internet different from other networks?  Advocates
+    tout the Internet as the network to end all networks; they
+    claim that it is has, or can be readily adapted to have, all
+    the capabilities needed for any conceivable application.
+    Such claims may be true in principle--but as currently
+    deployed a major category of networking is little utilized:
+    multicasting.
+
+WHAT IS MULTICASTING?
+------------------------------------------------------------------------
+
+  Nearly all the traffic on the Internet today is unicast:  it is
+  sent by a single host and is intended to be received by a
+  single host.  Unicasting starkly contrasts with networks such
+  as AM/FM radio in which data is broadcast through the local air
+  waves to everyone in the immediate vicinity whether they
+  requested it or not.
+
+  The Internet does not support broadcast.  There was early
+  discussion of a global Internet broadcast address; but network
+  engineers quickly decided that this was a bad idea.
+
+  Somewhere between unicast and broadcast is multicast.  For this
+  article we are interested in "IP-multicast"--that is,
+  multicasting that happens at the Internet Protocol network
+  layer.  Ethernet, for example, supports a lower-layer form of
+  multicast.  But ethernet is not suitable for global networking,
+  where general-purpose IP-multicast is.  Like broadcast, a
+  single multicast data transmission can be received by many
+  hosts.  But unlike broadcast, the data is not sent to all
+  corners of the Internet; rather it only goes to those networks
+  which have specifically requested it.
+
+  We believe that that advancement and refinement of multicast
+  technologies is essential to achieving the convergence of
+  telecommunication and computing technologies that Intel
+  envisions.  Multicast technologies, implemented on Intel
+  servers, PCs, handhelds, and routers will soon bring
+  audio-video content formerly only workable on a broadcast
+  model, to the Internet.
+
+
+THE PROBLEM MULTICASTING SOLVES
+------------------------------------------------------------------------
+
+  To understand why the Internet needs multicasting imagine
+  trying to use the Internet to distribute all the world's cable
+  TV and radio.  Using the unicast model, a TV station would have
+  to send identical copies of its transmission to every single
+  viewer on the net.  With unicast, a company or organization
+  inherently limits its own popularity.
+
+  One might naively think that the extra server and bandwidth
+  requirements of extra users could be addressed just by buying
+  more servers and more bandwidth.  But that hunch fails to
+  understand the magnitudes involved.  Suppose--optimistically--
+  that a video signal can be compressed into a dual-ISDN 128 Kbps
+  stream.  An OC3 line is quite comfortably more than this; at
+  155 Mbps, you can squeeze over a thousand such unicast streams
+  on such a channel.  Now imagine you have a million users--a
+  realistic number for for a popular TV broadcast.  You are not
+  just out of luck, you are three orders-of-magnitude out of
+  luck!
+
+  With unicast, the cost of transmission is O(n) for n receivers,
+  providing little or no short term scaleability.  But for
+  multicast the cost does not increase as the number of receivers
+  goes up--it is O(1).  The sender simply transmits a single data
+  stream, and the network replicates it as needed to ensure that
+  it reaches all interested receivers.  It costs effectively the
+  same amount to send a multicast data stream to a single
+  recipient as it does to send it to a billion recipients.
+
+ANY SOURCE MULTICAST
+------------------------------------------------------------------------
+
+  The first big step in Internet multicast was Steve Deering's
+  1989 Ph.D. thesis, "Scalable Multicast Routing Protocol."  This
+  laid out the basic ideas, and described, in abstract terms, the
+  mechanisms needed to distribute IP multicast on the Internet.
+  Deering and others put the theory of IP multicast into practice
+  to launch the MBone, an experimental
+  network-within-the-networks for Internet multicast.
+
+  In the MBone's "Any Source Multicasting" (ASM) model, multicast
+  traffic is divided into "groups" which are numbered like IP
+  addresses.  When an application wants to "join" group G, it
+  notifies its host operating system, which in turn communicates
+  this request to routers on the local network with Internet
+  Group Management Protocol (IGMP).  These routers, in turn, talk
+  to other routers on the Internet and set up distribution trees
+  for the desired group.  Once a distribution tree is
+  established, the application's host will receive every packet
+  on the entire Internet sent to group G.
+
+  Sending data to a multicast group is much simpler.  In the
+  spirit of the "connectionless" model of the Internet, no
+  advance warning needs to be given before transmiting multicast
+  data; a host simply puts the data on the local wire and routers
+  are responsible for delivering it to anyone who has expressed
+  an interest in it.
+
+  One of the problems the ASM faces is hooking senders up with
+  receivers.  Getting multicast data packets, which can appear
+  anywhere on the Internet at any time, delivered to everyone who
+  is interested in them is a complex problem.  The solution
+  currently in use involves what are called Rendezvous Points
+  (RPs).  RPs are spread throughout the Internet and each one is
+  responsible for knowing all the active senders to all the
+  groups on the entire Internet.  This allows other routers to
+  forget about all the multicast traffic they are not actively
+  distributing.  Unfortunately, requiring a single machine to
+  keep state information for every single multicast transmitter
+  on the Internet is just the sort of thing that fails to scale,
+  and becomes a bottleneck on the Internet.
+
+  Another problem with ASM occurs when two different
+  applications--or two different sets of users with the same
+  application--happen to pick the same group address G. The
+  result is what we would call, in electrical terms, "cross
+  talk."  However, allocating unused addresses is a manageable
+  problem since one of the first multicast applications created
+  was Session Directory Service (SDR).  SDR carries announcements
+  for multimedia multicast sessions throughout the MBone.  But
+  SDR does nothing to prevent someone from maliciously flooding a
+  multicast group with noise that "drowns out" the legitimate
+  users.  If anything, SDR simply helps a black-hat hacker
+  identify her denial-of-service target.
+
+
+SOURCE SPECIFIC MULTICAST
+------------------------------------------------------------------------
+
+  A solution to the problems of ASM is a system called Source
+  Specific Multicast (SSM).  With SSM, receivers can specify
+  which senders they want to receive data from.  The combination
+  of a sender source address and a group "(S,G)" is called a
+  "channel."  With SSM, anyone trying to flood a channel with
+  noise, has also to spoof a source IP address so she looks like
+  the legitimate sender.  However, all multicast routing
+  protocols in use today require routers to check the source
+  address of a packet before forwarding it.  This check,
+  fortunately, effectively removes the possibilities for
+  multicast address spoofing.
+
+  The biggest advantage of SSM is that it doesnt use Rendezvous
+  Points at all.  In fact a router doing SSM only needs to know
+  about the channels currently flowing through it.  And in most
+  cases this will be roughly proportional to the number and speed
+  of the interfaces it has to manage.  For this reason, SSM is
+  generally considered "cheap" in terms of hardware and software
+  resources.
+
+ISP SUPPORT OF MULTICAST
+------------------------------------------------------------------------
+
+  Both ASM and SSM, unfortunately, incur support costs for ISPs.
+  In Brad's experience working at a large backbone Internet
+  Service Provider, he found that multicast issues typically
+  require about twice as much work to debug versus traditional
+  unicast issues.  Much of the increased support cost is due to
+  the fact that support staff, so far, are generally less
+  familiar with multicast.  But beyond this issue, there are a
+  plethora of "stupid network tricks" which can disrupt
+  multicast, yet cause no problems at all for unicast.  Todays
+  jungle of IPSEC tunnels, VPNs, NAT, and ever smarter link-layer
+  switching hardware makes the potential for problems and the
+  difficulty of debugging them greater than ever.  But as
+  multicast is becoming ever more popular at the LAN and
+  enterprise level, more and more engineers are learning how to
+  configure and debug IP multicast, and to avoid network
+  situations that create problems for multicast.
+
+THE FUTURE
+------------------------------------------------------------------------
+
+  With multicast, anyone with even a moderate Internet connection
+  has enough bandwidth to run an Internet TV station.  RFC3170
+  lists and categorizes several multicast applications, but with
+  such a dramatic change in the cost of information delivery,
+  it's probably the applications we have not even thought of yet
+  that will have the most impact.
+
+  While multicast lowers the cost of distributing information
+  dramatically, there are still some unsolved problems.  Most
+  people do not yet have access to IP multicast because their
+  ISPs do not yet support it.  In Part Two, we will disuss some
+  basics of multicast routing and look at the 'Automatic
+  Multicast Tunneling' draft, which is a workaround for end users
+  to get direct access to Internet multicast, using existing
+  Intel infrastructure.
+
+  In part Three, we will discuss "reliable multicast"-- this is a
+  wide open research area that has a lot of potential, and IETF
+  and IRTF working groups.  Reliability is a problem addressed in
+  other context that looks easy until you look closely.
+
+REFERENCES
+------------------------------------------------------------------------
+
+  Intel CEO Craig R. Barrett gave a keynote address this February
+  that discusses convergence of telecommunications, media, and
+  Intel-platform servers.  You can read it in full at:
+
+    http://www.intel.com/pressroom/archive/speeches/barrett20030218.htm
+
+  Multicasting protocols are modularized in the sense Sean
+  Maloney talks about in his talk at:
+
+    http://www.intel.com/pressroom/archive/speeches/idfspr_2003_day3.htm
+
+  Specifically, multicast traffic is a way for heterogenous
+  Intel-architecture devices to connect, while coping with--and
+  channeling--the continued explosive growth of Internet traffic.
+
+  Intel routers support a variety of multicast protocols already.
+  Our later installments discuss many of these protocols in
+  greater detail.  In the meanwhile, a good glossary of
+  multicast-related acronyms can be found at:
+
+    http://www.intel.com/support/express/routers/9xxx/23647.htm
+
+  These articles put a particular emphasis on the multimedia
+  applications of multicasting.  But the LANDesk software,
+  developed by Intel, is a nice example of the use of these
+  technologies for coordinated software distribution:
+
+    http://www.landesksoftware.com/

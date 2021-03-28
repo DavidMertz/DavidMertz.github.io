@@ -1,0 +1,435 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN"> 
+<html> 
+<head> 
+<title>CHARMING PYTHON #19 (W-50039) -- Even More Functional Programming in Python -- </title> 
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico"> 
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles"> 
+<link REL="prev" HREF="charming_python_18.html" TITLE="CHARMING PYTHON #18"> 
+<link REL="next" HREF="charming_python_20.html" TITLE="CHARMING PYTHON #20"> 
+<link REL="Book" HREF="http://gnosis.cx/TPiP/" 
+                 TITLE="Text Processing in Python"> 
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html"> 
+ 
+<style>.code-sample {background-color: #CCCCCC}</style> 
+</head> 
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Charming Python #19 (w-50039)</h1>
+<h2>Even More Functional Programming in Python</h2> 
+ <br> 
+<p>David Mertz, Ph.D.<br> 
+ Applied Metaphysician, Gnosis Software, Inc.<br> 
+ June, 2001<br> 
+ <br> 
+</p> 
+<blockquote> 
+    Earlier installments of this columns touched on many basic 
+    concepts of functional programming (FP).  This column 
+    continues the discussion by illustrating additional 
+    capabilities, especially those contained in Xoltar Toolkit: 
+    Currying, higher-order functions, and other specialized 
+    concepts. 
+</blockquote> 
+<h3>What Is Python?</h3> 
+ <p> 
+  Python is a freely available, very-high-level, interpreted 
+  language developed by Guido van Rossum.  It combines a clear 
+  syntax with powerful (but optional) object-oriented semantics. 
+  Python is available for almost every computer platform you 
+  might find yourself working on, and has strong portability 
+  between platforms. 
+</p> 
+<h3>Expression Bindings</h3> 
+ <p> 
+  Never content with partial solutions, one reader--Richard 
+  Davies--raised the issue of whether we might move bindings all 
+  the way into individual expressions.  Let's take a quick look 
+  at why we might want to do that, and also show a remarkably 
+  elegant way of expressing this that a comp.lang.python 
+  contributor provided. 
+</p> 
+<p> 
+  Let us first recall the <code>Bindings</code> class of the functional 
+  module.  Using the attributes of that class, we were able to 
+  assure that a particular name means only one thing within a 
+  given block scope: 
+</p> 
+<div class="code-sample"><h4>Python FP session with guarded rebinding</h4><PRE>&gt;&gt;&gt; <FONT COLOR=#3333CC><B>from</B></FONT> functional <FONT COLOR=#3333CC><B>import</B></FONT> * 
+&gt;&gt;&gt; let = Bindings() 
+&gt;&gt;&gt; let.car = <FONT COLOR=#3333CC><B>lambda</B></FONT> lst: lst[0] 
+&gt;&gt;&gt; let.car = <FONT COLOR=#3333CC><B>lambda</B></FONT> lst: lst[2] 
+Traceback (innermost last): 
+  File <FONT COLOR=#115511>"&lt;stdin&gt;"</FONT>, line 1, <FONT COLOR=#3333CC><B>in</B></FONT> ? 
+  File <FONT COLOR=#115511>"d:\tools\functional.py"</FONT>, line 976, <FONT COLOR=#3333CC><B>in</B></FONT> __setattr__ 
+    <FONT COLOR=#3333CC><B>raise</B></FONT> BindingError, <FONT COLOR=#115511>"Binding '%s' cannot be modified."</FONT> % name 
+functional.BindingError:  Binding <FONT COLOR=#115511>'car'</FONT> cannot be modified. 
+&gt;&gt;&gt; let.car(range(10)) 
+0</PRE></div><p> 
+  The <code>Bindings</code> class does what we want within a module or 
+  function <code>def</code> scope, but there is no way to make it work 
+  within a single expression.  In ML-family languages, however, 
+  it is natural to create bindings within a single expression: 
+</p> 
+<div class="code-sample"><h4>Haskell expression-level name bindings</h4><pre> 
+-- car (x:xs) = x  -- *could* create module-level binding 
+list_of_list = [[1,2,3],[4,5,6],[7,8,9]] 
+ 
+-- 'where' clause for expression-level binding 
+firsts1 = [car x | x &lt;- list_of_list] where car (x:xs) = x 
+ 
+-- 'let' clause for expression-level binding 
+firsts2 = let car (x:xs) = x in [car x | x &lt;- list_of_list] 
+ 
+-- more idiomatic higher-order 'map' technique 
+firsts3 = map car list_of_list where car (x:xs) = x 
+ 
+-- Result: firsts1 == firsts2 == firsts3 == [1,4,7] 
+ 
+</pre></div><p> 
+  Greg Ewing observed that we can accomplish the same effect 
+  using Python's list-comprehensions; we can even do it in a way 
+  that is nearly as clean as Haskell's syntax: 
+</p> 
+<div class="code-sample"><h4>Python 2.0+ expression-level name bindings</h4><PRE>&gt;&gt;&gt; list_of_list = [[1,2,3],[4,5,6],[7,8,9]] 
+&gt;&gt;&gt; [car_x <FONT COLOR=#3333CC><B>for</B></FONT> x <FONT COLOR=#3333CC><B>in</B></FONT> list_of_list <FONT COLOR=#3333CC><B>for</B></FONT> car_x <FONT COLOR=#3333CC><B>in</B></FONT> (x[0],)] 
+[1, 4, 7]</PRE></div><p> 
+  This trick of putting an expession inside a single-item tuple 
+  in a list-comprehension does not provide any way of using 
+  expression-level bindings with higher-order functions.  To use 
+  the higher-order functions, we still need to use block-level 
+  bindings, as with: 
+</p> 
+<div class="code-sample"><h4>Python block-level bindings with 'map()'</h4><PRE>&gt;&gt;&gt; list_of_list = [[1,2,3],[4,5,6],[7,8,9]] 
+&gt;&gt;&gt; let = Bindings() 
+&gt;&gt;&gt; let.car = <FONT COLOR=#3333CC><B>lambda</B></FONT> l: l[0] 
+&gt;&gt;&gt; map(let.car,list_of_list) 
+[1, 4, 7]</PRE></div><p> 
+  Not bad, but if we want to use <code>map()</code>, the scope of the 
+  binding remains a little broader than we might want. 
+  Nonetheless, it is possible to coax list comprehensions into 
+  doing our name bindings for us, even in cases where a list is 
+  not what we finally want: 
+</p> 
+<div class="code-sample"><h4>"Stepping down" from Python list-comprehension</h4><PRE><FONT COLOR=#1111CC># Compare Haskell expression:</FONT> 
+<FONT COLOR=#1111CC># result = func car_car</FONT> 
+<FONT COLOR=#1111CC>#          where</FONT> 
+<FONT COLOR=#1111CC>#              car (x:xs) = x</FONT> 
+<FONT COLOR=#1111CC>#              car_car = car (car list_of_list)</FONT> 
+<FONT COLOR=#1111CC>#              func x = x + x^2</FONT> 
+&gt;&gt;&gt; [func <FONT COLOR=#3333CC><B>for</B></FONT> x <FONT COLOR=#3333CC><B>in</B></FONT> list_of_list 
+...       <FONT COLOR=#3333CC><B>for</B></FONT> car <FONT COLOR=#3333CC><B>in</B></FONT> (x[0],) 
+...       <FONT COLOR=#3333CC><B>for</B></FONT> func <FONT COLOR=#3333CC><B>in</B></FONT> (car+car**2,)][0] 
+2</PRE></div><p> 
+  What we have done is peform an arithmetic calculation on the 
+  first element of the first element of <code>list_of_list</code> while also 
+  naming the arithmetic calculation (but only in expression 
+  scope).  As an "optimization" we might not bother to create a 
+  list longer than one element to start with, since we choose 
+  only the first element with the ending index <code><em><code>0</code></em></code>: 
+</p> 
+<div class="code-sample"><h4>Efficient stepping down from list-comprehension</h4><pre> 
+&gt;&gt;&gt; [func for x in list_of_list[:1] 
+...       for car in (x[0],) 
+...       for func in (car+car**2,)][0] 
+2 
+ 
+ 
+</pre></div><h3>Higher-order Functions: Currying</h3> 
+ <p> 
+  Three of the most general higher-order functions are built into 
+  Python:  <code>map()</code>, <code>reduce()</code> and <code>filter()</code>.  What these 
+  functions do--and the reason we call them "higher-order"--is 
+  take other functions as (some of) their arguments.  Other 
+  higher-order functions, but not these builtins, return function 
+  objects. 
+</p> 
+<p> 
+  Python has always given users the ability to construct their 
+  own higher-order functions by virtue of the first-class status 
+  of function objects.  A trivial case might look like: 
+</p> 
+<div class="code-sample"><h4>Trivial Python function factory</h4><PRE>&gt;&gt;&gt; <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="foo_factory"><FONT COLOR=#CC0000><B> foo_factory</B></FONT></A>(): 
+...     <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="foo"><FONT COLOR=#CC0000><B> foo</B></FONT></A>(): 
+...         <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"Foo function from factory"</FONT> 
+...     <FONT COLOR=#3333CC><B>return</B></FONT> foo 
+... 
+&gt;&gt;&gt; f = foo_factory() 
+&gt;&gt;&gt; f() 
+Foo function <FONT COLOR=#3333CC><B>from</B></FONT> factory</PRE></div><p> 
+  The Xoltar Toolkit (see Resources), which I discussed also in 
+  early installments of this column, comes with a nice collection 
+  of higher-order functions.  Most of the functions that Xoltar's 
+  <em><code>functional</code></em> module provides are ones that have been developed 
+  in various traditionally functional languages, and whose 
+  usefulness has proved itself over many years. 
+</p> 
+<p> 
+  Possibly the most famous and most important higher-order 
+  function is traditionally called <code>curry()</code>.  <code>curry()</code> is named 
+  after the logician Haskell Curry, whose first-name is also used 
+  to name the abovementioned programming language.  The insight 
+  that underlies "currying" is that it is possible to treat 
+  (almost) every function as a partial function of just one 
+  argument.  All that is necessary for currying to work is to 
+  allow the return value of functions to themselves be functions, 
+  but with the returned functions "narrowed" or "closer to 
+  completion."  The way this works is quite similar to the 
+  closures that I wrote about in an earlier column--each 
+  successive call to a curried return function "fills in" more of 
+  the data involved in a final computation (data attached to a 
+  procedure). 
+</p> 
+<p> 
+  Let's illustrate currying first with a very simple example in 
+  Haskell, then with the same example repeated in Python using 
+  the <em><code>functional</code></em> module: 
+</p> 
+<div class="code-sample"><h4>Currying a Haskell computation</h4><pre> 
+computation a b c d = (a + b^2+ c^3 + d^4) 
+check = 1 + 2^2 + 3^3 + 5^4 
+ 
+fillOne   = computation 1  -- specify "a" 
+fillTwo   = fillOne 2      -- specify "b" 
+fillThree = fillTwo 3      -- specify "c" 
+answer    = fillThree 5    -- specify "d" 
+ 
+-- Result: check == answer == 657 
+ 
+</pre></div><p> 
+  Now in Python: 
+</p> 
+<div class="code-sample"><h4>Currying a Python computation</h4><PRE>&gt;&gt;&gt; <FONT COLOR=#3333CC><B>from</B></FONT> functional <FONT COLOR=#3333CC><B>import</B></FONT> curry 
+&gt;&gt;&gt; computation = <FONT COLOR=#3333CC><B>lambda</B></FONT> a,b,c,d: (a + b**2 + c**3 + d**4) 
+&gt;&gt;&gt; computation(1,2,3,5) 
+657 
+&gt;&gt;&gt; fillZero  = curry(computation) 
+&gt;&gt;&gt; fillOne   = fillZero(1)   <FONT COLOR=#1111CC># specify "a"</FONT> 
+&gt;&gt;&gt; fillTwo   = fillOne(2)    <FONT COLOR=#1111CC># specify "b"</FONT> 
+&gt;&gt;&gt; fillThree = fillTwo(3)    <FONT COLOR=#1111CC># specify "c"</FONT> 
+&gt;&gt;&gt; answer    = fillThree(5)  <FONT COLOR=#1111CC># specify "d"</FONT> 
+&gt;&gt;&gt; answer 
+657</PRE></div><p> 
+  The parallel with closures can be illustrated further by 
+  presenting the same simple tax-calculation program used in the 
+  earlier installment (this time using <code>curry()</code>): 
+</p> 
+<div class="code-sample"><h4>Python curried tax calculations</h4><PRE><FONT COLOR=#3333CC><B>from</B></FONT> functional <FONT COLOR=#3333CC><B>import</B></FONT> * 
+ 
+taxcalc = <FONT COLOR=#3333CC><B>lambda</B></FONT> income,rate,deduct: (income-(deduct))*rate 
+ 
+taxCurry = curry(taxcalc) 
+taxCurry = taxCurry(50000) 
+taxCurry = taxCurry(0.30) 
+taxCurry = taxCurry(10000) 
+<FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"Curried taxes due ="</FONT>,taxCurry 
+ 
+<FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"Curried expression taxes due ="</FONT>, \ 
+      curry(taxcalc)(50000)(0.30)(10000)</PRE></div><p> 
+  Unlike with closures, we need to curry the arguments in a 
+  specific order (left to right).  But note that <em><code>functional</code></em> 
+  also contains an <code>rcurry()</code> class that will start at the other 
+  end (right to left). 
+</p> 
+<p> 
+  The second <code>print</code> statement in the example at one level is a 
+  trivial spelling change from simply calling the normal 
+  <code>taxcalc(50000,0.30,10000)</code>.  But in a different level it makes 
+  rather clear the concept that every function can be a function 
+  of just one argument--a rather surprising idea to those new to 
+  it. 
+</p> 
+<h3>Miscellanous Higher-order Functions</h3> 
+ <p> 
+  Beyond the "fundamental" operation of currying, <em><code>functional</code></em> 
+  provides a grab-bag of interesting higher-order functions. 
+  Moreover, it is really not hard to write your own higher-order 
+  functions--either with or without <em><code>functional</code></em>.  The ones in 
+  <em><code>functional</code></em> provide some interesting ideas, at the least. 
+</p> 
+<p> 
+  For the most part, higher-order functions feel like "enhanced" 
+  versions of the standard <code>map()</code>, <code>filter()</code> and <code>reduce()</code>.  A 
+  lot of the time the pattern in these functions is roughly "take 
+  a function or functions and some lists as arguments, then apply 
+  the function(s) to list arguments."  There are a surprising 
+  number of interesting and useful ways to play on this theme. 
+  Another pattern is "take a collection of functions and create a 
+  function that combines their functionality."  Again, numerous 
+  variations are possible.  Let us look at some of what 
+  <em><code>functional</code></em> provides. 
+</p> 
+<p> 
+  The functions <code>seqential()</code> and <code>also()</code> both create a function 
+  based on a sequence of component functions.  The component 
+  functions can then be called with the same argument(s).  The 
+  main difference between the two is simply that <code>sequential()</code> 
+  expects a single list as an argument, while <code>also()</code> takes a 
+  list of arguments.  In most cases, these are useful for 
+  function side effects, but <code>sequential()</code> optionally lets you 
+  choose which function provides the combined return value: 
+</p> 
+<div class="code-sample"><h4>Sequential calls to functions (with same args)</h4><pre> 
+&gt;&gt;&gt; def a(x): 
+...     print x, 
+...     return "a" 
+... 
+&gt;&gt;&gt; def b(x): 
+...     print x*2, 
+...     return "b" 
+... 
+&gt;&gt;&gt; def c(x): 
+...     print x*3, 
+...     return "c" 
+... 
+&gt;&gt;&gt; r = also(a,b,c) 
+&gt;&gt;&gt; r 
+&lt;functional.sequential instance at 0xb86ac&gt; 
+&gt;&gt;&gt; r(5) 
+5 10 15 
+'a' 
+&gt;&gt;&gt; sequential([a,b,c],main=c)('x') 
+x xx xxx 
+'c' 
+ 
+</pre></div><p> 
+  The functions <code>disjoin()</code> and <code>conjoin()</code> are similar to 
+  <code>sequential()</code> and <code>also()</code> in terms of creating new functions 
+  that apply argument(s) to several component functions.  But 
+  <code>disjoin()</code> asks whether <em>any</em> component functions return true 
+  (given the argument(s)), and <code>conjoin()</code> asks whether <em>all</em> 
+  components return true.  Logical shortcutting is applied, where 
+  possible, so some side effects might not occur with 
+  <code>disjoin()</code>.  <code>joinfuncs()</code> is similar to <code>also()</code>, but returns 
+  a tuple of the components' return values rather than selecting 
+  a main one. 
+</p> 
+<p> 
+  Where the previous functions let you call multiple functions 
+  with the same argument(s), <code>any()</code>, <code>all()</code> and <code>none_of()</code> let 
+  you call the same function against a list of arguments.  In 
+  general structure, these are a bit like the builtin <code>map()</code>, 
+  <code>reduce()</code>, <code>filter()</code> functions.  But these particular 
+  higher-order functions from <em><code>functional</code></em> ask boolean questions 
+  about collections of return values.  For example: 
+</p> 
+<div class="code-sample"><h4>Ask about collections of return values</h4><pre> 
+&gt;&gt;&gt; from functional import * 
+&gt;&gt;&gt; isEven = lambda n: (n%2 == 0) 
+&gt;&gt;&gt; any([1,3,5,8], isEven) 
+1 
+&gt;&gt;&gt; any([1,3,5,7], isEven) 
+0 
+&gt;&gt;&gt; none_of([1,3,5,7], isEven) 
+1 
+&gt;&gt;&gt; all([2,4,6,8], isEven) 
+1 
+&gt;&gt;&gt; all([2,4,6,7], isEven) 
+0 
+ 
+</pre></div><p> 
+  A particularly interesting higher-order function for those with 
+  a little bit of mathematics background is <code>compose()</code>.  The 
+  composition of several functions is a "chaining together" of 
+  the return value of one function to the input of the next 
+  function.  The programmer who composes several functions is 
+  responsible for making sure the outputs and inputs match 
+  up--but then, that is true any time a programmer uses a return 
+  value.  A simple example makes it clear: 
+</p> 
+<div class="code-sample"><h4>Creating compositional functions</h4><pre> 
+&gt;&gt;&gt; def minus7(n): return n-7 
+... 
+&gt;&gt;&gt; def times3(n): return n*3 
+... 
+&gt;&gt;&gt; minus7(10) 
+3 
+&gt;&gt;&gt; minustimes = compose(times3,minus7) 
+&gt;&gt;&gt; minustimes(10) 
+9 
+&gt;&gt;&gt; times3(minus7(10)) 
+9 
+&gt;&gt;&gt; timesminus = compose(minus7,times3) 
+&gt;&gt;&gt; timesminus(10) 
+23 
+&gt;&gt;&gt; minus7(times3(10)) 
+23 
+ 
+ 
+</pre></div><h3>Until Next Time</h3> 
+ <p> 
+  I hope this latest look at higher-order functions will picque 
+  readers' interest in a certain style of thinking.  By all 
+  means, play with it.  Try to create some of your own 
+  higher-order functions; some might well prove useful and 
+  powerful.  Let me know how it goes, perhaps a later installment 
+  of this ad hoc series will discuss the novel and fascinating 
+  ideas that readers continue to provide. 
+</p> 
+<h3>Resources</h3> 
+ <p> 
+  The earlier installments of this series on functional 
+  programming in Python can be found at: 
+</p> 
+<blockquote> 
+   <a href="http://gnosis.cx/publish/programming/charming_python_13.html">http://gnosis.cx/publish/programming/charming_python_13.html</a> 
+</blockquote> 
+<blockquote> 
+   <a href="http://gnosis.cx/publish/programming/charming_python_16.html">http://gnosis.cx/publish/programming/charming_python_16.html</a> 
+</blockquote> 
+<p> 
+  Bryn Keller's "xoltar toolkit" which includes the module 
+  <em><code>functional</code></em> adds a large number of useful FP extensions to 
+  Python.  Since the <em><code>functional</code></em> module is itself written 
+  entirely in Python, what it does was already possible in Python 
+  itself.  But Keller has figured out a very nicely integrated 
+  set of extensions, with a lot of power in compact definitions. 
+  The toolkit can be found at: 
+</p> 
+<blockquote> 
+   <a href="http://sourceforge.net/projects/xoltar-toolkit">http://sourceforge.net/projects/xoltar-toolkit</a> 
+</blockquote> 
+<p> 
+  A good starting point for functional programming is the 
+  <cite>Frequently Asked Questions for comp.lang.functional</cite> : 
+</p> 
+<blockquote> 
+   <a href="http://www.cs.nott.ac.uk/~gmh//faq.html#functional-languages">http://www.cs.nott.ac.uk/~gmh//faq.html#functional-languages</a> 
+</blockquote> 
+<p> 
+  The author has found it much easier to get a grasp of 
+  functional programming via the language Haskell than in 
+  Lisp/Scheme (even though the latter is probably more widely 
+  used, if only in Emacs).  Other Python programmers might 
+  similarly have an easier time without quite so many parentheses 
+  and prefix (Polish) operators. 
+</p> 
+<blockquote> 
+   <a href="http://www.haskell.org/">http://www.haskell.org/</a> 
+</blockquote> 
+<p> 
+  An excellent introductory book is: 
+</p> 
+<blockquote> 
+    Haskell:  The Craft of Functional Programming (2nd Edition), 
+    Simon Thompson, Addison-Wesley (1999). 
+</blockquote> 
+<p> 
+  A book with a somewhat more applied feel which is an equally 
+  introduction to Haskell is: 
+</p> 
+<blockquote> 
+    The Haskell School of Expression:  Learning Functional 
+    Programming Through Multimeia, Paul Hudak, Cambridge 
+    University Press (2000). 
+</blockquote> 
+<h3>About The Author</h3> 
+ <p> 
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author"> 
+  Since conceptions without intuitions are empty, and intuitions 
+  without conceptions, blind, David Mertz wants a cast sculpture 
+  of Milton for his office.  Start planning for his birthday. 
+  David may be reached at mertz@gnosis.cx; his life pored over at 
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and recommendations on 
+  this, past, or future, columns are welcomed. 
+</p> 
+</body></html>

@@ -1,0 +1,277 @@
+XML MATTERS #10
+An Indexer for XML Documents
+
+David Mertz, Ph.D.
+Objectifier, Gnosis Software, Inc.
+April 2001
+
+    As XML becomes popular as a document storage format,
+    especially for prose-oriented documents, the task of locating
+    contents within XML document collections becomes more
+    difficult.  This column extends the generic full text indexer
+    presented in David's _Charming Python #15_ to include
+    XML-specific search and indexing features.  Discussions of
+    how indexing can take advantage of the hierarchical node
+    structure of XML is addressed in the tool design and in the
+    discussion.
+
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  In a technical sense, XML is a simplification and
+  specialization of SGML.  At a first approximation, XML
+  documents should also be valid SGML documents.  SGML, in turn,
+  has been used extensively for large-scale documents, in both
+  corporate and government circles.  One is likely to come across
+  multi-thousand page, multi-megabyte, documents for, e.g.
+  product specifications, regulatory requirements, and computer
+  system documentation in SGML formats.
+
+  Culturally, however, XML has evolved from a different
+  direction.  In one respect, XML is a successor for EDI; in
+  another respect, a successor for HTML.  But having a different
+  cultural history than SGML, XML is undergoing its own process
+  of tool development.  And at the same time, as XML is becoming
+  more popular, expect to see more and more of both (usally)
+  informal HTML documents and (usually) formal SGML documents to
+  migrate in the direction of XML formats--particularly using XML
+  dialects like DocBook.
+
+  One tool that XML has not yet grown within its own culture is
+  one to effectively and efficiently locate content within large
+  XML documents, or within large collections of XML documents.
+  General file-search tools like 'grep' on Unix, and other
+  similar tools on other platforms, are perfectly able to read
+  the plain text of XML documents (modulo possible Unicode
+  issues), but a simple 'grep' search (or even a complicated one)
+  miss the -structure- of XML documents.
+
+  If files contain thousands of pages of documentation, just
+  determining that a given file contains a word, phrase, or
+  regular expression only very loosely targets what you are
+  likely to know when searching for content in them.  Just which
+  of those agriculture reports, for example, was written by Ms.
+  June Apple?  One imagines a coarse tool like 'grep' would tend
+  to find a lot of things that are not the ones of interest.
+  Moreover, ad hoc tools like 'grep', while very efficient at
+  what they do, need to check the entire contents of large files
+  each time a search is performed.  For frequent searches,
+  repeated full-file searching is inefficient.
+
+
+EXTENDING [indexer]
+------------------------------------------------------------------------
+
+  In response to the need outlined above, I have created the
+  public-domain utility [xml_indexer].  This Python module can
+  both be used as a runtime utility and also easily extended by
+  custom applications that use its services.  [xml_indexer], in
+  turn, relies on the services of two earlier public-domain
+  utilities I have written about in IBM developerWorks articles:
+  [indexer] and [xml_objectify] (see Resources).
+
+  The "trick" [xml_indexer] uses is the same one XPATH uses.
+  Rather than treat XML documents as simply -things- in the
+  filesystem, we can pretend that the hierarchical nodes of an
+  XML document themselves look much like a hierarchical
+  filesystem.  For purposes of indexing, other than a need for a
+  little syntax to distinguish an XPATH from a filesystem path,
+  we can simply treat an XML node as if it were itself a text
+  file.  Fortunately, [indexer] was designed with enough
+  flexibility to use arbitrary identifiers in indexing texts.
+  Let's look at some search results:
+
+      #---------- Indexed search against XML nodes ------------#
+      [D:\articles] indexer ibm
+      /articles/tutor/cryptology3.xml::/section[1]/panel[2]/body/text_column/p[1]
+      /temp/Benchmark/Data/addr2.xml::/person[4]/contact_info/email/@address
+      /temp/Benchmark/Data/addr2.xml::/person[2]/contact_info/email/@address
+      /tools/addr2.xml::/person[4]/contact_info/email/@address
+      /tools/addr2.xml::/person[2]/contact_info/email/@address
+
+      5 file matched wordlist: ['ibm']
+      Processed in 0.320 seconds (SlicedZPickleIndexer)
+
+  As with XPATH, attribute values are preceded by an '@' mark,
+  and sibling nodes are enumerated within square brackets.  The
+  filesystem path to an XML document acts, in this context, like
+  an XPATH axis--roughly as a namespace.  For comparison, let's
+  peform a similar indexed search against a file database (some
+  additional search terms are used to keep the result list
+  reasonable):
+
+      #---------- Indexed search of email messages ------------#
+      [D:\articles] indexer ibm python xml indexer
+      D:\archive\mail\messages\tenco.cp15.2001-03-06.13+50+35
+      D:\archive\mail\messages\tenco.cp15.2001-03-01.07+57+26
+      D:\archive\mail\messages\tenco.cp15.2001-02-28.23+25+26
+
+      3 file matched wordlist: ['ibm', 'python', 'xml', 'indexer']
+      Processed in 2.530 seconds (SlicedZPickleIndexer)
+
+  While the first search is against a fairly trivial amount of
+  test data, the second search uses a "production" index against
+  about 100MB of archived email messages (stored in the
+  filesystem, one message per file).  Taking just a couple
+  seconds to search 100MB of files (for multiple simultaneous
+  word occurrences) is quite fast, methinks.
+
+  Moreover, while these searches utilize different index
+  databases (because they were done during a testing stage of
+  [xml_indexer]), there is no reason that a compound index of
+  text files and XML nodes cannot be created.  In such a case, it
+  is even possible (and probably often useful) to index each XML
+  file -both- as a collection of nodes and as a plain file.
+  After doing so, search results will show both types of
+  identifier, with the filesystem identifier obviously occurring
+  in every case that an XPATH in its namespace does.  For
+  example:
+
+      #---------- Indexed search of email messages ------------#
+      [D:\articles] indexer actresses
+      /temp/Benchmark/Data/addr_break.xml
+      /temp/Benchmark/Data/addr_break.xml::/person[3]/misc_info
+
+      2 file matched wordlist: ['actresses']
+      Processed in 0.070 seconds (SlicedZPickleIndexer)
+
+
+CREATING INDICES
+------------------------------------------------------------------------
+
+  In the above examples, readers will have noticed that in the
+  examples 'indexer' was used to perform searches, with no
+  mention of [xml_indexer].  This is because the very same index
+  search tool is used for searching index databases created by
+  [xml_indexer] as for those create by [indexer].  In fact
+  'indexer' is simply a call to 'python indexer.py ...' with the
+  command-line arguments passed in an OS-appropriate manner.
+  Creating or enhancing text-file indexes is also performed by
+  'indexer'--run 'indexer --help' or 'indexer /?' to get a
+  breakdown on the needed arguments and switches.  You can
+  recurse across directories when you add files to an index, and
+  also limited filename patterns in various ways.
+
+  At least for now, XML-node index databases are created using
+  the simpler 'xml_indexer.py' script.  As of this writing, just
+  a single XML document's nodes are added to an index database
+  at a time, by specifying its name as a command-line argument.
+  However, by the time you read this, the command-line syntax for
+  'xml_indexer.py' will probably be enhanced to look more like
+  that for 'indexer.py'.  Take a look at the output of
+  'python xml_indexer.py --help' before using it.
+
+
+SPECIFYING XPATHS
+------------------------------------------------------------------------
+
+  In order to give search results XPATH wildcard capabilities, a
+  '-filter' option has been added to [indexer].  XPATH functions,
+  however, are not currently supported in search results.  As a
+  transparent, and beneficial, side-effect, this same switch can
+  be used for filename globbing--just in case you are only
+  interested in matching files fulfilling some patterns.
+
+  Basically, the '/filter' option works exactly as you might
+  expect (adjust for different quoting syntax across shells).
+  You can specify that you are only interested in XPATH results
+  using the double colon in the filter.
+
+      #---------- Only return XPATH search results ------------#
+      [D:\articles] indexer "/filter=*::*" actresses
+      /temp/Benchmark/Data/addr_break.xml::/person[3]/misc_info
+
+      1 file matched wordlist: ['actresses']
+      Processed in 0.050 seconds (SlicedZPickleIndexer)
+-
+      #---------- Only return XML document as file ------------#
+      [D:\articles] indexer "/filter=*.xml" actresses
+      /temp/Benchmark/Data/addr_break.xml
+
+      1 file matched wordlist: ['actresses']
+      Processed in 0.050 seconds (SlicedZPickleIndexer)
+
+  More complicated XPATH specifiers are possible by specifying
+  the subelements and order required:
+
+      #-------- Show all the word matches in index ------------#
+      [D:\articles] indexer symmetric
+      /tutor/cryptology1.xml::/section[2]/panel[8]/title
+      /tutor/cryptology1.xml::/section[2]/panel[8]/body/text_column/code_listing
+      /tutor/cryptology1.xml::/section[2]/panel[7]/title
+      /tutor/cryptology1.xml::/section[2]/panel[7]/body/text_column/p[1]
+
+      4 file matched wordlist: ['symmetric']
+      Processed in 0.100 seconds (SlicedZPickleIndexer)
+-
+      #------- Limit matches to ones in a title element -------#
+      [D:\articles] indexer "-filter=*::/*/title" symmetric
+      /tutor/cryptology1.xml::/section[2]/panel[8]/title
+      /tutor/cryptology1.xml::/section[2]/panel[7]/title
+
+      2 file matched wordlist: ['symmetric']
+      Processed in 0.080 seconds (SlicedZPickleIndexer)
+
+
+CONCLUSION
+------------------------------------------------------------------------
+
+  It turned out that the design of [xml_indexer] was aided
+  enormously by the object-oriented design principles that went
+  into [indexer] before it.  With the overriding of just a few
+  methods in the 'GenericIndexer' class (actually, in its
+  descendent 'SlicedPickleIndexer'--but one could just as easily
+  mix in any concrete Indexer class), the use of an entirely new
+  set of identifiers and data source was possible.
+
+  Readers who wish to use [xml_indexer] as part of their own
+  larger Python projects should find its further specialization
+  equally simple.  I look forward to seeing the uses readers are
+  able to put these helpful base index classes to.
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  The [xml_indexer] module may be downloaded from:
+
+    http://gnosis.cx/download/xml_indexer.py
+
+  A general background discussion of the [indexer] module is
+  contained in _Charming Python #15:  Developing a Full-Text
+  Indexer in Python_:
+
+    http://gnosis.cx/publish/programming/charming_python_15.html
+
+  The [indexer] module itself may be found at:
+
+    http://gnosis.cx/download/indexer.py
+
+  In order to easily descend recursively through XML nodes, I
+  utilized the high-level Pythonic interface provided by
+  [xml_objectify].  However, it should be noted that until
+  recently, this option would not have been practical.  Older
+  versions of [xml_objectify] used DOM to read XML files, which
+  proves embarassingly slow for large XML documents (part of the
+  blame is on the way [xml_objectify] handles this DOM).  Costas
+  Malamas has provided an alternative parsing method that uses
+  the 'expat' parser and stream-oriented techniques.  This new
+  technique still has a few hickups with some complicated XML
+  documents, but in most cases works fine, and multiple orders of
+  magnitude faster.  You can find [xml_objectify] at:
+
+    http://gnosis.cx/download/xml_objectify.py
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author:  http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz must have mislaid his MacGuffin in one of his other
+  articles.  It is bound to show up again soon.  David may be
+  reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/.  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+
+

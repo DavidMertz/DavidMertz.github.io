@@ -1,0 +1,524 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>TUTORIAL FOR LPI EXAM 201: part 5 -- Topic 209: File Sharing Servers -- </title>
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Tutorial For Lpi Exam 201: Part 5</h1>
+<h2>Topic 209: File Sharing Servers</h2>
+ <br>
+<p>Brad Huntting and David Mertz<br>
+ Professional Neophytes<br>
+ July, 2005<br>
+ <br>
+</p>
+<blockquote>
+    Welcome to "File Sharing Servers", the fifth of eight tutorials
+    designed to prepare you for LPI exam 201. In this tutorial you will
+    learn how to use a Linux system as a networked file server, using
+    any of several protocols supported by Linux
+</blockquote>
+<h3>Before You Start</h3>
+ <h3>About this series
+</h3>
+ <p>
+  The Linux Professional Institute (LPI) certifies Linux system
+  administrators at junior and intermediate levels. There are two exams
+  at each certification level. This series of eight tutorials helps you
+  prepare for the first of the two LPI intermediate level system
+  administrator exams--LPI exam 201. A companion series of tutorials is
+  available for the other intermediate level exam--LPI exam 202. Both
+  exam 201 and exam 202 are required for intermediate level
+  certification. Intermediate level certification is also known as
+  certification level 2.
+</p>
+<p>
+  Each exam covers several or topics and each topic has a weight. The
+  weight indicate the relative importance of each topic. Very roughly,
+  expect more questions on the exam for topics with higher weight. The
+  topics and their weights for LPI exam 201 are:
+</p>
+<p>
+  <strong> Topic 201: Linux Kernel (5)
+  </strong> Topic 202: System Startup (5)
+  <strong> Topic 203: Filesystems (10)
+  </strong> Topic 204: Hardware (8)
+  <strong> Topic 209: File Sharing Servers (8)
+  </strong> Topic 211: System Maintenance (4)
+  <strong> Topic 213: System Customization and Automation (3)
+  </strong> Topic 214: Troubleshooting (6)
+</p>
+<h3>About this tutorial
+</h3>
+ <p>
+  Welcome to "File Sharing Servers", the fifth of eight tutorials
+  designed to prepare you for LPI exam 201. In this tutorial you will
+  learn how to use a Linux system as a networked file server, using
+  any of several protocols supported by Linux.
+</p>
+<p>
+  The current LPI guidelines for the specific Topic 209 exam cover NFS
+  and Samba. A system administrator designing a server configuration,
+  however, should also keep in mind whether FTP, SCP/SSH, HTTP, or other
+  protocols might, in fact, fit their specific requirements.
+</p>
+<h3>Prerequisites
+</h3>
+ <p>
+  To get the most from this tutorial, you should already have a basic
+  knowledge of Linux and a working Linux system on which you can
+  practice the commands covered in this tutorial.
+</p>
+<h3>About file servers
+</h3>
+ <p>
+  One of the most significant uses for Linux, particularly in a server
+  context, is providing shared files to client systems.  In fact, in a
+  general way, serving files is probably most of what all networking is
+  used for.  This tutorial--and in fact, this series of tutorials--will
+  not address peer-to-peer file sharing servers such as BitTorrent.
+  Rather, we will look only at older client-server arrangements: a
+  central server that provides disk stores for multiple clients.  Even
+  when clients upload files, those are always stored and served by the
+  server, rather than in a decentralized fashion.
+</p>
+<p>
+  Protocols widely used for file serving include HTTP (the WWW), TFTP
+  (trivial file transfer protocol), FTP (file transfer protocol), SCP
+  (secure copy; a specialized use of SSH), RCP (remote copy; generally
+  deprecated), NFS (network file system), and Samba (server message
+  block).  HTTP and SSH will be discussed in the tutorials for LPI exam
+  202, as will security issues around FTP.  TFTP and RCP are special
+  purpose or deprecated, and will not be addressed in these tutorials.
+</p>
+<p>
+  This tutorial looks at NFS and Samba in some detail, and briefly
+  describes FTP. NFS and Samba are network file sharing protocols that
+  allow mostly transparent access to remote filesystems.  FTP might
+  require a custom FTP client program, although many desktop
+  environments or tools (on Linux or otherwise) hide the details of this
+  negotiation, and effectively present the same user interface as an NFS
+  or Samba mounted drive.
+</p>
+<h3>Network File System</h3>
+ <h3>Using NFS on a client
+</h3>
+ <p>
+  If the server is properly configured, and the client has appropriate
+  permissions, mounting a remote filesystem with NFS requires only the
+  <code>mount</code> command:
+</p>
+<div class="code-sample"><h4></h4><pre>mount -t nfs my.nfs.server.com:/path/on/server /path/on/client
+
+</pre></div><p>
+  or a suitable entry in <code>/etc/fstab</code>:
+</p>
+<div class="code-sample"><h4></h4><pre>my.nfs.server.com:/path/on/server /path/on/client nfs rw,soft 0 0
+
+</pre></div><p>
+  The <code>soft</code> option tells the kernel to send an IO error (EIO) to user
+  processes in the event of network difficulties. The default <code>hard</code>
+  option will cause processes to hang while the nfs server is
+  unreachable.
+</p>
+<p>
+  In addition, the helper programs <code>rpc.lockd</code>, <code>rpc.statd</code>, and
+  <code>rpc.quotad</code> may be run on client and/or server.
+</p>
+<h3>Configuring an NFS server (part one)
+</h3>
+ <p>
+  An NFS server requires 3 distinct programs, as well as 3 optional
+  programs.
+</p>
+<p>
+  When an NFS client mounts an NFS file system, it contacts the
+  following server daemons, most of which must run stand alone (as
+  opposed to being started from <code>inetd</code>): <code>portmap</code> (sometimes named
+  <code>portmapper</code> or rpc.bind), <code>rpc.mountd</code> (sometimes <code>mounted</code>), and
+  <code>rpc.nfsd</code> (sometimes <code>nfsd</code>).
+</p>
+<p>
+  In addition, there are three optional helper programs <code>rpc.lockd</code>,
+  <code>rpc.statd</code>, and <code>rpc.quotad</code> which respectively provide global
+  locking, accelerate the <code>lstat</code> family of syscalls (used by <code>ls -l</code>,
+  etc), and provide support for quotas.
+</p>
+<h3>Configuring an NFS server (part two)
+</h3>
+ <p>
+  All three NFS related servers use "TCPwrappers" (i.e. <code>tcpd</code>) for
+  access control, and hence may require entries in <code>/etc/host.allow</code>.
+</p>
+<p>
+  Neither <code>nfsd</code> nor <code>portmap</code> normally require any configuration beyond
+  /etc/hosts.allow.
+</p>
+<p>
+  The configuration file for <code>mountd</code> is (indirectly) <code>/etc/exports</code>. It
+  says which filesystems can be mounted by which clients. Under the
+  Linux implementation of NFS, <code>/etc/exports</code> is not directly parsed by
+  <code>mountd</code>. Instead, the <code>exportfs -a</code> command parses <code>/etc/exports</code> and
+  writes the result to <code>/var/lib/nfs/xtab</code> where <code>mountd</code> can read it.
+  There are other flags to <code>exportfs</code> which allow these two files to be
+  desynchronized. That is, you may temporarily add or remove exported
+  directories without modifying the semi-permanent records in
+  <code>/etc/exports</code>.
+</p>
+<p>
+  Administrators of other Unix-like servers should note that the syntax
+  of the Linux <code>/etc/exports</code> file differs significantly from that of
+  SunOS or BSD.
+</p>
+<h3>Configuring /etc/hosts.allow and /etc/hosts.deny
+</h3>
+ <p>
+  The configuration file <code>/etc/hosts.allow</code> describes hosts that are
+  allowed to connect to a Linux system.  This configuration is not
+  specific to NFS, but a system needs to be permitted to connect in the
+  first place to use and NFS server.  Similarly, <code>/etc/hosts.deny</code> is a
+  list of hosts prohibited from connecting.
+</p>
+<p>
+  Slightly unintuitively, first allowed hosts are searched, then denied
+  hosts, but anything left unmatched is granted access.  This does not
+  mean that the login mechanisms of individual servers are not still
+  operative, but a cautious administrator might deny anything not
+  explicitly permitted (a little paranoia is good) by using:
+</p>
+<div class="code-sample"><h4></h4><pre># /etc/hosts.deny
+ALL:ALL EXCEPT localhost:DENY
+
+</pre></div><p>
+  With an <code>/etc/hosts.deny</code> set to deny everything (except connections
+  from LOCALHOST), only those connections explicitly permitted will be
+  allowed.  For example:
+</p>
+<div class="code-sample"><h4></h4><pre>#/etc/hosts.allow
+# Allow localhost and intra-net domain to use all servers
+ALL : 127.0.0.1, 192.168.
+# Let everyone ssh here except 216.73.92.* and .microsoft.com
+sshd: ALL EXCEPT 216.73.92. .microsoft.com : ALLOW
+# Let users in the *.example.net domain ftp in
+ftpd: .example.net
+
+</pre></div><h3>Configuring /etc/exports
+</h3>
+ <p>
+  Here's a sample /etc/export file:
+</p>
+<div class="code-sample"><h4></h4><pre># sample /etc/exports file
+/               master(rw) trusty(rw,no_root_squash)
+/projects       proj*.local.domain(rw)
+/usr            *.local.domain(ro) @trusted(rw)
+/home/joe       pc001(rw,all_squash,anonuid=150,anongid=100)
+/pub            (ro,insecure,all_squash)
+
+</pre></div><p>
+  Normally, <code>root</code> (uid 0) on the client is treated as <code>nobody</code> (uid
+  65534) on the server; this is called <code>root squashing</code> as it protects
+  files owned by root (and not group/other writable) from being altered
+  by NFS clients. The <code>no_root_squash</code> tag disables this behavior, and
+  allows the root user on <code>trusty</code> full access to the <code>/</code> partition.
+  This can be useful for installing and configuring software.
+</p>
+<p>
+  The <code>/usr</code> partition will be read only for all hosts except those in
+  the "trusted" netgroup.
+</p>
+<p>
+  When <code>/home/joe</code> is mounted by <code>pc001</code>, all remote users (regardless
+  of uid/gid) will be treated as if they have uid=150, gid=100. This is
+  useful if the remote NFS client is a single user workstation or does
+  not support different users (e.g. DOS).
+</p>
+<p>
+  Normally, Linux (and other Unix-like operating systems) reserves the
+  use of TCP and UDP ports 1-1023 (so called <code>secure ports</code>) for use by
+  processes running as root. To ensure that the root user has initiated
+  a remote NFS mount, the NFS server normally requires remote clients to
+  use "secure ports" when mounting NFS filesystems. This convention,
+  however, is not honored by some operating systems (notably Windows).
+  In such cases, the <code>insecure</code> option allows the NFS client to use any
+  TCP/UDP port. This is usually required when serving Windows clients.
+</p>
+<h3>NFS utilities
+</h3>
+ <p>
+  <code>nfsstat</code> displays a time series of NFS related statistics (client
+  and/or server) regarding the local machine similar to <code>iostat</code> and
+  <code>vmstat</code>.
+</p>
+<p>
+  The <code>showmount</code> command queries <code>mountd</code> and shows which clients are
+  currently mounting filesystems. As NFS is a stateless protocol, and
+  the <code>mountd</code> daemon is queried infrequently, the output of <code>showmount</code>
+  can become inaccurate.  Unfortunately, there is not really any way to
+  force <code>showmount</code> to become accurate.  However, where it is
+  inaccurate, <code>showmount</code> almost always errs in showing stale mounts
+  rather than omitting active mounts (i.e. relatively harmlessly).
+</p>
+<p>
+  In this context, "stateless" means that the <code>nfsd</code> daemons that serve
+  up the actual file data have no memory of which files are open, nor
+  even which clients have which partitions mounted. Each request
+  (readblock, writeblock, etc) contains all the information needed to
+  complete it (partition id provided by <code>mountd</code>, inode number, block
+  number(s), read/write/etc, data). The HTTP protocol is similar in this
+  respect. An upside of statelessness if the server reboots, the clients
+  will notice only a brief period of interrupted access.
+</p>
+<h3>Server Message Block</h3>
+ <h3>Samba server configuration
+</h3>
+ <p>
+  The Samba server <code>smbd</code> provides file and print services (largely for
+  Windows clients). While it can be started from <code>inetd</code>, it is
+  typically run as a stand alone daemon <code>smbd -D</code>. <code>nmbd</code> is the netbios
+  nameserver (or WINS server). It too can be run from <code>inetd</code>, but is
+  more typically run as a stand alone daemon <code>nmbd -D</code>. Samba can
+  function as a server in a Windows WORKGROUP, as well as Primary Domain
+  Controller.
+</p>
+<p>
+  The configuration file for both <code>smbd</code> and <code>nmbd</code> is
+  <code>/etc/samba/smb.conf</code>. Copious configuration parameters are described
+  in the <code>smb.conf</code> man page. The <code>lmhosts</code> file is used to map NetBios
+  names to IP addresses. It's format is similar to (but not identical
+  to) the <code>/etc/hosts</code> file.
+</p>
+<p>
+  There are several excellent HOWTOs on the subject of Samba
+  configuration as well as several books. This section touches on the
+  basic ideas with pointers to more complete documentation.
+</p>
+<h3>Setting up a home-directory file share
+</h3>
+ <p>
+  The following <code>smb.conf</code> snippet allows users to access their
+  (local) home directories from remote Samba clients:
+</p>
+<div class="code-sample"><h4></h4><pre>[homes]
+   comment = Home Directories
+   browseable = no
+
+</pre></div><p>
+  This is usually included in the default <code>smb.conf</code> file.
+</p>
+<h3>Setting up a print share with CUPS
+</h3>
+ <p>
+  Of the numerous Unix printing systems, CUPS is the least antiquated
+  and probably the currently most popular. Depending on your
+  distribution, CUPS may be enabled in the default <code>smb.conf</code>. Here is a
+  simple example of a CUPS print share:
+</p>
+<div class="code-sample"><h4></h4><pre>[global]
+  load printers = yes
+  printing = cups
+  printcap name = cups
+
+[printers]
+  comment = All Printers
+  path = /var/spool/samba
+  browseable = no
+  public = yes
+  guest ok = yes
+  writable = no
+  printable = yes
+  printer admin = root
+
+[print$]
+  comment = Printer Drivers
+  path = /etc/samba/drivers
+  browseable = yes
+  guest ok = no
+  read only = yes
+  write list = root
+
+</pre></div><p>
+  CUPS can provide <code>ppd</code> (Postscript printer description) files and
+  Windows drivers for clients, which, when setup properly, allow remote
+  users to take advantage of the full range of a printers features
+  (color versus black-and-white, resolution, paper tray select, double
+  vs single sided printing, etc). Traditional Unix printing systems are
+  quite cumbersome by comparison. Consult the <code>cupsaddsmb</code> man page for
+  more information.
+</p>
+<h3>Authentication
+</h3>
+ <p>
+  Samba (unlike NFS) requires individual users to authenticate with the
+  server. As with any network authentication service, care should be
+  taken to insure that passwords are never passed over the network
+  unencrypted. See the section on "encrypt passwords" in the <code>smb.conf</code>
+  man page for details.
+</p>
+<p>
+  There are a variety of mechanisms Samba can use to authenticate remote
+  users (clients). By their nature most of these are incompatible with
+  the standard Unix password hash. The notable exception is when
+  passwords are passed over the wire in the clear unencrypted, which is
+  almost always a bad idea.
+</p>
+<p>
+  Assuming you encrypt passwords on the wire, <code>smbpasswd</code> will usually
+  be used to setup users with an initial Samba password. The "Unix
+  password sync" option allows <code>smbpasswd</code> to change Unix passwords
+  whenever users change their Samba password.
+</p>
+<p>
+  Alternatively, the <code>pam_smb</code> module when configured can authenticate
+  Linux users using the Samba database directly. As if that's not enough
+  choices, LDAP can be used to authenticate Samba and/or Linux users.
+</p>
+<h3>Debugging Samba
+</h3>
+ <p>
+  When configuring a Samba server, the <code>testparm</code> (also called
+  <code>smbtestparm</code>) command can be quite useful. It will parse the
+  <code>smb.conf</code> file and report any problems.
+</p>
+<p>
+  The <code>nmblookup</code> command does for Samba what <code>nslookup</code> does for DNS;
+  it queries the NetBios directory. See the <code>nmblookup</code> man page for
+  more details.
+</p>
+<h3>Samba client configuration
+</h3>
+ <p>
+  The <code>smbclient</code> command provides FTP-like access to a Samba file
+  share. Transparent access to SMB file shares is trickier; see the
+  <code>smbmount</code> man page or the <code>sharity</code> package for more info.
+</p>
+<h3>File Transfer Protocol</h3>
+ <h3>About FTP
+</h3>
+ <p>
+  FTP is an old and widely used network protocol. FTP is normally run
+  over two separate ports, 20 and 21. Port 21 is used as a control
+  stream (transmitting login information and commands) while port 20 is
+  used as the data stream over which actual file content is transmitted.
+</p>
+<p>
+  Generally, FTP is not considered a very secure protocol in the sense
+  that in its default mode of operation, control information--i.e. login
+  passwords--are transmitted in the clear.  For that matter, data
+  streams are also unencrypted, but FTP shares that feature with NFS and
+  Samba (for secure data channels, SSH/SCP is a better choice).  It <strong>is</strong>
+  possible to layer FTP's control port over SSH, hence protecting
+  control information.
+</p>
+<p>
+  Traditional FTP clients provide their own shell environment over which
+  to transmit control commands and configure connections.  Sometimes GUI
+  frontends are used to provide friendlier interfaces to FTP transfers.
+  However, nowadays, many non-dedicated tools incorporate
+  FTP--everything from file managers to text editors are often happy to
+  work with files served by an FTP server.
+</p>
+<h3>Anonymous FTP
+</h3>
+ <p>
+  For what FTP is most often used for, its security usually does not
+  matter. Probably most often, FTP servers are used for "anonymous
+  FTP"--that is, data that is available to the world at large, and hence
+  does not require security. By convention, a username of <code>anonymous</code> is
+  configured to allow access, and an identifying password (often an
+  email address) is requested but not verified. Sometimes a
+  username/password is required, but such a combination is provided
+  without any deep user authentication (e.g. people who want to
+  volunteer for a project).
+</p>
+<p>
+  Most web browsers and many file managers and tools support FTP servers
+  transparently.  Often these tools will use an FTP URL to request a
+  file (or also to upload a file <strong>to</strong> a server).  For example, the
+  command line tool <code>wget</code> will retreive files from FTP servers using
+  e.g.:
+</p>
+<div class="code-sample"><h4></h4><pre>$ wget ftp://example.net/pub/somefile
+$ wget ftp://user:passwd@example.net/pub/somefile
+
+</pre></div><p>
+  File managers will often "mount" an FTP server in a manner that is
+  essentially identical to a local filesystem, or NFS or Samba drive
+  (this does not, however, use the <code>mount</code> and <code>/etc/fstab</code> system; and
+  such pseudo-partititions are usually named by their URL).
+</p>
+<h3>Choices of FTP servers
+</h3>
+ <p>
+  Given the age and ubiquity of FTP a bewildering number of
+  implementations are available, and installed with various Linux
+  distributions. Configuring the FTP server you decide to use will
+  require a visit to the documentation accompanying the particular
+  server.
+</p>
+<p>
+  Some popular Linux FTP servers include <code>wu-ftpd</code>, <code>vsftpd</code>, <code>ProFTPd</code>,
+  <code>BSD ftpd</code>, and TUX FTP.  There are many less used ones as well.  In
+  most every case, the configuration of a server will live in a file
+  like <code>/etc/FOOftpd.conf</code> (for an appropriate value of "FOO").  I am
+  fond of <code>vsftpd</code>, which is both fast and avoids known security
+  glitches (the "vs" stands for "very secure").
+</p>
+<h3>A sample FTPd configuration file
+</h3>
+ <p>
+  Given the wealth of servers, configuration syntaxes will differ.  But
+  a few concepts taken from <code>/etc/vsftpd.conf</code> illustrate the types of
+  options other servers provide.  For <code>vsftpd</code> each option takes the
+  form "option=value", with the usual hash marks for comment lines.
+  Most other FTPd configuration files are similar.
+</p>
+<p>
+  <strong> anonymous_enable: Controls whether anonymous logins are permitted.
+  </strong> anon_world_readable_only: When enabled, anonymous users will only be
+</p>
+<blockquote>
+    allowed to download world-readable files.
+</blockquote>
+<p>
+  * chroot_local_user: If enabled, local users will be placed in a
+</p>
+<blockquote>
+    chroot() jail in their home directory after login.
+</blockquote>
+<p>
+  * pasv_enable: Should the server use the "passive FTP" style in which
+</p>
+<blockquote>
+    clients initiate ports (helps with firewalls at clients).
+</blockquote>
+<p>
+  <strong> ssl_enable: If enabled, vsftpd will support SSL secure connections.
+  </strong> tcp_wrappers: If  enabled incoming connections will be fed through
+</p>
+<blockquote>
+    access control (i.e. <code>/etc/hosts.allow</code> and <code>/etc/hosts.deny</code>.
+</blockquote>
+<h3>Launching an FTP server
+</h3>
+ <p>
+  In the simplest case, you may start an FTP server the same way you
+  might launch any daemon, e.g.:
+</p>
+<div class="code-sample"><h4></h4><pre>% sudo vsftpd
+
+</pre></div><p>
+  At this point the server will listen for incoming connections,
+  according the rules configured in its configuration file.  You may
+  also launch an FTP server from an "network super-server" such as
+  <code>inetd</code> or <code>xinetd</code>.  The LPI 202 tutorials will discuss these
+  super-servers.
+</p>
+<p>
+  Launching a daemon individually, even if in appropiate startup
+  scripts--either for a particular runlevel or in <code>/etc/rcS.d/</code>--gives
+  you finer control over the behavior of an FTP server.
+</p>
+</body></html>

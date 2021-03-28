@@ -1,0 +1,447 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>CHARMING PYTHON #B16: Testing Frameworks in Python. -- Making sure your software does what you think it does -- </title>
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Charming Python #b16: Testing Frameworks In Python.</h1>
+<h2>Making sure your software does what you think it does</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Random Traveller, Gnosis Software, Inc.<br>
+ March, 2004<br>
+ <br>
+</p>
+<blockquote>
+    Python comes with two standard modules for unit testings: <em><code>unittest</code></em>
+    and <em><code>doctest</code></em>. These modules expand on the capability of the
+    built-in <code>assert</code> statement, which is used for validation of
+    pre-conditions and post-conditions within functions. This
+    installment discusses the best ways to incorporate testing into
+    Python development, weighing the advantages of different styles for
+    different types of projects.
+</blockquote>
+<h3>About Unit Testing</h3>
+ <p>
+  I have a confession. Even as the author of a fairly widely used public
+  domain Python library, I have been far less than systematic in
+  including unit tests for my modules. In fact, the bulk of those tests
+  that <em>are</em> included in Gnosis Utilities fall under gnosis.xml.pickle,
+  and were written by a contributor to that subpackage. I have found
+  that the large majority of third-party Python packages I donwnload
+  also lack a thorough unit test collection.
+</p>
+<p>
+  Moreover, the tests that exist in Gnosis Utilities suffer from another
+  flaw: you often need to understand the expected output in a fair
+  amount of detail to even know whether a test succeeds or fails. What
+  passes as tests are actually--in many cases--more like small utilities
+  that utilize parts of the library. These tests/utilities allow input
+  from arbitrary data sources (of the right type) and/or output in
+  descriptive data formats. These test utilities are actually rather
+  useful when you need to debug some subtle error. But as
+  self-explanatory sanity checks of changes between library versions,
+  these kinds of tests do not succeed.
+</p>
+<p>
+  In this installment, I try to improve the tests in my utility
+  collection using the Python standard library modules <em><code>doctest</code></em> and
+  <em><code>unittest</code></em>, and walk readers through my experience (with a few
+  pointers on best approaches).
+</p>
+<p>
+  The script <code>gnosis/xml/objectify/test/test_basic.py</code> provides a
+  typical example of both currrent testing weaknesses and their
+  solution. Let us look at a recent version of the script:
+</p>
+<div class="code-sample"><h4>gnosis/xml/objectify/test/test_basic.py</h4><PRE><FONT COLOR=#115511>"Read and print and objectified XML file"</FONT>
+<FONT COLOR=#3333CC><B>import</B></FONT> sys
+<FONT COLOR=#3333CC><B>from</B></FONT> gnosis.xml.objectify <FONT COLOR=#3333CC><B>import</B></FONT> XML_Objectify, pyobj_printer
+<FONT COLOR=#3333CC><B>if</B></FONT> len(sys.argv) &gt; 1:
+    <FONT COLOR=#3333CC><B>for</B></FONT> filename <FONT COLOR=#3333CC><B>in</B></FONT> sys.argv[1:]:
+        <FONT COLOR=#3333CC><B>for</B></FONT> parser <FONT COLOR=#3333CC><B>in</B></FONT> (<FONT COLOR=#115511>'DOM'</FONT>,<FONT COLOR=#115511>'EXPAT'</FONT>):
+            <FONT COLOR=#3333CC><B>try</B></FONT>:
+                xml_obj = XML_Objectify(filename, parser=parser)
+                py_obj = xml_obj.make_instance()
+                <FONT COLOR=#3333CC><B>print</B></FONT> pyobj_printer(py_obj).encode(<FONT COLOR=#115511>'UTF-8'</FONT>)
+                sys.stderr.write(<FONT COLOR=#115511>"++ SUCCESS (using "</FONT>+parser+<FONT COLOR=#115511>")\n"</FONT>)
+                <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"="</FONT>*50
+            <FONT COLOR=#3333CC><B>except</B></FONT>:
+                sys.stderr.write(<FONT COLOR=#115511>"++ FAILED (using "</FONT>+parser+<FONT COLOR=#115511>")\n"</FONT>)
+                <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"="</FONT>*50
+<FONT COLOR=#3333CC><B>else</B></FONT>:
+    <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"Please specify one or more XML files to Objectify."</PRE></FONT></div><p>
+  The utility function <code>pyobj_printer()</code> produces a non-XML
+  representation of arbitrary Python object--specifically one that does
+  not use any other facilities of <em><code>gnosis.xml.objectify</code></em> (nor <em>anything</em>
+  else from Gnosis Utilities). I will probably move the function
+  elsewhere within the Gnosis package for later releases. In any case,
+  <code>pyobj_printer()</code> uses various Python-like indentation and symbols to
+  describe objects and their attributes (similar to <em><code>pprint</code></em>, but
+  expanding instances rather than built-in datatypes).
+</p>
+<p>
+  The script <code>test_basic.py</code> provides a good debugging tool if some
+  particular XML does not seem to get "objectified" right--you can
+  inspect visually exactly what attributes and values the resultant
+  object has.  Moreover, if you redirect STDOUT, you can look at the
+  simple messages on STDERR, e.g.
+</p>
+<div class="code-sample"><h4>Examining STDERR result messages</h4><pre>
+$ python test_basic.py testns.xml &gt; /dev/null
+++ SUCCESS (using DOM)
+++ FAILED (using EXPAT)
+
+</pre></div><p>
+  However, success or failure in the above example run are defined very
+  weakly: success just means no exception was raised, not that the
+  (redirected) output was <em>correct</em>.
+</p>
+<h3>Using Doctest</h3>
+ <p>
+  The module <em><code>doctest</code></em> lets you embed comments within docstrings that
+  show the desired behavior of various statements, especially function
+  and method results. To do this is mostly just a matter of making the
+  docstring look like an interactive shell session; and easy way to do
+  that is to copy-and-paste from a Python interactive shell (or from
+  Idle, PythonWin, MacPython, or other IDEs with interactive sessions).
+  Let us look at an improved <code>test_basic.py</code> script to illustrate:
+</p>
+<div class="code-sample"><h4>test_basic.py script with self-diagnostics</h4><PRE><FONT COLOR=#3333CC><B>import</B></FONT> sys
+<FONT COLOR=#3333CC><B>from</B></FONT> gnosis.xml.objectify <FONT COLOR=#3333CC><B>import</B></FONT> XML_Objectify, pyobj_printer, EXPAT, DOM
+LF = <FONT COLOR=#115511>"\n"</FONT>
+
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="show"><FONT COLOR=#CC0000><B> show</B></FONT></A>(xml_src, parser):
+    <FONT COLOR=#115511>"""Self test using simple or user-specified XML data
+
+    &gt;&gt;&gt; xml = '''&lt;?xml version="1.0"?&gt;
+    ...  &lt;!DOCTYPE Spam SYSTEM "spam.dtd" &gt;
+    ...  &lt;Spam&gt;
+    ...    &lt;Eggs&gt;Some text about eggs.&lt;/Eggs&gt;
+    ...    &lt;MoreSpam&gt;Ode to Spam&lt;/MoreSpam&gt;
+    ...  &lt;/Spam&gt;'''
+    &gt;&gt;&gt; squeeze = lambda s: s.replace(LF*2,LF).strip()
+    &gt;&gt;&gt; print squeeze(show(xml,DOM)[0])
+    -----* _XO_Spam *-----
+    {Eggs}
+       PCDATA=Some text about eggs.
+    {MoreSpam}
+       PCDATA=Ode to Spam
+    &gt;&gt;&gt; print squeeze(show(xml,EXPAT)[0])
+    -----* _XO_Spam *-----
+    {Eggs}
+       PCDATA=Some text about eggs.
+    {MoreSpam}
+       PCDATA=Ode to Spam
+    PCDATA=
+    """</FONT>
+    <FONT COLOR=#3333CC><B>try</B></FONT>:
+        xml_obj = XML_Objectify(xml_src, parser=parser)
+        py_obj = xml_obj.make_instance()
+        <FONT COLOR=#3333CC><B>return</B></FONT> (pyobj_printer(py_obj).encode(<FONT COLOR=#115511>'UTF-8'</FONT>),
+                <FONT COLOR=#115511>"++ SUCCESS (using "</FONT>+parser+<FONT COLOR=#115511>")\n"</FONT>)
+    <FONT COLOR=#3333CC><B>except</B></FONT>:
+        <FONT COLOR=#3333CC><B>return</B></FONT> (<FONT COLOR=#115511>""</FONT>,<FONT COLOR=#115511>"++ FAILED (using "</FONT>+parser+<FONT COLOR=#115511>")\n"</FONT>)
+
+<FONT COLOR=#3333CC><B>if</B></FONT> __name__ == <FONT COLOR=#115511>"__main__"</FONT>:
+    <FONT COLOR=#3333CC><B>if</B></FONT> len(sys.argv)==1 <FONT COLOR=#3333CC><B>or</B></FONT> sys.argv[1]==<FONT COLOR=#115511>"-v"</FONT>:
+        <FONT COLOR=#3333CC><B>import</B></FONT> doctest, test_basic
+        doctest.testmod(test_basic)
+    <FONT COLOR=#3333CC><B>elif</B></FONT> sys.argv[1] <FONT COLOR=#3333CC><B>in</B></FONT> (<FONT COLOR=#115511>'-h'</FONT>,<FONT COLOR=#115511>'-help'</FONT>,<FONT COLOR=#115511>'--help'</FONT>):
+        <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"You may specify XML files to objectify instead of self-test"</FONT>
+        <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"(Use '-v' for verbose output, otherwise no message means success)"</FONT>
+    <FONT COLOR=#3333CC><B>else</B></FONT>:
+        <FONT COLOR=#3333CC><B>for</B></FONT> filename <FONT COLOR=#3333CC><B>in</B></FONT> sys.argv[1:]:
+            <FONT COLOR=#3333CC><B>for</B></FONT> parser <FONT COLOR=#3333CC><B>in</B></FONT> (DOM, EXPAT):
+                output, message = show(filename, parser)
+                <FONT COLOR=#3333CC><B>print</B></FONT> output
+                sys.stderr.write(message)
+                <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"="</FONT>*50</PRE></div><p>
+  There are several things worth noting about the improved (and
+  expanded) test script.  I arranged the <code><cite>_main_</cite></code> block so that if you
+  specify XML files on the command line, the script continues to
+  implement the prior behavior.  This lets you continue to check XML
+  other than the test case, and eyeball the result--either to find
+  errors in what gnosis.xml.objectify does, or just to understand its
+  purpose.  In standard fashion, <code>-h</code> or <code>--help</code> get you an explanation
+  of usage.
+</p>
+<p>
+  The interesting new functionality comes when <code>test_basic.py</code> is run
+  with no arguments (or with the <code>-v</code> argument that simply gets obeyed
+  by <em><code>doctest</code></em> in its turn).  In this case we run <em><code>doctest</code></em> on the
+  module/script itself--you can see from the fact that we import
+  <code>test_basic</code> into the scripts own namespace that we could just as
+  easily import some other module that we wanted to test.  The function
+  <code>doctest.testmod()</code> looks through all the docstrings in the module
+  itself, its functions, and its classes, to find anything that
+  resembles an interactive shell session; in this case, such a session
+  is found in the <code>show()</code> function.
+</p>
+<p>
+  The docstring to <code>show()</code> illustrates a couple minor gotchas in
+  designing good <em><code>doctest</code></em> sessions. Unfortunately, the way <em><code>doctest</code></em>
+  parses apparent sessions treats blank lines as ending sessions--so
+  output like the return value of <code>pyobj_printer()</code> needs to be munged
+  slightly to be tested. The easiest approach is a function like
+  <code>squeeze()</code>, defined in the docstring itself (it just removes adjacent
+  newlines). Also, since a docstring is--after all--a string escape
+  sequences like <code>\n</code> are expanded, which makes it slightly confusing to
+  escape a newline <em>within</em> the code sample.  You could use <code>\\n</code>, but I
+  found defining <code>LF</code> to clarify things.
+</p>
+<p>
+  The self-test defined in the docstring to <code>show()</code> does a bit more
+  than merely make sure no exception is raised (as with the initial
+  test script).  At least one simple XML document is checked for correct
+  "objectification."  Of course, it is still possible that some other
+  XML document would not be processed correctly--for example, the
+  namespace XML document <code>testns.xml</code> that we tried above fails with the
+  EXPAT parser.  The docstrings in processed by <em><code>doctest</code></em> <em>can</em> contain
+  tracebacks within them, but a better approach to special cases is to
+  utilize <em><code>unittest</code></em>.
+</p>
+<h3>Using Unittest</h3>
+ <p>
+  Another test included with <em><code>gnosis.xml.objectify</code></em> is <code>test_expat.py</code>.
+  The main reason for this test is simply that users of the subpackage
+  who use the EXPAT parser currently need to call a special setup
+  function to enable processing XML documents with namespaces (this fact
+  is evolutionary rather than designed, and might change later). The old
+  test tried printing the object without the setup, caught the exception
+  if it occurs, then prints with the setup if needed (and gives a
+  message about what happened).
+</p>
+<p>
+  As with <code>test_basic.py</code> the tool <code>test_expat.py</code> lets you examine how
+  a novel XML document is represented by <em><code>gnosis.xml.objectify</code></em>. But as
+  before, there are a number of concrete behaviors that we would like to
+  verify. An enhanced and expanded version of <code>test_expat.py</code> uses
+  <em><code>unittest</code></em> to check what happens when various actions are performed,
+  including assertions that certain conditions or (approximate)
+  equalities hold, or that certain exceptions are raised when expected.
+  Let us take a look:
+</p>
+<div class="code-sample"><h4>test_expat.py script with self-diagnostics</h4><PRE><FONT COLOR=#115511>"Objectify using Expat parser, namespace setup where needed"</FONT>
+
+<FONT COLOR=#3333CC><B>import</B></FONT> unittest, sys, cStringIO
+<FONT COLOR=#3333CC><B>from</B></FONT> os.path <FONT COLOR=#3333CC><B>import</B></FONT> isfile
+<FONT COLOR=#3333CC><B>from</B></FONT> gnosis.xml.objectify <FONT COLOR=#3333CC><B>import</B></FONT> make_instance, config_nspace_sep,\
+                                 XML_Objectify
+BASIC, NS = <FONT COLOR=#115511>'test.xml'</FONT>,<FONT COLOR=#115511>'testns.xml'</FONT>
+
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="Prerequisite"><FONT COLOR=#CC0000><B> Prerequisite</B></FONT></A>(unittest.TestCase):
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="testHaveLibrary"><FONT COLOR=#CC0000><B> testHaveLibrary</B></FONT></A>(self):
+        <FONT COLOR=#115511>"Import the gnosis.xml.objectify library"</FONT>
+        <FONT COLOR=#3333CC><B>import</B></FONT> gnosis.xml.objectify
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="testHaveFiles"><FONT COLOR=#CC0000><B> testHaveFiles</B></FONT></A>(self):
+        <FONT COLOR=#115511>"Check for sample XML files, NS and BASIC"</FONT>
+        self.failUnless(isfile(BASIC))
+        self.failUnless(isfile(NS))
+
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="ExpatTest"><FONT COLOR=#CC0000><B> ExpatTest</B></FONT></A>(unittest.TestCase):
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="setUp"><FONT COLOR=#CC0000><B> setUp</B></FONT></A>(self):
+        self.orig_nspace = XML_Objectify.expat_kwargs.get(<FONT COLOR=#115511>'nspace_sep'</FONT>,<FONT COLOR=#115511>''</FONT>)
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="testNoNamespace"><FONT COLOR=#CC0000><B> testNoNamespace</B></FONT></A>(self):
+        <FONT COLOR=#115511>"Objectify namespace-free XML document"</FONT>
+        o = make_instance(BASIC)
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="testNamespaceFailure"><FONT COLOR=#CC0000><B> testNamespaceFailure</B></FONT></A>(self):
+        <FONT COLOR=#115511>"Raise SyntaxError on non-setup namespace XML"</FONT>
+        self.assertRaises(SyntaxError, make_instance, NS)
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="testNamespaceSuccess"><FONT COLOR=#CC0000><B> testNamespaceSuccess</B></FONT></A>(self):
+        <FONT COLOR=#115511>"Sucessfully objectify NS after setup"</FONT>
+        config_nspace_sep(None)
+        o = make_instance(NS)
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="testNspaceBasic"><FONT COLOR=#CC0000><B> testNspaceBasic</B></FONT></A>(self):
+        <FONT COLOR=#115511>"Successfully objectify BASIC despite extra setup"</FONT>
+        config_nspace_sep(None)
+        o = make_instance(BASIC)
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="tearDown"><FONT COLOR=#CC0000><B> tearDown</B></FONT></A>(self):
+        XML_Objectify.expat_kwargs[<FONT COLOR=#115511>'nspace_sep'</FONT>] = self.orig_nspace
+
+<FONT COLOR=#3333CC><B>if</B></FONT> __name__ == <FONT COLOR=#115511>'__main__'</FONT>:
+    <FONT COLOR=#3333CC><B>if</B></FONT> len(sys.argv) == 1:
+        unittest.main()
+    <FONT COLOR=#3333CC><B>elif</B></FONT> sys.argv[1] <FONT COLOR=#3333CC><B>in</B></FONT> (<FONT COLOR=#115511>'-q'</FONT>,<FONT COLOR=#115511>'--quiet'</FONT>):
+        suite = unittest.TestSuite()
+        suite.addTest(unittest.makeSuite(Prerequisite))
+        suite.addTest(unittest.makeSuite(ExpatTest))
+        out = cStringIO.StringIO()
+        results = unittest.TextTestRunner(stream=out).run(suite)
+        <FONT COLOR=#3333CC><B>if</B></FONT> <FONT COLOR=#3333CC><B>not</B></FONT> results.wasSuccessful():
+            <FONT COLOR=#3333CC><B>for</B></FONT> failure <FONT COLOR=#3333CC><B>in</B></FONT> results.failures:
+                <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"FAIL:"</FONT>, failure[0]
+            <FONT COLOR=#3333CC><B>for</B></FONT> error <FONT COLOR=#3333CC><B>in</B></FONT> results.errors:
+                <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"ERROR:"</FONT>, error[0]
+    <FONT COLOR=#3333CC><B>elif</B></FONT> sys.argv[1].startswith(<FONT COLOR=#115511>'-'</FONT>):   <FONT COLOR=#1111CC># pass args to unittest</FONT>
+        unittest.main()
+    <FONT COLOR=#3333CC><B>else</B></FONT>:
+        <FONT COLOR=#3333CC><B>from</B></FONT> gnosis.xml.objectify <FONT COLOR=#3333CC><B>import</B></FONT> pyobj_printer as show
+        config_nspace_sep(None)
+        <FONT COLOR=#3333CC><B>for</B></FONT> fname <FONT COLOR=#3333CC><B>in</B></FONT> sys.argv[1:]:
+            <FONT COLOR=#3333CC><B>print</B></FONT> show(make_instance(fname)).encode(<FONT COLOR=#115511>'UTF-8'</FONT>)</PRE></div><p>
+  Using <em><code>unittest</code></em> adds quite a few capabilities to the simpler
+  <em><code>doctest</code></em> style. We can divide our tests into several classes, each
+  inheriting from <code>unittest.TestCase</code>. Within each test class, every
+  method whose name begins with ".test" is considered another test. The
+  two extra classes defined for <code>ExpatTest</code> are interesting: <code>.setUp()</code>
+  is run prior to each test performed with the class, and <code>.tearDown()</code>
+  is run at the end of the test (whether the test succeeds, fails, or
+  raises an error). In our case above we perform a bit of bookkeeping
+  around the special <code>expat_kwargs</code> dictionary to make sure each test
+  runs independently.
+</p>
+<p>
+  The distinction between failures and errors is important, by the way.
+  A test can fail because some specific assertion does not
+  hold (assertion methods either start with ".fail" or ".assert").  In a
+  sense, failures are expected--at least in the sense we have
+  specifically checked for them.  Errors, on the other hand, are
+  unexpected problems--since we do not know in advance what can go
+  wrong, we will need to examine the traceback in the actual test run to
+  diagnose such problems.  However, we can plan failures to give hints
+  on diagnosing errors.  For example, if <code>Prerequisite.haveFiles()</code>
+  fails, that will show up as errors in some of the <code>TestExpat</code> tests;
+  if the former succeeds, that tells you to look elsewhere for the
+  source of the error(s).
+</p>
+<p>
+  A particular test method within a <code>unittest.TestCase</code> derived class
+  may contain some <code>.assert...()</code> or <code>.fail...()</code> methods, but it may
+  also simply carry out a series of actions that we believe should run
+  successfully.  If the test method does not run as anticipated, we will
+  get an error (and a traceback describing the error).
+</p>
+<p>
+  The <code><cite>_main_</cite></code> block in <code>test_expat.py</code> is worth looking over also.
+  In the simplest case, we can run the test cases using just
+  <code>unittest.main()</code> which figures out what needs to be run.  Done this
+  way, the <em><code>unittest</code></em> module will accept a <code>-v</code> option for more verbose
+  output.  With filename(s) specified we print out representations of
+  the named XML file(s) after performing namespace setup, thereby
+  maintaining rough backward compatibility with older versions of the
+  tool.
+</p>
+<p>
+  The most interesting branch of <code><cite>_main_</cite></code> is the one that looks for
+  the <code>-q</code> or <code>--quiet</code> flags.  As you would expect, this branch is
+  quiet unless failures or errors occur.  Moreover, being quiet, only a
+  one-line report of where the failure/error is shown for each problem,
+  not a whole diagnostic traceback.  Aside from the direct utility of
+  the quiet output style, the branch illustrates custom testing against
+  test suites and control of result reporting.  The somewhat wordy
+  default output of <code>unittest.TextTestRunner()</code> is directed to the
+  StringIO <code>out</code>--if you want to see it, you are welcome to poke at
+  <code>out.getvalue()</code>.  But the <code>result</code> object lets us test for overall
+  success, and process the failures and errors if success was not total.
+  Obviously, being values in variables, you could easily log the
+  contents of the <code>result</code> object, send the as email, display them in a
+  GUI, or whatever, rather than simply print to STDOUT.
+</p>
+<h3>Combining Tests</h3>
+ <p>
+  Perhaps the nicest feature of the <em><code>unittest</code></em> framework is that it lets
+  you easily combine tests contained in different modules. With Python
+  2.3+, in fact, you can even convert <em><code>doctest</code></em> tests into <em><code>unittest</code></em>
+  suites. Let us combine the tests we have created so far into a script
+  <code>test_all.py</code> (admittedly an exageration for what we test so far):
+</p>
+<div class="code-sample"><h4>test_all.py combined unit tests</h4><PRE><FONT COLOR=#115511>"Combine tests for gnosis.xml.objectify package (req 2.3+)"</FONT>
+<FONT COLOR=#3333CC><B>import</B></FONT> unittest, doctest, test_basic, test_expat
+suite = doctest.DocTestSuite(test_basic)
+suite.addTest(unittest.makeSuite(test_expat.Prerequisite))
+suite.addTest(unittest.makeSuite(test_expat.ExpatTest))
+unittest.TextTestRunner(verbosity=2).run(suite)</PRE></div><p>
+  Since <code>test_expat.py</code> simply contains test classes, they can easily be
+  added to the local test suite.  The function <code>doctest.DocTestSuite()</code>
+  performs the conversion of a docstring test.  Let's see what
+  <code>test_all.py</code> does when run:
+</p>
+<div class="code-sample"><h4>Successful output from test_all.py</h4><PRE>$ python2.3 test_all.py
+doctest of test_basic.show ... ok
+Check <FONT COLOR=#3333CC><B>for</B></FONT> sample XML files, NS <FONT COLOR=#3333CC><B>and</B></FONT> BASIC ... ok
+Import the gnosis.xml.objectify library ... ok
+Raise SyntaxError on non-setup namespace XML ... ok
+Sucessfully objectify NS after setup ... ok
+Objectify namespace-free XML document ... ok
+Successfully objectify BASIC despite extra setup ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests <FONT COLOR=#3333CC><B>in</B></FONT> 0.052s
+
+OK</PRE></div><p>
+  Notice the descriptions of the tests performed: in the case of the
+  <em><code>unittest</code></em> test methods their description is taken from the
+  corresponding function docstring.  If you do not specify a docstring,
+  the module, class and method names are used as best-available
+  descriptions.  It is also intersting to see what we get if some tests
+  fail (trimming the traceback details for this article):
+</p>
+<div class="code-sample"><h4></h4><pre>$ mv testns.xml testns.xml# &amp;&amp; python2.3 test_all.py 2&gt;&amp;1 | head -7
+doctest of test_basic.show ... ok
+Check for sample XML files, NS and BASIC ... FAIL
+Import the gnosis.xml.objectify library ... ok
+Raise SyntaxError on non-setup namespace XML ... ERROR
+Sucessfully objectify NS after setup ... ERROR
+Objectify namespace-free XML document ... ok
+Successfully objectify BASIC despite extra setup ... ok
+
+</pre></div><p>
+  Incidentally, the final line written to STDERR on this failure is
+  "FAILED (failures=1, errors=2)" which makes a good summary if you want
+  such (compare with the final "OK" for success).
+</p>
+<h3>Working From Here</h3>
+ <p>
+  For this article I have merely looked at some typical usage of
+  <em><code>unittest</code></em> and <em><code>doctest</code></em> by way of improving some tests in my own
+  software.  Take a look at the Python documentation for more details on
+  the full range of methods available to test suites, test cases, and
+  test results.  All of them follow the pattern of the example
+  presented, however.
+</p>
+<p>
+  Committing yourself to the methodology provided by Python's standard
+  testing modules is good software practice. Test-driven development is
+  a mantra in many software circles; I do not wish to weigh in strongly
+  on such methodological disputes right here, but clearly Python is a
+  language well suited to the test-driven model. Moreover, a package or
+  library that is accompanied by a well considered set of tests is
+  simply more useful to users than is one lacking them, if for no other
+  reason than that the package is more likely to work as intended.
+</p>
+<h3>Resources</h3>
+ <p>
+  The documentation accompanying Python's standard library is really the
+  best place to look for up-to-date details on <em><code>unittest</code></em>:
+</p>
+<blockquote>
+   <a href="http://www.python.org/doc/current/lib/module-unittest.html">http://www.python.org/doc/current/lib/module-unittest.html</a>
+</blockquote>
+<p>
+  And on <em><code>doctest</code></em>:
+</p>
+<blockquote>
+   <a href="http://www.python.org/doc/current/lib/module-doctest.html">http://www.python.org/doc/current/lib/module-doctest.html</a>
+</blockquote>
+<p>
+  The PyUnit website is worth looking at for supplemtary modules.  The
+  <em><code>unittest</code></em> module is derived from the formerly independent <em><code>PyUnit</code></em>.
+  The older project site still has links to tools not including in
+  <em><code>unittest</code></em> such as GUI front-ends for testing:
+</p>
+<blockquote>
+   <a href="http://pyunit.sourceforge.net/">http://pyunit.sourceforge.net/</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz is feeling a bit testy. David may be reached at
+  mertz@gnosis.cx; his life pored over at<a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>
+  Check out David's book <cite>Text Processing in Python</cite>
+  (http://gnosis.cx/TPiP/).
+</p>
+</body></html>

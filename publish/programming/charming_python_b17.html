@@ -1,0 +1,463 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>CHARMING PYTHON #B17: The Python Enterprise Application Kit. -- A first look at protocols in Python -- </title>
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Charming Python #b17: The Python Enterprise Application Kit.</h1>
+<h2>A first look at protocols in Python</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Your Obedient Writer, Gnosis Software, Inc.<br>
+ March, 2004<br>
+ <br>
+</p>
+<blockquote>
+    PEAK is a Python framework for rapidly developing and reusing
+    application components. While Python itself is already a
+    very-high-level language, PEAK provides even higher abstractions,
+    largely through clever use of metaclasses and other advanced Python
+    techniques. In many ways PEAK does for Python what J2EE does for
+    Java.  Part of the formalization in PEAK comes in the explicit
+    specification of protocols, specifically in the separately available
+    package <em><code>PyProtocols</code></em>.
+</blockquote>
+<h3>The Python Enterprise Application Kit</h3>
+ <p>
+  If you felt like trying to get a handle on metaclasses, or wrestling
+  with asynchronous programming in Twisted, or thinking about object
+  oriented programming with multiple dispatch, made your brain melt,
+  then you ain't seen nothing yet! PEAK combines some elements of all of
+  these into a component programming framework. PEAK is still rough
+  around the edges. Like Twisted, PEAK's documentation, though
+  extensive, is difficult to penetrate. But for all that, there is
+  something enormously interesting about this project, led by Python
+  guru Phillip J. Eby; and, I think, some opportunities for extremely
+  productive and ultra-high-level application development.
+</p>
+<p>
+  The PEAK package is composed a number of subpackages for different
+  purposes.  Some significant subpackages are <em><code>peak.api</code></em>,
+  <em><code>peak.binding</code></em>, <em><code>peak.config</code></em>, <em><code>peak.naming</code></em>, and <em><code>peak.storage</code></em>.
+  Most of those names are fairly self-explanatory.  The subpackage
+  <em><code>peak.binding</code></em> is for flexibly connecting components; <em><code>peak.config</code></em>
+  lets you store "lazily immutable" data, which are involved in
+  declarative application programming; <em><code>peak.naming</code></em> lets you create
+  globally unique identifiers for (networked) resources; <em><code>peak.storage</code></em>
+  is pretty much exactly what the name suggests, it lets you manage
+  databases and persistence.
+</p>
+<p>
+  For this article, however, what we will be interested in is
+  <em><code>peak.api</code></em>. In particular, the package PyProtocols which is available
+  separately provides an infrastructure for other PEAK subpackages. A
+  version of the PyProtocols package is included within
+  <em><code>peak.api.protocols</code></em>. For now though, I am interested in looking at
+  the separate <em><code>protocols</code></em> package.  In later installments, I will
+  return to other parts of PEAK.
+</p>
+<h3>What Is A Protocol?</h3>
+ <p>
+  A protocol, abstractly, is simply a set of behaviors that an object
+  agrees to conform to.  Strongly-typed programming languages--including
+  Python--have a collection of basic types, each of which has such a
+  collection of guaranteed behaviors:  Integers know how to multiply
+  themselves together; lists know how to iterate over their contents;
+  dictionaries know how to find a value by key; files know how to read
+  and write bytes; etc.  The collection of behaviors you can expect out
+  of built-in types constitutes a <em>protocol</em> they implement.  An object
+  that codifies an protocol is known as an <em>interface</em>.
+</p>
+<p>
+  For standard types, it is not too difficult to explicitly list all the
+  behaviors implemented (though these change a bit between Python
+  version; or certainly between different programming languages).  But
+  at the boundaries--for objects that belong to custom classes--it is
+  difficult to state definitively what constitutes "dictionary-like" or
+  "file-like" behavior.  Most of the time, a custom object that
+  implements only a subset--even a fairly small subset--of, e.g., the
+  methods of a built-in <code>dict</code> are dictionary-like enough for purposes
+  at hand.  It would be nice, however, to be able to explicitly codify
+  what an object needs to be able to do to be used within a given
+  function, module, class, or framework.  That's (part of) what the
+  PyProtocols package does.
+</p>
+<p>
+  In programming languages that have static type declarations, you
+  generally need to <em>cast</em> or <em>convert</em> data from one type to another to
+  use it in a new context. In other languages, conversions are peformed
+  implicitly as a context requires them, and these are called
+  <em>coercions</em>. Python contains a mixture of casts and coercions, with a
+  usual preference for the former ("explicit is better than implicit").
+  You can add a float to an integer, and wind up with a more general
+  float as a result; but if you want to convert the string <code>"3.14"</code> into
+  a number, you need to use the explicit constructor <code>float("3.14")</code>.
+</p>
+<p>
+  PyProtocols provides a capability called "adaptation," which is akin
+  to the eccentric CS concept of "partial typing." Adaptation might also
+  be thought of as "coercion on steroids." If an interface defines a set
+  of needed capabilities (i.e. object methods), adaptation--via the
+  function <code>protocols.adapt()</code>--is a request to an object to do
+  "whatever is necessary" to provide the needed capabilities. Obviously,
+  if you have an explicit conversion function to turn an object of type
+  <code>X</code> into one of type <code>Y</code> (where <code>Y</code> implements some interface <code>IY</code>),
+  that function suffices to adapt <code>X</code> to protocol <code>IY</code>. However,
+  adaptation in PyProtocols can do quite a bit more than this as well.
+  For example, even if you have never explicitly programmed a conversion
+  from type <code>X</code> to type <code>Y</code>, <code>adapt()</code> can often deduce a route to let
+  <code>X</code> provide the capabilities mandated by <code>IY</code> (e.g. by finding
+  intermediate conversions to from <code>X</code> to interface <code>IZ</code>, from <code>IZ</code> to
+  <code>IW</code>, and from <code>IW</code> to <code>IY</code>).
+</p>
+<h3>Declaring Interfaces And Adaptors</h3>
+ <p>
+  There are quite a few different way within PyProtocols to create
+  interfaces and adaptors.  The PyProtocols documentation goes into
+  these techniques in quite a bit of detail--much of which cannot be
+  fully covered in this article.  We will get into a bit of the detail
+  below, but I think a useful approach here is to present a minimal
+  realistic example of actual PyProtocols code.
+</p>
+<p>
+  For the example, I decided to create a Lisp-like serialization of
+  Python objects. The representation is not literally any Lisp dialect,
+  and I am not particularly interested in the precise pros and cons of
+  this format. The idea here is just to create something that performs a
+  job similar to the function <code>repr()</code> or the module <em><code>pprint</code></em>, but with
+  a result that is both obviously different from and more easily
+  extensible/customizable than are aforsaid serializers. One very
+  un-Lisp-like choice was made for illustrative purposes: mappings are a
+  more fundamental data structure than are lists (a Python tuple or list
+  is treated as a mapping whose keys are sequential integers). Here is
+  the code:
+</p>
+<div class="code-sample"><h4>lispy.py PyProtocol definitions</h4><PRE><FONT COLOR=#3333CC><B>from</B></FONT> protocols <FONT COLOR=#3333CC><B>import</B></FONT> *
+<FONT COLOR=#3333CC><B>from</B></FONT> cStringIO <FONT COLOR=#3333CC><B>import</B></FONT> StringIO
+
+
+<FONT COLOR=#1111CC># Like unicode, &amp; even support objects that don't explicitly support ILisp</FONT>
+ILisp = protocolForType(unicode, [<FONT COLOR=#115511>'__repr__'</FONT>], implicit=True)
+<FONT COLOR=#1111CC># Class for interface, but no methods specifically required</FONT>
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="ISeq"><FONT COLOR=#CC0000><B> ISeq</B></FONT></A>(Interface): <FONT COLOR=#3333CC><B>pass</B></FONT>
+<FONT COLOR=#1111CC># Class for interface,  extremely simple mapping interface</FONT>
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="IMap"><FONT COLOR=#CC0000><B> IMap</B></FONT></A>(Interface):
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="items"><FONT COLOR=#CC0000><B> items</B></FONT></A>():
+        <FONT COLOR=#115511>"A requirement for a map is to have an .items() method"</FONT>
+
+
+<FONT COLOR=#1111CC># Define function to create an Lisp like representation of a mapping</FONT>
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="map2Lisp"><FONT COLOR=#CC0000><B> map2Lisp</B></FONT></A>(map_, prot):
+    out = StringIO()
+    <FONT COLOR=#3333CC><B>for</B></FONT> k,v <FONT COLOR=#3333CC><B>in</B></FONT> map_.items():
+        out.write(<FONT COLOR=#115511>"(%s %s) "</FONT> % (adapt(k,prot), adapt(v,prot)))
+    <FONT COLOR=#3333CC><B>return</B></FONT> <FONT COLOR=#115511>"(MAP %s)"</FONT> % out.getvalue()
+<FONT COLOR=#1111CC># Use this func to convert an IMap-supporting obj to ILisp-supporting obj</FONT>
+declareAdapter(map2Lisp, provides=[ILisp], forProtocols=[IMap])
+<FONT COLOR=#1111CC># Note that a dict implements an IMap interface with no conversion needed</FONT>
+declareAdapter(NO_ADAPTER_NEEDED, provides=[IMap], forTypes=[dict])
+
+<FONT COLOR=#1111CC># Define and use func to adapt an InstanceType obj to the ILisp interface</FONT>
+<FONT COLOR=#3333CC><B>from</B></FONT> types <FONT COLOR=#3333CC><B>import</B></FONT> InstanceType
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="inst2Lisp"><FONT COLOR=#CC0000><B> inst2Lisp</B></FONT></A>(o, p):
+    <FONT COLOR=#3333CC><B>return</B></FONT> <FONT COLOR=#115511>"(CLASS '(%s) %s)"</FONT> % (o.__class__.__name__, adapt(o.__dict__,p))
+declareAdapter(inst2Lisp, provides=[ILisp], forTypes=[InstanceType])
+
+<FONT COLOR=#1111CC># Define a class to adapt an ISeq-supporting obj to an IMap-supporting obj</FONT>
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="SeqAsMap"><FONT COLOR=#CC0000><B> SeqAsMap</B></FONT></A>(object):
+    advise(instancesProvide=[IMap],
+           asAdapterForProtocols=[ISeq] )
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="__init__"><FONT COLOR=#CC0000><B> __init__</B></FONT></A>(self, seq, prot):
+        self.seq = seq
+        self.prot = prot
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="items"><FONT COLOR=#CC0000><B> items</B></FONT></A>(self):    <FONT COLOR=#1111CC># Implement the IMap required .items() method</FONT>
+        <FONT COLOR=#3333CC><B>return</B></FONT> enumerate(self.seq)
+<FONT COLOR=#1111CC># Note that list, tuple implement an ISeq interface w/o conversion needed</FONT>
+declareAdapter(NO_ADAPTER_NEEDED, provides=[ISeq], forTypes=[list, tuple])
+
+<FONT COLOR=#1111CC># Define a lambda func to adapt str, unicode to ILisp interface</FONT>
+declareAdapter(<FONT COLOR=#3333CC><B>lambda</B></FONT> s,p: <FONT COLOR=#115511>"'(%s)"</FONT> % s,
+               provides=[ILisp], forTypes=[str,unicode])
+
+<FONT COLOR=#1111CC># Define a class to adapt several numeric types to ILisp interface</FONT>
+<FONT COLOR=#1111CC># Return a string (ILisp-supporting) directly from instance constructor</FONT>
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="NumberAsLisp"><FONT COLOR=#CC0000><B> NumberAsLisp</B></FONT></A>(object):
+    advise(instancesProvide=[ILisp],
+           asAdapterForTypes=[long, float, complex, bool] )
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="__new__"><FONT COLOR=#CC0000><B> __new__</B></FONT></A>(klass, val, proto):
+        <FONT COLOR=#3333CC><B>return</B></FONT> <FONT COLOR=#115511>"(%s %s)"</FONT> % (val.__class__.__name__.upper(), val)</PRE></div><p>
+  In the above code, I have declared a number of adapters in several
+  different ways.  In some cases, the code converts one interface to
+  another interface; in other cases types themselves are directly
+  adapted to an interface.  I would like you to notice a few things
+  about the code: (1) No adapter from a <code>list</code> or <code>tuple</code> to the <code>ILisp</code>
+  interface was created; (2) No adapter is explicitly declared for the
+  <code>int</code> numeric type; (3) For that matter, no adapter directly from a
+  <code>dict</code> to <code>ILisp</code> is declared.  How will the code <code>adapt()</code> various
+  Python objects:
+</p>
+<div class="code-sample"><h4>test_lispy.py object serialization</h4><PRE><FONT COLOR=#3333CC><B>from</B></FONT> lispy <FONT COLOR=#3333CC><B>import</B></FONT> *
+<FONT COLOR=#3333CC><B>from</B></FONT> sys <FONT COLOR=#3333CC><B>import</B></FONT> stdout, stderr
+toLisp = <FONT COLOR=#3333CC><B>lambda</B></FONT> o: adapt(o, ILisp)
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="Foo"><FONT COLOR=#CC0000><B> Foo</B></FONT></A>:
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="__init__"><FONT COLOR=#CC0000><B> __init__</B></FONT></A>(self):
+        self.a, self.b, self.c = <FONT COLOR=#115511>'a'</FONT>,<FONT COLOR=#115511>'b'</FONT>,<FONT COLOR=#115511>'c'</FONT>
+tests = [
+  <FONT COLOR=#115511>"foo bar"</FONT>,
+  {17:2, 33:4, <FONT COLOR=#115511>'biz'</FONT>:<FONT COLOR=#115511>'baz'</FONT>},
+  [<FONT COLOR=#115511>"bar"</FONT>, (<FONT COLOR=#115511>'f'</FONT>,<FONT COLOR=#115511>'o'</FONT>,<FONT COLOR=#115511>'o'</FONT>)],
+  1.23,
+  (1L, 2, 3, 4+4j),
+  Foo(),
+  True,
+]
+<FONT COLOR=#3333CC><B>for</B></FONT> test <FONT COLOR=#3333CC><B>in</B></FONT> tests:
+    stdout.write(toLisp(test)+<FONT COLOR=#115511>'\n'</FONT>)</PRE></div><p>
+  When run, we get:
+</p>
+<div class="code-sample"><h4>test_lispy.py serialization results</h4><PRE>$ python2.3 test_lispy.py
+'(foo bar)
+(MAP (17 2) (<FONT COLOR=#115511>'(biz) '</FONT>(baz)) (33 4) )
+(MAP (0 <FONT COLOR=#115511>'(bar)) (1 (MAP (0 '</FONT>(f)) (1 <FONT COLOR=#115511>'(o)) (2 '</FONT>(o)) )) )
+(FLOAT 1.23)
+(MAP (0 (LONG 1)) (1 2) (2 3) (3 (COMPLEX (4+4j))) )
+(CLASS <FONT COLOR=#115511>'(Foo) (MAP ('</FONT>(a) <FONT COLOR=#115511>'(a)) ('</FONT>(c) <FONT COLOR=#115511>'(c)) ('</FONT>(b) '(b)) ))
+(BOOL True)</PRE></div><p>
+  Some explanation of our output would help.  The first line is simple,
+  we defined an adapter directly from a string to <code>ILisp</code>, the call to
+  <code>adapt("foo bar", ILisp)</code> just returns the results of the lambda
+  function.  The next line is just a smidgeon more complicated.  No
+  adapter takes us directly from a <code>dict</code> to ILisp; but we can adapt
+  <code>dict</code> to <code>IMap</code> without any adapter (we declared as much), and we
+  have an adapter from <code>IMap</code> to <code>ILisp</code>.  Likewise, for the later lists
+  and tuples, we can adapt either to <code>ISeq</code>, <code>ISeq</code> to <code>IMap</code>, and
+  <code>IMap</code> to <code>ILisp</code>.  PyProtocols performs all the magic of figuring out
+  what adaptation path to take, behind the scenes.  A old-style instance
+  is the same story as a string or an <code>IMap</code>-supporting object, we have
+  an adaptation directly to <code>ILisp</code>.
+</p>
+<p>
+  But wait a moment.  What about all the integers used in our <code>dict</code> and
+  <code>tuple</code> objects?  Numeric <code>long</code>, <code>complex</code>, <code>float</code> and <code>bool</code> have
+  an explicit adapter, but <code>int</code> lacks any.  The trick here is that an
+  <code>int</code> object already has a <code>.__repr__()</code> method; by declaring implicit
+  support as part of the <code>ILisp</code> interface, we are happy to use the
+  existing <code>.__repr__()</code> method of objects as support for the <code>ILisp</code>
+  interface.  In particular, as a built-in, integers are represented
+  with bare digits, rather than with a capitalized type intializer (e.g.
+  <code>LONG</code>).
+</p>
+<h3>Adaptation Protocol</h3>
+ <p>
+  Let us look a bit more explicitly at what the function
+  <code>protocol.adapt()</code> does.  In our example we used the "declaration API"
+  to implicitly setup a collection of "factories" for adaptation.  This
+  API itself has several levels to it.  The "primitives" of the
+  declaration API are the functions: <code>declareAdaptorForType()</code>,
+  <code>declareAdaptorForObject()</code> and <code>declareAdaptorForProtocol()</code>.  The
+  prior example did not use these, but rather higher level APIs like:
+  <code>declareImplementation()</code>, <code>declareAdaptor()</code>, <code>adviceObject()</code> and
+  <code>protocolForType()</code>.  In one case we saw the "magic" declaration
+  <code>advise()</code> within a class body.  The function <code>advise()</code> allows a
+  large number of keyword arguments that configure the purpose and role
+  of a class so advised.  You may also <code>advise()</code> a module object.
+</p>
+<p>
+  You do not need to use the declaration API to create adapatable
+  objects, or interfaces that know how to <code>adapt()</code> objects to them.
+  Let us look at the call signature of <code>adapt()</code>, then explain the
+  procedure it follows.  A call to <code>adapt()</code> looks like:
+</p>
+<div class="code-sample"><h4>Call signature of adapt()</h4><pre>
+adapt(component, protocol, [, default [, factory]])
+
+</pre></div><p>
+  What this says is that you would like to adapt the object <code>component</code>
+  to the interface <code>protocol</code>.  If <code>default</code> is specified, it can be
+  returned as a wrapper object or modification for <code>component</code>.  If
+  <code>factory</code> is specified as a keyword argument, a conversion factory can
+  be used to produce the wrapper or modification.  But let us back up a
+  little bit, and look at the complete sequence of actions attempted by
+  <code>adapt()</code> (in simplified code):
+</p>
+<div class="code-sample"><h4>Hypothetical implementation of adapt()</h4><pre>
+if isinstance(component, protocol):
+    return component
+elif hasattr(component,'__conform__'):
+    return component.__conform__(protocol)
+elif hasattr(protocol,'__adapt__'):
+    return protocol.__adapt__(component)
+elif default is not None:
+    return default
+elif factory is not None:
+    return factory(component, protocol)
+else:
+    NotImplementedError
+
+</pre></div><p>
+  There are a couple qualities that calls to <code>adapt()</code> <em>should</em> maintain
+  (but this is advise to programmers, not generally enforced by the
+  library). Calls to <code>adapt()</code> should be idempotent. That is, for an
+  object <code>x</code> and a protocol <code>P</code>, we hope that:
+  <code>adapt(x,P)==adapt(adapt(x,P),P)</code>. In style, this intent is similar to
+  that behind iterator classes that return <code>self</code> from the <code>.__iter__()</code>
+  method. Basically, you do not want re-adapting to the same thing you
+  already adapted to to produce fluctuating results.
+</p>
+<p>
+  It is also worth noting that adaptation might be lossy.  In order to
+  bring an object into conformance with an interface, it may be
+  inconvenient or impossible to keep all the information necessary to
+  re-create the initial object.  That is, in the general case, for
+  object <code>x</code> and protocols <code>P1</code> and <code>P2</code>:
+  <code>adapt(x,P1)!=adapt(adapt(adapt(x,P1),P2),P1)</code>.
+</p>
+<p>
+  Before concluding, let us look at another test script that takes some
+  advantage of the lower level behavior of <code>adapt()</code>:
+</p>
+<div class="code-sample"><h4>test_lispy2.py object serialization</h4><PRE><FONT COLOR=#3333CC><B>from</B></FONT> lispy <FONT COLOR=#3333CC><B>import</B></FONT> *
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="Bar"><FONT COLOR=#CC0000><B> Bar</B></FONT></A>(object):
+    <FONT COLOR=#3333CC><B>pass</B></FONT>
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="Baz"><FONT COLOR=#CC0000><B> Baz</B></FONT></A>(Bar):
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="__repr__"><FONT COLOR=#CC0000><B> __repr__</B></FONT></A>(self):
+        <FONT COLOR=#3333CC><B>return</B></FONT> <FONT COLOR=#115511>"Represent a "</FONT>+self.__class__.__name__+<FONT COLOR=#115511>" object!"</FONT>
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="Bat"><FONT COLOR=#CC0000><B> Bat</B></FONT></A>(Baz):
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="__conform__"><FONT COLOR=#CC0000><B> __conform__</B></FONT></A>(self, prot):
+        <FONT COLOR=#3333CC><B>return</B></FONT> <FONT COLOR=#115511>"Adapt "</FONT>+self.__class__.__name__+<FONT COLOR=#115511>" to "</FONT>+repr(prot)+<FONT COLOR=#115511>"!"</FONT>
+<FONT COLOR=#3333CC><B>print</B></FONT> adapt(Bar(), ILisp)
+<FONT COLOR=#3333CC><B>print</B></FONT> adapt(Baz(), ILisp)
+<FONT COLOR=#3333CC><B>print</B></FONT> adapt(Bat(), ILisp)
+<FONT COLOR=#3333CC><B>print</B></FONT> adapt(adapt(Bat(), ILisp), ILisp)
+
+
+$ python2.3 test_lispy2.py
+&lt;__main__.Bar object at 0x65250&gt;
+Represent a Baz object!
+Adapt Bat to WeakSubset(&lt;type <FONT COLOR=#115511>'unicode'</FONT>&gt;,(<FONT COLOR=#115511>'__repr__'</FONT>,))!
+<FONT COLOR=#115511>'(Adapt Bat to WeakSubset(&lt;type '</FONT>unicode<FONT COLOR=#115511>'&gt;,('</FONT>__repr__',))!)</PRE></div><p>
+  It turns out the design of <code>lispy.py</code> fails the idempotence goal.  A
+  good exercise might be to improve this design.  The representation as
+  <code>ILisp</code>, however, is certainly lossy of the information in the
+  original object (which is fine).
+</p>
+<h3>Conclusion</h3>
+ <p>
+  In feel, PyProtocols has some commonalities with other "exotic" topic
+  this column has addressed.  For one thing, the declaration API is,
+  well, declarative (in contrast to imperative).  Rather than giving the
+  steps and switches needed to perform an action, declarative
+  programming states that certain things hold, and lets a library or
+  compiler figure out the details about how to carry it out.  The names
+  "declare*()" and "advice*()" are well chosen from this perspective.
+</p>
+<p>
+  As well, however, I find that PyProtocols programming has a similarity
+  to programming with multiple dispatch, specifically with the
+  <em><code>gnosis.magic.multimethods</code></em> module that I have presented in another
+  installment.  My own module performs a relatively simple deduction of
+  relevant ancestor classes to dispatch, in contrast to PyProtocols'
+  determination of adaptation paths.  But both libraries tend to
+  encourage a similar kind of modularity in programming--lots of little
+ functions or classes to perform "pluggable" tasks, without necessarily
+ falling into rigid class hierarchies.  The style has an elegance to it,
+ in my opinion.
+</p>
+<h3>Resources</h3>
+ <p>
+  The reference/tutorial document "Component Adaptation + Open Protocols
+  = The PyProtocols Package" is the place to start in exploring the
+  intricacies of PyProtocols.
+</p>
+<blockquote>
+   <a href="http://peak.telecommunity.com/protocol_ref/ref.html">http://peak.telecommunity.com/protocol_ref/ref.html</a>
+</blockquote>
+<p>
+  The home page for PEAK itself is the place to start for an
+  introduction to the library as a whole.
+</p>
+<blockquote>
+   <a href="http://peak.telecommunity.com/">http://peak.telecommunity.com/</a>
+</blockquote>
+<p>
+  And earlier <cite>Charming Python</cite> installment looked at creating
+  declarative mini-languages within Python.
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/library/l-cpdec.html">http://www-106.ibm.com/developerworks/library/l-cpdec.html</a>
+</blockquote>
+<p>
+  Another prior <cite>Charming Python</cite> developed and presented a library to
+  enable multiple dispatch.
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/linux/library/l-pydisp.html">http://www-106.ibm.com/developerworks/linux/library/l-pydisp.html</a>
+</blockquote>
+<p>
+  Michele Simionato and I worte two articles on metaclasses, an
+  introduction.
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/linux/library/l-pymeta.html">http://www-106.ibm.com/developerworks/linux/library/l-pymeta.html</a>
+</blockquote>
+<p>
+  And a look at some intracacies of metaclasses behavior.
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/library/l-pymeta2/">http://www-106.ibm.com/developerworks/library/l-pymeta2/</a>
+</blockquote>
+<p>
+  The Twisted library is similar to PEAK, both in containing a concept
+  of protocols and in various capabilities such as asynchronous
+  programming and providing an application configuration framework.
+</p>
+<p>
+  Part I was "Understanding asynchronous networking."
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/linux/library/l-twist1.html">http://www-106.ibm.com/developerworks/linux/library/l-twist1.html</a>
+</blockquote>
+<p>
+  Part II covered "Implementing Web servers."
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/linux/library/l-twist2.html">http://www-106.ibm.com/developerworks/linux/library/l-twist2.html</a>
+</blockquote>
+<p>
+  Part III looked at "Stateful Web servers and templating."
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/linux/library/l-twist3.html">http://www-106.ibm.com/developerworks/linux/library/l-twist3.html</a>
+</blockquote>
+<p>
+  And finally, Part IV, "Secure clients and servers."
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/linux/library/l-twist4.html">http://www-106.ibm.com/developerworks/linux/library/l-twist4.html</a>
+</blockquote>
+<p>
+  Part of what PEAK contains is a capability for something similar to
+  "weightless threads" that I described in two prior <cite>Charming Python</cite>
+  installments, "Generator-based State Machines."
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/linux/library/l-pygen.html">http://www-106.ibm.com/developerworks/linux/library/l-pygen.html</a>
+</blockquote>
+<p>
+  And one on "Semi-Coroutines."
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/linux/library/l-pythrd.html">http://www-106.ibm.com/developerworks/linux/library/l-pythrd.html</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz believes in adaptation by selective programming. David may
+  be reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a> Check out David's book <cite>Text Processing in
+  Python</cite> (http://gnosis.cx/TPiP/).
+</p>
+</body></html>

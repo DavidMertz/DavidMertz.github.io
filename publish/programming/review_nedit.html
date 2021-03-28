@@ -1,0 +1,169 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>PRODUCT REVIEW: -- NEdit 5.1.1 -- </title>
+<style>
+             {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+em           {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt}
+ul, ol, li   {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+tt           {font-family: mono, courier}
+pre          {font-family: mono; font-size: 9pt}
+th           {font-family: mono, courier; font-size: 8pt}
+
+.code-sample {background-color: #CCCCCC}
+.sidebar     {background-color: #FFFFCC}
+.title       {font-size: medium; color: #3333CC}
+.subtitle    {font-size: 9pt; color: #3333CC}
+.subhead     {font-size: 12pt}
+.input       {background: #FFFFFF; color: #000000; font-weight: normal}
+</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<p><strong class="title">Product Review:</strong><br>
+<strong class="subtitle">NEdit 5.1.1</strong></p>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Gnosis Software, Inc.<br>
+ September 2000<br>
+ <br>
+</p>
+<p><strong class="subhead">At A Glance</strong></p>
+ <p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>Creator:       Multiple developers &lt;develop@nedit.org&gt;
+Price/License: GNU General Public License
+Home Page:     http://nedit.org/
+Requirements:  Linux/X11 (or other Motif/Lesstif system);
+               Unsupported Win32 port (depends on CygWin and
+               X11 under Windows)
+
+
+</pre>
+</td></tr></table></p>
+<p><strong class="subhead">Background</strong></p>
+ <p>  In moving more-and-more toward Linux for my daily work, one of
+  the chief obstacles I have encountered is finding a text editor
+  that does everything I want it to.  There are plenty of text
+  editors available, but they all seem either to do too little
+  (jed, joe, xedit, kedit, gedit) or to be far too difficult to
+  learn and use (emacs, vi); sometimes both.  I reviewed FTE
+  previously as one option for a Linux text editor; NEdit,
+  however, is the best general Linux text editor I have found (at
+  least for my needs and style).  On a minor downside, NEdit
+  is not cross-platform beyond X11; and you cannot use it in a
+  console.
+</p>
+<h3>WHAT IS NEdit?
+
+</h3> <p>  NEdit is a GUI programmers' text editor for X11 that rolls in
+  a surprisingly rich amount of functionality.  You do not
+  realize at first just how much NEdit has behind it.  The menus
+  seem pretty simple at first; there are no icons or graphics in
+  the design.  The look-and-feel of NEdit is a clean, simple
+  CUA-style menu'd application, without a lot of visual extras.
+  Each file being edited is opened in its own SDI-like window,
+  and therefore no filetabs are used, nor arrangement of panes
+  within a main window (as with an MDI-style).   NEdit <strong>does</strong>
+  use a Motif-based true GUI--as opposed to the xterm/console
+  style of some other editors (like FTE, vi or emacs)--which
+  gives it more surface polish.  But NEdit does not advertise
+  its richness to the casual onlooker.
+</p>
+<p>  Its visual simplicity--at least for me--is a wonderful
+  feature. I <strong>do</strong> think filetabs are a nice interface device
+  that is missing, but the taskbar of KDE or Gnome manage a
+  similar function at the window-manager level (each document
+  appears on the taskbar seperately).  NEdit gives me my
+  document, a set of easy-to-use menus and shortcuts, a good
+  help system, and otherwise gets out of my way.
+</p>
+<p><strong class="subhead">The Bells And Whistles</strong></p>
+ <p>  NEdit pretty well fulfills my checklist of whiz-bang editor
+  features.  It is probably just quickest to list them.
+</p>
+<p>  - Syntax highlighting.  A very good collection of language
+</p>
+<blockquote>    modes comes built-in; and creating your own is all done in a
+    friendly dialog box (no need for editing obscure
+    configuration files).  The syntax highlighting even uses
+    versatile regular expression patterns (and highlights in
+    realtime), rather than simple keywords.
+</blockquote><p>  - Complete macro facility.  You can do a simple keystroke
+</p>
+<blockquote>    recording for simple stuff.  But NEdit also comes with a
+    complete built-in scripting language (it is similar to
+    Awk/C/Perl/PHP in look).  Basically, you can do <strong>anything</strong>
+    with macros.
+</blockquote><p>  - Access to shell commands.  Part of the nice design of *nix is
+</p>
+<blockquote>    its modularity.  NEdit takes advantage of this.  You do not
+    need to write your own complex macros when an external
+    program will do something complicated for you.  For example,
+    one pre-configured shell command is a call to <code>ispell</code> which
+    modifies (potentially) the document you are working in.  You
+    can also call anything else you want (including scripts in
+    your favorite programming language), and modify documents
+    almost seamlessly.
+</blockquote><p>  - Regular expression search <strong>and</strong> replace.  Some editors allow
+</p>
+<blockquote>    regex's in search patterns, but not backreferences in
+    replacement patterns.  NEdit does both.
+</blockquote><p>  Lots of little things are in NEdit also:
+</p>
+<p>  - Language modes let you change macro menus along with
+</p>
+<blockquote>    coloration and basic wrap/indent behavior.
+</blockquote><p>  - Column selection is available along with stream selection
+</p>
+<blockquote>    (ctrl-mouse or alt-shift-arrows).
+</blockquote><p>  - Correct handling of indented paragraph wrapping (a problem I
+</p>
+<blockquote>    have had in other editors).
+</blockquote><p>  - Highlighting of matching parenthesis to one at cursor (handy
+</p>
+<blockquote>    for parsing nested expressions).
+</blockquote><p>  - Handles case changes on blocks (upper, lower, but not
+</p>
+<blockquote>    proper); change indent of block.
+</blockquote><p><strong class="subhead">Niggles</strong></p>
+ <p>  With everything it does right, I almost feel bad pointing out
+  the few things I still wish NEdit had.  But a couple things
+  still stand out.
+</p>
+<p>  - No real template feature, and no significant built-in
+</p>
+<blockquote>    language-specific enhancements.  There is nothing you could
+    not in principle create for yourself with the macro language.
+    But a lot of editors offer things like language-mode menus
+    for tags/prototypes for a specific language.  "Shipping" with
+    a set of such enhancements would be nice.
+</blockquote><p>  - No bookmark feature.  This is handy in large documents for
+</p>
+<blockquote>    tracking several key areas of a document.  Using split
+    windows on the same document can accomplish part of this
+    purpose, but not really as well.
+</blockquote><p>  - No folding.  This capability might be a little bit exotic,
+</p>
+<blockquote>    but after working with FTE, I <strong>love</strong> the capability of
+    hiding away the body of document-sections, functions,
+    classes.
+</blockquote><p>  - Another whiz-bang feature I miss from FTE (and from some
+</p>
+<blockquote>    commercial IDE's) is the ability to produce a set of
+    navigable links of function/routine declarations (with jumps
+    to the bodies).
+</blockquote><p>  Smaller gaps are: no detab/entab; no box drawing; no inherent
+  calculator; no multiple clipboards.  Nothing terrible in the
+  list, but NEdit still falls a few steps short of perfection.
+</p>
+<p><strong class="subhead">About The Author</strong></p>
+ <p>  There is hardly anything David Mertz feels more strongly about
+  than text-editors.  It stands to reason after a tally of the
+  hours and minutes of his days.  You can find out copious
+  biographical details by rooting around at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>
+</p>
+</body></html>

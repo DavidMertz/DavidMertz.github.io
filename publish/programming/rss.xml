@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns="http://purl.org/rss/1.0/"
+  xmlns:dc="http://purl.org/dc/elements/1.1/" >
+
+  <channel rdf:about="http://gnosis.cx/">
+    <title>Gnosis Software</title>
+    <link>http://gnosis.cx/publish</link>
+    <description>All the publications of David Mertz, with a sprinkling of free software, and occasional extra goodies. </description>
+    <items>
+      <rdf:Seq>
+      <rdf:li rdf:resource="www/publish/programming/publish/programming/linuxppc.html"/>
+      <rdf:li rdf:resource="www/publish/programming/publish/programming/rexx.html"/>
+      <rdf:li rdf:resource="www/publish/programming/publish/programming/xml_matters_31.html"/>
+      <rdf:li rdf:resource="www/publish/programming/publish/programming/xml_matters_33.html"/>
+      <rdf:li rdf:resource="www/publish/programming/publish/programming/sockets.html"/>
+      <rdf:li rdf:resource="www/publish/programming/publish/programming/sockets2.html"/>
+      <rdf:li rdf:resource="www/publish/programming/publish/programming/text_utils.html"/>
+      <rdf:li rdf:resource="http://gnosis.cx/download/Gnosis_Utils.ANNOUNCE"/>
+      </rdf:Seq>
+    </items>
+    <image rdf:resource="http://gnosis.cx/home/hugo.gif"/>
+  </channel>
+  <image rdf:about="http://gnosis.cx/home/hugo.gif">
+    <title>Gnosis Software</title>
+    <link>http://gnosis.cx/publish</link>
+    <url>http://gnosis.cx/home/hugo.gif</url>
+  </image>
+
+<!-- insert -->
+
+
+  <item rdf:about="www/publish/programming/publish/programming/linuxppc.html">
+    <title>LINUX ZONE FEATURE: Linux on PowerPC Processors
+Your favorite operating system isn't only for x86</title>
+    <link>www/publish/programming/publish/programming/linuxppc.html</link>
+    <description>    Even though most Linux users have treated Linux as an operating
+    system for their x86 white boxes, Linux runs equally well on PowerPC
+    machines.  With the appealing range of PPC machines produced by
+    Apple, the option of using Linux on one of these is of great value
+    to many users.</description>
+    <dc:date>January, 2004</dc:date>
+  </item>
+
+  <item rdf:about="www/publish/programming/publish/programming/rexx.html">
+    <title>LINUX ZONE FEATURE: Regina and NetRexx
+Scripting with Free Software Rexx Implementations</title>
+    <link>www/publish/programming/publish/programming/rexx.html</link>
+    <description>    It is easy to get lost in the world of "little languages"--quite a
+    few have been written to scratch some itch of a company, individual
+    or project.  Rexx is one of these languages, with a long history of
+    use on IBM OS's, and good current implementations for Linux and
+    other Free Software operating systsems.  Moreover, David argues that
+    Rexx occupies a useful ecological niche between the relative
+    crudeness of shell scripting and the cumbersome formality of full
+    systems languages.  Many Linux programmers and systems
+    administrators would benefit from adding a Rexx implementation to
+    their collection of go-to tools.</description>
+    <dc:date>January, 2004</dc:date>
+  </item>
+
+  <item rdf:about="www/publish/programming/publish/programming/xml_matters_31.html">
+    <title>XML MATTERS #31: SXML and SSAX
+Manipulating XML in the Scheme Programming Language</title>
+    <link>www/publish/programming/publish/programming/xml_matters_31.html</link>
+    <description>    Previous installments have looked at XML libraries for various
+    programming languages, and with various strengths and weaknesses.
+    The Lisp family of languages remains popular, especially in teaching
+    and among purists. The SSAX library for Scheme is an efficient
+    pure-functional parser; SXML is a tree library (like DOM); and
+    related tools SXSLT and SXPath have been created to work with these.
+    This installment looks at the advantages of parsing in a strongly
+    functional language, and compares SSAX with libraries for other
+    languages.</description>
+    <dc:date>October 2003</dc:date>
+  </item>
+
+  <item rdf:about="www/publish/programming/publish/programming/xml_matters_33.html">
+    <title>XML MATTERS #33: XML for Word Processors
+Open source embraces XML as native document format</title>
+    <link>www/publish/programming/publish/programming/xml_matters_33.html</link>
+    <description>    In their recent versions, the three major Free Software word
+    processing programs have all adopted XML formats as their native
+    document format. The approach to XML taken by AbiWord, KOffice's
+    KWord, and OpenOffice.org Writer differs somewhat between the
+    applications-- largely reflecting the underlying development focus
+    of each project. But all open source word processor developers have
+    realized the advantages of XML as a document format:
+    componentization of parsers and writers; openness and formality of
+    format specification; applicability of XSLT and other transformation
+    APIs.</description>
+    <dc:date>February 2004</dc:date>
+  </item>
+
+  <item rdf:about="www/publish/programming/publish/programming/sockets.html">
+    <title><title id="401fad6c"></title>
+    <link>www/publish/programming/publish/programming/sockets.html</link>
+    <description> </description>
+    <dc:date>Thu Apr  1 13:58:05 2004</dc:date>
+  </item>
+
+  <item rdf:about="www/publish/programming/publish/programming/sockets2.html">
+    <title><title id="4021756c"></title>
+    <link>www/publish/programming/publish/programming/sockets2.html</link>
+    <description> </description>
+    <dc:date>Sun Feb 29 17:26:30 2004</dc:date>
+  </item>
+
+  <item rdf:about="www/publish/programming/publish/programming/text_utils.html">
+    <title><title id="4025e94c"></title>
+    <link>www/publish/programming/publish/programming/text_utils.html</link>
+    <description> </description>
+    <dc:date>Sun Feb 29 17:27:16 2004</dc:date>
+  </item>
+
+  <item rdf:about="http://gnosis.cx/download/Gnosis_Utils.ANNOUNCE">
+    <title>Gnosis Utilities 1.1.1</title>
+    <link>http://gnosis.cx/download/Gnosis_Utils.ANNOUNCE</link>
+    <description>This release adds gnosis.xml.relax to the package. Miscellaneous speedups and bugfixes to gnosis.xml.objectify. Improvements to floating point handling in gnosis.xml.pickle. Little used gnosis.trigramlib updated per needs of my personal spam filter. Minor fixes in gnosis.util.introspect.</description>
+    <dc:date>April 1, 2004</dc:date>
+  </item>
+
+</rdf:RDF>

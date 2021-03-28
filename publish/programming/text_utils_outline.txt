@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tutorial SYSTEM "dwtut.dtd">
+<tutorial abstract=" "
+          email-link="http://www-106.ibm.com/developerworks/edu/linux.html"
+          exit-url="http://www.ibm.com/developer/zone/"
+          feedback-link="fb"
+          filename="l-sockets2"
+          img="images/tutorial.jpg"
+          zone="Linux" >
+<title>Programming IP Sockets on Linux, Part Two</title>
+
+
+
+
+(0) Introduction
+    unix philosophy: small utilities combine to do large tasks
+    files and streams
+    redirection and piping
+    grep
+    shell scripting
+
+(1) byte oriented filtering
+    cat and tac
+    head and tail
+    od (and hexdump)
+    HERE documents
+
+(2) line oriented filtering
+    cut
+    expand and unexpand
+    fold
+    fmt
+    nl
+    tr (multi panels?)
+
+(3) file oriented processing
+    sort
+    tsort
+    ?tsort#2: dependency lists
+    uniq
+    pr
+
+(4) combining and spliting multiple files
+    comm
+    join
+    paste
+    split
+    csplit
+
+(5) summarizing and identifying files
+    wc
+    ptx
+    cksum and sum
+    md5sum (in bsd: md5) and sha1sum
+    crytographic and ordinary collision resistance
+
+(6) working with log files
+    extracting ip addresses of website visitors
+    counting occurences
+    finding the most frequent visitors
+    generate new ad hoc report
+    cut by regex
+    correlating server logs (join)
+
+
+(7) working with documentation
+
+
+
+
+(6) Resources

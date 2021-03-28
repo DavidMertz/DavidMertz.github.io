@@ -1,0 +1,136 @@
+                The Net's New Enclosures
+
+_Code and Other Laws of Cyberspace_, Lawrence Lessig.
+New York:  Basic Books, 1999.  Pp. xii + 297.  US$30.
+ISBN 0-465-03912-X
+
+Historians will identify the principle juridico-political trend
+of the last and next few decades as a period of new enclosure
+laws, this time governing *intellectual* property.  On the one
+hand, corporatist states--and supra-state entities--have overseen
+a huge transfer of wealth from poor to rich, and more
+specifically, from individuals to corporations.  On the other
+hand, an even more profound change is underway in defining more
+and more previously unincorporated domains under the legal aegis
+of property and capitalist exchange.  Property used to cover the
+realm of things; but increasingly, it is *facts* that are the
+most socially important form of property.  Few radicals and
+philosophers imagined even a few years ago that a human
+individual's name, genetic sequence, shopping preferences,
+psychiatric profile, and appearance would be forms of capitalist
+property; fewer still imagined that these "properties" would be
+consistently wrested from the persons they compose and vested in
+the coffers of corporations, as proprietary assets.  Imagine
+being sued or arrested for unauthorized use of your own
+chromosomes (e.g. in seeking treatment for a disease) or of your
+own image or name.  This is not far off.  Even in a more
+traditional domain, fair use is shrinking rapidly, while
+exclusive "rights" are expanding in both breadth and length.
+Imagine in this case that you are able to read books only on a
+page-metered basis, and with the copyright owner collecting
+details on each page turn, as well as a comprehensive background
+on all the other books you have read.  This is also not far in
+the future (at least as technological potential).
+
+Lawrence Lessig is not a radical, and he is not a philosopher; at
+least neither strictu sensu.  By politics, I suspect he is
+basically a Millean libertarian; and by trade he is a law
+professor.  But his book is extremely important for radical
+philosophers to read; Lessig's is one of the first books
+intelligently to address significant aspects of the new enclosure
+movement (not by that name, however).  The area addressed by
+Lessig is the increasingly important part of our lives that is
+sometimes called 'cyberspace':  the nexus of computational,
+storage, and communications technologies that are coming to
+regulate and determine much of our lives.  While cyberspace may
+not include everything in the aformentioned IP enclosure
+movement, its technologies are clearly one driving force.
+
+Lessig's book is, in a certain sense, a manifesto.  Its call is
+to treat cyberspace, in its underlying architecture, as a subject
+for informed democratic discussion--and potentially of legal
+regulation.  Whether or not we, collectively, make the decisions
+on how to regulate cyberspace, it will inevitably regulate us:
+
+    This regulator is code--or more generally, the "built
+    environment" of social life, its architecture.  And if in the
+    middle of the nineteenth century it was norms that threatened
+    liberty, and at the start of the twentieth state power that
+    threatened liberty, and during much of the middle of the
+    twentieth the market that threatened liberty, my argument is
+    that ... into the twenty-first, it is a different
+    regulator--code--that should be our concern.  (p.86)
+
+The mistake made by most previous discussants about cyberspace is
+to treat cyberspace as a given--either a given of technological
+potentials, or a given of free-market inevitabilities.  Lessig
+argues, quite correctly, that what cyberspace *is* is not what it
+*must* be, and what it will become is up to us collectively (but
+only if we collectively make decisions about what happens).
+Cyberspace is not a fact of nature, but a fact of technology.
+And these facts are ones that are going to make deep differences
+to the way all of us live are lives, in relation to important
+issues such as privacy, economic life, and our ability to
+participate in the decisions that affect us.  However, the facts
+of cyberspace are now being made primarily by commercial
+interests with no democratic accountability.  In relation to
+privacy and liberty,
+
+    Some architectures make behavior more regulable; other
+    architectures make behavior less regulable.  These
+    architectures are displacing architectures of liberty....
+    the why is commerce, and the how is through architectures
+    that enable identification to enable commerce. (p.30)
+
+Furthermore,
+
+    With a robust PKI [public-key infrastructure], the
+    possibilities for identification become extraordinary.
+    Individuals could carry certificates that authenticate any
+    number of facts about themselves--who they are; personal
+    attributes (age, citizenship, sex, marital status, sexual
+    orientation, HIV status); professional credentials (college
+    degrees, bar certification, and so on). (p.38)
+
+'Could' need not imply 'must', but such is the fear that Lessig
+and I share:
+
+    The truth, I suspect, is that the [free-market ideologists]
+    will win--at least for now.  We will treat code-based
+    environmental disasters--like Y2K, like the loss of privacy,
+    like the censorship of filters, like the disappearance of an
+    intellectual commons--as if they were produced by gods, not
+    by Man. We will watch as important aspects of privacy and
+    free speech are erased by the emerging architecture of the
+    panopticon, and we will speak, like modern Jeffersons, about
+    nature making it so--forgetting that here, we are nature.  We
+    will in many domains of our social life come to see the Net
+    as the product of something alien--something we cannot direct
+    because we cannot direct anything.  Something instead that we
+    must simply accept, as it invades and transforms our lives.
+    (p.233)
+
+There is a lot more to Lessig's book than the warnings and
+proclamations briefly presented here, moreover.  Lessig provides
+both a good basic discussion of cyberspace technologies (for a
+non-technical audience), and an excellent discussion of US
+jurisprudence as it relates to the issues discussed.  Futher,
+Lessig gives us an awfully good sense of why this all is going to
+matter so much.  Tempering the realistic pessimism of current
+trends, Lessig provides some insightful suggestions for how
+judges and legislatures (and ultimately, we the represented)
+ought to do their jobs in manners that can preserve the values
+and traditions of democracy, rather than sacrifice these
+traditions to the altars of commerce and technology.
+
+                                                    DAVID MERTZ
+                                                Gnosis Software
+
+
+---------------------------------------------------------------------
+                             CONTRIBUTOR
+
+David Mertz is professionally peripatetic.  The new economy pays
+him quite a lot more to construct architectures of cyberspace
+than for academic ideology-building.  His writings and
+interventions also wander.

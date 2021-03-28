@@ -1,0 +1,463 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>CHARMING PYTHON #9 (20000052) -- TK programming in Python: Tips for Beginners -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="charming_python_8.html" TITLE="CHARMING PYTHON #8">
+<link REL="next" HREF="charming_python_10.html" TITLE="CHARMING PYTHON #10">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<h1>Charming Python #9 (20000052)</h1>
+<h2>TK programming in Python: Tips for Beginners</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Super model, Gnosis Software, Inc.<br>
+ October 2000<br>
+ <br>
+</p>
+<blockquote>
+    Built into most distributions of Python you will find the
+    <code>TK</code> GUI library developed by Scriptics for use with TCL.
+    <code>TK</code> is available for a large number of computer platforms,
+    and its Python interface, <em><code>TKinter</code></em>, is available almost
+    equally widely.  This column introduces a programmer to
+    <em><code>TKinter</code></em> by means of source code samples and usage
+    explanations.  The project used as an example is a port of
+    the Txt2Html front-end discussed in an earlier article to a
+    GUI environment.
+</blockquote>
+<h3>What Is Python? What Is Tk?</h3>
+ <p>
+  Python is a freely available, very-high-level, interpreted
+  language developed by Guido van Rossum.  It combines a clear
+  syntax with powerful (but optional) object-oriented semantics.
+  Python is available for almost every computer platform you
+  might find yourself working on, and has strong portability
+  between platforms.
+</p>
+<p>
+  TK is a widely used graphics library developed by John
+  Ousterhout, and most closely associated with the TCL language
+  also developed by Ousterhout.  TK started out--in 1991--as an
+  X11 library, but since that time it has been ported to
+  virtually every popular GUI.  Bindings for TK have been written
+  for many popular languages (and for many small languages too),
+  including the <em><code>Tkinter</code></em> module for Python.  TK is as close as
+  Python comes to having a "standard" GUI.
+</p>
+<h3>Introduction</h3>
+ <p>
+  This column has a lot of parallels with my earlier "Curses
+  programming in Python" column.  Both <code>curses</code> and <code>TK</code> are
+  widely used user interface libraries.  And despite the fact
+  that <code>curses</code> targets text consoles, and <code>TK</code> GUIs, working
+  with both libraries is surprisingly similar.  Understanding the
+  basic notions of windows and event loops is the first step to
+  programming with either library.  Once you have got those
+  concepts down, all you really need is a reference to the
+  widgets available.  Well, a good reference, and a moderate
+  amount of practice.
+</p>
+<p>
+  In this column--much as with the <code>curses</code> one--we'll be limiting
+  ourselves to the features of <em><code>Tkinter</code></em> itself.  Since the
+  <em><code>Tkinter</code></em> module is part of many Python distributions, you have
+  a good chance of having it available without requiring users to
+  download support libraries or other Python modules.  The
+  Resources section gives pointers to several collections of
+  higher-level widgets for various UI purposes.  But you can do a
+  lot with <em><code>Tkinter</code></em> itself, even construct your own new
+  high-level widgets.  Getting used to the base <em><code>Tkinter</code></em> module
+  is a good way to familiarize yourself with the <code>TK</code> way of
+  thinking, even if you go on to use extra widget collections.
+</p>
+<p>
+  The author should also make a confession to readers--but a
+  useful one, perhaps.  I am no wizened expert at <code>TK</code> programming.
+  In fact, my <code>TK</code> programming experience stretches back about
+  three days (with a few glances at some of the references in the
+  Resources prior to that).  Maybe it was not an entirely
+  painless three days, but at the end of them, I feel like I have
+  a pretty good grasp of working with <em><code>Tkinter</code></em>.  The moral here
+  is that <code>TK</code> itself, and the Python <em><code>Tkinter</code></em> wrapper are both
+  extraordinarily well-designed and friendly libraries that are
+  about the easiest way to start GUI programming I can think of.
+</p>
+<h3>The Application</h3>
+ <p>
+  As a test application for this article, the author will discuss
+  a wrapper he has written for the <code>Txt2Html</code> program introduced
+  in "Charming Python #3", whose techniques were discussed
+  further in subsequent columns.  <code>Txt2Html</code> works in several
+  ways, but for purposes of this article, we are interested in
+  <code>Txt2Html</code> as a command-line format conversion program.  One
+  way to operate <code>Txt2Html</code> is to feed it a bunch of command-line
+  arguments indicating various aspects of the conversion to be
+  performed, and let the application run as a batch process.  For
+  occassional usage, it might be friendlier for users to be
+  presented with an interactive selection screen that leads users
+  through conversion options, and provides visual feedback of
+  options selected, before performing the actual conversion.
+</p>
+<p>
+  The application <code>tk_txt2html</code> is structured in terms of
+  a familiar topbar menu with drop-downs and nested submenus.
+  Even beyond the similarities of <code>TK</code> and <code>curses</code> event loops,
+  this application <em>looks</em> a lot like the <code>curses</code> version
+  discussed in "Charming Python #6" <em></em> at least in terms of the
+  basic parts of the screens and UI techniques.  <code>TK</code> gives us a
+  bit more starting material than <code>curses</code> did, so things like
+  the menus can rely on inherent <em><code>Tkinter</code></em> classes, rather than
+  being built "from scratch."  <code>tk_txt2html</code> has somewhat fewer
+  lines of code than does <code>curses_txt2html</code>, while simultaneously
+  doing a bit more.  But they are in the same ballpark.  Beyond
+  the capability for selecting each configuration option, a
+  scrolling help box is created with the TK Text widget, an about
+  box used the Message widget, and a series of history lines help
+  flex 'TK's dynamic geometry management a little bit.  Of
+  course, as with most interactive applications, some user input
+  is caught with 'TK's Entry widget.
+</p>
+<p>
+  Probably it is worth looking at the application in action
+  before going on with the explanation of its code:
+</p>
+<p>
+  <img src="http://gnosis.cx/publish/programming/cp9.gif" alt="Screenshot of tk_txt2html.py">
+</p>
+<h3>The Basics
+
+</h3>
+ <p>
+  There are really exactly three things that a <em><code>Tkinter</code></em> program
+  has to do:
+</p>
+<div class="code-sample"><h4>Minimum possible [Tkinter] program</h4><pre>
+import Tkinter        # import the Tkinter module
+root = Tkinter.Tk()   # create a root window
+root.mainloop()       # create an event loop
+
+</pre></div><p>
+  The sample program is a perfectly legitimate <em><code>Tkinter</code></em> program
+  (maybe not a perfectly <em>good</em> on, since it doesn't even manage
+  "hello world").  But the only thing actually missing from our
+  first sample program is some widgets to populate the root
+  window we have created.  Once we enhance our program with
+  widgets, this same root <code>.mainloop()</code> method call will handle
+  all the interaction with our widgets without further programmer
+  intervention.
+</p>
+<p>
+  Let's take a look at the more realistic main() function of
+  <code>tk_txt2html.py</code>.  Notice that I prefer to perform an <code>import
+  Tkinter</code> statement to the <code>from Tkinter import <strong></code> that John
+  Grayson uses throughout his book (see Resources).  It is not so
+  much that I am worried about namespace pollution (the usual
+  caveat for <code>from ... import </strong></code> statements); rather, I want to
+  make it explicit when I am using <em><code>Tkinter</code></em> classes, and not
+  risk confusion with my own functions and clases.  I recommend
+  you do this, at least as you begin working with <em><code>Tkinter</code></em>:
+</p>
+<div class="code-sample"><h4>tk_txt2html main() function</h4><pre>
+def main():
+    global root, history_frame, info_line
+    root = Tkinter.Tk()
+    root.title('Txt2Html TK Shell')
+    init_vars()
+
+    #-- Create the menu frame, and menus to the menu frame
+    menu_frame = Tkinter.Frame(root)
+    menu_frame.pack(fill=Tkinter.X, side=Tkinter.TOP)
+    menu_frame.tk_menuBar(file_menu(), action_menu(), help_menu())
+
+    #-- Create the history frame (to be filled in during runtime)
+    history_frame = Tkinter.Frame(root)
+    history_frame.pack(fill=Tkinter.X, side=Tkinter.BOTTOM, pady=2)
+
+    #-- Create the info frame and fill with initial contents
+    info_frame = Tkinter.Frame(root)
+    info_frame.pack(fill=Tkinter.X, side=Tkinter.BOTTOM)
+
+    # first put the column labels in a sub-frame
+    LEFT, Label = Tkinter.LEFT, Tkinter.Label   # shortcut names
+    label_line = Tkinter.Frame(info_frame, relief=Tkinter.RAISED, borderwidth=1)
+    label_line.pack(side=Tkinter.TOP, padx=2, pady=1)
+    Label(label_line, text="Run #", width=5).pack(side=LEFT)
+    Label(label_line, text="Source:", width=20).pack(side=LEFT)
+    Label(label_line, text="Target:", width=20).pack(side=LEFT)
+    Label(label_line, text="Type:", width=20).pack(side=LEFT)
+    Label(label_line, text="Proxy Mode:", width=20).pack(side=LEFT)
+
+    # then put the "next run" information in a sub-frame
+    info_line = Tkinter.Frame(info_frame)
+    info_line.pack(side=Tkinter.TOP, padx=2, pady=1)
+    update_specs()
+
+    #-- Finally, let's actually do all that stuff created above
+    root.mainloop()
+
+</pre></div><p>
+  There are a number of things to notice about our simple <code>main()</code> function.
+</p>
+<blockquote>
+    - Every widget has a parent.  Whenever we create a widget,
+    the first argument to the instance creation is the parent of
+    that new widget.
+</blockquote>
+<blockquote>
+    - When other arguments are used besides a parent, they are
+    passed in Python's pass-by-name style.  This gives us lots of
+    flexibility about what options we want to override the
+    defaults on, and which we are happy to leave be.
+</blockquote>
+<blockquote>
+    <em> A number of (Frame) widget instances are global variables.
+    It would be possible to pass these around from function to
+    function, and maintain a theoretical purity about scoping.
+    Doing that is much more trouble than it is worth.  The basic
+    UI elements of our application are perfectly appropriate for
+    any function to play with; making them global just makes this
+    explicit.  Of course, you should use a good naming convention
+    when you use global variables (Pythonistas seem to hate
+    Hungarian notation, so don't use that ^</em>)).
+</blockquote>
+<blockquote>
+    - After a widget is created, it needs to call a geometry
+    manager method to let <code>TK</code> know where to put the widget.  A
+    lot of magic goes into <code>TK</code> 's calculation of the details,
+    especially when windows are resized or widgets are added
+    dynamically.  But you need to let <code>TK</code> know which set of
+    incantations to use, for your part.
+</blockquote>
+<h3>Geometry Managers</h3>
+ <p>
+  <code>TK</code> (and therefore <em><code>Tkinter</code></em>) has three geometry managers to
+  choose from:  <code>.pack()</code>, <code>.grid()</code> and <code>.place()</code>.  Only the
+  first two are used by <code>tk_txt2html</code>, although <code>.place()</code> can be
+  used for the most fine-grained (and therefore complicated)
+  control.  Most of the time, you will use <code>.pack()</code>.
+</p>
+<p>
+  You are certainly allowed to call the <code>.pack()</code> method of a
+  widget with no arguments.  If you do that, you can certainly
+  count on the widget winding up <em>somewhere</em> in your application.
+  But you probably want to provide some slight hints by way of
+  named argument.  The most important such hint is the <code>side</code>
+  argument.  Options are LEFT, RIGHT, TOP, and BOTTOM (note that
+  those words are variables in the <em><code>Tkinter</code></em> namespace).
+</p>
+<p>
+  A lot of the magic of <code>.pack()</code> comes from the fact that
+  widgets can be nested.  In particular, the Frame widget does
+  little more than act as a container for other widgets (maybe
+  show borders of various types).  So a particularly handy way of
+  organizing things is to pack together several frames in the
+  orientations you want them, then later add other widgets within
+  each frame.  Frames (or any other widgets) get packed in the
+  order their <code>.pack()</code> methods are called.  So if two widgets
+  both want to have <code>side=TOP</code>, it is first-come-first-serve.
+</p>
+<p>
+  <code>.grid()</code> is also used a bit in <code>tk_txt2html</code> (mostly just to
+  play with it though).  The idea of the grid geometry manager is
+  that a parent widget is divided into invisible graph-paper
+  lines.  When a widget calls <code>.grid(row=3, column=4)</code> it is
+  requesting (of its parent) that if be placed on the third row
+  and fourth column.  The total number of rows and columns is
+  just a matter of looking at the requests made by all the
+  siblings.
+</p>
+<p>
+  Don't forget to apply a geometry manager to your widgets, or
+  else you'll be surprised not to see them in your application.
+</p>
+<h3>Menus</h3>
+ <p>
+  <em><code>Tkinter</code></em> makes creating menus quite painless.  If you want,
+  you can even have different fonts, pictures, checkboxes, and
+  all sorts of fancy child widgets populate your menus.  Our
+  application is simpler than that though.  The menus for
+  <code>tk_txt2html</code> were all created with the line we saw above:
+</p>
+<div class="code-sample"><h4></h4><pre>menu_frame.tk_menuBar(file_menu(), action_menu(), help_menu())
+
+</pre></div><p>
+  But this line might mystify as much as it clarifies, by itself.
+  Most of the work (but still a small amount) lives in the
+  functions I have called  <code>*_menu()</code>.  Let's look at the simplest
+  one:
+</p>
+<div class="code-sample"><h4>Creating a drop-down menu</h4><pre>
+def help_menu():
+    help_btn = Tkinter.Menubutton(menu_frame, text='Help', underline=0)
+    help_btn.pack(side=Tkinter.LEFT, padx="2m")
+    help_btn.menu = Tkinter.Menu(help_btn)
+    help_btn.menu.add_command(label="How To", underline=0, command=HowTo)
+    help_btn.menu.add_command(label="About", underline=0, command=About)
+    help_btn['menu'] = help_btn.menu
+    return help_btn
+
+</pre></div><p>
+  Basically, a drop-down menu consists of a Menubutton widget
+  that has a Menu widget as a child.  The Menubutton needs to be
+  <code>.pack()'d to the appropriate location (or </code>.grid()'d, etc.),
+  but the Menu widget instead has items added with the
+  <code>.add_command()</code> method.  There is an odd little assignment to
+  the Menubutton's dictionary in the above:  just do the same in
+  your own code.
+</p>
+<h3>Getting User Input</h3>
+ <p>
+  We have seen to display output (the Label widget was used
+  above, see the full source for some use of the Text widget and
+  the Message widget also).  And we have also seen how to create
+  menus.  Probably the most significant remaining UI issue is
+  getting user field input (and the last UI issue for this
+  introduction).
+</p>
+<p>
+  The basic widget for field input is Entry.  Using this is
+  simple, but might be a little bit different than you would
+  expect from Python's <code>raw_input()</code> or <em><code>curses</code></em>' <code>.getstr()</code>.
+  That is, 'TK's Entry widget does not return a value for an
+  assignment context, but rather takes an argument for the field
+  object to be populated.  For example, this is the function that
+  allows the user to specify an input file:
+</p>
+<div class="code-sample"><h4>Receiving user field input</h4><pre>
+def GetSource():
+    get_window = Tkinter.Toplevel(root)
+    get_window.title('Source File?')
+    Tkinter.Entry(get_window, width=30,
+                  textvariable=source).pack()
+    Tkinter.Button(get_window, text="Change",
+                   command=lambda: update_specs()).pack()
+
+</pre></div><p>
+  Again, there are a few things to look at here.  We have created
+  a new Toplevel widget for this input.  That is, input occurs in
+  its own dialog box in this example.  The input field is created
+  by creating an Entry widget, and specifying a <code>textvariable</code>
+  argument.  But there is a bit more to this still.
+</p>
+<p>
+  The <code>textvariable</code> argument does not specify a simple string
+  variable, but is instead a StringVar object.  In our case, the
+  <code>init_vars()</code> function that was called from <code>main()</code> contained
+  these lines:
+</p>
+<div class="code-sample"><h4></h4><pre>source = Tkinter.StringVar()
+source.set('txt2html.txt')
+
+</pre></div><p>
+  What this did was create an object suitable for taking user
+  input, and then give it an initial value.  Once this object
+  exists, it is modified immediately every time a change is made
+  within an Entry widget that links to it.  The change occurs for
+  every keystroke within the Entry widget, not just upon
+  termination of a read, in the style of <code>raw_input()</code>.
+</p>
+<p>
+  Once we want to do something with the value a user entered, we
+  use the <code>.get()</code> method of our StringVar instance, for example:
+</p>
+<div class="code-sample"><h4></h4><pre>source_string = source.get()
+
+
+</pre></div><h3>Finally</h3>
+ <p>
+  The techniques outlined here--and especially those additional
+  ones used in the full application source code should get you
+  started with <em><code>Tkinter</code></em> programming.  Play with it a bit, it is
+  not hard to work with.  One nice thing is that the <code>TK</code>
+  library may be accessed by many languages other than Python
+  also, so what you learn using Python's <em><code>Tkinter</code></em> module is
+  mostly transferrable elsewhere.
+</p>
+<h3>Resources</h3>
+ <p>
+  A good online starting point for <em><code>Tkinter</code></em> information (and
+  downloads) is:
+</p>
+<blockquote>
+   <a href="http://python.org/topics/tkinter/">http://python.org/topics/tkinter/</a>
+</blockquote>
+<p>
+  Several extra widget collections are available to save you some
+  time in constructing complex UIs. PMW (Python Mega Widgets) is
+  one written 100% in Python, and widely used in the Python
+  community.  Several widget collections can be found at:
+</p>
+<blockquote>
+   <a href="http://python.org/topics/tkinter/widgets.html">http://python.org/topics/tkinter/widgets.html</a>
+</blockquote>
+<p>
+  Fredrik Lundh has written a good tutorial for <em><code>Tkinter</code></em> that
+  contains much more detail than this article:
+</p>
+<blockquote>
+   <a href="http://www.pythonware.com/library/tkinter/introduction/index.htm">http://www.pythonware.com/library/tkinter/introduction/index.htm</a>
+</blockquote>
+<p>
+  A couple printed books are worth checking out also.  The first
+  is a good intro to TK itself.  The second is specific to
+  Python, with a lot of use of the PMW collection in its
+  examples:
+</p>
+<blockquote>
+    <cite>TCK/TK in a Nutshell</cite>, Paul Raines &amp; Jeff Tranter, O'Reilly,
+    1999. ISBN 1-56592-433-9
+</blockquote>
+<blockquote>
+    <cite>Python and Tkinter Programming</cite>, John E. Grayson, Manning,
+    2000. ISBN 1-884777-81-3
+</blockquote>
+<p>
+  A very nice distribution of Python has been created recently by
+  ActiveState.  This distribution includes <em><code>TKinter</code></em> and a
+  variety of other nice packages and modules not contained in
+  most other distributions.  (They even have an ActivePerl
+  distribution for those inclined towards that other scripting
+  language).  Find it at:
+</p>
+<blockquote>
+   <a href="http://activestate.com/Products/ActivePython/Download.html">http://activestate.com/Products/ActivePython/Download.html</a>
+</blockquote>
+<p>
+  Scriptics (the maintainers and creators of TK) has been renamed
+  as Ajuba Solutions.  It can still be found at:
+</p>
+<blockquote>
+   <a href="http://www.scriptics.com/home.html">http://www.scriptics.com/home.html</a>
+</blockquote>
+<p>
+  For many comparisons, take a look at "Curses programming in
+  Python:"
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/publish/programming/charming_python_6.html">http://gnosis.cx/publish/programming/charming_python_6.html</a>
+</blockquote>
+<p>
+  Files used and mentioned in this article:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/download/charming_python_9.zip">http://gnosis.cx/download/charming_python_9.zip</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz writes many apocopetic articles.  David may be
+  reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+</p>
+</body></html>

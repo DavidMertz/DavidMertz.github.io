@@ -1,0 +1,415 @@
+CHARMING PYTHON #B25: Python Elegance, Python Warts
+Sequences and comparisons
+
+David Mertz, Ph.D.
+Frog Prince, Gnosis Software
+May, 2005
+
+    Since the "golden age" of Python 1.5.2--for a long time a stable and
+    solid version--Python has greatly increased its number of syntactic
+    features and built-in functions and types. Each of these additions
+    has reasonable justification, in isolation, but taken as a whole,
+    they make Python no longer a language that experienced programmers
+    can pick up "in an afternoon."  Moreover, some of the changes have
+    pitfalls along with benefits.
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  In this article, David discusses the non-obvious features and
+  misfeatures that have been added to the last several Python versions;
+  and weighs in on which are truly valuable, and which unnecessary
+  complication. David hopes to provide a collection of valuable things
+  to watch out for to all those programmers who use Python less than
+  full time--either programmer in other languages, or people like
+  scientists for whom programming is only a side task.  Where some
+  quandries are raised, solutions are suggested.
+
+INCOMPARABLE ABOMINATIONS
+------------------------------------------------------------------------
+
+  Between Python 2.0 and Python 2.1 something strange happened.
+  Previously comparable objects started raising exceptions when
+  compared. Specifically, complex numbers became incomparable to other
+  numbers, including both other complex numbers and ints, floats, longs.
+  Actually, the problem arose earlier than this with Unicode strings
+  comparing to plain strings, but only in some edge cases.
+
+  To my mind, the changes are both grating just plain weird. Back in
+  that golden age of 1.5.2, you knew the inequality operators would
+  return a result regardless of which objects were compared.  Sure the
+  result would not necessarily be meaningful--a string is neither
+  objectively less than nor greater than a float.  But some consistent
+  result would obtain.
+
+  After the change, some Pythonistas argued that a good behavior would
+  be to disallow all inequality comparisons between objects of distinct
+  types, at least unless we define custom comparison functions. My
+  hunch is that this could get tricky in practice once you deal with
+  custom classes and multiple inheritence. Moreover, not being able to
+  compare among floats, ints and longs (or e.g. [decimal]) would be
+  awkward. But maybe a sensible rule could be defined.
+
+  However, whatever rule that might be, it would be very different than
+  what Python did historically. And what we are left with now is
+  dramatically irregular comparison behavior in which even knowing the
+  types of compared objects doesn't tell you whether they are comparable
+  (and inequality is not transitive or closed):
+
+      #--- Success of comparisons depends on both types and values ----#
+      >>> map(type, (u1, s1, s2))
+      [<type 'unicode'>, <type 'str'>, <type 'str'>]
+      >>> u1 < s1
+      True
+      >>> s1 < s2
+      True
+      >>> u1 < s2
+      UnicodeDecodeError: 'ascii' codec can't decode byte 0xf0 in position 0:
+          ordinal not in range(128)
+      >>> map(type, (n, j, u1))
+      [<type 'int'>, <type 'complex'>, <type 'unicode'>]
+      >>> n < u1
+      True
+      >>> j < u1
+      True
+      >>> n < j
+      TypeError: no ordering relation is defined for complex numbers
+
+  Adding insult to injury, complex numbers are now incomparable to
+  -most- numeric values, but claim a definite inequality from most
+  non-numeric values. I can get that holding theoretical purity in mind,
+  '1+1j', for example, is neither more nor less than '2-3j', but then
+  why have this:
+
+      #----------------- Surprising comparison results ----------------#
+      >>> 2-3j < 'spam'
+      True
+      >>> 4+0j < decimal.Decimal('3.14')
+      True
+      >>> 4+0j < 5+0j
+      TypeError: no ordering relation is defined for complex numbers
+
+  None of that is particularly "pure" theoretically.
+
+A real wart: sorting heterogeneous collections
+
+  An argument is sometimes made that it is a programming mistake to try
+  to compare items of incomensurable types.  But Python is very
+  happy to perform many such comparisons; and doing so meshes well with
+  a philosophy of "duck typing" (it is not what an object -is-, but what
+  it -does-).  Python collections frequently group together objects on
+  non-identical types with the hope of being able to -do- something
+  similar with each such collected object.  A frequent use case is that
+  you often want to encode a bunch of disparate values for transmission
+  over some protocol.
+
+  For most values of "do", inequality comparisons are not necessarily
+  needed. However, one very common case where inequalities are
+  implicitly extremely useful is in -sorting- collection, usually lists
+  or list-like custom collections. Sometimes its meaningful to process a
+  collection of things in a meaningfully ascending order (e.g. data
+  values from smallest to largest).  Other times, it is simply useful to
+  create a stable order of multiple collections, particularly to run a
+  sort of "list diff" on the two collections.  That is, perhaps you want
+  to take one type of action is an object is in both collections, but a
+  different action if it is in only one collection.  Constantly asking
+  'if x in otherlist' runs into geometric big-O inefficiencies; marching
+  in parallel between two stably-sorted lists is more efficient.  For
+  example:
+
+      #----------- Action depending on two-list membership ------------#
+      list1.sort()
+      list2.sort()
+      list2_xtra = []
+      list2_ndx = 0
+      for it1 in list1:
+          it2 = list2[list2_ndx]
+          while it1 < it2:
+              list2_ndx += 1
+              it2 = list2[list2_ndx]
+              if it1 == it2:
+                  item_in_both(it1)
+              elif it1 > it2:
+                  item_in_list1(it1)
+              else:
+                  list2_xtra.appen(it2)
+       for it2 in list2_xtra:
+           item_in_list2(it2)
+
+  Sometimes as well, having "local sequences" of meaningful comparisons
+  is nice, even where heterogeneous items also occur (e.g. process all
+  the floating values "in order" even though they are not in any deep
+  sense greater or less than the strings processed elsewhere).
+
+Sorting falling down
+
+  Of course, the code above to perform a "list diff" is subject to
+  blowing up, almost randomly.  For example, here is a collection of
+  small lists one might encounter for 'list1' and 'list2'.  Try to guess
+  which are sortable:
+
+      #---------- Hodgepodge of sortables and unsortables -------------#
+      ['x','y','z', 1],
+      ['x','y','z', 1j],
+      ['x','y','z', 1j, 1],       # Adding an element makes it unsortable
+      [0j, 1j, 2j],               # An obvious "natural" order
+      [0j, 1, 2],
+      [0, 1, 2],                  # Notice that 0==0j --> True
+      [chr(120), chr(240)],
+      [chr(120), chr(240), 'x'],
+      [chr(120), chr(240), u'x'], # Notice u'x'=='x' --> True
+      [u'a', 'b', chr(240)],
+      [chr(240), u'a', 'b']       # Same items, different initial order
+
+  I wrote a short program to try sorting each list:
+
+      % python compare.py
+      (0)  ['x', 'y', 'z', 1] --> [1, 'x', 'y', 'z']
+      (1)  ['x', 'y', 'z', 1j] --> [1j, 'x', 'y', 'z']
+      (2)  ['x', 'y', 'z', 1j, 1] --> exceptions.TypeError
+      (3)  [0j, 1j, 2j] --> exceptions.TypeError
+      (4)  [0j, 1, 2] --> exceptions.TypeError
+      (5)  [0, 1, 2] --> [0, 1, 2]
+      (6)  ['x', '\xf0'] --> ['x', '\xf0']
+      (7)  ['x', '\xf0', 'x'] --> ['x', 'x', '\xf0']
+      (8)  ['x', '\xf0', u'x'] --> exceptions.UnicodeDecodeError
+      (9)  [u'a', 'b', '\xf0'] --> [u'a', 'b', '\xf0']
+      (10) ['\xf0', u'a', 'b'] --> exceptions.UnicodeDecodeError
+
+  Some of these results more-or-less follow from the prior caveats. But
+  look at (9) and (10) which contain exactly the same objects in
+  different orders: the failure depends not only on the type and values
+  of the items -in- the list, but on the specific implementation of the
+  'list.sort()' method!
+
+Fixing comparisons
+
+  Along the path away from 1.5.2, Python grew a very useful datatype:
+  sets, first as a standard module then as a built-in (the module still
+  contains some extras). For a lot of the problem I describe above,
+  simply using sets rather than lists lets you easily answer the
+  question of what items are in one collection, or the other, or in
+  both, all without having to roll your own "list diff" code. For
+  example:
+
+      #------------------ Sets and set operations ---------------------#
+      >>> set1 = set([1j, u'2', 3, 4.0])
+      >>> set2 = set([4, 3, 2, 1])
+      >>> set1 | set2
+      set([3, 1, 2, 1j, 4.0, u'2'])
+      >>> set1 & set2
+      set([3, 4])
+
+  I discovered something rather odd in composing the above example. Set
+  operations apparently use equality rather than identity. Perhaps there
+  is some sense to this, but it strikes me as peculiar that the union of
+  the two sets contains the float '4.0' while their intersection
+  contains the int '4'. Or more specifically, what exact value gets
+  included is order-sensitive, despite the set-theoretic symmetry of the
+  union and intersection operations:
+
+      #------------------ Odd type results in sets --------------------#
+      >>> set2 & set1
+      set([3, 4.0])
+      >>> set([3, 4.0, 4, 4+0j])
+      set([3, 4.0])
+
+  Still, at as a first pass, sets are a wonderful datatype.
+  Nonetheless, it is worth keeping custom comparisons in mind as a
+  workaround.  Prior to Python 2.4, it was possible to implement a
+  custom 'cmp()' function to pass to 'list.sort()'.  That would work to
+  implement comparisons for otherwise incomparable objects; the problem
+  with the 'cmp' argument is that it calls the function on every
+  comparison: Python's call overhead is relatively high, but worse than
+  this, computed values wind up being computed multiple times.
+
+  The efficient solution to 'cmp' inefficiency is to use a Schwartzian
+  sort instead: decorate each item, sort, then undecorate.
+  Unfortunately, that requires a bit of custom code, rather than a
+  simple call to 'list.sort()'. Python 2.4 finds a good combination
+  solution using the 'key' argument.  This argument just takes a
+  function that returns a decorated object, and does the Schwartzian
+  sort mechanics "behind the scenes".  Keeping in mind the fact that
+  complex numbers are incomparable to even each other, while unicode
+  objects only have problems comparing to -some- strings, we can use:
+
+      #---------------- A stable and universal sort key ---------------#
+      def stablesort(o):
+          # Use as: mylist.sort(key=stablesort)
+          if type(o) is complex:
+              return (type(o), o.real, o.imag)
+          else:
+              return (type(o), o)
+
+  Mind you, the order of elements might not be strictly what you expect:
+  it is not identical to an undecorated sort, even where the undecorated
+  sort succeeds.  In particular, elements like different numeric types
+  are no longer intermixed, but separated into different parts of the
+  sorted result.  But at least it is stable, and will succeed on almost
+  any list (if you try, you can still get a custom object to make
+  the sort blow up).
+
+GENERATORS AS NOT-QUITE-SEQUENCES
+------------------------------------------------------------------------
+
+  Over several versions, Python has hugely enhanced its "laziness". For
+  several versions, we have had generators defined with the 'yield'
+  statement in a function body. But along the way we also got the
+  [itertools] modules to combine and create various types of iterators.
+  We have the 'iter()' built-in function to turn many sequence-like
+  objects into iterators. With Python 2.4, we got -generator
+  expressions-; and with 2.5 we will get enhanced generators that make
+  writing coroutines easier. Moreover, more and more Python objects have
+  become iterators or iterator-like; for example, what used to require
+  the '.xreadlines()' method or before that the [xreadlines] module, is
+  now simply the default behavior of 'open()' to read files.
+
+  Similarly, looping through a 'dict' lazily used to require the
+  '.iterkeys()' method; now it is just the default 'for key in dct'
+  behavior. Functions like 'xrange()' are a bit "special" in being
+  generator-like, but neither -quite- a real iterator (no '.next()'
+  method), nor a realized list like 'range()' returns. However,
+  'enumerate()' returns a true generator, and usually does what you had
+  earlier wanted 'xrange()' for. And 'itertools.count()' is another lazy
+  call that does -almost- the same thing as 'xrange()', but as a
+  full-fledged iterator.
+
+  Python is strongly moving towards lazily constructing sequence-like
+  objects; and overall this is an excellent direction. Lazy
+  pseudo-sequences both save memory space and speeds up operations
+  (especially when dealing with very large sequence-like "things").
+
+  The problem is that Python still has a schizoaffective condition when
+  it comes to deciding what the differences and similarities between
+  "hard" sequences and iterators are.  The troublesome part of this is
+  that it really violates Python's idea of "duck typing": the ability to
+  use a given object for a purpose, just as long as it has the right
+  behaviors, but not necessarily any inheritance or type restriction.
+  The various things that are iterators or iterator-like sometimes act
+  sequence-like, but other times do not; conversely, sequences often act
+  iterator-like, but not always.  Outside of those steeped in Python
+  arcana, what does what is not obvious.
+
+Divergences
+
+  The main point of similarity is that everything that is sequence- or
+  iterator-like lets you loop over it, whether using a 'for' loop, a
+  list comprehension, or a generator comprehension.  Past that,
+  divergences occur.  The most important of these differences is that
+  sequences can be indexed, and directly sliced, while iterators cannot.
+  In fact, indexing into a sequence is probably the most common thing
+  you ever do with a sequence--why on earth does it fall down so badly
+  on iterators?  For example:
+
+      #----------- Sequence-like and iterator-like things -------------#
+      >>> r = range(10)
+      >>> i = iter(r)
+      >>> x = xrange(10)
+      >>> g = itertools.takewhile(lambda n: n<10, itertools.count())
+      #...etc...
+
+  For all of these, you can use 'for n in thing'. In fact, if you
+  "concretize" any of them with 'list(thing)' you wind up with exactly
+  the same result.  But if you wish to obtain a specific item--or a
+  slice of a few items--you need to start caring about the exact type of
+  'thing'.  E.g.:
+
+      #-------------- When indexing succeeds and fails ----------------#
+      >>> r[4]
+      4
+      >>> i[4]
+      TypeError: unindexable object
+
+  With enough contortions, you can get an item for every type of
+  sequence/iterator.  One way is to loop until you get there.  Another
+  hackish combination might be something like:
+
+      #-------------- Contortions to obtain an index ------------------#
+      >>> thing, temp = itertools.tee(thing)
+      >>> zip(temp, '.'*5)[-1][0]
+      4
+
+  The pre-call to 'itertools.tee()' preserves the original iterator. For
+  a slice, you might use the 'itertools.islice()' function, wrapped up
+  in contortions.
+
+      #-------------- Contortions to obtain a slice -------------------#
+      >>> r[4:9:2]
+      [4, 6, 8]
+      >>> list(itertools.islice(r,4,9,2))  # works for iterators
+      [4, 6, 8]
+
+A class wrapper
+
+  You might combine these techniques into a class wrapper for
+  convenience, using some magic methods:
+
+      #------------------ Making iterators indexable ------------------#
+      >>> class Indexable(object):
+      ...     def __init__(self, it):
+      ...         self.it = it
+      ...     def __getitem__(self, x):
+      ...         self.it, temp = itertools.tee(self.it)
+      ...         if type(x) is slice:
+      ...             return list(itertools.islice(self.it, x.start, x.stop, x.step))
+      ...         else:
+      ...             return zip(temp, range(x+1))[-1][0]
+      ...     def __iter__(self):
+      ...         self.it, temp = itertools.tee(self.it)
+      ...         return temp
+      ...
+      >>> integers = Indexable(itertools.count())
+      >>> integers[4]
+      4
+      >>> integers[4:9:2]
+      [4, 6, 8]
+
+  So with some effort, you can coax an object to behave like both a
+  sequence and an iterator.  But this much effort should -really- not be
+  necessary; indexing and slicing should "just work" whether a concrete
+  sequence or a iterator is involved.
+
+  Notice that the 'Indexable' class wrapper is still not as flexible as
+  might be desirable. The main problem is that we create a new copy of
+  the iterator every time--a better approach would be to cache the head
+  of the sequence when we slice it, then use that cached head for future
+  access of elements already examined.  Of course, there is a tradeoff
+  between memory used and the speed penalty of running through the
+  iterator.  Nonetheless, the best thing would be if Python itself would
+  do all of this "behind the scenes"--the behavior might be fine-tuned
+  somehow by "power users", but average programmers should not have to
+  think about any of this.
+
+RESOURCES
+------------------------------------------------------------------------
+
+  Andrew Kuchling wrote a pretty well known page about "Python Warts"
+  (though it hasn't changed in a couple years):
+
+    http://www.amk.ca/python/writing/warts.html
+
+  Frank McIngvale, my coauthor on Gnosis Utilities, has written an
+  excellent discussion of issues with Python and Unicode, including his
+  motivation for including some enhanced Unicode handling facilities in
+  Gnosis Utilities. Frank's essay is titled, charmingly, "All About
+  Python and Unicode... and even more about Unicode:"
+
+    http://boodebr.org/python/pyunicode/index.html
+
+  Incidentally, to see what is in the latest Gnosis Utilities--currently
+  including Frank McIngvale's Unicode tools added in version 1.2.0--take
+  a look at:
+
+    http://www.gnosis.cx/download/Gnosis_Utils.ANNOUNCE
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz almost enjoys problems because of the solutions they
+  enable. David may be reached at mertz@gnosis.cx; his life pored over
+  at http://gnosis.cx/publish/. Check out David's book _Text Processing
+  in Python_ (http://gnosis.cx/TPiP/).
+
+
+

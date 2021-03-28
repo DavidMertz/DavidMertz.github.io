@@ -1,0 +1,462 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>XML MATTERS #23: Another better XML -- YAML Ain't Markup Language -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="xml_matters_22.html" TITLE="XML MATTERS #22">
+<link REL="next" HREF="xml_matters_24.html" TITLE="XML MATTERS #24">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<h1>Xml Matters #23: Another Better Xml</h1>
+<h2>YAML Ain't Markup Language</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Alternator, Gnosis Software, Inc.<br>
+ October, 2002<br>
+ <br>
+</p>
+<blockquote>
+    YAML is a data serialization format that is both easily
+    human-readable and well suited to encoding the data types
+    used in dynamic programming languages.  In contrast to XML,
+    YAML uses very minimal and clean structural indicators,
+    relying largely on indentation of nested elements.  More
+    important than than the superior syntax of YAML, however, is
+    the far better semantic fit between YAML and "natural" data
+    structures for many tasks.
+</blockquote>
+<h3>About Yaml</h3>
+ <p>
+  I suppose the very first question on readers' minds has to be,
+  "why the name <code>YAML</code>?" There are a number of tools that have
+  cutely adopted acronyms of the form "YA*", to mean "Yet
+  Another XXX."  In the arms race of open-source wit, YAML
+  eschews its implied acronym, instead settling on the recursive
+  "YAML Ain't Markup Language."  There is a certain sense to
+  this, however: YAML does what markup languages do, but without
+  requiring any, well, <em>markup</em>.
+</p>
+<p>
+  Although actually no less general than XML, YAML is a great
+  deal simpler to read, edit, modify and produce than XML.  That
+  is, anything you can represent in XML, you can represent
+  (almost always more compactly) in YAML; the one case where some
+  special pleading is necessary is with namespaces--you could
+  "bolt them on" to YAML, but they are not in the current spec.
+</p>
+<p>
+  A criticism I have frequently raised of XML in this column--and
+  one that I am far from alone in emphasizing--is that XML is
+  poorly focussed. It is a classic committee-driven behemoth, it
+  tries to be a document format, a data format, a message packet
+  format, a secure RPC channel (SOAP), an object database;
+  moreover, XML piles on APIs for every style of access and
+  manipulation: DOM, SAX, XSLT, XPATH, JDOM, and dozens of less
+  common interface layers (I have contributed a few of my own in
+  the <em><code>gnosis.xml.pickle</code></em>, <em><code>gnosis.xml.objectify</code></em> and
+  <em><code>gnosis.xml.validity</code></em> packages). The remarkable thing is that XML
+  <em>does</em> all these things; the disappointing part is that it does
+  none of them particularly well.
+</p>
+<p>
+  YAML aims more narrowly to <em>cleanly</em> represent the data
+  structures and data types one encounters in dynamic programming
+  languages like Perl, Python, Ruby, and to a lesser extent Java.
+  Bindings/libraries currently exist for those languages. A number
+  of other languages have data models that would "play nice" with
+  YAML, but no one has written libraries yet: Lisp/Scheme, Rebol,
+  Smalltalk, xBase, AWK, etc. Less dynamic languages would fit less
+  well with YAML. In syntax, YAML combines the contextual typing of
+  Perl with the indentation structure of Python, with a few
+  conventions from MIME standards thrown into the mix. Somewhat as
+  Python is sometimes praised as "executable pseudocode", YAML's
+  concrete syntax is very close to the way you might informally
+  explain a data structure to a class or work group.
+</p>
+<h3>Sketching An Application</h3>
+ <p>
+  I think the easiest way to see why you would want to use YAML is
+  to start looking at some code in different formats. For this
+  installment, I imagined creating a little application with a data
+  storage and transmission requirement. My particular toy project
+  is inspired by the "Brains in Bahrain" chess tournament that is
+  being played at the time of this writing between the FISA world
+  chess champion and the best ranked computer player--take my data
+  details with a grain of salt. Suppose you wanted to create a
+  program that tracked the activity of a chess club, you might
+  utilize a data structure that would be described by the following
+  code. In Perl:
+</p>
+<div class="code-sample"><h4>Perl description of chess club data structure</h4><pre>
+$players = {
+  'Vladimir Kramnik' =&gt; {'status'=&gt;'GM', 'rating'=&gt;'2700'},
+  'Deep Fritz' =&gt;  {'status'=&gt;'Computer','rating'=&gt;'2700'},
+  'David Mertz' =&gt; {'status'=&gt;'Amateur', 'rating'=&gt;'1400'},
+};
+$club = {
+  '_players' =&gt; $players,
+  'matches' =&gt; [
+    {'Date' =&gt; '2002-10-04',
+     'White' =&gt; $players-&gt;{'Deep Fritz'},
+     'Black' =&gt; $players-&gt;{'Vladimir Kramnik'},
+     'Result' =&gt; 'Draw' },
+    {'Date' =&gt; '2002-10-06',
+     'White' =&gt; $players-&gt;{'Vladimir Kramnik'},
+     'Black' =&gt; $players-&gt;{'Deep Fritz'},
+     'Result' =&gt; 'White' }
+  ]
+};
+
+</pre></div><p>
+  Python is pretty close here:
+</p>
+<div class="code-sample"><h4>Python description of chess club data structure</h4><PRE>ts = yaml.timestamp    <FONT COLOR=#1111CC># or mx.DateTime or othr date class</FONT>
+players = {
+  <FONT COLOR=#115511>'Vladimir Kramnik'</FONT>:  {<FONT COLOR=#115511>'status'</FONT>:<FONT COLOR=#115511>'GM'</FONT>, <FONT COLOR=#115511>'rating'</FONT>:2700},
+  <FONT COLOR=#115511>'Deep Fritz'</FONT>:        {<FONT COLOR=#115511>'status'</FONT>:<FONT COLOR=#115511>'Computer'</FONT>, <FONT COLOR=#115511>'rating'</FONT>:2700},
+  <FONT COLOR=#115511>'David Mertz'</FONT>:       {<FONT COLOR=#115511>'status'</FONT>:<FONT COLOR=#115511>'Amateur'</FONT>, <FONT COLOR=#115511>'rating'</FONT>:1400},
+  }
+matches = [
+  {<FONT COLOR=#115511>'Date'</FONT>:      ts(<FONT COLOR=#115511>'2002-10-04'</FONT>),
+   <FONT COLOR=#115511>'White'</FONT>:     players[<FONT COLOR=#115511>'Deep Fritz'</FONT>],
+   <FONT COLOR=#115511>'Black'</FONT>:     players[<FONT COLOR=#115511>'Vladimir Kramnik'</FONT>],
+   <FONT COLOR=#115511>'Result'</FONT>:    <FONT COLOR=#115511>'Draw'</FONT> },
+  {<FONT COLOR=#115511>'Date'</FONT>:      ts(<FONT COLOR=#115511>'2002-10-06'</FONT>),
+   <FONT COLOR=#115511>'White'</FONT>:     players[<FONT COLOR=#115511>'Vladimir Kramnik'</FONT>],
+   <FONT COLOR=#115511>'Black'</FONT>:     players[<FONT COLOR=#115511>'Deep Fritz'</FONT>],
+   <FONT COLOR=#115511>'Result'</FONT>:    <FONT COLOR=#115511>'White'</FONT> }
+  ]
+club = {<FONT COLOR=#115511>'_players'</FONT>:players, <FONT COLOR=#115511>'matches'</FONT>:matches}</PRE></div><p>
+  Other dynamic programming languages would use similar
+  descriptions of the data structure. Basically, it is a top level
+  dictionary/mapping/hash that contains both dicts and lists at a
+  few recursive levels, and that also allows nested elements to
+  refer to each other.
+</p>
+<p>
+  Presumably an application that managed the chess club would have
+  capabilities to do things like record additional matches,
+  add/remove players from the club, or update ratings based on
+  matches played. Moreover, an application would want not only to
+  <em>record</em> a data snapshot, but also <em>share</em> it with other
+  applications (in other languages) that worked with the same data
+  model.  One more thing, it would be nice if we could easily
+  touch up the data by hand outside of an application--anyone
+  who has developed a data-oriented application or maintained an
+  organizations records knows how helpful it can be to "poke at
+  the guts" of underlying data structures.
+</p>
+<h3>Choosing The Representation</h3>
+ <p>
+  Readers, of course, will have already picked up on the fact that
+  I have rigged the deck. YAML is going to swoop in here as the
+  right solution. But I do not think the setup is unfair. The way
+  I structured the data is a whole lot like the way data often
+  presents itself, at least in broad strokes. I chose to uses maps,
+  and lists, references and data types above in precisely the
+  places they each seemed most natural; and I chose the
+  underlying problem merely as something that was complex enough
+  to show the issues while being simple enough to fit in one
+  article.
+</p>
+<p>
+  If you are willing to require a particular programming language
+  (and possibly version) for all chess club applications, most
+  languages have good serialization capabilities in built-in or
+  common libraries. For example, Python has <em><code>cPickle</code></em>,
+  <em><code>gnosis.xml.pickle</code></em> and <em><code>pprint</code></em>; Perl has <em><code>Data::Dumper</code></em>,
+  <em><code>Data::Denter</code></em> and <em><code>Data:DumpXML</code></em>; Ruby has <em><code>Marshal</code></em> and
+  <em><code>XmlSerialization</code></em>; Java has <em><code>java.io.Serializable</code></em>,
+  <em><code>org.apache.xml.serialize.XMLSerializer</code></em> and various others. As
+  the names indicate, some of those libraries produce XML; but
+  just because it is XML, that hardly means that it is easily
+  transferable between languages.
+</p>
+<p>
+  In addition, there are a few general semantic problems with using
+  XML to represent my chess club data. XML has the concept of
+  unordered mapping for element attributes, but nested elements are
+  strictly ordered. A particular application, of course, if free to
+  <em>ignore</em> some of the ordering information; but the <em>information
+  model</em> of XML always asserts a significance to order, often
+  spuriously. For example, matches are considered meaningly to fall
+  in a particular (date) order, while players are not inherently
+  ordered (you could, of course <em>impose</em> an order such as rating or
+  enroll-date). The problem here is that you need custom
+  programming in every application to <em>remove</em> implied ordering
+  information everywhere it is spurious; but to keep it where it is
+  important.
+</p>
+<p>
+  A generic approach to representing mappings is taken by XML-RPC,
+  SOAP, <em><code>gnosis.xml.pickle</code></em>, and the XML serializer libraries in
+  various languages. In all cases, the basic principle is simply
+  to use (rather verbosely) <code>&lt;key&gt;</code> and <code>&lt;val&gt;</code> (or similar tags)
+  to indicate unordered pairs, and use different container elements
+  to indicate ordered items. It adds several layers to remove part
+  of the XML information model, for example:
+</p>
+<div class="code-sample"><h4>XML-RPC model of ordered and unordered collections</h4><pre>
+&gt;&gt;&gt; import xmlrpclib
+&gt;&gt;&gt; print xmlrpclib.dumps(({'this':'that',
+...                         'spam':('eggs','toast')},))
+&lt;params&gt;
+&lt;param&gt;
+&lt;value&gt;&lt;struct&gt;
+&lt;member&gt;
+&lt;name&gt;this&lt;/name&gt;
+&lt;value&gt;&lt;string&gt;that&lt;/string&gt;&lt;/value&gt;
+&lt;/member&gt;
+&lt;member&gt;
+&lt;name&gt;spam&lt;/name&gt;
+&lt;value&gt;&lt;array&gt;&lt;data&gt;
+&lt;value&gt;&lt;string&gt;eggs&lt;/string&gt;&lt;/value&gt;
+&lt;value&gt;&lt;string&gt;toast&lt;/string&gt;&lt;/value&gt;
+&lt;/data&gt;&lt;/array&gt;&lt;/value&gt;
+&lt;/member&gt;
+&lt;/struct&gt;&lt;/value&gt;
+&lt;/param&gt;
+&lt;/params&gt;
+
+</pre></div><p>
+  XML-RPC has a few additional artifacts--like the need to wrap
+  the whole object in a one-item tuple--but those are minor
+  issues.  The awkward fit between the "native" and XML data
+  models is equally evident in any of the mentioned XML
+  serialization formats.
+</p>
+<h3>An Attempt At Xml</h3>
+ <p>
+  There are at least two families of issues involved in
+  representing my chess club data as XML.  The simpler issue is
+  exactly what the best XML representation would be, in the
+  abstract.  Putting aside the later interface-with-application
+  issue, I would propose something like the following as a best
+  attempt in XML:
+</p>
+<div class="code-sample"><h4>Optimal XML description of chess club data</h4><pre>
+&lt;?xml version="1.0"?&gt;
+&lt;club&gt;
+  &lt;players&gt;
+    &lt;player id="kramnik"
+            name="Vladimir Kramnik"
+            rating="2700"
+            status="GM" /&gt;
+    &lt;player id="fritz"
+            name="Deep Fritz"
+            rating="2700"
+            status="Computer" /&gt;
+    &lt;player id="mertz"
+            name="David Mertz"
+            rating="1400"
+            status="Amateur" /&gt;
+  &lt;/players&gt;
+  &lt;matches&gt;
+    &lt;match&gt;
+        &lt;Date&gt;2002-10-04&lt;/Date&gt;
+        &lt;White refid="fritz" /&gt;
+        &lt;Black refid="kramnik" /&gt;
+        &lt;Result&gt;Draw&lt;/Result&gt;
+    &lt;/match&gt;
+    &lt;match&gt;
+        &lt;Date&gt;2002-10-06&lt;/Date&gt;
+        &lt;White refid="kramnik" /&gt;
+        &lt;Black refid="fritz" /&gt;
+        &lt;Result&gt;White&lt;/Result&gt;
+    &lt;/match&gt;
+  &lt;/matches&gt;
+&lt;/club&gt;
+
+</pre></div><p>
+  The above XML data representation is fairly clear.  It is not
+  all that much more verbose than the native data descriptions
+  given in the Perl and Python examples, nor than the YAML
+  description below.  It is not all that difficult to modify the
+  document with general purpose tools like a text editor--in
+  fact, that is exactly how I created the XML to start with.
+</p>
+<p>
+  Semantically, my proposed XML has all the problems discussed.
+  Players appear ordered, even though they are not intended to
+  be.  And the player list appears to precede the matches list,
+  even though no such conceptual order is meant.  Player
+  attributes are unordered, as desired (being XML attributes);
+  but since match "attributes" cannot fit as XML attributes, an
+  artificial order is again imposed.
+</p>
+<p>
+  The more important issue arises with actually reading and
+  writing my optimal XML format.  None of the common XML APIs
+  comes even close to automating this operation.  For example, a
+  SAX reader could look for various "player" and "match" events,
+  and manually add to relevant nested dictionaries or lists; but
+  this approach is fragile, and needs to be reprogrammed for the
+  slightest change in data structure during development.  Walking
+  a DOM tree has the same issue.  Custom APIs like <em><code>JDOM</code></em> or
+  <em><code>REXML</code></em> do not help much either.  <em><code>gnosis.xml.objectify</code></em> does a
+  fairly good job of automatically generating a "native" object,
+  but this is only any good for reading in the XML, not for
+  writing it back out.  Writing, of course, is symmetric with
+  reading, with all the corresponding fragilities.
+</p>
+<h3>Yaml To The Rescue</h3>
+ <p>
+  The YAML format just simply matches the data structures of
+  dynamic languages better.  And it looks nicer too.  Let me
+  display a YAML representation of the same chess club data:
+</p>
+<div class="code-sample"><h4>YAML description of chess club data</h4><pre>
+---
+players:
+  Vladimir Kramnik: &amp;kramnik
+    rating: 2700
+    status: GM
+  Deep Fritz: &amp;fritz
+    rating: 2700
+    status: Computer
+  David Mertz: &amp;mertz
+    rating: 1400
+    status: Amateur
+
+matches:
+  -
+    Date: 2002-10-04
+    White: *fritz
+    Black: *kramnik
+    Result: Draw
+  -
+    Date: 2002-10-06
+    White: *kramnik
+    Black: *fritz
+    Result: White
+
+</pre></div><p>
+  There are a number of nice things about this format. See the YAML
+  web site for exact specifications, but this brief sample gives
+  you a pretty accurate idea of the basic elements. Intuitive means
+  of including (multi-)paragraph strings are also in the spec. YAML
+  is terse, while still being readable. Moreover, quoting is
+  minimal, with data types being inferred from patterns (e.g. if it
+  looks like a date, it is treated as a timestamp value unless
+  explicitly string quoted).  References can be used to any named
+  target.  And importantly, the distinction between ordered and
+  associative collections is maintained.  As an added bonus, it
+  is awfully easy to edit YAML in a text editor.
+</p>
+<p>
+  None of the semantic and syntactic benefits listed above are
+  really the strongest point for using YAML for my application.
+  The best part is actually the uniform interface to the format
+  in all the supported languages.  I can read, manipulate, and
+  write the above YAML data file as easily as:
+</p>
+<div class="code-sample"><h4>Python access to YAML data source</h4><PRE><FONT COLOR=#3333CC><B>import</B></FONT> yaml
+club = yaml.loadFile(<FONT COLOR=#115511>'club.yml'</FONT>).next()
+<FONT COLOR=#1111CC># ...manipulate the 'club' data structure...</FONT>
+club_yamlstr = yaml.dump(club)
+<FONT COLOR=#1111CC># ...do something w/ formatted YAML in club_yamlstr...</PRE></FONT></div><p>
+  I use the <code>.next()</code> method above because a YAML text can
+  contain multiple streams, each separated by "<em>-</em>".  The data
+  structure in <code>club</code> is <em>exactly</em> the same as in the one defined
+  in the prior pure Python definition, by the way.
+</p>
+<p>
+  In Perl (or Ruby or Java), the steps are almost the same:
+</p>
+<div class="code-sample"><h4>Perl access to YAML data source</h4><pre>
+use YAML ();
+my $club = YAML::LoadFile('club.yml');
+my $club_yamlstr = YAML::Dump($club);
+
+</pre></div><p>
+  The roundtrip between YAML and native data structures is free.
+  Well, very close. I found two minor drawbacks: (1) references
+  lose their names (e.g. "*kramnik") and simply become numbered
+  (e.g. "*1"); (2) targets are always spelled out on first
+  occurrence--aesthetically I prefer to see a player's
+  details in the "players" section, but that is not guaranteed by
+  an unordered dictionary (the use of "_player" in the Perl/Python
+  samples is a hack to force matters).
+</p>
+<h3>What It Means</h3>
+ <p>
+  There are a number of features of YAML that I have not covered
+  here.  The formal specification is good, albeit somewhat
+  difficult reading (as most specs).  For example, the existing
+  YAML libraries come with adequate--but not great--conversion
+  tools from moving between XML and YAML; and there is some
+  support for a technique called YPATH, which is the YAML version
+  of XPATH.
+</p>
+<p>
+  What this introduction hopes to do is suggest some situations
+  where YAML provides a better object serialization format than
+  XML.  To my mind, XML is not always the best choice for data
+  representation--not even in many of those cases where it seems
+  obvious.
+</p>
+<h3>Resources</h3>
+ <p>
+  The home page for YAML is:
+</p>
+<blockquote>
+   <a href="http://yaml.org/">http://yaml.org/</a>
+</blockquote>
+<p>
+  The YAML specification has recently reached 1.0 level, and it
+  can be found in its full glory at:
+</p>
+<blockquote>
+   <a href="http://yaml.org/spec/">http://yaml.org/spec/</a>
+</blockquote>
+<p>
+  A number of my previous colums have looked at related topics.
+</p>
+<p>
+  REXML is a Ruby library for making XML look more like "native"
+  data structures:
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/xml/library/x-matters18.html">http://www-106.ibm.com/developerworks/xml/library/x-matters18.html</a>
+</blockquote>
+<p>
+  PYX is another format that is not quite XML, and is in some
+  ways easier to process.  But the semantics of PYX are
+  essentially identical to XML, only the syntax is differs:
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/xml/library/x-matters17.html">http://www-106.ibm.com/developerworks/xml/library/x-matters17.html</a>
+</blockquote>
+<p>
+  I looked at the object models of XML-RPC in comparison to
+  <em><code>gnosis.xml.pickle</code></em>.  Given my current hindsight, I like YAML
+  better than either of them (at least for a lot of purposes):
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/xml/library/x-matters15.html">http://www-106.ibm.com/developerworks/xml/library/x-matters15.html</a>
+</blockquote>
+<p>
+  My Python tools <em><code>gnosis.xml.pickle</code></em> and <em><code>gnosis.xml.objectify</code></em>
+  attempt to bridge some of the conceptual gaps between XML and
+  dynamic programming languages (at least Python specifically):
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/xml/library/x-matters11.html">http://www-106.ibm.com/developerworks/xml/library/x-matters11.html</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz wishes to let a thousand flowers bloom.  David may
+  be reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>
+</p>
+</body></html>

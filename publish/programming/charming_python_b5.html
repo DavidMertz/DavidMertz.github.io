@@ -1,0 +1,489 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>CHARMING PYTHON #B5: -- Generator-based State Machines and Coroutines -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="charming_python_b4.html" TITLE="CHARMING PYTHON #b4">
+<link REL="next" HREF="charming_python_b6.html" TITLE="CHARMING PYTHON #b6">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<h1>Charming Python #b5:</h1>
+<h2>Generator-based State Machines and Coroutines</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Functor, Gnosis Software, Inc.<br>
+ January, 2002<br>
+ <br>
+</p>
+<blockquote>
+    Simple generators, introduced in Python 2.2, may be used to
+    simplify state machines and to simulate coroutines.  A much
+    earlier <cite>Charming Python</cite> presented an abstract pattern for
+    state machine processing.  Since that time, the introduction
+    of simple generators has provided some even more natural
+    paradigms for describing machines.  Coroutines are an
+    "exotic" flow mechanism that few widely-used languages allow
+    (not even non-Stackless Python).  Python's new generators,
+    however, get us <em>almost</em> all the way to coroutines, and the
+    extra few steps can be faked.  Explanation of the relevant
+    concepts are accompanied by code samples.
+</blockquote>
+<h3>What Is Python?</h3>
+ <p>
+  Python is a freely available, very-high-level, interpreted
+  language developed by Guido van Rossum.  It combines a clear
+  syntax with powerful (but optional) object-oriented semantics.
+  Python is available for almost every computer platform you
+  might find yourself working on, and has strong portability
+  between platforms.
+</p>
+<h3>Introduction</h3>
+ <p>
+  It takes a while to completely "get" Python 2.2's new
+  generators.  Even after writing an earlier <cite>Charming Python</cite>
+  installment that introduced simple generators, I could not say
+  that I fully understood the "gestalt" of generators.  This
+  article presents some additional patterns for the use of
+  generators, and hopefully brings both myself and readers
+  further into the mindset of "resumable functions."
+</p>
+<p>
+  There is a lot good about simple generators.  In addition to
+  offering more natural ways of expressing the flow of a class of
+  problems, generators prove to make many problems dramatically
+  more efficient.  In Python, function invocation is rather
+  expensive; among other factors, function arguments lists take a
+  while to sort out (positional and default arguments need to be
+  parsed, among other things).  Also, initializing a frame object
+  takes some setup steps (according to Tim Peters, on
+  comp.lang.python, over 100 lines of C; I have not examined the
+  Python source myself).  Resuming a generator, in contrast, is
+  quite cheap; the arguments have already been parsed, and the
+  frame object is just sitting around waiting for resumption
+  (almost no extra initialization is needed).  Of course, if
+  speed is tantamount, you should not be using aa byte-code
+  compiled dynamic language; but even where speed is not the
+  primary concern, faster is better than slower.
+</p>
+<h3>Revisiting State Machines</h3>
+ <p>
+  In <cite>Charming Python</cite> #4, I presented a <code>StateMachine</code> class
+  that allowed users to add as many state handlers as were needed
+  for a given machine.  In the model, one or more states are
+  defined as end states, and exactly one state is defined as a
+  start state (calls to the class methods configure this).  Each
+  handler had a certain required structure; a handler would
+  perform a series of actions, then after a while return to a
+  loop in the <code>StateMachine.run()</code> method with a flag indicating
+  the desired next state.  As well, a <code>cargo</code> variable was used
+  to allow one state to pass some (unprocessed) information on to
+  the next state.
+</p>
+<p>
+  A typical use for the <code>StateMachine</code> class I presented would be
+  to consume input in a stateful way.  For example, a text
+  processing tool (Txt2Html) I use reads lines from a file; each
+  line needs to be processed in a particular fashion, depending
+  on which category the line belongs in.  However, one often
+  needs to look at the context provided by immediately prior
+  lines to determine which category the current line belongs in
+  (and how it should be processed).  An implementation of this
+  process built around the <code>StateMachine</code> class might define a
+  handler <code>A</code> that reads lines for a while, and processes them in
+  an A-like manner.  After a while, a condition is satisfied such
+  that the next batch of lines should be processed by the <code>B</code>
+  handler.  <code>A</code> passes control back to the <code>.run()</code> loop, with
+  the instruction to transition to the <code>B</code> state--along with any
+  extra line(s) that <code>A</code> could not properly handle, and <code>B</code>
+  should before reading additional lines.  Eventually, some
+  handler passes its control to some state designated as an end
+  state, and processing halts.
+</p>
+<p>
+  For the concrete code example in the prior installment, I used
+  a simplified application.  Rather than process lines, I
+  processed a stream of numbers that were produced by an
+  iterative function.  Each state handler simply printed those
+  numbers that were within its desired numeric range (along with
+  some messages about the operative state).  When a number in the
+  stream passed into a different range, a different handler took
+  over the "processing."  For this installment, we will look at
+  another way of implementing the same numeric stream handling
+  using generators (with some extra wrinkles and capabilities).
+  But a more sophisticated generator example is likely to deal
+  with something more like the input streams mentioned in the
+  prior paragraph.  It is worth reminding ourselves about the
+  earlier state machine with an abridged version of that code:
+</p>
+<div class="code-sample"><h4>File: statemachine_test.py</h4><PRE><FONT COLOR=#3333CC><B>from</B></FONT> statemachine <FONT COLOR=#3333CC><B>import</B></FONT> StateMachine
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="ones_counter"><FONT COLOR=#CC0000><B> ones_counter</B></FONT></A>(val):
+    <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"ONES State:    "</FONT>,
+    <FONT COLOR=#3333CC><B>while</B></FONT> 1:
+        <FONT COLOR=#3333CC><B>if</B></FONT> val &lt;= 0 <FONT COLOR=#3333CC><B>or</B></FONT> val &gt;= 30:
+           newState = <FONT COLOR=#115511>"Out_of_Range"</FONT> ; <FONT COLOR=#3333CC><B>break</B></FONT>
+        <FONT COLOR=#3333CC><B>elif</B></FONT> 20 &lt;= val &lt; 30:
+            newState = <FONT COLOR=#115511>"TWENTIES"</FONT>;     <FONT COLOR=#3333CC><B>break</B></FONT>
+        <FONT COLOR=#3333CC><B>elif</B></FONT> 10 &lt;= val &lt; 20:
+            newState = <FONT COLOR=#115511>"TENS"</FONT>;         <FONT COLOR=#3333CC><B>break</B></FONT>
+        <FONT COLOR=#3333CC><B>else</B></FONT>:
+            <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"  @ %2.1f+"</FONT> % val,
+        val = math_func(val)
+    <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"  &gt;&gt;"</FONT>
+    <FONT COLOR=#3333CC><B>return</B></FONT> (newState, val)
+
+<FONT COLOR=#1111CC># ... other handlers ...</FONT>
+
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="math_func"><FONT COLOR=#CC0000><B> math_func</B></FONT></A>(n):
+    <FONT COLOR=#3333CC><B>from</B></FONT> math <FONT COLOR=#3333CC><B>import</B></FONT> sin
+    <FONT COLOR=#3333CC><B>return</B></FONT> abs(sin(n))*31
+
+<FONT COLOR=#3333CC><B>if</B></FONT> __name__== <FONT COLOR=#115511>"__main__"</FONT>:
+    m = StateMachine()
+    m.add_state(<FONT COLOR=#115511>"ONES"</FONT>, ones_counter)
+    m.add_state(<FONT COLOR=#115511>"TENS"</FONT>, tens_counter)
+    m.add_state(<FONT COLOR=#115511>"TWENTIES"</FONT>, twenties_counter)
+    m.add_state(<FONT COLOR=#115511>"OUT_OF_RANGE"</FONT>, None, end_state=1)
+    m.set_start(<FONT COLOR=#115511>"ONES"</FONT>)
+    m.run(1)</PRE></div><p>
+  Readers further interested in the imported <code>StateMachine</code> class
+  and how its methods work should take a look at the earlier
+  installment.
+</p>
+<h3>Using Generators</h3>
+ <p>
+  The entire generator-based version of our state machine is
+  slightly longer than the code samples I prefer to present in
+  this column.  However, the below code sample is the entire
+  application, no separate <em><code>statemachine</code></em> module is imported for
+  support.  In total, this version is shorter than the
+  class-based one (and we will see that its does something extra,
+  and very powerful).
+</p>
+<div class="code-sample"><h4>File: stategen_test.py</h4><PRE><FONT COLOR=#3333CC><B>from</B></FONT> __future__ <FONT COLOR=#3333CC><B>import</B></FONT> generators
+<FONT COLOR=#3333CC><B>import</B></FONT> sys
+
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="math_gen"><FONT COLOR=#CC0000><B> math_gen</B></FONT></A>(n):    <FONT COLOR=#1111CC># Iterative function becomes a generator</FONT>
+    <FONT COLOR=#3333CC><B>from</B></FONT> math <FONT COLOR=#3333CC><B>import</B></FONT> sin
+    <FONT COLOR=#3333CC><B>while</B></FONT> 1:
+        yield n
+        n = abs(sin(n))*31
+
+<FONT COLOR=#1111CC># Jump targets not state-sensitive, only to simplify example</FONT>
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="jump_to"><FONT COLOR=#CC0000><B> jump_to</B></FONT></A>(val):
+    <FONT COLOR=#3333CC><B>if</B></FONT>    0 &lt;= val &lt; 10: <FONT COLOR=#3333CC><B>return</B></FONT> <FONT COLOR=#115511>'ONES'</FONT>
+    <FONT COLOR=#3333CC><B>elif</B></FONT> 10 &lt;= val &lt; 20: <FONT COLOR=#3333CC><B>return</B></FONT> <FONT COLOR=#115511>'TENS'</FONT>
+    <FONT COLOR=#3333CC><B>elif</B></FONT> 20 &lt;= val &lt; 30: <FONT COLOR=#3333CC><B>return</B></FONT> <FONT COLOR=#115511>'TWENTIES'</FONT>
+    <FONT COLOR=#3333CC><B>else</B></FONT>:                <FONT COLOR=#3333CC><B>return</B></FONT> <FONT COLOR=#115511>'OUT_OF_RANGE'</FONT>
+
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="get_ones"><FONT COLOR=#CC0000><B> get_ones</B></FONT></A>(iter):
+    <FONT COLOR=#3333CC><B>global</B></FONT> cargo
+    <FONT COLOR=#3333CC><B>while</B></FONT> 1:
+        <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"\nONES State:      "</FONT>,
+        <FONT COLOR=#3333CC><B>while</B></FONT> jump_to(cargo)==<FONT COLOR=#115511>'ONES'</FONT>:
+            <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"@ %2.1f  "</FONT> % cargo,
+            cargo = iter.next()
+        yield (jump_to(cargo), cargo)
+
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="get_tens"><FONT COLOR=#CC0000><B> get_tens</B></FONT></A>(iter):
+    <FONT COLOR=#3333CC><B>global</B></FONT> cargo
+    <FONT COLOR=#3333CC><B>while</B></FONT> 1:
+        <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"\nTENS State:      "</FONT>,
+        <FONT COLOR=#3333CC><B>while</B></FONT> jump_to(cargo)==<FONT COLOR=#115511>'TENS'</FONT>:
+            <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"#%2.1f  "</FONT> % cargo,
+            cargo = iter.next()
+        yield (jump_to(cargo), cargo)
+
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="get_twenties"><FONT COLOR=#CC0000><B> get_twenties</B></FONT></A>(iter):
+    <FONT COLOR=#3333CC><B>global</B></FONT> cargo
+    <FONT COLOR=#3333CC><B>while</B></FONT> 1:
+        <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"\nTWENTIES State:  "</FONT>,
+        <FONT COLOR=#3333CC><B>while</B></FONT> jump_to(cargo)==<FONT COLOR=#115511>'TWENTIES'</FONT>:
+            <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"*%2.1f  "</FONT> % cargo,
+            cargo = iter.next()
+        yield (jump_to(cargo), cargo)
+
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="exit"><FONT COLOR=#CC0000><B> exit</B></FONT></A>(iter):
+    jump = raw_input(<FONT COLOR=#115511>'\n\n[co-routine for jump?] '</FONT>).upper()
+    <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"...Jumping into middle of"</FONT>, jump
+    yield (jump, iter.next())
+    <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"\nExiting from exit()..."</FONT>
+    sys.exit()
+
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="scheduler"><FONT COLOR=#CC0000><B> scheduler</B></FONT></A>(gendct, start):
+    <FONT COLOR=#3333CC><B>global</B></FONT> cargo
+    coroutine = start
+    <FONT COLOR=#3333CC><B>while</B></FONT> 1:
+        (coroutine, cargo) = gendct[coroutine].next()
+
+<FONT COLOR=#3333CC><B>if</B></FONT> __name__ == <FONT COLOR=#115511>"__main__"</FONT>:
+    num_stream = math_gen(1)
+    cargo = num_stream.next()
+    gendct = {<FONT COLOR=#115511>'ONES'</FONT>        : get_ones(num_stream),
+              <FONT COLOR=#115511>'TENS'</FONT>        : get_tens(num_stream),
+              <FONT COLOR=#115511>'TWENTIES'</FONT>    : get_twenties(num_stream),
+              <FONT COLOR=#115511>'OUT_OF_RANGE'</FONT>: exit(num_stream)         }
+    scheduler(gendct, jump_to(cargo))</PRE></div><p>
+  There are a number of observations to make about our
+  generator-based state machines.  A first point is fairly
+  cosmetic.  We arranged <code>stategen_test.py</code> to use only
+  functions, not classes--generators, to my mind at least, have
+  much more of a functional programming feel than an OOP feel.
+  But one could easily wrap the same general model in one or more
+  classes if desired.
+</p>
+<p>
+  The main function in our sample is <code>scheduler()</code>, which is
+  perfectly generic (while being quite a bit shorter than the
+  <code>StateMachine</code> class in the earlier pattern).  The function
+  <code>scheduler()</code> requires as arguments a dictionary of
+  generator-iterator objects ("instantiated" generators).  The
+  string names given to each generator can be whatever one
+  wants--the literal names of the generator-factory functions is
+  one obvious choice, but I use capitalized keyword names in my
+  example.  The <code>scheduler()</code> function also accepts a "start
+  state" as an argument, although perhaps a default value could
+  be selected automatically if that was desired.
+</p>
+<p>
+  Each generator "scheduled" obeys some simple conventions.  Each
+  generator runs for a while, then yields a pair that contains
+  the desired jump and some "cargo"--just as with the prior
+  model.  No generator is marked specifically as an "end state."
+  Instead we allow individual generators the option of raising an
+  error to break out of <code>scheduler()</code>--specifically, a generator
+  will raise a <code>StopIteration</code> exception if the generator "fall
+  off" the end or gets to a <code>return</code> statement.  One could catch
+  that exception (or a different one), if desired.  In our case,
+  we use a <code>sys.exit()</code> to terminate the application, which is
+  encountered within the <code>exit()</code> generator.
+</p>
+<p>
+  Two more small notes on the code.  Instead of an iterative
+  function to generate our numeric sequence, the above sample
+  uses a much cleaner looping generator-iterator.  Rather than
+  have continually to pass back in the "last value", the
+  generator simply issues an (infinite/indefinite) stream of
+  numbers with each successive call.  It is a nice, albeit small,
+  illustration of a generator.  As well, the above isolates the
+  "state transition" table in a separate function.  In a
+  realistic program, the state transition jumps would be much
+  more context dependent, and would probably be determined in the
+  actual generator bodies.  This approach simplifies the example.
+  For what it is worth, we could have simplified even further by
+  producing the generator functions out of a single function
+  factory; but the general case would not have each generator so
+  similar to the others as to make this feasible.
+</p>
+<h3>Coroutines And Semi-coroutines</h3>
+ <p>
+  Careful readers will have noticed that we have actually
+  smuggled in a much more powerful flow-control structure than
+  was initially admitted.  There is more than a state machine
+  going on in the sample code.  The pattern above is, in fact,
+  effectively a general system for coroutines.  Most readers will
+  probably need a little bit of background here.
+</p>
+<p>
+  A coroutine is a collection of program functionality that
+  allows arbitrary branching into other control contexts <em>and</em>
+  arbitrary resumption of flow from the branch point.  The
+  subroutines familiar in most programming languages are an
+  extremely limited sub-case of general coroutines.  A subroutine
+  is only entered from a fixed point at the top, and only exits
+  once (it cannot be resumed).  As well a subroutine always
+  passes flow back to its caller.  In essence, each coroutine
+  represents a callable continuation--although adding a new word
+  doesn't necessarily clarify things for those who do not know
+  it.  An illustration in Randall Hyde's <cite>The Art of Assembly</cite>
+  goes a long way towards explaining coroutines:
+</p>
+<p>
+  <img src="http://gnosis.cx/publish/programming/CH19A1.gif " alt="Two coroutines in action">
+</p>
+<p>
+  See the Resources for Hyde's general discussion, which is good.
+  Despite the negative associations, one can note that the
+  infamous <code>goto</code> statment in many languages allows arbitrary
+  branching too, albeit in a less structured context that
+  promotes "spagetti code."
+</p>
+<p>
+  Python 2.2+'s generators take a big step towards coroutines.
+  That is, generators--unlike functions/subroutines--are
+  resumable, and can yield values across multiple invocations.
+  However, Python generators are only what Donald Knuth describes
+  as "semi-coroutines."  A generator is resumable, and can branch
+  control elsewhere--but it can only branch control back to its
+  immediate caller.  To be precise, a generator context (like any
+  context) can itself call other generators or functions--even
+  itself recursively--but every eventual return must pass through
+  a linear hierarchy of return contexts.  Python generators do
+  not allow for the common coroutine usage of "Producers" and
+  "Consumers" that freely resume into the middle of each other.
+</p>
+<p>
+  Luckily, full-fledged coroutines are quite easy to simulate
+  with Python generators.  The simple trick is a <code>scheduler()</code>
+  function exactly like that in the above sample code.  In fact,
+  the state machine presented is itself a much more general
+  coroutine framework pattern.  Adapting to this pattern
+  overcomes the minor limitations still present in Python
+  generators (and gives incautious programmers the full power of
+  spagetti code).
+</p>
+<h3>Stategen In Action</h3>
+ <p>
+  To see exactly what is going on in <code>stategen_test.py</code>, the
+  easiest thing is to run it:
+</p>
+<div class="code-sample"><h4>Running STATEGEN (with manual jump control)</h4><pre>
+% python stategen_test.py
+
+ONES State:       @ 1.0
+TWENTIES State:   *26.1   *25.3
+ONES State:       @ 4.2
+TWENTIES State:   *26.4   *29.5   *28.8
+TENS State:       #15.2   #16.3   #16.0
+ONES State:       @ 9.5   @ 3.8
+TENS State:       #18.2   #17.9
+TWENTIES State:   *24.4
+TENS State:       #19.6
+TWENTIES State:   *21.4
+TENS State:       #16.1   #12.3
+ONES State:       @ 9.2   @ 6.5   @ 5.7
+TENS State:       #16.7
+TWENTIES State:   *26.4   *30.0
+
+[co-routine for jump?] twenties
+ ...Jumping into middle of TWENTIES
+
+TWENTIES State:
+TENS State:       #19.9
+TWENTIES State:   *26.4   *29.4   *27.5   *22.7
+TENS State:       #19.9
+TWENTIES State:   *26.2   *26.8
+Exiting from exit()...
+
+</pre></div><p>
+  This output is basically identical to that from the earlier
+  <code>statemachine_test.py</code>.  Each line of the results reprents flow
+  spent in one particular state handler or generator; the flow
+  context is announced at the beginning of the line.  However,
+  rather than simply <strong>call</strong> a handler function again, the
+  generator version <strong>resumes</strong> execution (within a loop) whenever
+  another coroutine branches into it.  Given that the bodies of
+  all the <code>get_*()</code> coroutines are all contained in infinite
+  loops, this difference is less evident.
+</p>
+<p>
+  To see what is fundamentally different in <code>stategen_test.py</code>
+  look at what happens in the <code>exit()</code> generator.  On the first
+  invocation of the generator-iterator, a jump target is
+  collected from the user (which is a simple case of the
+  event-driven branching decisions a realistic application might
+  utilize).  However, when <code>exit()</code> is invoked a second time, it
+  is within a later flow-context in the generator--an exit
+  message is displayed, and <code>sys.exit()</code> is called.  The user in
+  the sample interaction could have also jumped directly to
+  "out_of_range", which would exit without going to another
+  "handler" (but it <em>would</em> perform a recursive jump into this
+  same generator).
+</p>
+<h3>Conclusion</h3>
+ <p>
+  As was hinted in the introduction, I expect my coroutine
+  version of a state machine to run significantly faster than the
+  class-with-callback-handlers version presented earlier.
+  Resuming a generator-iterator will be notably efficient.  The
+  particular example is so simple as to be hardly worth
+  benchmarking, but I welcome readers' feedback on concrete
+  results.
+</p>
+<p>
+  But any speedup the "coroutine pattern" I present might achieve
+  is shadowed by the startlingly general flow-control it allows.
+  A number of readers on the comp.lang.python newsgroup have
+  inquired about just how general Python's new generators are.  I
+  think the availability of the described framework makes the
+  answer "as general as one can want!"  As with most things
+  Pythonic, it is usually a lot easier to <em>program</em> the things
+  than it is to <em>understand</em> them.  Give my pattern a try; I
+  think you will find it useful.
+</p>
+<h3>Resources</h3>
+ <p>
+  Early on in this column, I presented an abstract pattern for a
+  broad class of state machines in Python.  The installment is
+  the touchstone from which I explicate the new concepts herein:
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/library/python-state.html">http://www-106.ibm.com/developerworks/library/python-state.html</a>
+</blockquote>
+<p>
+  My interview with Stackless Python creator Christian Tismer
+  touched on coroutines briefly, along with other exotic flow
+  structures like continuations, microthreads and generators.
+  The installment hints at some of the issues, before Python 2.2
+  introduced generators:
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/library/l-pyth7.html">http://www-106.ibm.com/developerworks/library/l-pyth7.html</a>
+</blockquote>
+<p>
+  Of most recent and closest connection is my effort to introduce
+  iterators and simple generators during Python 2.2's alpha
+  period:
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/library/l-pycon.html">http://www-106.ibm.com/developerworks/library/l-pycon.html</a>
+</blockquote>
+<p>
+  Several installments have touched on functional programming in
+  Python.  Given the somewhat FP feel of generators, these might
+  be worth looking at:
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/linux/library/l-prog.html">http://www-106.ibm.com/developerworks/linux/library/l-prog.html</a>
+</blockquote>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/linux/library/l-prog2.html">http://www-106.ibm.com/developerworks/linux/library/l-prog2.html</a>
+</blockquote>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/linux/library/l-prog3.html">http://www-106.ibm.com/developerworks/linux/library/l-prog3.html</a>
+</blockquote>
+<p>
+  Some brief introductions to coroutines can be found on the web
+  at:
+</p>
+<blockquote>
+   <a href="http://www2.dcs.hull.ac.uk/people/far/teaching/concurrency/handouts/subsection1_2_0_4_1.html">http://www2.dcs.hull.ac.uk/people/far/teaching/concurrency/handouts/subsection1_2_0_4_1.html</a>
+</blockquote>
+<p>
+  Randall Hyde's <cite>The Art of Assembly</cite> also contains an
+  introduction to coroutines (albeit for Assembly):
+</p>
+<blockquote>
+   <a href="http://webster.cs.ucr.edu/Page_asm/ArtofAssembly/CH19/CH19-6.html#HEADING6-1">http://webster.cs.ucr.edu/Page_asm/ArtofAssembly/CH19/CH19-6.html#HEADING6-1</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz would like to write, with Nietzsche, that these are
+  the musings of an old philologist, but that untruth would
+  unmask itself.  But perhaps his (right here gratuitously
+  plugged) forthcoming book, <cite>Text Processing in Python</cite>, will
+  someday be mistaken for a cybernetic variant of philology.
+  David may be reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+</p>
+</body></html>

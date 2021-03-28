@@ -1,0 +1,441 @@
+XML MATTERS #26: More on RELAX NG
+Tools and Special Issues
+
+David Mertz, Ph.D.
+Facilitator, Gnosis Software, Inc.
+January 2003
+
+    RELAX NG Schemas provide a more powerful, more concise, and
+    semantically more straightforward means of describing classes
+    of valid XML instances than do W3C XML Schemas.  This
+    installment continues the discussion of RELAX NG begun in the
+    last one, addresses a few addition semantic issues, and looks
+    at tools for working with RELAX NG.
+
+MORE SEMANTIC ISSUES
+------------------------------------------------------------------------
+
+  The last installment gave readers a fairly complete overview of
+  both the syntax and semantics of RELAX NG schemas.  However, a
+  few issues were glossed over, and are worth touching on.
+
+  Both DTDs and W3C XML Schemas allow for -infoset augmentation-,
+  while RELAX NG does not.  James Clark--one of the creators of
+  RELAX NG (and of many widely used XML tools)--argues vehemently
+  that infoset augmentation violates modularity in the roles of
+  XML instance documents and schemata.  In other words, for
+  Clark, RELAX NG has a feature where DTDs and W3C Schemas have a
+  bug.  My own feelings on the matter are mixed, but I can get
+  his intuition.
+
+  Let us backtrack a little and explain what this infoset stuff
+  is about.  Basically, we can ask of an XML instance what data
+  it contains.  If we parse the instance without validation, the
+  answer depends on nothing other than what values occur in its
+  attributes and element bodies.  If we value modularity, a
+  schema should only tell us whether an instance is valid or not,
+  it should not change that actually -information- in a document.
+  However, such modularity is violated if we use a DTD or W3C XML
+  Schema for validation.  For example, consider the following
+  DTD:
+
+      #--------------------- curious.dtd -----------------------#
+      <!ELEMENT foo EMPTY>
+      <!ATTLIST foo bar CDATA "curious"
+                    baz CDATA #FIXED "curiouser">
+
+  And the XML instance:
+
+      #--------------------- curious.xml -----------------------#
+      <?xml version="1.0"?>
+      <!DOCTYPE foo SYSTEM "curious.dtd">
+      <foo/>
+
+  A non-validating parser finds a different set of information in
+  this document than a validating parser. Contrast the
+  non-validating utility 'xmlcat' with the validating '4xml'
+  (both echo whatever they "see" back to the console):
+
+      % ./xmlcat curious.xml
+      <?xml version="1.0" encoding="iso-8859-1"?>
+      <foo></foo>
+      % 4xml -p curious.xml
+      <?xml version="1.0" encoding="utf-8"?>
+      <foo bar="curious" baz="curiouser"/>
+
+  An W3C Schema allows 'default' and 'fixed' attributes to have
+  similar effects for both '<xsd:attribute>' and '<xsd:element>'
+  tags.
+
+  The argument in favor of defaulting is that it allows XML
+  instance minimization. I have used defaults (or more likely
+  '#FIXED' attributes) for this very purpose. But I can also see
+  dangers--both of malice and of debugging nightmares--in the idea
+  that the very content of a local XML document depends on a remote
+  URI (perhaps spoofable), and even upon an absence of network
+  interruptions during parsing.
+
+  In any case, RELAX NG does not peform any infoset augementation.
+  Well, almost; I think Clark overstates this point. If you impose
+  a datatype on an element or attribute, you still change the
+  content of the value in an important way. The value of the string
+  "1.0" is different from the value of the float 1.0, even though
+  the two are represented in exactly the same way in an XML
+  instance.
+
+STATING CARDINALITY
+------------------------------------------------------------------------
+
+  Basically, W3C XML Schemas have better means of requiring
+  occurrence cardinalities than do DTDs or RELAX NG schemas. If you
+  want a '<foo>' element to occur between 5 and 30 times within the
+  '<bar>' element, you can decare this in W3C Schemas with a
+  straightforward:
+
+      #------------ W3C XML Schema cardinality rule ------------#
+      <xsd:element name="bar">
+        <xsd:element name="foo" minOccurs="5" maxOccurs="30"/>
+      </xsd:element>
+
+  The same cardinality rule -can- be stated in a DTD, but -very-
+  clumsily:
+
+      #----------------- DTD cardinality rule ------------------#
+      <!ELEMENT bar
+          (foo, foo, foo, foo, foo, foo?,foo?,foo?,foo?,foo?
+           foo?,foo?,foo?,foo?,foo?,foo?,foo?,foo?,foo?,foo?
+           foo?,foo?,foo?,foo?,foo?,foo?,foo?,foo?,foo?,foo?) >
+
+  What I would like for RELAX NG would be an explicit
+  '<cardinality>' tag, so that you could (hypothetically) write
+  something like:
+
+      #-------- Imagined RELAX NG 2.0 cardinality rule ---------#
+      <element name="bar" xmlns="http://relaxng.org/ns/structure/1.0>
+        <cardinality min="5" max="30">
+          <element name="foo"/>
+        </cardinality>
+      </element>
+
+  Unfortunately, in the actually existing RELAX NG, the only
+  cardinalities you get are '<zeroOrMore>', '<oneOrMore>', and
+  '<optional>'.  However, named patterns can at least be used to
+  make spelling out cardinalities slightly less painful.  In
+  compact syntax, for example:
+
+      #---- Actual RELAX NG compact syntax cardinality rule ----#
+      start = element bar { fivefoo, upto25foo }
+      fivefoo = element foo { empty }, element foo { empty },
+                element foo { empty }, element foo { empty },
+                element foo { empty }
+      maybefoo = element foo { empty }?
+      upto25foo =
+        fivefoo?, fivefoo?, fivefoo?, fivefoo?,
+        maybefoo, maybefoo, maybefoo, maybefoo, maybefoo
+
+  I confess that this sort of naming is not perfect, but at least
+  it is possible to name large numbers by effectively raising to
+  powers though repetition of named patterns.
+
+TRANSFORMATIONS AND VALIDATIONS
+------------------------------------------------------------------------
+
+  There are a variety of tools available for working with RELAX NG
+  schemas. Java is the language in which these tools are
+  predominantly implemented, but some tools/libraries have been
+  written in in Python, C#, Visual Basic. Surprisingly, I have not
+  found any libraries written in other languages that would seem to
+  be good fits: Perl, Ruby, C/C++.
+
+  One obvious class of RELAX NG application is validators.  Just
+  as with validating parsers that work with DTDs or W3C XML
+  Schemas, a number of command-line, online, or library parsers
+  are available for RELAX NG.  A slightly less obvious class of
+  application is tools to transform schemata into each other.
+  Sun's RELAX NG Converter and James Clark's [trang] and
+  [DTDinst] let you convert among RELAX NG (XML and compact
+  syntax), DTDs, and W3C XML Schemas.  I plan to write a less
+  ambitious Python tool 'compact2xml.py' in time for the next
+  installment, which will allow [4Suite] and [xvif] to utilize
+  RELAX NG compact syntax (both authors have expressed an
+  interest in including such a tool).
+
+  It is worth looking at tranformations in a bit more detail.
+  The first installment in this sequence looked at ways in which
+  RELAX NG is strictly more powerful than W3C XML Schemas, and
+  looking at some "best effort" transformations help illustrate
+  this point.  For example, the previous installment presented a
+  schema for a library patron, which is expressed in compact
+  syntax as:
+
+      #-------------- Libary Patron Compact Syntax--------------#
+      element patron {
+        element name { text }   &
+        element id-num { text } &
+        element book {
+          attribute isbn { text } |
+          attribute title { text }
+        }*
+      }
+
+  See the first part for the XML syntax version, which is
+  semantically identical, albeit more verbose.  [trang] make a
+  good effort at turning this into a W3C XML Schema.  The file
+  extensions of the input and output file are used to guess types
+  (or may be overridden with switches):
+
+      #------- Transforming RELAX NG to W3C XML Schema ---------#
+      % java -jar trang.jar patron.rnc patron.xsd
+      % cat patron.xsd
+      <?xml version="1.0" encoding="UTF-8"?>
+      <xsd:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                 elementFormDefault="qualified" version="1.0">
+        <xsd:element name="patron">
+          <xsd:complexType>
+            <xsd:choice minOccurs="0" maxOccurs="unbounded">
+              <xsd:element ref="name"/>
+              <xsd:element ref="id-num"/>
+              <xsd:element ref="book"/>
+            </xsd:choice>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="name">
+          <xsd:complexType mixed="true"/>
+        </xsd:element>
+        <xsd:element name="id-num">
+          <xsd:complexType mixed="true"/>
+        </xsd:element>
+        <xsd:element name="book">
+          <xsd:complexType>
+            <xsd:attribute name="isbn"/>
+            <xsd:attribute name="title"/>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:schema>
+
+  To the credit of [trang], I think this W3C Schema is genuinely
+  the best that can be done for the situation.  -Every- XML
+  instance accepted by the RELAX NG schema is also accepted by
+  the W3C XML Schema, and many errors are rejected by both.  The
+  problem is, that there is a distinct class of XML instances
+  that are not -really- valid according to our desired rule, but
+  that pass validation with the W3C Schema.  For example:
+
+      #---------- Limits of W3C XML Schema discernment ---------#
+      % cat patron-i1.xml
+      <?xml version="1.0" encoding="UTF-8"?>
+      <patron>
+        <book isbn="0-528-84460-X"/>
+        <name>John Doe</name>    <!-- repeats name subelement -->
+        <name>Second Name</name>
+        <id-num>12345678</id-num>
+        <book title="Why RELAX is Clever"/>
+      </patron>
+      % cat patron-i2.xml
+      <?xml version="1.0" encoding="UTF-8"?>
+      <patron>
+        <name>John Doe</name>
+        <id-num>12345678</id-num>
+        <!-- Too many and too few attributes of book element -->
+        <book title="Why RELAX is Clever" isbn="0-528-84460-X"/>
+        <book/>
+      </patron>
+      % cat patron-i3.xml
+      <?xml version="1.0" encoding="UTF-8"?>
+      <patron/>        <!-- No required subelements -->
+
+  Of course, even though the above three examples falsely
+  validate, W3C XML Schema will still reject XML instances with
+  entirely disallowed elements/attributes, or ones that nest
+  elements in improper ways (e.g. '<book>' inside '<name>'
+  rather than as a sibling).
+
+  As far as validation tools go, I find that [jing] does a good
+  job of producing useful error messages when validation fails.
+  The Python XML library [4Suite] encorporates a version of the
+  [xvif] library, and also performs validation (the latter is
+  also accessible online, see Resources).  But compare the
+  errors:
+
+      #-------- Validation error messages with jing ------------#
+      % java -jar ../trang/jing.jar patron.rng patron-i3.xml
+      Error at URL "file:/.../patron-i3.xml",
+      line number 2: unfinished element
+      % java -jar ../trang/jing.jar patron.rng patron-i1.xml
+      Error at URL "file:/.../patron-i1.xml",
+      line number 5: element "name" not allowed in this context
+
+      #-------- Validation error messages with 4Suite ----------#
+      % 4xml --rng=patron.rng patron-i1.xml
+      Traceback (most recent call last):
+      ...
+        File "/.../site-packages/Ft/Xml/_4xml.py", line 89, in Run
+          raise RngInvalid(result)
+      Ft.Xml.Xvif.RngInvalid: Qname {None}name not exected
+      % 4xml --rng=patron.rng patron-i3.xml
+      Traceback (most recent call last):
+      ...
+      Ft.Xml.Xvif.RngInvalid
+
+  Of course, in an application context, the choice of the
+  programming language that will utilize the libraries outweighs
+  differences in produced messages.
+
+COMPILED VALIDATORS
+------------------------------------------------------------------------
+
+  A category of tool that I have not seen much of outside of RELAX
+  NG contexts is a single-schema validator. Take a look at the
+  RELAX NG home page for links to such tools, including [Bali],
+  [RelaxNGCC].  These frameworks will automatically emit code for
+  specialized validation of a particular RELAX NG schema.
+  Presumably, such a specialized validator will run faster than a
+  general purpose one.  The reason such tools are possible--or at
+  least much more straightforward than the same thing would be
+  relative to W3C XML Schemas--is because the design of RELAX NG
+  is extremely well grounded in algorithmic analysis.
+
+RELAX NG ENHANCED XML EDITORS
+------------------------------------------------------------------------
+
+  Unfortunately, XML editors do not yet support RELAX NG as
+  widely as they do W3C XML Schemas.  Of course, DTDs remain much
+  more widely supported than either of other schema style.  A
+  shame in this is that it would actually be far -easier- to
+  include customizations around RELAX NG in an editor because of
+  the simple conceptual framework of RELAX NG validation.
+  Ideally, a custom XML editor would utilize a RELAX NG schema to
+  direct and assist a user in the insertion of attributes and
+  elements in ways that maintain validity.
+
+  A compromise for the moment could be to use a tool like [trang]
+  to convert a RELAX NG schema into a W3C XML Schema or DTD that
+  approximates it, then use those within a GUI XML editor.  But
+  doing that would help only to a limited extent.
+
+  There is one XML editor built around RELAX NG that is mentioned
+  on the RELAX NG home page.  It is called XML Operator, and is a
+  Java based tool.  I played with the editor a small amount, and
+  found that it could be potentially useful.  But XML Operator
+  falls on the low end of the XML editors I have previously
+  reviewed, implementing just a few features here and there,
+  providing neither the huge array of tools of XML-Spy, or the
+  simple elegance of oXygen.  I suppose XML Operator is
+  comparable to EditML Pro or XMLWriter (but XML Operator is Free
+  Software, which is a plus).
+
+UNTIL NEXT TIME
+------------------------------------------------------------------------
+
+  The last two installments have looked at most of the elements
+  of RELAX NG, including a summary of tools for working with it.
+  The next installment will touch briefly on how RELAX NG lets
+  you include external schemas in your schema, and selectively
+  merge the specifications of different schemas.  But in main,
+  the final installment of this sequence will look at the RELAX
+  NG compact syntax in some more detail, and explain the exact
+  correspondences between compact syntax and XML syntax.
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  The home page for RELAX NG is at the below URL.  This website
+  contains numerous useful links to links, articles, tools, and
+  so on.  Of particular note is the excellent tutorial written by
+  two great luminaries of XML technologies, James Clark and
+  Murata Makoto.
+
+    http://www.oasis-open.org/committees/relax-ng/
+
+  James Clark wrote a discussion of the algorithmic principles
+  behind RELAX NG validation. Interestingly, his sample code is
+  provided in Haskell, which has some advantages I have described
+  in my _XML Matters_ installment on the [HaXml] library:
+
+    http://www.thaiopensource.com/relaxng/derivative.html
+
+  An online tool to validate an XML instance document against a
+  RELAX NG shcema is at the following URL. A RELAX NG schema itself
+  is validated during the process, as well. This tool is based on
+  Eric van der Vlist's [xvif] tool, written in Python:
+
+    http://downloads.xmlschemata.org/python/xvif/tryMe.cgi?testCase=013
+
+  The above online RELAX NG validator lets you select from a set
+  of test cases, as well as check your own examples.  The set of
+  test cases provided are also available (and briefly discussed)
+  at:
+
+    http://downloads.xmlschemata.org/python/xvif/tests/iframe/strawman/
+
+  The [xvif] library itself can be downloaded from:
+
+    http://downloads.xmlschemata.org/python/
+
+  However, [4Suite] is a somewhat more polished tool that
+  incorporates [xvif] for RELAX NG validation.  The command-line
+  tool '4xml' will validate against both RELAX NG and DTDs, with
+  various options.  [4Suite] includes many other tools and
+  libraries for working with many XML-related technologies:
+
+    http://4suite.org/?xslt=downloads.xslt
+
+  For background and comparison, an online tool to validate an XML
+  instance document against a W3C XML Schema can be found at:
+
+    http://tools.decisionsoft.com/schemaValidate.html
+
+  Also, an online tool to check W3C XML Schemas against the
+  Approved Recommendation:
+
+    http://www.w3.org/2001/03/webdata/xsv
+
+  The tools [trang] and [jing] are complementary tools for
+  transformation between schemata and validation against RELAX NG
+  schemas.  The former depends on the latter, but both can be
+  downloaded in a convenient archive from:
+
+    http://www.thaiopensource.com/relaxng/trang.html
+
+  You will need to optain an implementation of the Java API for
+  XML Processing (JAXP) to use [trang].  If you run a Java 1.4
+  JVM, you are fine already; otherwise, obtain [crimson] at:
+
+    http://xml.apache.org/dist/crimson/
+
+  Sun's RELAX NG Converter utilizes Sun's Multi-Schema Validator
+  (MSV) to accomplish the same purpose as [trang].  See:
+
+    http://wwws.sun.com/software/xml/developers/relaxngconverter/
+
+  [DTDinst] is a Java tool to convert DTDs into an XML instance
+  document format, including handling of parametric entities:
+
+    http://www.thaiopensource.com/relaxng/dtdinst/
+
+  The [DTDinst] XML format is of limited utility by itself, since
+  nothing else works with it.  However, an XSLT stylesheet is
+  available to transform this format into RELAX NG (with a few
+  caveats).  You will need an XSLT tool to utilize this:
+
+    http://www.thaiopensource.com/relaxng/dtdinst/dtdinst2rng.xsl
+
+  A collection of schemata and test XML instance documents for
+  the library patron example discussed in this article can be
+  found at:
+
+    http://gnosis.cx/download/relax/
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author:  http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz, in his gnomist aspirations, wishes he had coined
+  the observation that the great thing about standards is that
+  there are so many to choose from.  But then, he is also fuzzy
+  on OS design.  David may be reached at mertz@gnosis.cx; his
+  life pored over at http://gnosis.cx/publish/. Suggestions and
+  recommendations on this, past, or future, columns are welcomed.
+

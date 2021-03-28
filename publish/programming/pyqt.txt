@@ -1,0 +1,376 @@
+Qt and PyQt:
+An advanced GUI library for Python
+
+David Mertz, Ph.D., Gnosis Software, Inc.
+Boudewijn Rempt, Tryllian
+December 2002
+
+    The [Qt] toolkit is a widely-used cross-platform GUI toolkit,
+    available for Windows, Linux, Mac OSX and handheld platforms.
+    QT has an a well-structured, but flexible, object oriented
+    organization, clear documentation, and an intuitive API.
+    This article looks the Qt library, with a focus on the [PyQt]
+    bindings that let Python programmers access [Qt] functionality.
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  Programmers--in Python and in other languages--have a wide
+  variety of GUI toolkits to choose from.  Each toolkit comes
+  with a set of advantages and disadvantages.  Some are more
+  cross-platform than others, and more specifically, some support
+  the specific platforms -you- need to address.  Various
+  libraries are accompanied by various licenses.  Some toolkits
+  are faster than others; some smaller than others; some easier
+  to install than others.  Choosing a GUI toolkit for your
+  application can be a tricky matter.
+
+  For a Python programmer, the -default- GUI choice is [Tk], and
+  the [Tkinter] binding to it.  The popular [Tkinter] IDE, 'idle'
+  is written by the Python creators, and it and [Tkinter] are
+  distributed with most Python distributions.  The standard
+  Python documentation discusses [Tkinter], but not other GUI
+  bindings.  To move a Python programmer away from the default, a
+  toolkit should offer something extra.
+
+  [PyQt] has a number of advantages over [Tkinter] (and a few
+  disadvantages as well).  [Qt] and [PyQt] are quite fast; the
+  design of [Qt] and [PyQt] is thoroughly object-oriented;, [Qt]
+  comes with a much larger collection of well-designed widgets
+  than does [Tk].  On the downside, [Qt] has a less open license
+  than many toolkits (at least on non-Linux platforms); it is
+  often tricky to get [Qt] and [PyQt] installed correctly; as
+  well, [Qt] is a quite large library.  Users of your [PyQt]
+  application will need to manage to install [Qt] and [PyQt],
+  which makes distribution difficult.
+
+  [PyQt] follows the licensing of Qt closely.  This means that it
+  is available under the GPL on Unix/X11 platforms and the Qt
+  Palmtop Environment environment on the Zaurus, and that a
+  free-as-in-free-beer Windows package for an older version of Qt
+  also exists.  Commercial licenses for [PyQt] are available for
+  Windows.
+
+  For this article, one advantage of [PyQt] over many other
+  toolkits merits particular focus.  [Qt] uses a mechanism called
+  "signals/slots" to communicate events and messages between
+  widgets (and among other objects).  This mechanism is quite
+  different from the callback mechanism used by most toolkits,
+  including [Tkinter].  With signals/slots, it is much easier to
+  control communications between objects in a flexible and
+  maintainable manner than it is with a fragile callback style.
+  The larger applications get, the more important this advantage
+  of [Qt] becomes.
+
+  In the beginning of this year, co-author Boudewijn Rempt,
+  published a book on application development with [PyQt].  Using
+  Python and [PyQt] the book, published by OpenDocs, shows the
+  reader how to design and develop a complete GUI application,
+  from first idea to distribution.
+
+
+A SAMPLE APPLICATION
+------------------------------------------------------------------------
+
+  To show the contrast between signals/slots and callbacks, we
+  present a toy application using both [Tkinter] and [PyQt].
+  While the [PyQt] version is not really simpler for this basic
+  program, it already demonstrates the better modularity and
+  maintainability of [PyQt] applications.
+
+  Our application contains four widgets:  (1) A "Quit" button (to
+  communicate with the overall application); (2) A "Log
+  Timestamp" button (for inter-widget messages); (3) A text
+  area that displays a scrolling list of logged timestamps; (4)
+  A message widget that shows the number of timestamps that have
+  been logged.  In [Tkinter] we can implement our application as:
+
+      #------------ Logger.py Tkinter application -------------#
+      #!/usr/bin/python
+      import sys, time
+      from Tkinter import *
+
+      class Logger(Frame):
+          def __init__(self):
+              Frame.__init__(self)
+              self.pack(expand=YES, fill=BOTH)
+              self.master.title("Timestamp logging application")
+              self.tslist = []
+              self.tsdisp = Text(height=6, width=25)
+              self.count = StringVar()
+              self.cntdisp = Message(font=('Sans',24),
+                                     textvariable=self.count)
+              self.log = Button(text="Log Timestamp",
+                                command=self.log_timestamp)
+              self.quit = Button(text="Quit", command=sys.exit)
+              self.tsdisp.pack(side=LEFT)
+              self.cntdisp.pack()
+              self.log.pack(side=TOP, expand=YES, fill=BOTH)
+              self.quit.pack(side=BOTTOM, fill=BOTH)
+          def log_timestamp(self):
+              stamp = time.ctime()
+              self.tsdisp.insert(END, stamp+"\n")
+              self.tsdisp.see(END)
+              self.tslist.append(stamp)
+              self.count.set("% 3d" % len(self.tslist))
+
+      if __name__=='__main__':
+          Logger().mainloop()
+
+  This TK version uses a 'log_timestamp()' method as the
+  'command=' argument of a button.  This method, in turn, needs
+  to individually manipulate all the widgets it wants to affect.
+  This style is fragile if we want to change the effects of a
+  button press, say log the timestamps also.  You might achieve
+  this by inheritence:
+
+      #---------- StdOutLogger.py Tkinter enhancement ---------#
+      class StdOutLogger(Logger):
+          def log_timestamp(self):
+              Logger.log_timestamp(self)
+              print self.tslist[-1]
+
+  But the writer of this child class needs to understand pretty
+  accurately exactly what 'Logger.log_timestamp()' is already
+  doing; and moreover, there is no way to -remove- a message
+  except by rewriting the '.log_timestamp()' method altogether in
+  the child, and not calling the parent method.
+
+  A very basic PyQt application always has some boilerplate code that
+  is the same everywhere, as does Tkinter code. However, when we get
+  past the code needed to setup the application, and into the code
+  that displays the widget, the differences get interesting.
+
+      #------------ logger-qt.py PyQt application -------------#
+      #!/usr/bin/env python
+      import sys, time
+      from qt import * # Generally advertised as safe
+
+      class Logger(QWidget):
+          def __init__(self, *args):
+              QWidget.__init__(self, *args)
+              self.setCaption("Timestamp logging application")
+              self.layout = QGridLayout(self, 3, 2, 5, 10)
+              self.tsdisp = QTextEdit(self)
+              self.tsdisp.setMinimumSize(250, 300)
+              self.tsdisp.setTextFormat(Qt.PlainText)
+              self.tscount = QLabel("", self)
+              self.tscount.setFont(QFont("Sans", 24))
+              self.log = QPushButton("&Log Timestamp", self)
+              self.quit = QPushButton("&Quit", self)
+              self.layout.addMultiCellWidget(self.tsdisp, 0, 2, 0, 0)
+              self.layout.addWidget(self.tscount, 0, 1)
+              self.layout.addWidget(self.log, 1, 1)
+              self.layout.addWidget(self.quit, 2, 1)
+              self.connect(self.log, SIGNAL("clicked()"),
+                           self.log_timestamp)
+              self.connect(self.quit, SIGNAL("clicked()"),
+                           self.close)
+          def log_timestamp(self):
+              stamp = time.ctime()
+              self.tsdisp.append(stamp)
+              self.tscount.setText(str(self.tsdisp.lines()))
+      if __name__ == "__main__":
+          app = QApplication(sys.argv)
+          app.connect(app, SIGNAL('lastWindowClosed()'), app,
+                        SLOT('quit()'))
+          logger = Logger()
+          logger.show()
+          app.setMainWidget(logger)
+          app.exec_loop()
+
+  The 'Logger' class begins with creating a layout manager. Layout
+  managers are a quite complex subject in any GUI system, but Qt's
+  implementation makes life quite simple. In most cases, you'd use Qt
+  Designer to create a generic GUI design, that can then be used to
+  generate either Python or C++ code. Then you would subclass the
+  generated code to add functionality.
+
+  In this example, though, we've chosen to create a layout manager
+  manually. Widgets are placed in cells in a grid, or can span
+  multiple cells. Where Tkinter demands named arguments, PyQt forbids
+  them. This is an important difference that often throws people who
+  work in both environments.
+
+  All Qt widgets work natively with QString objects, not with Python
+  string or unicode objects. Fortunately, conversion is automatic. If
+  you use a string or unicode argument in a Qt method, it will
+  automatically be converted to a QString. The converse is not true:
+  if you call a method that returns a QString, what you get is a
+  QString.
+
+  The most interesting part is the place where we connect the
+  'clicked' signals to functionality in the application. One button is
+  connected to the 'log_timestamp' method; the other to the
+  'close' method of the QWidget class.
+
+  {Screenshot of logger-qt:
+     http://gnosis.cx/publish/programming/qt-logger.png}
+
+  Now we want to add logging to standard output to this application.
+  That's easy enough. We can subclass the 'Logger' class, or just, for
+  the sake of the demonstration create a simple standalone function:
+
+      #------------ logger-qt.py PyQt enhancement -------------#
+      def logwrite():
+          print(time.ctime())
+
+      if __name__ == "__main__":
+         app = QApplication(sys.argv)
+         app.connect(app, SIGNAL('lastWindowClosed()'), app,
+                     SLOT('quit()'))
+         logger = Logger()
+         QObject.connect(logger.log, SIGNAL("clicked()"), logwrite)
+         logger.show()
+         app.setMainWidget(logger)
+         app.exec_loop()
+
+  And then it's just a matter of connecting the 'log' QPushButton's
+  'clicked()' signal to the new function. Note that signals can also
+  carry any data to the slots they are connected to, even though we
+  don't show examples of that here.
+
+  If we don't want the original method to be called, we can
+  'disconnect' the signal from the slot, for instance by adding the
+  following linebefore the 'logger.show()' line:
+
+      #------------ logger-qt.py PyQt enhancement -------------#
+      QObject.disconnect(logger.log, SIGNAL("clicked()"),
+                         logger.log_timestamp)
+
+  And now the GUI won't be updated anymore.
+
+
+USING QT FROM OTHER LANGUAGES
+------------------------------------------------------------------------
+
+  As well as with Python, it is possible to use the [Qt] toolkit
+  from a number of other programming languages.  Both of the
+  authors prefer Python to other languages, given freedom to make
+  this choice; but obviously external contraints such as company
+  policies and interfacing with other codebases can determine
+  choice of programming language.  The native language of [Qt] is
+  C++, but bindings exist for C, Java, Perl, and Ruby.  Just for
+  comparison with the Python examples, let us look at some toy
+  applications in Ruby and Java.
+
+  [Ruby/Qt] is quite similar in usage to [PyQt].  Both languages
+  have a similar dynamism and conciseness, so aside from spelling
+  differences, one would expect the code to be similar:
+
+      #------------- HelloWorld.rb Qt2 application ------------#
+      #!/usr/local/bin/ruby
+      require 'qt2'
+      include Qt2
+      a = QApplication.new([$0] + ARGV)
+      hello = QPushButton.new('Hello world!')
+      hello.resize(100, 30)
+      a.connect( hello, QSIGNAL('clicked()'), a, QSLOT('quit()'))
+      a.setMainWidget(hello)
+      hello.show
+      a.exec
+
+  Java is always a bit more verbose than are scripting languages.
+  But the basic parts are the same as with other languages.  An
+  equivalent minimal [qtjava] application looks something like:
+
+      #----------- HelloWorld.java Qt2 application ------------#
+      import org.kde.qt.*;
+      public class HelloWorld {
+        public static void main(String[] args)
+        {
+          QApplication myapp = new QApplication(args);
+          QPushButton hello = new QPushButton("Hello World", null);
+          hello.resize(100,30);
+          myapp.connect(hello, SIGNAL("clicked"),
+                        this, SLOT("quit()"));
+          myapp.setMainWidget(hello);
+          hello.show();
+          myapp.exec();
+          return;
+        }
+        static {
+          System.loadLibrary("qtjava");
+          try {
+              Class c = Class.forName("org.kde.qt.qtjava");
+          } catch (Exception e) {
+              System.out.println("Can't load qtjava class");
+          }
+        }
+      }
+
+
+OTHER GUI BINDINGS FOR PYTHON
+------------------------------------------------------------------------
+
+  For comparison, here are a few other popular GUI toolkits
+  Python programmer use:
+
+  *AnyGui*:  [AnyGui] is actually not a GUI toolkit, but an
+  abstract wrapper around a large number of toolkits (even
+  surprising ones like [curses] and Java/Jython [Swing]).  In
+  programming style, using [AnyGui] is similar to using
+  [Tkinter], but the underlying toolkit is selected either
+  automatically or with a configuration call.  [AnyGui] is nice
+  since it lets unmodified applications run on widely different
+  platforms (but it therefore supports the "lowest common
+  denominator" of the supported toolkits).
+
+  *PyGTK*:  The [PyGTK] binding wraps the GPL toolkit [GTK] which
+  is the basis of the popular Gnome environment.  [GTK] is
+  primarily an X Window toolkit, but there is beta-level support
+  of Win32, and alpha-level support of BeOS.  In general
+  paradigm, [PyGTK] uses callbacks with widgets.  Bindings
+  exist between GTK and a -huge- number of programming languages,
+  more than either [Qt], or even [TK].
+
+  *FXPy*:  The Python binding [FXPy] wraps the [FOX] toolkit.
+  The [FOX] toolkit has been ported to most Unix-like platforms,
+  and Win32 as well.  As with most of the toolkits, [FOX] and
+  [FXPy] use a callback paradigm.  [FOX] is under the LGPL.
+
+  *wxPython*:  This binding wraps the [wxWindows] toolkit.  Like
+  [FOX] or [GTK], [wxWindows] is ported to Win32 and Unix-like
+  platforms (but not to MacOS, OS/2, BeOS, or other "lesser"
+  platforms--MacOSX is alpha-level though).  In paradigm,
+  [wxPython] is close to a callback style.  [wxPython] has a
+  greater emphasis on inheritence structure than do most of the
+  other tookits, and it uses "events" rather than callbacks.  But
+  in essence, an event is still connected to a single method,
+  which might then need to act on various widgets.
+
+  *win32ui*:  [win32ui] is part of the [win32all] package, and
+  wraps the MFC classes.  Obviously, this toolkit is a Win32
+  specific library.  MFC is actually quite a bit more than just a
+  GUI toolkit, and uses a mixture of paradigms.  For readers who
+  want to create Windows applications, [win32ui] get you "closer
+  to the metal" than other toolkits.
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  Charming Python: TK programming in Python
+
+    http://www-106.ibm.com/developerworks/library/l-tkprg/
+
+  Charming Python: Preview of the [anygui] project
+
+    http://www-106.ibm.com/developerworks/library/l-anygui/
+
+
+ABOUT THE AUTHORS
+------------------------------------------------------------------------
+
+  {Picture of Author:  http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz wishes to let a thousand flowers bloom.  David may
+  be reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/.  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.  His forthcoming
+  book _Text Processing in Python_ has a webpage at
+  http://gnosis.cx/TPiP/.
+
+  {Picture of Author:  http://www.valdyas.org/graphics/fotoalbum/boud.jpg}
+  Boudewijn Rempt has recently completed a book on PyQt, published by
+  Opendocs, http://www.opendocs.org/pyqt.  The availability of this
+  title puts [PyQt] on a par with Tkinter in printed documentation.

@@ -1,0 +1,363 @@
+XML MATTERS #32: The XOM Java XML API
+A rigorously correct tree-oriented XML model
+
+David Mertz, Ph.D.
+Formalizer, Gnosis Software, Inc.
+November 2003
+
+    In general outline, Elliotte Rusty Harold's [XOM] is -yet another-
+    object-oriented XML API, somewhat in the style of DOM. However,
+    there are a number of features that set [XOM] apart, and that Harold
+    argues are important design elements. Chief among these is a
+    rigorous insistence on maintaining invariants in in-memory objects
+    so that an [XOM] instance can -always- be serialized to correct XML.
+    As well, [XOM] aims at a greater simplicity and regularity than
+    other Java XML APIs.
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  There are a number of different general attitudes developers have
+  towards the XML APIs they develop. Stream-oriented APIs like SAX,
+  libxml, SSAX and expat aim towards parsimony firstly--make it fast,
+  make it work in little memory, and make few assumptions about the
+  overall document structure.  Moreover, stream-oriented APIs can be
+  handled in a very procedural style, which is nice for C programming,
+  where objects are not ubiquitous.
+
+  In contrast, tree- or object-oriented APIs generally create an
+  in-memory image of an XML document, translated into some sort of
+  object-oriented (or at least hierarchical, e.g. SXML) rendition.
+  Walking, filtering, and transforming XML proxy objects somehow
+  utilizes the native syntax of a programming language.  XSLT can
+  also be considered an API of sorts, and its functional/declarative
+  model is different from either, but let us skip consideration of XSLT
+  for this installment.
+
+  Among the tree-oriented APIs, several divergent design goals come to
+  the fore. Libraries like [gnosis.xml.objectify], [ElementTree],
+  [REXML], [SXML], [XML::Grove] and [JDOM] pretty much aim at shaping
+  XML into the most "native" seeming objects possible for their
+  respective programming languages--the goal in each of this is to avoid
+  needing to think about the fact your data started out as XML; it is
+  just another object to you.
+
+  At the other end of the scale, DOM almost completely eschews any
+  concern with the particular programming language DOM methods might be
+  invoked in.  While the designers of DOM tended to come from a Java
+  background more than others, DOM does not really feel any more
+  unnatural in other languages than it is in Java.  On the other hand,
+  DOM suffers terribly from the weight of design-by-committee: the
+  methods are too numerous, inconsistently named, and have poor
+  orthogonality.  Making things still worse, a DOM object is not
+  entirely -guaranteed- to be serializable into XML; at some edge cases
+  you can create "non-well-formed" DOM objects in memory (requiring
+  extra checks and behaviors for serialization).
+
+  The closest analogue of [XOM] is DOM, and to an extent [JDOM]. However
+  [XOM] aims to remedy the problems of DOM by starting from a fresh
+  design, valuing orthogonality, and centralizing control of the API in
+  a single expert (the abovementioned Mr. Harold). [XOM] is basically
+  prety Java-focussed, even though a Python implementation also exists
+  (but seems to have little benefit over other techniques in Python).
+  But the primary goal of [XOM] is not to be "true to Java," but rather
+  to be "true to XML." Harold's goal is to capture and enforce the
+  precise infoset of XML, in a minimal set of relevant object methods.
+
+  There are two sides to the XML-focused orientation of [XOM]. On the
+  one hand, it is impossible to create nodes that violate XML rules--for
+  example with disallowed tag names, or with null bytes in the content
+  (constraints not checked by most APIs). On the other hand, [XOM]
+  provides only methods that operate at the same conceptual level as XML
+  itself--for example, serialization is only as XML, CDATA sections are
+  not retained as separate nodes, and XML attribute order is ignored.
+
+A FIRST APPLICATION
+------------------------------------------------------------------------
+
+  As a start at getting the feel of [XOM], I decided to write the same
+  little application I wrote in [SSAX] for the last installment.  The
+  utility 'Outline' takes an XML document as input, and produces a
+  summary of it in an outline style, displaying the initial portion of
+  the longer text sections for context.  Moreover, namespaces are
+  dropped from tag names, and only the local portion is displayed.  This
+  utility is not particularly complicated or compelling, but it -does-
+  cover the basics of walking trees of children and attributes.
+
+  My test XML document is a highly reduced version of a recent
+  developerWorks article.  The document looks like:
+
+      #----------- An XML document with most XML features -------------#
+      $ cat example.xml
+      <?xml version="1.0" encoding="UTF-8"?>
+      <?xml-stylesheet type="text/css"
+            href="http://gnosis.cx/publish/programming/dW.css" ?>
+      <dw-document xmlns:dw="http://www.ibm.com/developerWorks/">
+        <title>The Twisted Matrix Framework</title>
+        <author name="David Mertz, Ph.D.">
+          <bio>David thinks it's turtles all the way down...</bio>
+        </author>
+        <docbody>
+          <dw:heading refname="" toc="yes">Introduction</dw:heading>
+          <p>
+            Sorting through Twisted Matrix is reminiscent of the old story
+            about blind men and elephants. Twisted Matrix has many
+            capabilities within it, and it takes a bit of a gestalt switch
+            to <i>get</i> a good sense of why they are all there.
+          </p>
+        </docbody>
+      </dw-document>
+
+  The output I want from my utility is:
+
+      #------------- An outline display of example.xml ----------------#
+      $ java Outline example.xml
+      <dw-document>
+        <title>
+        <author name='David Mertz, Ph.D.'>
+          <bio>
+            |David thinks it's turtles all ...
+        <docbody>
+          <heading refname='' toc='yes'>
+          <p>
+            |
+            Sorting through Twisted...
+            <i>
+            | a good sense of why they are ...
+
+  Simple enough, and identical to the [SSAX] utility I presented.
+
+WRITING THE OUTLINE UTILITY
+------------------------------------------------------------------------
+
+  The main work of 'Outline.java' is performed by the class
+  [nu.xom.Builder].  This class builds an in-memory [XOM] object based
+  on an XML source.  One surprise I found is that if you specify a class
+  initializer of 'true', [XOM] will insist on validation, even for XML
+  documents that do not specify a DTD.  In other words, all such
+  documents will throw a 'ValidityException' (but this might be system
+  dependend upon installed Java XML parsers).  The best approach is
+  probably to omit an initialization flag, and let [XOM] figure out the
+  best parser.
+
+      #-------------------- Outline.java utility ----------------------#
+      import nu.xom.*;
+      import java.io.IOException;
+
+      public class Outline {
+        public static void main(String[] args) {
+          try {
+            // Use 'Builder(true)' to require validation
+            Builder parser = new Builder();
+            Document doc = parser.build(args[0]);
+            showElement(doc.getRootElement(), 0);
+          }
+          catch (ValidityException ex) {
+            System.err.println(args[0]+" is invalid.");
+          }
+          catch (ParseException ex) {
+            System.err.println(args[0]+" is not well-formed.");
+          }
+          catch (java.io.IOException ex) {
+            System.err.println(args[0]+" cannot be read");
+          }
+        }
+        private static void showElement(Element element, int level) {
+          // Show the tag, along with its attributes
+          indent(level, "<"+element.getLocalName());
+          for (int i=0; i < element.getAttributeCount(); i++) {
+            Attribute attr = element.getAttribute(i);
+            System.out.print(" "+attr.getLocalName()+"='"+attr.getValue()+"'");
+          }
+          System.out.println(">");
+
+          // Now loop through child nodes
+          for (int i=0; i < element.getChildCount(); i++) {
+            Node node = element.getChild(i);
+            if (node instanceof Text) {
+              String text = node.getValue();
+              if (text.length() > 30) {
+                indent(level+1, "|"+text.substring(0,30)+"...\n");
+              }
+            } else if (node instanceof Element) {
+              showElement((Element)node, level+1);
+            }
+          }
+        }
+        private static void indent(int level, String string) {
+          for (int i=0; i < level; i++) { System.out.print("  "); }
+          System.out.print(string);
+        }
+      }
+
+  The organization here is pretty straightforward. The method
+  '.showElement()' displays the name and attributes of each element, then
+  recurses to its children, incremementing an indent level on each
+  recursion.
+
+  In designing this utility, I took an illustrative misstep.  The class
+  'Element' has a method '.getChildElements()' that returns a
+  traversable list of elements--excluding other 'Node' objects from the
+  enumeration.  On its face, using this enumeration would seem more
+  straightforward; the method is, in fact, widely useful since you can
+  optionally limit the enumeration to children with a given name.  Since
+  an 'Element' also has a '.getValue()' method to retrieve the PCDATA,
+  it would seem like we could grab these content strings with each such
+  child element.
+
+  Unfortunately, the semantics of '.getValue()' are slightly wrong for
+  my intended use: '.getValue()' retrieves -all- the text inside a given
+  tag, not only that portion of it leading up to the next child tag. For
+  example, in the above example, the blurb inside the '<bio>' element is
+  also thereby inside the enclosing '<author>' element, and
+  'author.getValue()' retrieves stuff we do not want.  What we are left
+  with is walking through all the child nodes, and deciding what to do
+  with each based on which subclass of 'Node' we find.  In particular,
+  for purposes of this utility, I am only interested in 'Text' and
+  'Element', not 'Comment', 'ProcessingInstruction', 'DocType' or
+  others.
+
+CREATING A NEW XML DOCUMENT
+------------------------------------------------------------------------
+
+  While, in my opinion, the main benefit of XML APIs in in parsing and
+  traversing existing XML documents, sometimes we also want to create
+  new documents within a program--or at least modify existing ones.  For
+  the simplest tasks, basic string operations really do suffice.  But
+  it's not hard to make a programming error, and fail to close a tag, or
+  escape a special value.  Using [XOM] for document creation guards
+  against any such errors.
+
+  Here is a brief example, mostly taken from the [XOM] tutorial:
+
+      #---------------------- HelloWorld.java -------------------------#
+      import nu.xom.*;
+      public class HelloWorld {
+        public static void main(String[] args) {
+          Element root = new Element("root");
+          root.appendChild("Hello World!");
+          Attribute foo = new Attribute("foo","bar");
+          root.addAttribute(foo);
+          Document doc = new Document(root);
+          String result = doc.toXML();
+          System.out.println(result);
+        }
+      }
+
+  This outputs the following:
+
+      #---------------------- HelloWorld output -----------------------#
+      $ java HelloWorld
+      <?xml version="1.0"?>
+      <root foo="bar">Hello World!</root>
+
+  Beyond the basic, '.appendChild()' and '.addAttribute()' methods, the
+  '.copy()', '.detach()' method and the '.remove*()' collection are
+  useful for rearranging [XOM] trees. Every tree, and every node inside
+  it has a '.toXML()' method, and moreover this is the sole
+  serialization format for [XOM] objects.
+
+COMPARISONS
+------------------------------------------------------------------------
+
+  In writing my little 'Outline' utility, I became curious about how
+  convenient [XOM] really is compared to other APIs. Since the same
+  utility was written for the last installment on [SSAX], that makes for
+  an obvious comparison. As it turns out, the Scheme and Java
+  versions--using [SSAX] and [XOM] respectively--work out to pretty much
+  the same length in lines, despite Schemes use of macros and dynamic
+  typing. The coding style is very different, of course; and the Scheme
+  is actually shorter in characters (if you ignore the larger number of
+  comments in the [SSAX] version).
+
+  Readers of this column, however, will know that I often advocate
+  Python--and specifically my own Gnosis Utilities APIs.  I decided to
+  make a quick shot at the same utility using the latest development
+  version of [gnosis.xml.objectify]:
+
+      #---------------------- outline.py utility ----------------------#
+      from sys import stdin, stdout, stderr
+      from gnosis.xml.objectify import XML_Objectify, \
+                  make_instance, tagname, content, attributes
+      XML_Objectify.expat_kwargs['nspace_sep'] = None
+
+      def showNode(node, level=0):
+          stdout.write("  "*level+"<"+tagname(node))
+          for key,val in attributes(node).items():
+              stdout.write(" %s='%s'" % (key,val))
+          stdout.write(">\n")
+          for child in content(node):
+              if isinstance(child, unicode):
+                  if len(child) > 30:
+                      stdout.write("  "*(level+1)+"|"+child[:30]+"...\n")
+              else:
+                  showNode(child, level+1)
+      showNode(make_instance(stdin))
+
+  I find it interesting that the Java version with [XOM] is still about
+  2.5 times as long (and also very close to the same speed, once I
+  benchmarked against a large XML version of Shakespeare's _Hamlet_;
+  Python's smaller startup time biases small tests).
+
+  Much of the extra code in Java relates to the various exception
+  checking in the method 'Outline.main()'.  In Python, I can let the
+  built in exception stacks do the work for me; of course, if I were to
+  start doing something more meaningful with exceptions than just report
+  them, then Python starts to look more like Java.
+
+  Obviously, however, programmers who want to use Java, for whatever
+  good reasons, gain little benefit in knowing that libraries for Python
+  or Scheme might allow more compact code.  And Java certainly has a
+  number of strengths that can merit the extra verboseness.
+
+CONCLUSION
+------------------------------------------------------------------------
+
+  The real problem with DOM is that it is -good enough- for many
+  purposes.  There are far too many methods in DOM, many overlapping in
+  purpose, and not named consistently.  Committees and legacies do that.
+  Despite that, -everyone- already has a DOM library handy--not just
+  Java programmers, but also programmers of many other programming
+  languages.  It is too easy to just choose DOM because it is widespread
+  and available.
+
+  Even though I would not generally choose to write in Java if I had the
+  option to write Python (or maybe Ruby, or even Perl), [XOM] really
+  does everything better than DOM.  [XOM] is more correct, easier to
+  learn, and more conistent.  Most of its capabilities have not been
+  covered in this introduction, but feel assured it has the usual
+  collection of XML technologies incorporated: XPath, XSLT, XInclude,
+  ability to interface with SAX and DOM, and so on.
+
+  If you are doing XML development in Java, and you are able to include
+  a custom LGPL library in your application, I strongly recommend you
+  give [XOM] a serious look.
+
+RESOURCES
+------------------------------------------------------------------------
+
+  The starting point for [XOM] is its homepage:
+
+    http://www.cafeconleche.org/XOM
+
+  A good place to get a sense of -why- Elliote Rusty Harold things he
+  needed to develop [XOM] is his presentation "What's Wrong with XML
+  APIs (and how to fix them)":
+
+    http://www.cafeconleche.org/XOM/whatswrong/text0.html
+
+  The API documentation for [XOM] is quite good.  It can be found at:
+
+    http://www.cafeconleche.org/XOM/apidocs/index.html
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz once led the desperate life of scholarship. David may be
+  reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/. Suggestions and recommendations on this,
+  past, or future, columns are welcomed. Check out David's new book
+  _Text Processing in Python
+  _ at http//gnosis.cx/TPiP/.
+

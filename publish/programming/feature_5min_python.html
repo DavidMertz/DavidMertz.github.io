@@ -1,0 +1,351 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>FEATURE -- Five minutes to a Python CGI -- </title>
+<style>
+             {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+em           {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt}
+ul, ol, li   {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+tt           {font-family: mono, courier}
+pre          {font-family: mono; font-size: 9pt}
+th           {font-family: mono, courier; font-size: 8pt}
+
+.code-sample {background-color: #CCCCCC}
+.sidebar     {background-color: #FFFFCC}
+.title       {font-size: medium; color: #3333CC}
+.subtitle    {font-size: 9pt; color: #3333CC}
+.subhead     {font-size: 12pt}
+.input       {background: #FFFFFF; color: #000000; font-weight: normal}
+</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<p><strong class="title">Feature</strong><br>
+<strong class="subtitle">Five minutes to a Python CGI</strong></p>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Gnosis Software, Inc.<br>
+ June 2000<br>
+ <br>
+</p>
+<p><strong class="subhead">Why Python?</strong></p>
+ <p>  For anyone out there who doesn't know, Python is a freely
+  available, very-high-level, interpreted language developed by
+  Guido van Rossum.  It combines a clear syntax with powerful
+  (but optional) object-oriented semantics.  Python has a lot of
+  the same strengths as other script languages used for
+  web-programming:  good text processing tools; dictionaries
+  (hash-tables) and other versitile types; a broad range of
+  modules (libraries) relating to web-programming.  Compared to
+  Perl, most people find Python code easier to read and maintain.
+  Compared to VBScript or ColdFusion, Python packs much more
+  powerful basic constructs.  Compared to PHP, TCL, REXX (or C
+  for that matter), it is a lot easier to make nicely modular and
+  object-oriented code in Python.  Compared to JSP, Python is
+  concise, dynamic, and loosely-typed (in short, a lot quicker to
+  develop).  Compared to Bash...
+</p>
+<p>  OK, you figured me out.  I am a Pythonista, a convert to all
+  things Pythonic.  I have had the opportunity to do a bit of
+  programming in a lot of languages, and have found Python my
+  favorite among them for most purposes.  Of course, there are
+  many more languages I've never yet managed "Hello World!" in,
+  so who knows.  But let me avoid proselytizing, and pass on a
+  few hints for getting started with CGI programming in Python.
+</p>
+<p>  Before I start, let me mention that CGI has sometimes gotten a
+  bad reputation.  This reputation is mostly ill-deserved.
+  Plain CGI indeed has some overhead to it (in the need to <code>fork</code>
+  processes mostly).  But you can't beat old-fashion CGI for
+  rapid development and server portability.  If speed turns into
+  a real issue (good enough should be good enough, however), a
+  number of solutions are available to speed things up:
+  Python/ASP, fastcgi, mod_python, JPython servlets, Medusa,
+  Zope.  Or write your own by using the module <em><code>CGIHTTPServer</code></em>.
+  Links to these solutions, and other helpful third-party tools,
+  are given at bottom of this article.  Most of the advice here
+  about plain CGI will apply if one of the speedup solutions are
+  used, but you'll need to see the respective documentation for
+  details.
+</p>
+<p><strong class="subhead">Using The <em><code>cgi</code></em> Module</strong></p>
+ <p>  Python's <em><code>cgi</code></em> module--in the standard distribution--is usually
+  the place to start in writing CGI programs in Python.  The main
+  use of the <em><code>cgi</code></em> module is to extract the values passed to a
+  CGI program from an HTML form.  Most typically, one interacts
+  with CGI applications by means of an HTML form.  One fills out
+  some values in the form that specify details of the action to
+  be performed, then call on the CGI to perform its action using
+  your specifications.
+</p>
+<p>  You may include many input fields within an HTML form, and the
+  fields can be of a number of different types (text, checkboxes,
+  picklists, radio buttons, etc.).  Chuck Musciano wrote a nice
+  series of articles for Webreview.com explaining all the form
+  elements, beginning with:
+</p>
+<blockquote>   <a href="http://webreview.com/pub/98/10/09/tag/index.html.">http://webreview.com/pub/98/10/09/tag/index.html.</a>
+</blockquote><p>  Your Python script should begin with <code>import cgi</code> to make
+  sorting out its calling form easy.  One thing this module does
+  is hide any details of the difference between "get" and "post"
+  methods from the CGI script.  By the time the call is made,
+  this is not a detail the CGI creator needs to worry about.  The
+  main thing done by the CGI module is to treat all the fields in
+  the calling HTML form in a dictionary-like fashion.  What you
+  get is not <strong>quite</strong> a Python dictionary, but it is close enough
+  to be easy to work with.  Let's play around with it:
+</p>
+<p><strong>Example of working with Python [cgi] module</strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<PRE><FONT COLOR=#3333CC><B>
+import</B></FONT> cgi
+form = cgi.FieldStorage()   <FONT COLOR=#1111CC># FieldStorage object to</FONT>
+                            <FONT COLOR=#1111CC># hold the form data</FONT>
+
+<FONT COLOR=#1111CC># check whether a field called "username" was used...</FONT>
+<FONT COLOR=#1111CC># it might be used multiple times (so sep w/ commas)</FONT>
+<FONT COLOR=#3333CC><B>if</B></FONT> form.has_key(<FONT COLOR=#115511>'username'</FONT>):
+    username = form[<FONT COLOR=#115511>"username"</FONT>]
+    usernames = <FONT COLOR=#115511>""</FONT>
+    <FONT COLOR=#3333CC><B>if</B></FONT> type(username) <FONT COLOR=#3333CC><B>is</B></FONT> type([]):
+        <FONT COLOR=#1111CC># Multiple username fields specified</FONT>
+        <FONT COLOR=#3333CC><B>for</B></FONT> item <FONT COLOR=#3333CC><B>in</B></FONT> username:
+            <FONT COLOR=#3333CC><B>if</B></FONT> usernames:
+                <FONT COLOR=#1111CC># Next item -- insert comma</FONT>
+                usernames = usernames + <FONT COLOR=#115511>","</FONT> + item.value
+            <FONT COLOR=#3333CC><B>else</B></FONT>:
+                <FONT COLOR=#1111CC># First item -- don't insert comma</FONT>
+                usernames = item.value
+    <FONT COLOR=#3333CC><B>else</B></FONT>:
+        <FONT COLOR=#1111CC># Single username field specified</FONT>
+        usernames = username.value
+
+<FONT COLOR=#1111CC># just for the fun of it let's create an HTML list</FONT>
+<FONT COLOR=#1111CC># of all the fields on the calling form</FONT>
+field_list = <FONT COLOR=#115511>'&lt;ul&gt;\n'</FONT>
+<FONT COLOR=#3333CC><B>for</B></FONT> field <FONT COLOR=#3333CC><B>in</B></FONT> form.keys():
+    field_list = field_list + <FONT COLOR=#115511>'&lt;li&gt;%s&lt;/li&gt;\n'</FONT> % field
+field_list = field_list + <FONT COLOR=#115511>'&lt;/ul&gt;\n'</FONT>
+
+</PRE>
+</td></tr></table></p>
+<p>  We'll have to do something more to present a useful page to the
+  user, but we've made a good start by working with the
+  submitting form.
+</p>
+<p><strong class="subhead">Getting The Output Right</strong></p>
+ <p>  Past parsing the query form that called your Python CGI, the
+  next thing you need to do is send something back to the client
+  browser.  Judging from questions on the comp.lang.python
+  newsgroup, the most common mistake made by beginners is
+  forgetting to include a blank line between the HTTP header(s)
+  and the HTML document (or forgetting the header altogether).
+  Be sure to put something like the following in your Python CGI:
+</p>
+<p><strong>Writing HTTP header in Python</strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<PRE><FONT COLOR=#3333CC><B>
+print</B></FONT> <FONT COLOR=#115511>'Content-type: text/html\n\n'</FONT>
+
+</PRE>
+</td></tr></table></p>
+<p>  Of course, if you want to send back something other than an
+  HTML page, the header should indicate that.  But be sure to
+  have a header in any case.  For example, a dynamically
+  generated image (using Python's <em><code>pil</code></em> module, for example)
+  might start with:
+</p>
+<p><strong>Writing HTTP header in Python</strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<PRE><FONT COLOR=#3333CC><B>
+print</B></FONT> <FONT COLOR=#115511>'Content-type: image/jpeg\n\n'</FONT>
+
+</PRE>
+</td></tr></table></p>
+<p>  Once the header is there (and it might include other header
+  lines, such as setting cookies), we need to compose an HTML
+  page.  It is perfectly acceptable to use a bunch of <code>print</code>
+  statements in a row to output the whole page, like:
+</p>
+<p><strong>Step-by-step HTML creation in Python</strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<PRE><FONT COLOR=#3333CC><B>
+print</B></FONT> <FONT COLOR=#115511>'&lt;html&gt;&lt;head&gt;'</FONT>
+<FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>'&lt;title&gt;My Page&lt;/title&gt;'</FONT>
+<FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>'&lt;/head&gt;&lt;body&gt;'</FONT>
+<FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>'&lt;h1&gt;Powers of two&lt;/h1&gt;\n&lt;ol&gt;'</FONT>
+<FONT COLOR=#3333CC><B>for</B></FONT> n <FONT COLOR=#3333CC><B>in</B></FONT> range(1,11):
+  <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>'&lt;li&gt;'</FONT>+str(2**n)+<FONT COLOR=#115511>'&lt;/li&gt;'</FONT>
+<FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>'&lt;/ol&gt;&lt;/body&gt;&lt;/html&gt;'</FONT>
+
+</PRE>
+</td></tr></table></p>
+<p>  A technique that is often more readable and easier to work with
+  is to use Python's <code>sprintf()</code> style string formatting on a
+  page template of the whole HTML page (usally as the last thing
+  in the script, after the variables have been computed).  You
+  can do this with tuples like (and using Python's nifty
+  triple-quoting for multiple line expressions):
+</p>
+<p><strong>Formatting sprintf()-style in Python</strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<PRE><FONT COLOR=#3333CC><B>
+print</B></FONT> <FONT COLOR=#115511>"""&lt;html&gt;&lt;head&gt;
+&lt;title&gt;%s&lt;/title&gt;
+&lt;/head&gt;&lt;body&gt;
+&lt;h1&gt;Famous irrational numbers&lt;/h1&gt;
+&lt;dl&gt;&lt;dt&gt;Pi&lt;/dt&gt;
+    &lt;dd&gt;%2.3f&lt;/dd&gt;
+    &lt;dt&gt;Square-root of 2&lt;/dt&gt;
+    &lt;dd&gt;%2.3f&lt;/dd&gt;&lt;/dl&gt;
+&lt;/body&gt;&lt;/html&gt;"""</FONT> % (<FONT COLOR=#115511>"Another Page"</FONT>, 3.1415, 1.4142)
+
+</PRE>
+</td></tr></table></p>
+<p>  Python has an even better trick up its sleeve, however.  In
+  addition to using positional <code>%</code> expressions in a string, you
+  can use named expression that are pulled from a dictionary:
+</p>
+<p><strong>Dictionary sprintf()-style in Python</strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<PRE>
+mydict = {<FONT COLOR=#115511>"title"</FONT>:<FONT COLOR=#115511>"Formatted from Dict"</FONT>,
+          <FONT COLOR=#115511>"pi"</FONT>: 3.1415, <FONT COLOR=#115511>"e"</FONT>: 2.7182,
+          <FONT COLOR=#115511>"sqrt3"</FONT>: 1.73205, <FONT COLOR=#115511>"sqrt2"</FONT>: 1.4142}
+template = <FONT COLOR=#115511>"""&lt;html&gt;&lt;head&gt;
+&lt;title&gt;%(title)s&lt;/title&gt;
+&lt;/head&gt;&lt;body&gt;
+&lt;h1&gt;Famous irrational numbers&lt;/h1&gt;
+&lt;dl&gt;&lt;dt&gt;Pi&lt;/dt&gt;
+    &lt;dd&gt;%(pi)2.3f&lt;/dd&gt;
+    &lt;dt&gt;Square-root of 2&lt;/dt&gt;
+    &lt;dd&gt;%(sqrt2)2.3f&lt;/dd&gt;&lt;/dl&gt;
+&lt;/body&gt;&lt;/html&gt;"""</FONT>
+<FONT COLOR=#3333CC><B>print</B></FONT> template % mydict
+
+
+</PRE>
+</td></tr></table></p>
+<p><strong class="subhead">Tricks For Debugging</strong></p>
+ <p>  As easy as Python makes writing a CGI script, there is always
+  the possibility some mistakes will creep into the code.
+  Fortunately, it is not hard to design a Python CGI program in
+  such a way as to catch a helpful traceback.  Depending on what
+  your needs are, you might either want to log errors to server
+  storage, or display them in the client browser.
+</p>
+<p>  The simplest case is coaxing a CGI to display errors in the
+  client browser (if displaying the desired page fails).  The
+  first thing to know for this is that Python errors and
+  tracebacks are sent to STDERR, while web-servers normally pick
+  up the output of STDOUT.  It might seem like we have a
+  problem... until we notice the redefining STDERR is simple in
+  Python.  Here's what a script might look like:
+</p>
+<p><strong>Debugging CGI script in Python</strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<PRE><FONT COLOR=#3333CC><B>
+import</B></FONT> sys
+sys.stderr = sys.stdout
+
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="main"><FONT COLOR=#CC0000><B> main</B></FONT></A>():
+    <FONT COLOR=#3333CC><B>import</B></FONT> cgi
+    <FONT COLOR=#1111CC># ...do the actual work of the CGI...</FONT>
+    <FONT COLOR=#1111CC># perhaps ending with:</FONT>
+    <FONT COLOR=#3333CC><B>print</B></FONT> template % script_dictionary
+
+<FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"Content-type: text/html\n\n"</FONT>
+main()
+
+</PRE>
+</td></tr></table></p>
+<p>  This approach is not bad for quick debugging.  Unfortunately,
+  though, the traceback (if one occurs) gets displayed as HTML,
+  which means that you need to go to "View Source" in a browser
+  to see the original linebreaks in the traceback.  With a few
+  more lines, we can add a little extra sophistication.
+</p>
+<p><strong>Debugging/logging CGI script in Python</strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<PRE><FONT COLOR=#3333CC><B>
+import</B></FONT> sys, traceback
+<FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"Content-type: text/html\n\n"</FONT>
+<FONT COLOR=#3333CC><B>try</B></FONT>:               <FONT COLOR=#1111CC># use explicit exception handling</FONT>
+    <FONT COLOR=#3333CC><B>import</B></FONT> my_cgi  <FONT COLOR=#1111CC># main CGI functionality in 'my_cgi.py'</FONT>
+    my_cgi.main()
+<FONT COLOR=#3333CC><B>except</B></FONT>:
+    <FONT COLOR=#3333CC><B>import</B></FONT> time
+    errtime = <FONT COLOR=#115511>'--- '</FONT>+ time.ctime(time.time()) +<FONT COLOR=#115511>' ---\n'</FONT>
+    errlog = open(<FONT COLOR=#115511>'cgi_errlog'</FONT>, <FONT COLOR=#115511>'a'</FONT>)
+    errlog.write(errtime)
+    traceback.print_exc(None, errlog)
+    <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"&lt;html&gt;&lt;head&gt;&lt;title&gt;CGI Error Encountered!&lt;/title&gt;&lt;/head&gt;"</FONT>
+    <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"&lt;body&gt;&lt;p&gt;Sorry, a problem was encountered running MyCGI&lt;/p&gt;"</FONT>
+    <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"&lt;p&gt;Please check the error log on the server for details&lt;/p&gt;"</FONT>
+    <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"&lt;/body&gt;&lt;/html&gt;"</FONT>
+
+</PRE>
+</td></tr></table></p>
+<p>  The second approach is quite generic as a wrapper for any real
+  CGI functionality we might write.  Just <code>import</code> a different
+  CGI module as needed; and maybe make the error messages more
+  detailed or friendlier.
+</p>
+<p><strong class="subhead">Other Handy (third-party) Modules</strong></p>
+ <p>  Once a web programmer has gotten started with writing Python
+  CGI's, she's likely to find the need to use some more Python
+  capabilities.  Third party modules and tools for most anything
+  are available, usually for free.  The best place to start in
+  looking for Python tools is the Vaults of Parnassus:
+</p>
+<blockquote>   <a href="http://www.vex.net/parnassus/">http://www.vex.net/parnassus/</a>
+</blockquote><p>  For general tutorials and references, or to download Python
+  itself, take a look at the Python home:
+</p>
+<blockquote>   <a href="http://www.python.org">http://www.python.org</a>
+</blockquote><p>  In the first section, I mentioned some options for speeding up
+  CGI's using various server-enhancement techniques.  Most of
+  those can be found on the Vaults.  But a few deserve special
+  links.
+</p>
+<p>  JPython is an implementation of the Python language in 100%
+  Pure Java.  JPython compiles Python source code into Java
+  bytecodes, and most handily, allows you to call any Java class
+  from right in your JPython source code (using friendly Python
+  syntax and semantics).  The rub here is that you can write Java
+  servlets in Python!:
+</p>
+<blockquote>   <a href="http://www.jpython.org">http://www.jpython.org</a>
+</blockquote><p>  Zope may be Python's "Killer App."  Zope is a free
+  web-application development system written in Python (with
+  little bits of C for time-critical parts).  It handles
+  persistence, versioning, security, and just about everything
+  else.  And best of all, you can script it in its native Python:
+</p>
+<blockquote>   <a href="http://www.zope.org">http://www.zope.org</a>
+</blockquote><p>  You can also find a number of excellent articles on Zope here
+  at Webreview.com.  Take a look at:
+</p>
+<blockquote>   <a href="http://webreview.com/wr/pub?x-tb=a&amp;x-searchall=zope">http://webreview.com/wr/pub?x-tb=a&amp;x-searchall=zope</a>
+</blockquote><p><strong class="subhead">Wrapping Up</strong></p>
+ <p>  Our five minutes should help get you started on Python CGI.
+  Play with what we have gone over, put up a few CGI's on a
+  web-site you have access to, get a feel for what is going on.
+  Make some mistakes even, there is no better way to learn.
+  After you are comfortable with the basics, I am sure you'll
+  want to move on to some of the really fancy things you can do
+  with Python and CGI's.  Maybe you'll want to generate information
+  from an SQL database (check out the database modules).  Maybe
+  you'll want to dynamically generate images (check out <em><code>pil</code></em>).
+  Whatever direction you want to go, there is plenty of room to
+  grow, and the learning curve is an easy one to master.
+</p>
+<p><strong class="subhead">About The Author</strong></p>
+ <p>  David Mertz dabbles in a lot of things.  Lately, he has mostly
+  done web-application development and writing articles like
+  this.  You can find out copious biographical details by rooting
+  around at<a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>
+</p>
+</body></html>

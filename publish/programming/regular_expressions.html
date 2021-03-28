@@ -1,0 +1,1045 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN"><html><head>
+<title>Learning to Use Regular Expressions</title></head>
+
+<body bgcolor="#F0F0E0">
+
+<h4>
+<a href="http://gnosis.cx/publish/index.html">
+    Publications of David Mertz </a> <b>*</b>
+<a href="http://gnosis.cx/publish/tech_index.html">
+    Technical Publications</a> <b>*</b>
+<a href="http://gnosis.cx/">
+    Gnosis Software Home Page</a> <b>*</b>
+<a href="http://gnosis.cx/TPiP/">
+    My book: <cite>Text Processing in Python</cite></a>
+<hr></h4>
+<a href="http://www.amazon.com/exec/obidos/ASIN/0321112547/gnosis-20">
+   <img align="right" src="http://gnosis.cx/TPiP/cover-small.jpg"
+        border="0" alt="Buy TPiP"/></a>
+
+<table><tr><td>
+<h1>Introduction to the Tutorial</h1>
+(Translations: <a href="http://websitehostingrating.com/libs/regular-expressions-be/">Belorussian)</a></td>
+<td>&nbsp;&nbsp;&nbsp;</td><td> 
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+  <input type="hidden" name="cmd" value="_xclick"/>
+  <input type="hidden" name="business" value="tpip@gnosis.cx"/>
+  <input type="hidden" name="item_name" 
+         value="Regular expression tutorial"/>
+  <input type="hidden" name="no_note" value="1"/>
+  <input type="hidden" name="currency_code" value="USD"/>
+  <input type="hidden" name="tax" value="0"/>
+  <input type="image" 
+         src="https://www.paypal.com/en_US/i/btn/x-click-but21.gif" 
+         name="submit" alt="PayPal Donation"/>
+</form>
+</td></tr></table>
+
+<p><strong>Sob story</strong>: This page seems to be quite widely
+read, but only just occasionally gets donations on the above
+links. Tragedy of the commons and all that... but still, if any of
+you would like to donate a buck or two, I'd appreciate it? 
+
+Anyway, this tutorial was first published by
+<a href="http://ibm.com/developer/">IBM developerWorks</a>. 
+This version contains a few minor corrections that readers 
+have suggested since the original publication.  An expanded 
+and updated version can be found in my book, 
+<a href="http://tinyurl.com/jskh"><cite>Text Processing in Python</cite>
+</a></p>
+
+<h2>Navigation</h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ffffff" width="40%">
+<img src="http://gnosis.cx/publish/programming/regex_logo.png"></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>This tutorial is just one big HTML file, with a few graphics used 
+    along the way.  Just scroll down to read it.  Printing may break 
+    some lessons in the middle--but then, you didn't pay much to get this.
+    </td>
+</tr></tbody></table>
+<h2>Who is this tutorial for?</h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ffffff" width="40%">
+<img src="http://gnosis.cx/publish/programming/re_punch.jpg"></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>This tutorial is aimed at users and programmers who have
+    begun to work with tools that use regular expressions, but
+    who are not quite comfortable with the intricacies of them.
+    Even users who may have used regular expressions in the past,
+    but have forgotten some of the details can benefit from this
+    as a refresher.</p>
+
+    <p>After completing this tutorial you will not yet be an
+    expert in using regular expressions to best advantage.  But
+    this tutorial combined with <b>lots</b> of practice with
+    varying cases is about all you need to be an expert.  The
+    <i>concepts</i> of regular expressions are extremely simple
+    and powerful. . . it is their application that takes some
+    work.</p>
+    </td>
+</tr></tbody></table>
+<h2>Just what is a regular expression anyway?</h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ffffff" width="40%">
+<img src="http://gnosis.cx/publish/programming/re_punch.jpg"></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>Read the tutorial to get the long answer.  The short
+    answer is that a regular expression is a compact way of
+    describing complex patterns in texts.  You can use them to
+    search for patterns and, once found, to modify the patterns
+    in complex ways.  They can also be used to launch
+    programmatic actions that depend on patterns.</p>
+
+    <p>A tongue-in-cheek comment by programmers is worth
+    thinking about: <i>"Sometimes you have a programming problem
+    and it seems like the best solution is to use regular
+    expressions; now you have two problems."</i> Regular
+    expressions are amazingly powerful and deeply expressive.
+    That is the very reason writing them is just as error-prone
+    as writing any other complex programming code.  It is always
+    better to solve a genuinely simple problem in a simple way;
+    when you go beyond simple, think about regular
+    expressions.</p>
+    </td>
+</tr></tbody></table>
+<h2>What tools use regular expressions?</h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ffffff" width="40%">
+<img src="http://gnosis.cx/publish/programming/re_fish.jpg"></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>A large number of tools incorporate regular expressions as
+    part of their functionality.  Unix-oriented command line
+    tools like <code>grep</code>, <code>sed</code>, and
+    <code>awk</code> are mostly wrapper for regular expression
+    processing.  Many text editors allow search and/or
+    replacement based on regular expressions.  Many programming
+    languages, especially scripting languages such as Perl,
+    Python, and TCL, build regular expressions into the heart of
+    the language.  Even most command-line shells, such as Bash or
+    the Windows-console allow restricted regular expressions as
+    part of their command syntax.</p>
+
+    <p>There are a few variations in regular expression syntax
+    between different tools that use them.  Some tools add
+    enhanced capabilities that are not available everywhere.  In
+    general, for the simplest cases, this tutorial will use
+    examples based around <code>grep</code> or <code>sed</code>.
+    For a few more exotic capabilities, Perl or Python examples
+    will be chosen.  For the most part, examples will work
+    anywhere; but check the documentation on your own tool for
+    syntax variations and capabilities.</p>
+
+    </td>
+</tr></tbody></table>
+<h2>Note on presentation</h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ffffff" width="40%">
+<img src="http://gnosis.cx/publish/programming/re_fish.jpg"></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>For purposes of presenting examples in this tutorial,
+    regular expressions described will be surrounded by forward
+    slashes.  This style of delimiting regular expressions is
+    used by <code>sed</code>, <code>awk</code>, perl and other
+    tools.  For instance, an example might mention:</p>
+
+    <p><code>/[A-Z]+(abc|xyz)*/</code></p>
+
+    <p>Read ahead to understand this example, for now just
+    understand that the actual regular expression is everything
+    <b>between</b> the slashes.</p>
+
+    <p>Many examples will be accompanied by an illustration that
+    shows a regular expression, and a text that is highlighted
+    for every match on that expression.</p>
+
+    </td>
+</tr></tbody></table>
+<h2>Contact</h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ffffff" width="40%">
+<img src="http://gnosis.cx/publish/programming/re_curl.jpg"></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>David Mertz is a writer, a programmer, and a teacher, who
+    always endeavors to improve his communication to readers (and
+    tutorial takers).  He welcomes any comments, please direct
+    them to &lt;mertz@gnosis.cx&gt;.  </p>
+
+    </td>
+</tr></tbody></table>
+<h2>Where to go from here...</h2>
+<table width="100%" border="1">
+<tbody><tr><td bgcolor="#ffffdd">
+    <p>After you complete this tutorial you will have seen the basics
+    (and a bit of some advanced topics) of regular expressions.  The
+    best thing to do next is to start using them in real-life problems.
+    The first thing to look at is the documentation that accompanies the
+    particular tool you use.  Beyond that, a number of printed books
+    have good explanations of regular expressions, often as implemented
+    by specific tools.  Some books the creator of this tutorial has
+    benefited from are:</p>
+
+    <ul><li><i>Mastering Regular Expressions</i>, Friedl, Jeffrey
+            E. F., O'Reilly, Cambridge, MA 1997.</li>
+        <li><i>sed &amp; awk</i>, Dale Dougherty &amp; Arnold
+            Robbins, O'Reilly, Cambridge, MA 1997.</li>
+        <li><i>Programming Perl</i>, Larry Wall, Tom Christiansen
+            &amp; Randal L. Schwartz, O'Reilly, Cambridge, MA 1996.
+            </li>
+        <li><i>TCL/TK in a Nutshell</i>, Paul Raines &amp; Jeff
+            Tranter, O'Reilly, Cambridge, MA 1999.</li>
+        <li><i>Python Pocket Reference</i>, Mark Lutz, O'Reilly,
+            Cambridge, MA 1998.</li>
+        <li><i>A Practical Guide to Linux</i>, Mark G. Sobell,
+            Addison Wesley, Reading, MA 1997.</li>
+    </ul>
+    </td></tr>
+</tbody></table>
+<h1>Matching Patterns in Text: The Basics</h1><hr>
+<h2>Character literals</h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ddffff" width="40%"><pre><code-listing>
+<font color="blue">/a/</font>
+
+M<font color="red"><b>a</b></font>ry h<font color="red"><b>a</b></font>d <font color="red"><b>a</b></font> little l<font color="red"><b>a</b></font>mb.
+And everywhere th<font color="red"><b>a</b></font>t M<font color="red"><b>a</b></font>ry
+went, the l<font color="red"><b>a</b></font>mb w<font color="red"><b>a</b></font>s sure
+to go.
+
+<font color="blue">/Mary/</font>
+
+<font color="red"><b>Mary</b></font> had a little lamb.
+And everywhere that <font color="red"><b>Mary</b></font>
+went, the lamb was sure
+to go.
+
+    </code-listing></pre></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>The very simplest pattern matched by a regular expression
+    is a literal character or a sequence of literal characters.
+    Anything in the target text that consists of exactly those
+    characters in exactly the order listed will match.  A lower
+    case character is not identical with its upper case version,
+    and vice versa.  A space in a regular expression, by the way,
+    matches a literal space in the target (this is unlike most
+    programming languages or command-line tools, where spaces
+    separate keywords).</p>
+
+    </td>
+</tr></tbody></table>
+<h2>"Escaped" characters literals</h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ddffff" width="40%"><pre><code-listing>
+<font color="blue">/.*/</font>
+
+<font color="red"><b>Special characters must be escaped.*</b></font>
+
+<font color="blue">/\.\*/</font>
+Special characters must be escaped<font color="red"><b>.*</b></font>
+    </code-listing></pre></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>A number of characters have special meanings to regular
+    expressions.  A symbol with a special meaning can be
+    matched, but to do so you must prefix it with the backslash
+    character (this includes the backslash character itself: to
+    match one backslash in the target, your regular expression
+    should include "\\").</p>
+    </td>
+</tr></tbody></table>
+<h2>Positional special characters</h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ddffff" width="40%"><pre><code-listing>
+<font color="blue">/^Mary/</font>
+
+<font color="red"><b>Mary</b></font> had a little lamb.
+And everywhere that Mary
+went, the lamb was sure
+to go.
+
+<font color="blue">/Mary$/</font>
+
+Mary had a little lamb.
+And everywhere that <font color="red"><b>Mary</b></font>
+went, the lamb was sure
+to go.
+
+    </code-listing></pre></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>Two special characters are used in almost all regular
+    expression tools to mark the beginning and end of a line:
+    caret (^) and dollarsign ($).  To match a caret or dollarsign
+    as a literal character, you must escape it (i.e. precede it
+    by a backslash "\").  </p>
+
+    <p>An interesting thing about the caret and dollarsign is
+    that they match <b>zero-width</b> patterns.  That is the
+    length of the string matched by a caret or dollarsign by
+    itself is zero (but the rest of the regular expression can
+    still depend on the zero-width match).  Many regular
+    expression tools provide another zero-width pattern for
+    word-boundary (\b).  Words might be divided by whitespace
+    like spaces, tabs, newlines, or other characters like nulls;
+    the word-boundary pattern matches the actual point where a
+    word starts or ends, not the particular whitespace
+    characters.</p>
+
+    </td>
+</tr></tbody></table>
+<h2>The "wildcard" character </h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ddffff" width="40%"><pre><code-listing>
+<font color="blue">/.a/ </font>
+
+<font color="red"><b>Ma</b></font>ry <font color="red"><b>ha</b></font>d<font color="red"><b> a</b></font> little <font color="red"><b>la</b></font>mb.
+And everywhere t<font color="red"><b>ha</b></font>t <font color="red"><b>Ma</b></font>ry
+went, the <font color="red"><b>la</b></font>mb <font color="red"><b>wa</b></font>s sure
+to go.
+
+
+    </code-listing></pre></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>In regular expressions, a period can stand for any
+    character.  Normally, the newline character is not included,
+    but most tools have optional switches to force inclusion of
+    the newline character also.  Using a period in a pattern is a
+    way of requiring that "something" occurs here, without having
+    to decide what. </p>
+
+    <p>Users who are familiar with DOS command-line wildcards will
+    know the question-mark as filling the role of "some
+    character" in command masks.  But in regular expressions, the
+    question-mark has a different meaning, and the period is
+    used as a wildcard.</p>
+
+    </td>
+</tr></tbody></table>
+<h2>Grouping regular expressions</h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ddffff" width="40%"><pre><code-listing>
+<font color="blue">/(Mary)( )(had)/ </font>
+
+<font color="red"><b>Mary had</b></font> a little lamb.
+And everywhere that Mary
+went, the lamb was sure
+to go.
+
+    </code-listing></pre></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>A regular expression can have literal characters in it,
+    and also zero-width positional patterns.  Each literal
+    character or positional pattern is an <b>atom</b> in a
+    regular expression.  You may also group several atoms
+    together into a small regular expression that is part of a
+    larger regular expression.  One might be inclined to call
+    such a grouping a "molecule," but normally it is also called
+    an atom.</p>
+
+    <p>In older Unix-oriented tools like <code>grep</code>,
+    subexpressions must be grouped with escaped parentheses, e.g.
+    <code>/\(Mary\)/</code>.  In Perl and most more recent tools
+    (including egrep), grouping is done with bare parentheses,
+    but matching a literal parenthesis requires escaping it in
+    the pattern (the example to the side follows Perl).</p>
+
+    </td>
+</tr></tbody></table>
+<h2>Character classes</h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ddffff" width="40%"><pre><code-listing>
+<font color="blue">/[a-z]a/ </font>
+
+Mary <font color="red"><b>ha</b></font>d a little <font color="red"><b>la</b></font>mb.
+And everywhere t<font color="red"><b>ha</b></font>t Mary
+went, the <font color="red"><b>la</b></font>mb <font color="red"><b>wa</b></font>s sure
+to go.
+
+    </code-listing></pre></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>Rather than name only a single character, you can include
+    a pattern in a regular expression that matches any of a set
+    of characters.</p>
+
+    <p>A set of characters can be given as a simple list inside
+    square brackets, e.g. <code>/[aeiou]/</code> will match any
+    single lowercase vowel.  For letter or number ranges you may
+    also use only the first and last letter of a range, with a
+    dash in the middle, e.g. <code>/[A-Ma-m]/</code> will match
+    any lowercase or uppercase in the first half of the alphabet.</p>
+
+    <p>Many regular expression tools also provide escape-style
+    shortcuts to the most commonly used character class, such as
+    <code>\s</code> for a whitespace character and
+    <code>\d</code> for a digit.  You could always define these
+    character classes with square brackets, but the shortcuts can
+    make regular expressions more compact and more readable.</p>
+
+    </td>
+</tr></tbody></table>
+<h2>Complement operator</h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ddffff" width="40%"><pre><code-listing>
+<font color="blue">/[^a-z]a/ </font>
+
+<font color="red"><b>Ma</b></font>ry had<font color="red"><b> a</b></font> little lamb.
+And everywhere that <font color="red"><b>Ma</b></font>ry
+went, the lamb was sure
+to go.
+
+    </code-listing></pre></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>The caret symbol can actually have two different meanings
+    in regular expressions.  Most of the time, it means to match
+    the zero-length pattern for line beginnings.  But if it is
+    used at the beginning of a character class, it reverses the
+    meaning of the character class.  Everything <b>not</b>
+    included in the listed character set is matched.</p>
+    </td>
+</tr></tbody></table>
+<h2>Alternation of patterns</h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ddffff" width="40%"><pre><code-listing>
+<font color="blue">/cat|dog|bird/</font>
+
+The pet store sold <font color="red"><b>cat</b></font>s, <font color="red"><b>dog</b></font>s, and <font color="red"><b>bird</b></font>s.
+
+<font color="blue">/=first|second=/</font>
+
+<font color="red"><b>=first</b></font> first= # =second <font color="red"><b>second=</b></font> # <font color="red"><b>=first</b></font>= # =<font color="red"><b>second=</b></font>
+
+<font color="blue">/(=)(first)|(second)(=)/</font>
+
+<font color="red"><b>=first</b></font> first= # =second <font color="red"><b>second=</b></font> # <font color="red"><b>=first</b></font>= # =<font color="red"><b>second=</b></font>
+
+<font color="blue">/=(first|second)=/</font>
+
+=first first= # =second second= # <font color="red"><b>=first=</b></font> # <font color="red"><b>=second=</b></font>
+
+    </code-listing></pre></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>Using character classes is a way of indicating that either
+    one thing or another thing can occur in a particular spot.
+    But what if you want to specify that either of two whole
+    subexpressions occur in a position in the regular expression?
+    For that, you use the alternation operator, the vertical
+    bar ("|").  This is the symbol that is also used to indicate
+    a pipe in Unix/DOS shells, and is sometimes called the pipe
+    character. </p>
+
+    <p>The pipe character in a regular expression indicates an
+    alternation between <b>everything</b> in the group enclosing
+    it.  What this means is that even if there are several groups
+    to the left and right of a pipe character, the alternation
+    greedily asks for everything on both sides.  To select the
+    scope of the alternation, you must define a group that
+    encompasses the patterns that may match.  The example
+    illustrates this.</p>
+
+    </td>
+</tr></tbody></table>
+<h2>The basic abstract quantifier</h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ddffff" width="40%"><pre><code-listing>
+<font color="blue">/@(=#=)*@/ </font>
+
+Match with zero in the middle: <font color="red"><b>@@</b></font>
+Subexpresion occurs, but...: @=#=ABC@
+Lots of occurrences: <font color="red"><b>@=#==#==#==#==#=@</b></font>
+Must repeat entire pattern: @=#==#=#==#=@
+
+    </code-listing></pre></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>One of the most powerful and common things you can do with
+    regular expressions is to specify how many times an atom
+    occurs in a complete regular expression.  Sometimes you want
+    to specify something about the occurrence of a single
+    character, but very often you are interested in specifying
+    the occurrence of a character class or a grouped
+    subexpression.  </p>
+
+    <p>There is only one quantifier included with "basic" regular
+    expression syntax, the asterisk ("*"); in English this has
+    the meaning "some or none" or "zero or more." If you want to
+    specify that any number of an atom may occur as part of a
+    pattern, follow the atom by an asterisk. </p>
+
+    <p>Without quantifiers, grouping expressions doesn't really
+    serve as much purpose, but once we can add a quantifier to a
+    subexpression we can say something about the occurrence of the
+    subexpression as a whole.  Take a look at the example.</p>
+
+    </td>
+</tr></tbody></table>
+<h1>Matching Patterns in Text: Intermediate</h1><hr>
+<h2>More abstract quantifiers </h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ddffff" width="40%"><pre><code-listing>
+<font color="blue">/A+B*C?D/</font>
+
+<font color="red"><b>AAAD</b></font>
+<font color="red"><b>ABBBBCD</b></font>
+BBBCD
+ABCCD
+AAABBBC
+
+    </code-listing></pre></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>In a certain way, the lack of any quantifier symbol after
+    an atom quantifies the atom anyway:  it says the atom occurs
+    <b>exactly once</b>.  Extended regular expressions (which
+    most tools support) add a few other useful numbers to "once
+    exactly" and "zero or more times." The plus-sign ("+") means
+    "one or more times" and the question-mark ("?") means "zero
+    or one times." These quantifiers are by far the most common
+    enumerations you wind up naming.</p>
+
+    <p>If you think about it, you can see that the extended
+    regular expressions do not actually let you "say" anything the
+    basic ones do not.  They just let you say it in a shorter and
+    more readable way.  For example, "<code>(ABC)+</code>" is
+    equivalent to "<code>(ABC)(ABC)*</code>"; and
+    "<code>X(ABC)?Y</code>" is equivalent to
+    "<code>XABCY|XY</code>".  If the atoms being quantified are
+    themselves complicated grouped subexpressions, the
+    question-mark and plus-sign can make things a lot shorter.</p>
+
+    </td>
+</tr></tbody></table>
+<h2>Numeric quantifiers</h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ddffff" width="40%"><pre><code-listing>
+<font color="blue">/a{5} b{,6} c{4,8}/</font>
+
+<font color="red"><b>aaaaa bbbbb ccccc</b></font>
+aaa bbb ccc
+aaaaa bbbbbbbbbbbbbb ccccc
+
+<font color="blue">/a+ b{3,} c?/</font>
+
+<font color="red"><b>aaaaa bbbbb c</b></font>cccc
+<font color="red"><b>aaa bbb c</b></font>cc
+<font color="red"><b>aaaaa bbbbbbbbbbbbbb c</b></font>cccc
+
+<font color="blue">/a{5} b{6,} c{4,8}/</font>
+
+aaaaa bbbbb ccccc
+aaa bbb ccc
+<font color="red"><b>aaaaa bbbbbbbbbbbbbb ccccc</b></font>
+
+    </code-listing></pre></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>Using extended regular expressions, you can specify
+    arbitrary pattern occurrence counts using a more verbose
+    syntax than the question-mark, plus-sign, and asterisk
+    quantifiers.  The curly-braces ("{" and "}") can surround a
+    precise count of how many occurrences you are looking for. </p>
+
+    <p>The most general form of the curly-brace quantification
+    uses two range arguments (the first must be no larger than the
+    second, and both must be non-negative integers).  The
+    occurrence count is specified this way to fall between the
+    minimum and maximum indicated (inclusive).  As shorthand,
+    either argument may be left empty: if so the minimum/maximum
+    is specified as zero/infinity, respectively.  If only one
+    argument is used (with no comma in there),
+    <b>exactly</b> that number of occurrences are matched.</p>
+
+    </td>
+</tr></tbody></table>
+<h2>Backreferences</h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ddffff" width="40%"><pre><code-listing>
+<font color="blue">/(abc|xyz) \1/</font>
+
+jkl abc xyz
+jkl xyz abc
+jkl <font color="red"><b>abc abc</b></font>
+jkl <font color="red"><b>xyz xyz</b></font>
+
+<font color="blue">/(abc|xyz) (abc|xyz)/</font>
+
+jkl <font color="red"><b>abc xyz</b></font>
+jkl <font color="red"><b>xyz abc</b></font>
+jkl <font color="red"><b>abc abc</b></font>
+jkl <font color="red"><b>xyz xyz</b></font>
+
+    </code-listing></pre></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>One powerful option in creating search patterns is
+    specifying that a subexpression that was matched earlier in
+    a regular expression is matched again later in the
+    expression.  We do this using <b>backreferences</b>.
+    Backreferences are named by the numbers 1 through 9,
+    preceded by the backslash/escape character when used in this
+    manner.  These backreferences refer to each successive group
+    in the match pattern, as in
+    <code>/(one)(two)(three)/\1\2\3/</code>.  Each numbered
+    backreference refers to the group that, in this example, has
+    the word corresponding to the number. </p>
+
+    <p>It is important to note something the example illustrates.
+    What gets matched by a backreference is the same literal
+    string matched the first time, even if the pattern that
+    matched the string could have matched other strings.  Simply
+    repeating the same grouped subexpression later in the regular
+    expression does not match the same targets as using a
+    backreference (but you have to decide what it is you actually
+    want to match in either case).</p>
+
+    <p>Backreferences refer back to whatever occurred in the
+    previous grouped expressions, in the order those grouped
+    expressions occurred.  Because of the naming convention
+    (\1-\9), many tools limit you to nine backreferences.  Some
+    tools allow actual naming of backreferences and/or saving
+    them to program variables.  The more advanced parts of this
+    tutorial touch on these topics</p>
+
+    </td>
+</tr></tbody></table>
+<h2>Don't match more than you want to</h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ddffff" width="40%"><pre><code-listing>
+<font color="blue">/th.*s/</font>
+
+-- I want to match <font color="red"><b>the words that s</b></font>tart
+-- wi<font color="red"><b>th 'th' and end with 's</b></font>'.
+<font color="red"><b>this</b></font>
+<font color="red"><b>thus</b></font>
+<font color="red"><b>this</b></font>tle
+<font color="red"><b>this line matches</b></font> too much
+
+    </code-listing></pre></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>Quantifiers in regular expressions are <b>greedy</b>.
+    That is, they match as much as they possibly can. </p>
+
+    <p>Probably the easiest mistake to make in composing
+    regular expressions is to match <b>too much</b>.  When you
+    use a quantifier, you want it to match everything (of the
+    right sort) up to the point where you want to finish your
+    match. But when using the "*", "+" or numeric quantifiers, it
+    is easy to forget that the last bit you are looking for might
+    occur later in a line than the one you are interested in.</p>
+
+    </td>
+</tr></tbody></table>
+<h2>Tricks for restraining matches</h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ddffff" width="40%"><pre><code-listing>
+<font color="blue">/th[^s]*./</font>
+
+-- I want to match <font color="red"><b>the words </b></font>that start
+-- wi<font color="red"><b>th 'th' and end with 's</b></font>'.
+<font color="red"><b>this</b></font>
+<font color="red"><b>thus</b></font>
+<font color="red"><b>this</b></font>tle
+<font color="red"><b>this</b></font> line matches too much
+
+    </code-listing></pre></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>Often if you find that your regular expressions are matching
+    too much, a useful procedure is to reformulate the problem in
+    your mind.  Rather than thinking about "what am I trying to
+    match later in the expression?" ask yourself "what do I need to
+    <b>avoid</b> matching in the next part?" Often this leads to more
+    parsimonious pattern matches.  Often the way to avoid a pattern is
+    to use the complement operator and a character class.  Look at the
+    example, and think about how it works.</p>
+
+    <p>The trick here is that there are two different ways of
+    formulating <b>almost</b> the same sequence.  You can either
+    think you want to keep matching <b>until</b> you get to XYZ,
+    or you can think you want to keep matching <b>unless</b> you
+    get to XYZ.  These are subtly different.</p>
+
+    <p>For people who have thought about basic probability, the
+    same pattern occurs.  The chance of rolling a 6 on a die in
+    one roll is 1/6.  What is the chance of rolling a 6 in six
+    rolls?  A naive calculation puts the odds at
+    1/6+1/6+1/6+1/6+1/6+1/6, or 100%.  This is wrong, of course
+    (after all, the chance after twelve rolls isn't 200%).  The
+    correct calculation is "how do I <b>avoid</b> rolling a 6 for
+    six rolls?"  -- i.e.  5/6*5/6*5/6*5/6*5/6*5/6, or about 33%.
+    The chance of <b>getting</b> a 6 is the same chance as not
+    <b>avoiding</b> it (or about 66%).  In fact, if you imagine
+    transcribing a series of dice rolls, you could apply a
+    regular expression to the written record, and similar
+    thinking applies.</p>
+
+    </td>
+</tr></tbody></table>
+<h2>Comments on modification tools</h2>
+<table width="100%" border="1">
+<tbody><tr><td bgcolor="#ffffdd">
+    <p>Not all tools that use regular expressions allow you to
+    modify target strings.  Some simply locate the matched
+    pattern; the mostly widely used regular expression tool is
+    probably <code>grep</code>, which is a tool for searching
+    only.  Text editors, for example, may or may not allow
+    replacement in their regular expression search facility.  As
+    always, consult the documentation on your individual
+    tool.</p>
+
+    <p>Of the tools that allow you to modify target text, there
+    are a few differences to keep in mind.  The way you actually
+    specify replacements will vary between tools: a text editor
+    might have a dialog box; command-line tools will use
+    delimiters between match and replacement, programming
+    languages will typically call functions with arguments for
+    match and replacement patterns.</p>
+
+    <p>Another important difference to keep in mind is of what is
+    getting modified.  Unix-oriented command-line tools typically
+    utilize pipes and STDOUT for changes to buffers, rather than
+    modify files in-place.  Using a <code>sed</code> command, for
+    example, will write the modifications to the console, but
+    will not change the original target file.  Text editors or
+    programming languages are more likely to actually modify a
+    file in-place. </p>
+
+    </td></tr>
+</tbody></table>
+<h2>A note on modification examples</h2>
+<table width="100%" border="1">
+<tbody><tr><td bgcolor="#ffffdd">
+    <p>For purposes of this tutorial, examples will continue to
+    use the <code>sed</code> style slash delimiters.
+    Specifically, the examples will indicate the substitution
+    command and the global modifier, as with
+    "<code>s/this/that/g</code>".  This expression means:
+    "Replace the string 'this' with the string 'that' everywhere
+    in the target text.</p>
+
+    <p>Examples will consist of the modification command, an
+    input line, and an output line.  The output line will have
+    any changes emphasized.  Also, each input/output line will be
+    preceded by a less-than or greater-than symbol to help
+    distinguish them (the order will be as described also), which
+    is suggestive of redirection symbols in Unix shells.</p>
+
+    </td></tr>
+</tbody></table>
+<h2>A literal-string modification example</h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ddffff" width="40%"><pre><code-listing>
+<font color="blue">s/cat/dog/g </font>
+
+&lt; The zoo had wild dogs, bobcats, lions, and other wild cats.
+&gt; The zoo had wild dogs, bob<font color="red"><b>dog</b></font>s, lions, and other wild <font color="red"><b>dog</b></font>s.
+    </code-listing></pre></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>Let us take a look at a couple modification examples that
+    build on what we have already covered.  This one simply
+    substitutes some literal text for some other literal text.
+    The search-and-replace capability of many tools can do this
+    much, even without using regular expressions.</p>
+
+    </td>
+</tr></tbody></table>
+<h2>A pattern-match modification example</h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ddffff" width="40%"><pre><code-listing>
+<font color="blue">s/cat|dog/snake/g </font>
+
+&lt; The zoo had wild dogs, bobcats, lions, and other wild cats.
+&gt; The zoo had wild <font color="red"><b>snake</b></font>s, bob<font color="red"><b>snake</b></font>s, lions, and other wild <font color="red"><b>snake</b></font>s.
+
+<font color="blue">s/[a-z]+i[a-z]*/nice/g </font>
+
+&lt; The zoo had wild dogs, bobcats, lions, and other wild cats.
+&gt; The zoo had <font color="red"><b>nice</b></font> dogs, bobcats, <font color="red"><b>nice</b></font>, and other <font color="red"><b>nice</b></font> cats.
+    </code-listing></pre></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>Most of the time, if you are using regular expressions to
+    modify a target text, you will want to match more general
+    patterns than just literal strings.  Whatever is matched is what
+    gets replaced (even if it is several different strings in the
+    target)</p>
+
+    </td>
+</tr></tbody></table>
+<h2>Modification using backreferences</h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ddffff" width="40%"><pre><code-listing>
+<font color="blue">s/([A-Z])([0-9]{2,4}) /\2:\1 /g </font>
+
+&lt; A37 B4 C107 D54112 E1103 XXX
+&gt; <font color="red"><b>37:A</b></font> B4 <font color="red"><b>107:C</b></font> D54112 <font color="red"><b>1103:E</b></font> XXX
+    </code-listing></pre></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>It is nice to be able to insert a fixed string everywhere
+    a pattern occurs in a target text.  But frankly, doing that
+    is not very context sensitive.  A lot of times, we do not
+    want just to insert fixed strings, but rather to insert
+    something that bears much more relation to the matched
+    patterns.  Fortunately, backreferences come to our rescue
+    here.  You can use backreferences in the pattern-matches
+    themselves, but it is even more useful to be able to use them
+    in replacement patterns.  By using replacement
+    backreferences, you can pick and choose from the matched
+    patterns to use just the parts you are interested in.  </p>
+
+    <p>To aid readability, subexpressions will be grouped with
+    bare parentheses (as with Perl), rather than with escaped
+    parentheses (as with <code>sed</code>).</p>
+
+    </td>
+</tr></tbody></table>
+<h2>Another warning on mismatching</h2>
+<table width="100%" border="1">
+<tbody><tr><td bgcolor="#ffffdd">
+    <p>This tutorial has already warned about the danger of matching
+    too much with your regular expression patterns.  But the danger
+    is so much more serious when you do modifications, that it is
+    worth repeating.  If you replace a pattern that matches a larger
+    string than you thought of when you composed the pattern, you
+    have potentially deleted some important data from your target.</p>
+
+    <p>It is always a good idea to try out your regular expressions
+    on diverse target data that is representative of your production
+    usage.  Make sure you are matching what you think you are matching.
+    A stray quantifier or wildcard can make a surprisingly wide
+    variety of texts match what you thought was a specific pattern.
+    And sometimes you just have to stare at your pattern for a while,
+    or find another set of eyes, to figure out what is really going
+    on even after you see what matches.  Familiarity might breed
+    contempt, but it also instills competence.</p>
+
+    </td></tr>
+</tbody></table>
+<h1>Advanced Regular Expression Extensions</h1><hr>
+<h2>About advanced features</h2>
+<table width="100%" border="1">
+<tbody><tr><td bgcolor="#ffffdd">
+    <p>Some very useful enhancements are included in some regular
+    expression tools.  These enhancements often make the
+    composition and maintenance of regular expression considerably
+    easier.  But check with your own tool to see what is supported.
+    </p>
+    <p>The programming language Perl is probably the most
+    sophisticated tool for regular expression processing, which
+    explains much of its popularity.  The examples illustrated
+    will use Perl-ish code to explain concepts. Other programming
+    languages, especially other scripting languages such as Python,
+    have a similar range of enhancements. But for purposes of
+    illustration, Perl's syntax most closely mirrors the regular
+    expression tools it builds on, such as <code>ed</code>,
+    <code>ex</code>, <code>grep</code>, <code>sed</code>, and
+    <code>awk</code>. </p>
+    </td></tr>
+</tbody></table>
+<h2>Non-greedy quantifiers</h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ddffff" width="40%"><pre><code-listing>
+<font color="blue">/th.*s/</font>
+
+-- I want to match <font color="red"><b>the words that s</b></font>tart
+-- wi<font color="red"><b>th 'th' and end with 's</b></font>'.
+<font color="red"><b>this line matches jus</b></font>t right
+<font color="red"><b>this # thus # this</b></font>tle
+
+<font color="blue">/th.*?s/</font>
+
+-- I want to match <font color="red"><b>the words</b></font> that start
+-- with '<font color="red"><b>th' and end with 's</b></font>'.
+<font color="red"><b>this</b></font> # <font color="red"><b>thus</b></font> # <font color="red"><b>this</b></font>tle
+<font color="red"><b>this</b></font> line matches just right
+
+<font color="blue">/th.*?s /</font>
+
+-- I want to match <font color="red"><b>the words</b></font> that start
+-- with 'th' and end with 's'. (FINALLY!)
+<font color="red"><b>this</b></font> # <font color="red"><b>thus</b></font> # thistle
+<font color="red"><b>this</b></font> line matches just right
+    </code-listing></pre></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>Earlier in the tutorial, the problems of matching too much
+    were discussed, and some workarounds were suggested.  Some
+    regular expression tools are nice enough to make this easier
+    by providing optional <b>non-greedy</b> quantifiers.  These
+    quantifier grab as little as possible while still matching
+    whatever comes next in the pattern (instead of <b>as much</b>
+    as possible).</p>
+
+    <p>Non-greedy quantifiers have the same syntax as regular greedy
+    ones, except with the quantifier followed by a question-mark.
+    For example, a non-greedy pattern might look like:
+    "<code>/A[A-Z]*?B/</code>".  In English, this means "match an A,
+    followed by only as many capital letters as are needed to find
+    a B."</p>
+
+    <p>One little thing to look out for is the fact that the pattern
+    "<code>/[A-Z]*?./</code>" will always match <b>zero</b> capital
+    letters.  If you use non-greedy quantifiers, watch out for
+    matching <b>too little</b>, which is a symmetric danger.</p>
+    </td>
+</tr></tbody></table>
+<h2>Pattern-match modifiers</h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ddffff" width="40%"><pre><code-listing>
+<font color="blue">/M.*[ise] /</font>
+
+<font color="red"><b>MAINE # Massachusetts </b></font># Colorado #
+mississippi # <font color="red"><b>Missouri </b></font># Minnesota #
+
+<font color="blue">/M.*[ise] /i</font>
+
+<font color="red"><b>MAINE # Massachusetts </b></font># Colorado #
+<font color="red"><b>mississippi # Missouri </b></font># Minnesota #
+
+<font color="blue">/M.*[ise] /gis</font>
+
+<font color="red"><b>MAINE # Massachusetts # Colorado #
+mississippi # Missouri </b></font># Minnesota #
+    </code-listing></pre></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>We already saw one pattern-match modifier in the modification
+    examples: the <b>g</b>lobal modifier.  In fact, in many regular
+    expression tools, we should have been using the "g" modifier
+    for all our pattern matches.  Without the "g", many tools will
+    match only the first occurrence of a pattern on a line in the
+    target.  So this is a useful modifier (but not one you necessarily
+    want to use <b>always</b>).  Let us look at some others.</p>
+
+    <p>As a little mnemonic, it is nice to remember the word "gismo"
+    (it even seems somehow appropriate).  The most frequent modifiers
+    are:</p>
+    <ul><li>g - Match globally </li>
+      	<li>i - Case-insensitive match </li>
+        <li>s - Treat string as single line </li>
+        <li>m - Treat string as multiple lines </li>
+        <li>o - Only compile pattern once </li>
+    </ul>
+    <p>The <b>o</b> option is an implementation optimization, and not
+    really a regular expression issue (but it helps the mnemonic).
+    The <b>s</b>ingle-line option allows the wildcard to match a
+    newline character (it won't otherwise).  The <b>m</b>ultiple-line
+    option causes "^" and "$" to match the begin and end of each line
+    in the target, not just the begin/end of the target as a whole
+    (with <code>sed</code> or <code>grep</code> this is the default).
+    The <b>i</b>nsensitive option ignores differences between case of
+    letters.</p>
+
+    </td>
+</tr></tbody></table>
+<h2>Changing backreference behavior</h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ddffff" width="40%"><pre><code-listing>
+<font color="blue">s/([A-Z])(?:-[a-z]{3}-)([0-9]*)/\1\2/g</font>
+
+&lt; A-xyz-37 # B:abcd:142 # C-wxy-66 # D-qrs-93
+&gt; <font color="red"><b>A37</b></font> # B:abcd:42 # <font color="red"><b>C66</b></font> # <font color="red"><b>D93</b></font>
+    </code-listing></pre></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>Backreferencing in replacement patterns is very powerful;
+    but it is also easy to use more than nine groups in a complex
+    regular expression.  Quite apart from using up the available
+    backreference names, it is often more legible to refer to the
+    parts of a replacement pattern in sequential order.  To handle
+    this issue, some regular expression tools allow "grouping
+    without backreferencing."</p>
+
+    <p>A group that should not also be treated as a back reference
+    has a question-mark colon at the beginning of the group, as in
+    "<code>(?:pattern)</code>."  In fact, you can use this syntax
+    even when your backreferences are in the search pattern itself.
+    </p>
+    </td>
+</tr></tbody></table>
+<h2>Naming backreferences</h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ddffff" width="40%"><pre><code-listing><font color="blue">
+import re
+txt = "A-xyz-37 # B:abcd:142 # C-wxy-66 # D-qrs-93"
+print re.sub("(?P&lt;prefix&gt;[A-Z])(-[a-z]{3}-)(?P&lt;id&gt;[0-9]*)",
+             "\g&lt;prefix&gt;\g&lt;id&gt;", txt) </font>
+
+<font color="red"><b>A37</b></font> # B:abcd:42 # <font color="red"><b>C66</b></font> # <font color="red"><b>D93</b></font>
+    </code-listing></pre></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>The language Python offers a particularly handy syntax for
+    really complex pattern backreferences.  Rather than just play
+    with the numbering of matched groups, you can give them a name.</p>
+
+    <p>The syntax of using regular expressions in Python is a
+    standard programming language function/method style of call,
+    rather than Perl- or <code>sed</code>-style slash delimiters.
+    Check your own tool to see if it supports this facility.</p>
+
+    </td>
+</tr></tbody></table>
+<h2>Lookahead assertions</h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ddffff" width="40%"><pre><code-listing>
+<font color="blue">s/([A-Z]-)(?=[a-z]{3})([a-z0-9]* )/\2\1/g</font>
+
+&lt; A-xyz37 # B-ab6142 # C-Wxy66 # D-qrs93
+&gt; <font color="red"><b>xyz37A-</b></font> # B-ab6142 # C-Wxy66 # <font color="red"><b>qrs93D-</b></font>
+
+<font color="blue">s/([A-Z]-)(?![a-z]{3})([a-z0-9]* )/\2\1/g</font>
+
+&lt; A-xyz37 # B-ab6142 # C-Wxy66 # D-qrs93
+&gt; A-xyz37 # <font color="red"><b>ab6142B-</b></font> # <font color="red"><b>Wxy66C-</b></font> # D-qrs93
+    </code-listing></pre></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>Another trick of advanced regular expression tools is
+    "lookahead assertions."  These are similar to regular grouped
+    subexpression, except they do not actually grab what they
+    match.  There are two advantages to using lookahead assertions.
+    On the one hand, a lookahead assertion can function in a
+    similar way to a group that is not backreferenced; that is, you
+    can match something without counting it in backreferences.
+    More significantly, however, a lookahead assertion can specify
+    that the next chunk of a pattern has a certain form, but let
+    a different subexpression actually grab it (usually for purposes
+    of backreferencing that other subexpression).</p>
+
+    <p>There are two kinds of lookahead assertions: positive and
+    negative.  As you would expect, a positive assertion specifies
+    that something <b>does</b> come next, and a negative one
+    specifies that something <b>does not</b> come next.  Emphasizing
+    their connection with non-backreferenced groups, the syntax
+    for lookahead assertions is similar: <code>(?=pattern)</code>
+    for positive assertions, and <code>(?!pattern)</code> for
+    negative assertions.</p>
+
+    </td>
+</tr></tbody></table>
+<h2>Making regular expressions more readable</h2>
+<table width="100%" border="1"><tbody><tr>
+<td bgcolor="#ddffff" width="40%"><pre><code-listing><font color="blue">
+/               # identify URLs within a text file
+          [^="] # do not match URLs in IMG tags like:
+                # &lt;img src="http://mysite.com/mypic.png"&gt;
+http|ftp|gopher # make sure we find a resource type
+          :\/\/ # ...needs to be followed by colon-slash-slash
+      [^ \n\r]+ # stuff other than space, newline, tab is in URL
+    (?=[\s\.,]) # assert: followed by whitespace/period/comma
+/
+</font>
+The URL for my site is: <font color="red"><b>http://mysite.com/mydoc.html</b></font>.  You
+might also enjoy <font color="red"><b>ftp://yoursite.com/index.html</b></font> for a good
+place to download files.
+    </code-listing></pre></td>
+<td bgcolor="#ffffdd" width="60%">
+    <p>In the later examples we have started to see just how
+    complicated regular expressions can get.  These examples are
+    not the half of it.  It is possible to do some almost absurdly
+    difficult-to-understand things with regular expression (but
+    ones that are nonetheless useful).</p>
+
+    <p>There are two basic facilities that some of the more advanced
+    regular expression tools use in clarifying expressions.  One is
+    allowing regular expressions to continue over multiple lines (by
+    ignoring whitespace like trailing spaces and newlines).  The
+    second is allowing comments within regular expressions.  Some
+    tools allow you to do one or another of these things alone, but
+    when it gets complicated, do both!</p>
+
+    <p>The example given uses Perl's e<b>x</b>tend modifier to enable
+    commented multi-line regular expressions.  Consult the
+    documentation for your own tool for details on how to compose
+    these.</p>
+
+    </td>
+</tr></tbody></table>
+</body></html>

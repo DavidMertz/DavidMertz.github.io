@@ -1,0 +1,394 @@
+XML MATTERS #27: RELAX NG Forms
+Compact Syntax and XML Syntax
+
+David Mertz, Ph.D.
+Facilitator, Gnosis Software, Inc.
+May, 2003
+
+    The RELAX NG compact syntax provides a much less verbose, and
+    easier to read, format for describing the same semantic
+    constraints as RELAX NG XML syntax. This installment looks
+    at tools for working with and transforming between the two
+    syntax forms.
+
+EMPHASIZING READABILITY
+------------------------------------------------------------------------
+
+  Readers of my earlier installments on RELAX NG will have noticed
+  that I chose to provide many of my examples using compact syntax
+  rather than XML syntax. Both formats are semantically equivalent,
+  but the compact syntax is, in my opinion, far easier to read and
+  write. Moreover, readers of this column in general will have a
+  sense of how little enamored I am of the notion that everything
+  vaguely related to XML technologies must itself use an XML
+  format. XSLT is a prominent example of this XML-everywhere
+  tendency, and its pitfalls--but that is a rant for a different
+  column.
+
+  In the later part of this article, I will discuss the format
+  of the RELAX NG compact syntax in more detail than the prior
+  installments allowed.
+
+TOOL SUPPORT
+------------------------------------------------------------------------
+
+  On the down side, since the RELAX NG compact syntax is newer--and
+  not 100% settled at its edges--tool support for compact syntax is
+  less complete than for the XML syntax. For example, even though
+  the Java tool 'trang' supports conversion between compact and XML
+  syntax, the associated tool 'jing' will only validate against XML
+  syntax schemas. Obviously, it is not overly difficult to generate
+  the XML syntax RELAX NG schema to use for validation, but direct
+  usage of the compact syntax schema would be more convenient.
+  Likewise, the Python tools 'xvif' and '4xml' validate only
+  against XML syntax schemas.
+
+  To help remedy the gaps in direct support for compact syntax, I
+  have produced a Python tool for parsing RELAX NG compact schemas,
+  and for outputting them to XML format. While my 'rnc2rng' tool
+  only does what 'trang' does, Eric van der Vlist and Uche Ogbuji
+  have expressed their interest in including 'rnc2rng' in 'xvif'
+  and '4xml', respectively.  Hopefully, in the near future direct
+  validation against compact syntax schemas will be included in
+  these tools.
+
+  Writing 'rnc2rng' proved more difficult than I anticipated; and
+  there is probably a lesson in that. While RELAX NG compact syntax
+  is quite readable--as we will see below--there are enough
+  variations in the arrangement of tokens between instances that a
+  parser was non-trivial to write. For better or worse, I use
+  [PLY]'s [lex] module to tokenize the schema, but gave up on using
+  [yacc] for the parsing, using application-specific massaging of
+  the token stream instead. Debugging declarative grammars is often
+  more difficult than incrementally adjusting imperative code.
+  Despite my frequent concern for the unfriendliness of XML, the
+  task of parsing an XML syntax schema would have been far simpler,
+  since I could have let a framework like SAX or DOM do most of
+  the work for me.
+
+MORE ON RELAX NG EDITORS
+------------------------------------------------------------------------
+
+  Since the last installment, tool support for RELAX NG has gotten
+  a little bit better. The XML editor oXygen has come out with a
+  version 2.0 that incorporates 'trang' as a plugin, and thereby
+  some support for RELAX NG. While this is not the place for a full
+  review, I found oXygen 2.0--which I liked in version 1.2 to start
+  with--has gained a number of nice features and general polish. I
+  would like to see RELAX NG integrated at a deeper level into
+  various editors--to a degree similar to DTD and W3C XML Schema.
+  With a bit more time, I think greater RELAX NG integration into
+  tools is likely.
+
+SYNTAX FEATURES - NAMESPACES
+------------------------------------------------------------------------
+
+  A compact syntax RELAX NG schema may begin with any of several
+  optional namespace declarations. Each of these looks a lot like
+  an assignment statement in a programming language. A default
+  namespace for schema tags may be specified with:
+
+      default namespace = "http://relaxng.org/ns/structure/version"
+
+  When converted to XML syntax, use of this declaration appends a
+  "ns" attribute to the root element of the schema. If this
+  namespace is not explicitly specified, the "default default"
+  namespace is used, and is declared with the root attribute, e.g.:
+
+      <root-tag xmlns="http://relaxng.org/ns/structure/1.0">
+
+  You may also declare an external namespace for elements or
+  attributes:
+
+      namespace foo = "http://some.path.to/foo"
+
+  This lets you describe elements like:
+
+      element foo:bar { ... }
+
+  When converted to XML syntax, the namespace URL is added to the
+  root tag as an extra attribute:
+
+      <root-tag xmlns="http://relaxng.org/ns/structure/1.0"
+                xmlns:foo="http://some.path.to/foo">
+
+  The namespace "a" is a bit special here.  RELAX NG allows
+  annotations, which are basically just tags with the "a"
+  namespace.  In compact syntax, you can avoid thinking about
+  namespaces, and add an annotation with initial double hash
+  marks:
+
+      ## An annotation
+
+  Converted to XML syntax, this annotation appears as:
+
+      <a:documentation>An annotation</a:documentation>
+
+  By the way, a single leading hash introduces a comment instead
+  of an annotation.  The following compact syntax form:
+
+      # This is a comment
+
+  Corresponds to the XML form:
+
+      <!-- This is a comment -->
+
+  You can also use a slightly odd compact syntax form to specify
+  other annotations within the "a" namespace:
+
+      [ a:defaultValue = "foo" ]
+
+  A root attribute "xmlns:a" will be specified automatically in
+  the XML syntax if annotations are used, but since "a" is just
+  another namespace, you can specfify you own URL if you want.
+  The default attribute is equivalent to specifying:
+
+      namespace a = "http://relaxng.org/ns/compatibility/annotation/1.0"
+
+  One more special namespace is specified differently, in both
+  syntax forms.  Datatypes rely on a modular specification,
+  usually using W3C XML Schema datatypes.  You may specify these
+  with compact syntax:
+
+      datatypes xsd = "http://www.w3.org/2001/XMLSchama-datatypes"
+
+  Or XML syntax:
+
+      <root-tag xmlns="http://relaxng.org/ns/structure/1.0"
+         datatypeLibrary="http://www.w3.org/2001/XMLSchama-datatypes">
+
+SYNTAX FEATURES - NESTED AND CONTEXT FREE
+------------------------------------------------------------------------
+
+  The main body of a RELAX NG grammar may have either of two
+  styles. In some way, the more direct style is to simply nest
+  elements and attributes where they should occur in a valid
+  instance.  Generally it is good form to use indentation much as
+  you would in a programming language, but as in C-family
+  languages, curly-braces are the actual block delimiters.  A
+  moderately complete schema looks like, e.g.:
+
+      #-------------- A nested compact syntax schema -----------#
+      # A library patron example
+      default namespace = "http://some.other.url/ns"
+      namespace foo = "http://home.of.foo/ns"
+      datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
+      ## Annotation here
+      element patron {
+        element name { xsd:string { pattern = "\w{,10}" } }
+        & element id-num { xsd:string }
+        & element book {
+            ( attribute isbn { text }
+            | attribute title { text }
+            | attribute anonymous { empty })
+          }*
+      }
+
+  The library patron example uses most of the syntax elements.
+  Interpersed "&"s between elements (or attributes) indicate that
+  the several elements must occur, but may do so in any order. In
+  XML syntax, this is the same as the '<interleave>' tag. Likewise,
+  interpersed "|"s indicate a choice between several items--in XML,
+  '<choice>'. Notice the "book" element too, the parenthesis
+  indicate a group, but they are redundant in this case. A group
+  (XML: '<group>'), however, is useful as part of quantification or
+  interpersal, e.g.:
+
+      #------------ Using groups for quanitfication ------------#
+      element foo {
+          ( element bar { text },
+            element baz { text } )+,
+          element bam { text } }
+
+  In this case, a valid document's root '<foo>' element might have
+  contain several '<bar></bar><baz></baz>' sequences prior to one
+  final '<bam>' element. There is no way to express the same
+  concept by only quantifying the indifidual "bar" and "baz"
+  elements.
+
+  A nested-style RELAX NG grammar need not describe a single
+  element only. Any well-formed XML document must have a single
+  root element, so clearly an attribute at the top is prohibited.
+  Likewise a sequence or interleave description at the top level
+  could not describe a well-formed XML document, and therefore it
+  could not describe a valid one.  But there is nothing wrong
+  with allowing a -choice- of root elements, e.g.:
+
+      #-------------- Choice as top level grammar --------------#
+      ( element foo {text}
+      | element bar {text} )
+
+  A second style of RELAX NG grammar more closely resembles a DTD.
+  A special "production" named "start" is indicated at the
+  beginning, followed by a variety of other named productions. As
+  with namespace declarations, a production is named in the manner
+  of an assignment in a programming language. For example, a
+  library patron schema could also look something like:
+
+      #-------- A context free compact syntax schema -----------#
+      # A library patron example
+      default namespace = "http://some.other.url/ns"
+      namespace foo = "http://home.of.foo/ns"
+      datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
+      ## Annotation here
+      start = patron
+      patron = name & id-num & book
+      name = element name { xsd:string { pattern = "\w{,10}" } }
+      id-num = element id-num { xsd:string }
+      book = element book {
+            ( attribute isbn { text }
+            | attribute title { text }
+            | attribute anonymous { empty }) }*
+
+  Names of productions may occur within other productions, which
+  can avoid repititions, and generally make complex patterns more
+  readable. Beyond readability, naming patterns allows recursive
+  definition of patterns--either direct or mutual recursion. For
+  example, describing HTML--where tables can nest within tables, or
+  lists within lists--is not possible in a strictly nested style.
+  An upshot of recursive XML instance documents is to make DTDs
+  and context free RELAX NG much more natural as descriptions
+  than is W3C XML Schemas (but you -can- get what is needed out
+  of W3C XML Schemas, just with more work).
+
+  It is probably worth looking at an entire XML syntax RELAX NG
+  schema document.  For comparison, the below is what 'rnc2rng'
+  produces when processing the above context free library patron
+  schema:
+
+      #----------- A context free XML syntax schema ------------#
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!-- A library patron example -->
+      <grammar xmlns="http://relaxng/ns/structure/1.0"
+          ns="http://some.other.url/ns"
+          datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"
+          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
+          xmlns:foo="http://home.of.foo/ns">
+        <a:documentation>Annotation here</a:documentation>
+        <start><ref name="patron"/></start>
+        <define name="patron">
+          <interleave>
+            <ref name="name"/>
+            <ref name="id-num"/>
+            <ref name="book"/>
+          </interleave>
+        </define>
+        <define name="name">
+          <element name="name">
+            <data type="string"/>
+              <param name="pattern">\w{,10}</param>
+            </data>
+          </element>
+        </define>
+        <define name="id-num">
+          <element name="id-num">
+            <data type="string"/>
+          </element>
+        </define>
+        <define name="book">
+          <zeroOrMore>
+            <element name="book">
+              <choice>
+                <attribute name="isbn"/>
+                <attribute name="title"/>
+                <attribute name="anonymous">
+                  <empty/>
+                </attribute>
+              </choice>
+            </element>
+          </zeroOrMore>
+        </define>
+      </grammar>
+
+  I would say this is easier to read than a W3C XML Schema, but
+  it sure does not come close to the compact syntax (prior
+  installments pointed out that this schema is actually
+  -impossible- to express precisely in W3C XML Schema, or DTDs).
+
+MISCELLANY
+------------------------------------------------------------------------
+
+  In some of these examples you will have noticed that elements
+  and attributes, in compact syntax, always contain -something-
+  in curly braces after their name.  In XML syntax, you can
+  self-close an attribute tag, but to prevent ambiguity, you need
+  to specify at least '{text}' or '{empty}' for an attribute
+  body.  You can also use a more complex datatype description if
+  you wish, of course.  Also, the only quantification that makes
+  sense for attributes is "?"--attributes might be optional, but
+  they will not be repeated multiple times.
+
+  In some corner cases, 'rnc2rng' differs from 'trang'.  For
+  example, both tools force an annotation to occur inside a root
+  element in XML syntax, even if the annotation line occurs
+  before the root element in the compact syntax.  Since
+  well-formed XML documents are single rooted, this is a
+  necessity.  But 'trang' also moves comments in a similar
+  manner, while 'rnc2rng' does not.  At minimum, some slightly
+  different use is made of whitespace between the tools.  Most
+  likely, a few other variations exist, but hopefully none that
+  are semantically important.
+
+RESOURCES
+------------------------------------------------------------------------
+
+  The [xvif] library itself can be downloaded from:
+
+    http://downloads.xmlschemata.org/python/
+
+  However, [4Suite] is a somewhat more polished tool that
+  incorporates [xvif] for RELAX NG validation.  The command-line
+  tool '4xml' will validate against both RELAX NG and DTDs, with
+  various options.  [4Suite] includes many other tools and
+  libraries for working with many XML-related technologies:
+
+    http://4suite.org/?xslt=downloads.xslt
+
+  The tools [trang] and [jing] are complementary tools for
+  transformation between schemata and validation against RELAX NG
+  schemas.  The former depends on the latter, but both can be
+  downloaded in a convenient archive from:
+
+    http://www.thaiopensource.com/relaxng/trang.html
+
+  You will need to optain an implementation of the Java API for
+  XML Processing (JAXP) to use [trang].  If you run a Java 1.4
+  JVM, you are fine already; otherwise, obtain [crimson] at:
+
+    http://xml.apache.org/dist/crimson/
+
+  [DTDinst] is a Java tool to convert DTDs into an XML instance
+  document format, including handling of parametric entities:
+
+    http://www.thaiopensource.com/relaxng/dtdinst/
+
+  The [DTDinst] XML format is of limited utility by itself, since
+  nothing else works with it.  However, an XSLT stylesheet is
+  available to transform this format into RELAX NG (with a few
+  caveats).  You will need an XSLT tool to utilize this:
+
+    http://www.thaiopensource.com/relaxng/dtdinst/dtdinst2rng.xsl
+
+  A collection of documents and tools presented in this series of
+  articles can be found at:
+
+    http://gnosis.cx/download/relax/
+
+  My ealier reviews of XML editors (including oXygen) for this
+  column can be found at:
+
+    http://www-106.ibm.com/developerworks/xml/library/x-matters21/
+
+  and:
+
+    http://www-106.ibm.com/developerworks/xml/library/x-matters22/
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz thinks that the schema that is real is not the
+  real schema. David may be reached at mertz@gnosis.cx; his life
+  pored over at http://gnosis.cx/publish/. Suggestions and
+  recommendations on this, past, or future, columns are welcomed.
+

@@ -1,0 +1,32 @@
+http://www.w3.org/TR/SVG11/
+
+    SVG is a language for describing two-dimensional graphics in XML
+    [XML10]. SVG allows for three types of graphic objects: vector
+    graphic shapes (e.g., paths consisting of straight lines and
+    curves), images and text. Graphical objects can be grouped, styled,
+    transformed and composited into previously rendered objects. The
+    feature set includes nested transformations, clipping paths, alpha
+    masks, filter effects and template objects.
+
+http://www.w3.org/Graphics/SVG/About.html:
+
+    SVG is a platform for two-dimensional graphics. It has two parts: an
+    XML-based file format and a programming API for graphical
+    applications. Key features include shapes, text and embedded raster
+    graphics, with many different painting styles. It supports scripting
+    through languages such as ECMAScript and has comprehensive support
+    for animation.
+
+    SVG is a royalty-free vendor-neutral open standard developed under
+    the W3C Process. It has strong industry support; Authors of the SVG
+    specification include Adobe, Agfa, Apple, Canon, Corel, Ericsson,
+    HP, IBM, Kodak, Macromedia, Microsoft, Nokia, Sharp and Sun
+    Microsystems. SVG viewers are deployed to over 100 million desktops,
+    and there is a broad range of support in many authoring tools.
+
+  Graphviz, Free Software for Graph Visualization
+
+    http://www.graphviz.org/
+
+  SVG.org is a community website aiming at bringing all the SVG users,
+  developers and enthusiasts to a single place on the Web.

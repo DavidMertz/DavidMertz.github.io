@@ -1,0 +1,448 @@
+CHARMING PYTHON #15 (20010165)
+Developing a Full-Text Indexer in Python
+
+David Mertz, Ph.D.
+Wanderer, Gnosis Software, Inc.
+February, 2001
+
+    As information grows, effective means of locating information
+    become ever more crucial.  This column examines the author's
+    public-domain Python [indexer] module, with a focus on the
+    general field of full-text indexing.
+
+
+WHAT IS PYTHON?
+------------------------------------------------------------------------
+
+  Python is a freely available, very-high-level, interpreted
+  language developed by Guido van Rossum.  It combines a clear
+  syntax with powerful (but optional) object-oriented semantics.
+  Python is available for almost every computer platform you
+  might find yourself working on, and has strong portability
+  between platforms.
+
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  This column has a somewhat different purpose than my previous
+  ones.  Like my readers, I am always trying to learn more, and
+  much of the purpose of this column is to invite contributions
+  from readers, so that I can include them in future columns (and
+  in the discussed project).  I would like this column, in
+  general, to reflect the interests and knowledge of my community
+  of readers, not simply pronouncements from on high by me.  Let
+  us see how it goes.
+
+  The project for this column is one that I hope will be useful
+  to readers, even in the early version presented.  I have
+  developed a full-text indexer in Python, that may be used
+  either as a stand-alone utility, or as a module in larger
+  projects.  The module is called, creatively enough, [indexer].
+  The design of [indexer] aims to illustrate principles of
+  reusable object-oriented coding.  And the underlying purpose
+  brings up many interesting design principles as well (text
+  indexing is a quite rich topic, with a surprising number of
+  subtleties).  While Knuth has justly warned that "premature
+  optimization is the root of all evil," -speeding- up searches
+  over the capabilities of raw text search tools like 'grep'
+  is, after all, the point of an index.  So performance issues
+  are considered, to a degree, in this column as well.
+
+  The module [indexer] comes, proximally, from a specific request
+  by a colleague for a good way to search a large volume of text
+  and HTML help documents.  A nagging concern over the
+  usability of years of accumulated mail, news, and writing
+  archives provides a distal motivation for [indexer].  What
+  [indexer] does is quite simple:  it allows one to locate
+  (quickly) documents that match search criteria (especially
+  where criteria may be difficult or impossible to specify as
+  regular expressions).  While a number of commercial and free
+  tools exist for similar purposes, many of these are focused on
+  the specifics of web-indexing (and require a CGI interface,
+  even if through LOCALHOST), are quite complicated to set up and
+  use, and only one tool (with a different focus) exists for
+  Python.  Of course, some of the older and more complicated
+  tools -do- a lot more in terms of search capabilities.  But
+  [indexer] has been designed with room to grow into additional
+  capabilities.  Nonetheless, even in later versions, I
+  anticipate that [indexer] will be quite easy to use in
+  comparison to other programs.
+
+
+ABOUT SEARCH ENGINES
+------------------------------------------------------------------------
+
+  What this column calls "full text indexers" is part of the
+  slightly broader category "search engines."  For most people,
+  a search engine is usually something used to locate URL's on
+  the WWW.  Indeed, the WWW is certainly the largest communal
+  document store in human history, and by its informal
+  organization is probably the set of documents most in need of
+  good search engine.  But other document collections--including,
+  notably, the files on increasingly large local harddisks--can
+  also benefit from search engines to find contents.
+  Hierarchical file systems and file-naming conventions are good,
+  but they only go so far; sometimes you just need to find a
+  document that -contains- certain information.
+
+  Half the problem for internet search engines is -locating- the
+  documents whose contents are to be indexed.  There is no
+  algorithm for enumerating every valid URL (although there are
+  many heuristics for finding a lot of them).  Fortunately,
+  indexing local documents (as [indexer] does, for now) makes
+  that step easy.  Documents all live in known and enumerable
+  locations.  While one might still want to index some directory
+  subtrees, but not others, listing of document locations can be
+  exhaustive and precise.
+
+  There are two rather different approaches one can take to a
+  local search engine.  You can perform every search on an ad hoc
+  basis against actual file contents at the moment you search, or
+  you can create some kind of database of what files contain in
+  advance (and search the database rather than the files
+  themselves).  The first approach has the advantage of always
+  being accurate, and always searching exactly where, and for
+  exactly what, you indicate.  In addition, this approach adds
+  nothing to storage requirements beyond those for the content
+  files themselves.  The -big- disadvantage of the ad hoc
+  approach is that it can be extremely slow, and use a lot of
+  computer resources if searching is a common activity.  The
+  second approach has the advantage of being -far- faster, at
+  least if implemented well.  Furthemore, in the database
+  approach, one search activity can produce summaries of the
+  searchable features of documents such that those same documents
+  never need to be accessed again for subsequent searches.  This
+  makes for -much- lower cumulative load of a CPU.  On the
+  downside, a database can potentially be out of synchronization
+  with file contents (reindexing must occur periodically), and it
+  will occupy extra space to store (how much space depends
+  greatly on the search capabilities and design choices--anywhere
+  from 1% to 100% of the size of the original documents might
+  well occur).
+
+  Some examples of the ad hoc approach are the "File Find"
+  function in Windows, the 'find' and 'grep' utilities under
+  Unix-like operating systems (and 'kfind' under KDE), the
+  'PMSeek.exe' and "Find Object" utilities under OS/2, and the
+  "Finder" under MacOS 7.  Database approaches include the "Fast
+  Find" utility of MS-Office application, the similar
+  "QuickFinder" of Corel-Office, "Sherlock" in MacOS 8+, and in a
+  very limited way, the Linux 'locate' utility.  The BeOS "Find"
+  is something of a mixture, but it is limited to attibute--not
+  full text--search.  Other operating systems have other
+  utilities.
+
+  When it comes to searching, there are many different ways of
+  specifying just what contents you are looking for.  All, or
+  nearly all, operating systems maintain some metadata on
+  documents, such as size, modified date, creation date, and file
+  type (sometimes through a "file extension" convention).
+  Usually regular file-oriented tools can search for such
+  metadata.  Below are some ways of searching actual textual
+  contents of files (for files that contain at least -some- text).
+
+    * -Regular expression- searches match for complex (or less
+      complex) patterns that might occur inside files.  These are
+      often useful for highly structured data, but usually far
+      less useful for identifying textual contents.
+
+    * -Word occurrence rates- indicate how frequently a set of
+      search words occur within a document.  The presumption here
+      is that documents that contain a greater prevalence of
+      searched terms are "better" matches for a given search.
+
+    * -Phrase- searches are simply searches that allow multi-word
+      terms.  Regular expression searches certainly include this
+      capability, but so do some simpler systems.
+
+    * -Proximity- searches look for sets of words or phrases that
+      occur "close" to one another.  How close is often a search
+      option.
+
+    * -Boolean searches- allow complex relations between
+      word/phrase occurrences.  For example "(spam AND eggs) OR
+      (ham AND cheese)" might match either parenthesized
+      conjunction without including words from the other side of
+      the disjunction.
+
+    * -Word stems- are sometimes used rather than actual words.
+      For purposes of searching, it is sometimes nice to consider
+      that "run", "runner", "running" and "runs" are related words
+      (since you might not be sure which occured in the documents
+      you want).
+
+    * -Conceptual- searches pay attention to words that are
+      similar in meaning (under the assumption that any of them
+      might have been used in documents covering similar topics).
+      This type requires integrating some sort of thesaurus into
+      the search engine.
+
+    * -Soundex- searches allow for irregular spellings,
+      particularly in English.  Rather than look for words as
+      spelled, a cannonical pronunciation is indexed for a word,
+      and search terms are cannonicalized internally.
+
+  No doubt, still other variations are possible, but these are
+  the mostly widely used capabilities.
+
+
+ABOUT [indexer]
+------------------------------------------------------------------------
+
+  The project presented, [indexer], uses a database of word
+  occurrences for its searching.  The only search capability
+  contained in the version 0.1x alpha is a search for multiple
+  words jointly occurring in a document.  However, an algorithm
+  is optionally used to rank matched documents based on the
+  prevalence of the occurrence of search words (compared to
+  document length).  There are some ways [indexer] could be
+  logically and directly extended, and other ways that would be
+  more difficult.
+
+  Boolean capability is straightfoward, and is planned.  Since
+  [indexer] stores a mapping of everywhere each word occurs (and
+  how many times per file), adding some logic to rule out or
+  include files as matches based on the various search words that
+  do and do not occur is easy enough.  In fact, the current
+  capability is essentially the same thing as defaulting to an
+  AND between every search word.  On the other hand, my own hunch
+  is that the large majority of practical searches are precisely
+  this "x AND y AND z" type search.
+
+  Regular expressions would be nearly impossible to add to
+  [indexer], and I know of no database search system that stores
+  an abstraction of possible regular expressions.  For practical
+  purposes, regular expressions need to be handled on an ad hoc
+  basis... and we have 'grep' for just this purpose.
+
+  Phrase and proximity searches are not currently performed, but
+  the mechanism to perform them would not be all that difficult
+  to add.  Basically, along with the number of occurrences of
+  each word in each file, we would have to collect a list of
+  offsets where the word occurs (per file).  From this, phrases
+  and proximity could be deduced backwards.  However, I have a
+  feeling that adding this would considerably increase database
+  size, and thereby also search time.
+
+  Conceptual, word stem, and soundex searches are also possible
+  within the current general framework, but with quite a bit of
+  work.  These might actually reduce the size of the database
+  since only cannonical forms would be stored, not variants; but
+  at the cost of requiring considerable external thesauri and
+  rule-patterns for transformations of words.
+
+
+HOW IS [indexer] PROGRAMMED?
+------------------------------------------------------------------------
+
+  I encourage readers to download the source for [indexer].  It
+  is just one file, and is extensively commented (almost to the
+  point of literate programming).  But I'd like to make a few
+  remarks on the program structure here, followed by a discussion
+  of the biggest outstanding issues for future development.
+
+  The general principle of [indexer] is simply to keep a Python
+  dictionary with words as keys, and values containing nested
+  dictionaries of fileid/occurrence pairs).  Python dictionary
+  lookups are quite fast and efficient.  A little extra work goes
+  into connecting integer fileids with the actual filenames, but
+  that is fairly minor (there are a lot more words than there are
+  files).
+
+  In its main, [indexer] contains an -abstract- class called
+  'GenericIndexer'.  The most important methods defined in
+  'GenericIndexer' are 'add_files()' and 'find()'.  They rely on
+  various other methods, but these are the main ones a user of
+  the module will call.  The 'save_index()' method might also be
+  important, depending on whether the storage mechanism requires
+  finalization (most do).
+
+  What makes 'GenericIndexer' -abstract- is that it cannot be
+  instantiated itself, only its children that fulfill certain
+  further obligations can.  The term "abstract" comes from C++,
+  where it can be part of the formal declaration of a class.  In
+  Python, no such formal declaration exists; instead, the
+  "abstract"ness of a class is simply a matter of a
+  recommendation by the class developer to its users.  That's the
+  Python way--not to enforce data hiding, member visibility,
+  inheritence requirements, and the like, but simply to follow
+  polite conventions about when these things should be done
+  (sometimes through a few naming conventions, such as initial
+  underscores).  However, 'GenericIndexer' does a pretty good job
+  of imposing its recommendation, since several of its methods
+  consist of the line 'raise NotImplementedError'.  In
+  particular, '__init__()' calls 'load_index()', which is one of
+  those "NotImplemented" methods.  There are many ways to get
+  around the limits of 'GenericIndexer', but the easiest one is
+  simply to descend from it, and implement the missing methods
+  (which is what is done).
+
+  The main job descendents of 'GenericIndexer' perform is the
+  actual *storage* of indices.  It would be possible--although
+  somewhat pointless--to create a 'NullIndexer' descendent that
+  effectively dumped every index to '/dev/null', and required new
+  indexing at the start of every search.  Partially for the fun
+  of it, and partially because of some surprising performance
+  results (see the module for benchmarks), I have created a large
+  number of instantiable child 'SomethingIndexer' classes.  If
+  you like, concrete (the opposite of abstract) classes for
+  [shelve], XML, flat-file, [cPickle] are available.  But the
+  best one for most purposes is 'ZPickleIndexer', which combines
+  [zlib] with [cPickle], and stores compressed, pickled
+  dictionaries.
+
+  As well as providing implementations for 'load_index()' and
+  'save_index()', concrete 'SomethingIndexer' classes inherit
+  from a "mixin class" 'SomethingSplitter'.  At the current time,
+  the only such 'SomethingSplitter' is 'TextSplitter', but others
+  are likely later.  A 'SomethingSplitter' provides the very
+  important 'splitter()' method, whose job is to take a text
+  string, and break it into component words.  It turns out that
+  this job is a *lot* more difficult than one might thing
+  (certainly than I thought beforehand).  A lot of subtlety goes
+  into what -is- and -is not- a word.  In ther future, besides
+  general version improvements, I expect to create descendent
+  classes like 'XMLSplitter', 'TeXSplitter', 'PDFSplitter', and
+  the like.  For now, we try to find text words in a moderately
+  naive way.
+
+  A "mixin class" is an interesting concept, and is often a good
+  design choice.  A class like 'TextSplitter' (or its future
+  descendents) might contain a bit of functionality that might be
+  useful for a number of unrelated descendents.  Like an abstract
+  class, a mixin is unlikely to be instantiated directly
+  (although this is not as much a matter of prohibition as
+  usefulness:  I do not raise 'NotImplementedError' in the
+  mixin).  But unlike an abstract class, a mixin does not try to
+  contain the framework for an instantiable child.
+  'TextSplitter.splitter()' is basically similar to a global
+  utility function (which is how it started out, before
+  refactoring), but the OOP-iness of an inherited class gives
+  somewhat better control of scoping.
+
+
+OPEN PROBLEMS IN [indexer]
+------------------------------------------------------------------------
+
+  There are a few specific issues I would like to resolve for
+  [indexer].  Ultimately, the problems boil down to peformance
+  ones.
+
+  In the current design, indexes are stored in a single database
+  that is read into memory at startup ('ShelveIndexer' actually
+  uses three 'shelve's, but the WORD one is the only one that
+  matters, sizewise).  To read in a 3-4 MB database, find word
+  matches, and produce results, takes only about 5 seconds on the
+  slower of my test machines (a 333Mhz Linux box w/ 96 MB).  That
+  is very reasonable, and still far faster than an ad hoc search
+  tool.  However, I get dramatically non-linear performance as
+  the database grows.  For a 12 MB database, the read-load-find
+  cycles jumps to well over a minute.  That is really
+  unacceptable, and is not proportional to the 4x increase in
+  database size.  It seems like some sort of cache miss effect in
+  behavior, but that does not make sense to me given the actual
+  memory of the system.
+
+  A fairly simple solution to the large database issue would be
+  to break to database into pieces.  For example, separate files
+  could be used for each initial letter of indexed words.  Since
+  most searches would be on just a few words--hitting no more
+  first letters than the number of words--only a subset of to
+  pieces would be loaded for a given search.  Even with
+  non-uniform distribution of initial letters, this makes for
+  dramatically smaller reads.  Of course, a little extra
+  processing would be needed to combine dictionaries in memory
+  after read of each sub-database; but that should be far less
+  significant than the read overhead.
+
+  An even better solution to the database-read startup cost would
+  be to avoid it altogether.  Using 'shelve' would seem to be a
+  way to do this, since it would allow disk files to be used as
+  dictionaries without requiring a unified read into memory.
+  However, on two test machines 'dumbdbm' and 'dbhash' proved to
+  be the installed 'dbm's, both of which produce *absurdly*
+  inflated database sizes (an order of magnitude worse than
+  'ZPickleIndexer' uses).  I do not like that cost, and do not
+  feel that I can count on users installing a better 'dbm' like
+  'gdbm' or 'bsddb'.
+
+  The problems with database size boil down to a more fundamental
+  problem, however.  Ideally, I would expect the word dictionary
+  to behave asymptotically as more files are indexed.  After all,
+  at a certain point, it would seem as if all the possible
+  words--or at least a majority of them--have been added.
+  Unfortunately, this ideal behavior does not seem to occur.
+
+  It turns out that it is quite difficult to identify real words,
+  and distinguish them from "gibberish."  The set of words
+  someone might very reasonably want to search for is far larger
+  than a simple English dictionary (documents are written in
+  other human languages, for one thing).  Trademarks, usernames,
+  URLs, company names, open source projects, and many other
+  sources use words that are definitely "words" in the sense
+  [indexer] wants.  But binary encodings--and especially
+  semi-binary encodings like base64 and uuencoding--also
+  produces, more-or-less by accident alphanumeric strings also.
+  The result is quite a few spurious words when mixed filetypes
+  are indexed.  A few heuristics are used by 'TextSplitter' to
+  eliminate a quite a bit of "gibberish", but an improvement to
+  this class would probably bring indexing much closer to the
+  desired asymptotic behavior.  By the way, restricting words to
+  alphabetic characters would aid things by a huge amount, but
+  there are just too many letter/number combinations that are
+  genuine ("P2P", "Win95", "4DOM", and so on) to do this.
+  Suggestions are welcomed.
+
+
+CONCLUSION
+------------------------------------------------------------------------
+
+  This column has probably only scratched the surface of either
+  the [indexer] module itself, or the broader topic of full text
+  indexing.  As the module improves with time--and especially if
+  readers/users contribute suggestions--later columns will
+  revisit the module, and more of the theory behind it.
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  To download the [indexer.py] utility/module, go to:
+
+    http://gnosis.cx/download/indexer.py
+
+  dtSearch Corporation offers a family of commercial products
+  performing sophisticated full-text searching in various
+  contexts.  Their website is:
+
+    http://www.dtsearch.com/dtdevlop.html
+
+  One other Python tool, called Ransacker, to perform indexing
+  seems to be out there, although with a somewhat different focus:
+
+    http://ransacker.sourceforge.net/
+
+  A popular and powerful full text indexing engine is ht://Dig:
+
+    http://www.htdig.org/
+
+  Perlfect Search is another versitile search engine written in
+  Perl:
+
+    http://www.perlfect.com/freescripts/search/
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  No one, David Mertz supposes, could wish this column any
+  longer.  He will by all means embark on a search for his lost
+  time.  David may be reached at mertz@gnosis.cx; his life pored
+  over at http://gnosis.cx/publish/.  Suggestions and
+  recommendations on this, past, or future, columns are welcomed.
+
+
+
+
+

@@ -1,0 +1,185 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>PRODUCT REVIEW: -- Folding Text Editor (FTE) -- </title>
+<style>
+             {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+em           {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt}
+ul, ol, li   {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+tt           {font-family: mono, courier}
+pre          {font-family: mono; font-size: 9pt}
+th           {font-family: mono, courier; font-size: 8pt}
+
+.code-sample {background-color: #CCCCCC}
+.sidebar     {background-color: #FFFFCC}
+.title       {font-size: medium; color: #3333CC}
+.subtitle    {font-size: 9pt; color: #3333CC}
+.subhead     {font-size: 12pt}
+.input       {background: #FFFFFF; color: #000000; font-weight: normal}
+</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<p><strong class="title">Product Review:</strong><br>
+<strong class="subtitle">Folding Text Editor (FTE)</strong></p>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Gnosis Software, Inc.<br>
+ June 2000<br>
+ <br>
+</p>
+<p><strong class="subhead">At A Glance</strong></p>
+ <p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>Creator:       Marko Macek &lt;Marko.Macek@gmx.net&gt;
+Price/License: Free of cost; source under either GPL or Artistic
+               License
+Home Page:     http://fte.sourceforge.com/
+Requirements:  Win32, Linux/X11, OS/2, DOS
+
+
+</pre>
+</td></tr></table></p>
+<p><strong class="subhead">What Is Fte?</strong></p>
+ <p>  FTE is a programmers' text editor with a few tricks up its
+  sleeve that you won't find in most editors.  The main thing
+  that distinguishes FTE is right in its name:  it <strong>folds</strong>.  If
+  that does not mean anything to you, keep reading and we'll give
+  you some examples and illustrations.  Other handy features FTE
+  gives you are:  state-machine based syntax highlighting; custom
+  modes for many languages (including HTML, Perl, Java, etc);
+  configurable key-bindings (with nice CUA-style defaults); a
+  number of subtle programming aids; and pretty much all the
+  miscellaneous features a programmer expects to have handy in an
+  editor.
+</p>
+<p>  Who is FTE for, exactly?  For me, the biggest "selling point"
+  for FTE was that it runs on the three platforms I use most, and
+  can share a configuration between them.  But I am fairly
+  uncommon in using OS/2 most of the time; it is a lot easier to
+  find a cross-platform editor if you use only Win32 and Linux
+  (and if you use MacOS, BeOS, or other platforms, you have some
+  porting work if you want to run FTE).  But even for
+  two-platform compatibility, FTE occupies a middle ground
+  without much else directly comparable.  FTE <strong>does</strong> a lot more
+  than most shareware/freeware editors, even compared to those
+  that target programmers.  On the other hand, FTE neither gives
+  you all the power, nor requires all the effort and commitment
+  of emacs or vi.  Most specifically, although it is quite
+  configurable, FTE does not have any builtin scripting language
+  the way emacs--or some high-end commercial editors--have.
+</p>
+<p>  On the negative side, although FTE has less arcana to it than
+  vi or emacs, it still has more than I think it should.  To
+  configure FTE, you have to mess around with text-based
+  configuration files, rather than use friendly configuration
+  screens like you would find in most commercial programmers'
+  editors.  Also, like much free software the documentation tends
+  too much towards "accurate, but not friendly."
+</p>
+<p><strong class="subhead">A <strong>folding</strong> Text Editor</strong></p>
+ <p>  If you haven't used an editor that does folding, you really
+  just do not yet understand how useful it is.  The idea behind
+  folding is that the text you are editing is often composed of
+  conceptual blocks that you want to be reminded of, but don't
+  necessarily want to have to scroll through.  For example, you
+  might want to see all the methods of a class on screen at once,
+  but not necessarily the whole implementation of each method
+  (and if you did show the implementation, it wouldn't all fit on
+  one screen).  But even more than programming code, one thing
+  that benefits <strong>hugely</strong> from folding is HTML.  Here is an
+  example, based on the FTE documentation:
+</p>
+<p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>&lt;H2&gt;SaveFolds&lt;/H2&gt;  (0:10)
+&lt;H2&gt;Colorizer&lt;/H2&gt;  [0]
+    Specifies a previously declared &lt;A
+    HREF="#colorizer"&gt;colorize&lt;/A&gt; mode to use for syntax
+    highlighting in this editing mode.
+&lt;H2&gt;Loading files in various formats&lt;/H2&gt;  (0:43)
+
+</pre>
+</td></tr></table></p>
+<p>  The first and last line here are color-highlighted within FTE
+  itself.  The parenthesis (also color-highlighted to stand out)
+  after the folded lines tell you quickly that, e.g., the
+  "SaveFolds" section has 10 lines in it, and is a top-level fold
+  (it might contain sub-folds).  It takes just a couple
+  keystrokes to fold away "Colorizer" and display the "SaveFolds"
+  body.
+</p>
+<p>  If you happen to need to look at the same file in a different
+  text editor, the folds are indicated by comments appropriate to
+  the language being used, for example:
+</p>
+<p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>&lt;H2&gt;Loading files in various formats&lt;/H2&gt; &lt;!--fold00--&gt;
+
+</pre>
+</td></tr></table></p>
+<p>  It adds a few extra characters, but doesn't interfere with the
+  actual function of the file outside of FTE.
+</p>
+<p><strong class="subhead">Making Things Easy</strong></p>
+ <p>  There are some nuggets buried in FTE that you might not even
+  notice at first.  The modes are pretty obvious.  Most of them
+  just set up syntax highlighting and indentation; but a few
+  (like HTML) add some extra menus to insert templates (the HTML
+  mode has most tags in the menu).  You can also make your own
+  modes with a little bit of work (for a Python mode, download
+  http://www.vex.net/parnassus/apyllo.py?i=55744778).  In no
+  particular order, here are some more subtle nuggets:
+</p>
+<p>  - Support of ctags (see http://home.hiwaay.net/~darren/ctags/).
+</p>
+<blockquote>    This is a way of creating automated hypertext links between,
+    for example, function calls and function definitions (even
+    across files).
+</blockquote><p>  - Highlights matching parenthesis when cursor is on a
+</p>
+<blockquote>    parenthesis (same with the various brackets and braces).
+    Really handy to help see how nested expressions line up.
+</blockquote><p>  - Hypertext list of "routines".  This is part of language
+</p>
+<blockquote>    definitions.  The idea is that you can open another screen
+    that just shows a summary of the meaningful units of your
+    text (function definitions, HTML headings, class
+    declarations, etc).  Highlight one unit and press enter to
+    jump there.  The concept is similar to folds, but operates
+    independently of what's folded.
+</blockquote><p>  - Bookmarks.  Lots of editors have this nowadays.  FTE is not
+</p>
+<blockquote>    left out on this.  They are named in FTE, rather than simply
+    numbered.
+</blockquote><p>  - Highlight all occurances of a word.  Handy, for example, to
+</p>
+<blockquote>    quickly see everywhere a call to function FooBar() is made in
+    a file.
+</blockquote><p>  - Lots of stuff you might expect:  block indenting,
+</p>
+<blockquote>    entab/detab, case changes on text block, sort lines, column
+    marking/copying, call to external programs (such as
+    compiling), regex searching, screen splitting.  A lot of this
+    stuff is expected in a good editor, and nothing obvious is
+    missing from FTE.
+</blockquote><p><strong class="subhead">Overall</strong></p>
+ <p>  FTE does a nice job at a good number of things, and is
+  especially a good choice for users who want a consistent editor
+  across platforms.  A few rough edges make FTE more work to
+  configure than it should be, but the learning curve on FTE is
+  still comparatively mild.  You can get a lot of power and
+  convenience--free of cost, and in an open-source spirit--by
+  selecting FTE as your text editor.
+</p>
+<p><strong class="subhead">About The Author</strong></p>
+ <p>  There is hardly anything David Mertz feels more strongly about
+  than text-editors.  It stands to reason after a tally of the
+  hours and minutes of his days.  You can find out copious
+  biographical details by rooting around at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>
+</p>
+</body></html>

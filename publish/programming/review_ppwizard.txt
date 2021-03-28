@@ -1,0 +1,129 @@
+PRODUCT REVIEW:
+PPWizard (HTML Preprocessor)
+
+David Mertz, Ph.D.
+Gnosis Software, Inc.
+June 2000
+
+
+AT A GLANCE
+------------------------------------------------------------------------
+
+      Creator:       Dennis Bareis <db0@anz.com>
+      Price/License: Free of cost, with a simple license statment
+                     prohibiting sale or breaking up the distribution.
+      Home Page:     http://www.labyrinth.net.au/~dbareis/ppwizard.htm
+      Requirements:  System with REXX interpreter
+
+
+WHAT IS PPWIZARD?
+------------------------------------------------------------------------
+
+  PPWizard is a text "preprocessor" written in REXX.  A special
+  emphasis is made by PPWizard to process for HTML output (lots
+  of handy HTML-related functions come with it); but strictly
+  speaking you can use PPWizard for most any output format.
+
+  A preprocessor is a great thing to use when you want to
+  generate a site worth of consistent-looking pages.  Rather than
+  having to copy-and-paste things like navigation bars,
+  site-titles, color and background definitions, with a
+  preprocessor you can give a simple name to a whole bunch of
+  HTML; and changing it in one place will change it everywhere.
+
+  What a preprocessor actually does is read a source file that
+  consists of some literal text with some directives, and create
+  output according to the directives.  In the case of PPWizard,
+  the directives can range from some predefined high-level macros
+  to your own embedded code.
+
+  PPWizard is probably the most powerful and well designed
+  preprocessor you can get.  And like so much good software, it's
+  free.  PPWizard is not a tool that completely holds your hand:
+  you need to remember some macro names and keep in mind what you
+  are doing.  But anyone who has written a little program code,
+  or even hand-coded HTML, should have no trouble with the
+  skill-level needed by PPWizard.  Quite a bit can be done with
+  PPWizard's predefined macros; and for those requiring more,
+  there is room to grow by programming directives in actual REXX
+  (it is an easy language to work with).  One can even process
+  HTML pages based on database queries, or on the results of
+  other programs you might use.
+
+  A word on REXX:  Users of IBM operating systems (plus AmigaOS)
+  will be familiar with the REXX scripting language that comes
+  with their OS.  For other developers, however, a free REXX
+  interpreter is available called 'Regina'; Regina can be found
+  at http://www.lightlink.com/hessling/Regina/index.html.
+  Precompiled binaries can be downloaded for most common
+  operating systems (even, for example, BeOS and QNX), and source
+  code is available for any others.
+
+
+PPWIZARD VERSUS SERVER-SIDE INCLUDES
+------------------------------------------------------------------------
+
+  Apache's server-side includes (SSI) are a handy tool for
+  including common-content across a number of web-pages (often
+  for site consistency).  PPWizard is much like a greatly
+  enhanced SSI mechanism.  In much the same style as SSI, a
+  PPWizard source file is a bunch of instructions about what to
+  include in a given web page.  But PPWizard goes a lot farther
+  than SSI does.  You can include content conditionally on a
+  calculation or another program step (are certain files in a
+  directory, what's the date, how does an SQL query do, etc); you
+  can write values into the file that depend on program steps,
+  rather than just another file's contents; you can generate a
+  whole site worth of files rather than just the one being
+  delivered.
+
+  The site issue draws another contrast.  PPWizard is primarily
+  useful as a batch tool for regenerating a site.  It is not
+  firstly designed for dynamic page delivery.  You might generate
+  a PPWizard site every night--as a cron job, for example--but if
+  your site content changes from minute to minute, PPWizard is
+  not really the best tool.  You *could* install PPWizard on your
+  server, and create a wrapper for generation of pages by
+  PPWizard.  That would not be hard to do, but it is also not
+  really the target usage of PPWizard:  REXX is not as fast as
+  Perl or Python (let alone C), and there is nothing like
+  mod_perl or mod_php to speed things up.  On the plus side, if
+  you have a site that is the type you only need to change
+  intermittently, batch processing with PPWizard avoids any extra
+  server load imposed by SSI or CGI-like techniques.
+
+
+PPWIZARD VERSUS SERVER-SIDE SCRIPTING
+------------------------------------------------------------------------
+
+  PPWizard is also comparable to server-side scripting tools like
+  PHP or ASP.  REXX has a similar power and expressiveness to
+  PHP, ColdFusion, or VBScript (but programmer tastes differ, of
+  course).  PPWizard source files look less like "HTML files with
+  extra bits" than they do like "Include files with bits of
+  HTML."  But that is a small difference once you are used to one
+  thing or another.  Both the pros and cons of batch versus dynamic
+  are increased when thinking of server-side scripting (vs.
+  SSI).  Scripts demand more server resources, but can also be
+  more dynamic, than SSI.  PPWizard gives you the sophisticated
+  processing of server-side scripts, but the batch mode reduces
+  the server utilization to static-page requirements.
+
+  PPWizard arguably makes it easier to create consistent site
+  features and appearance than one gets with PHP, mod_perl, ASP,
+  ColdFusion, or the like.  PPWizard templates are flexible and
+  can be nested hierarchically.  A change one place very easily
+  propogates consistently.  PPWizard's source file structure puts
+  a clear focus on the conditional and common elements of pages,
+  and the files are easy to update and maintain.  Overall,
+  PPWizard is the best tool the author has found for creating
+  consistent, mostly-static sites.
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  David Mertz dabbles in a lot of things.  Lately, he has mostly
+  done web-application development and writing articles like
+  this.  You can find out copious biographical details by rooting
+  around at http://gnosis.cx/publish/.

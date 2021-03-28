@@ -1,0 +1,254 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>XML ZONE TIP: Command-line XML Processing -- Working with XML Documents from the Shell -- </title>
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Xml Zone Tip: Command-line Xml Processing</h1>
+<h2>Working with XML Documents from the Shell</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Line commander, Gnosis Software, Inc.<br>
+ April, 2003<br>
+ <br>
+</p>
+<blockquote>
+    Most of the time, processing XML documents utilizes heavy-duty
+    APIs and custom applications. However, the tradition of using
+    small tools with I/O piped between them is a very fine one on
+    Unix-like platforms. XML need not be entirely left out of
+    quick-and-dirty processing with one-liners that is especially
+    useful during development and debugging cycles.
+</blockquote>
+<h3>Introduction</h3>
+ <p>
+  As much as I hate to say it, XML tools simply have not
+  reached the level of convenience of the text utilities
+  available at a Unix-like command-line.  For line-oriented,
+  whitespace- or comma-delimited text files, it is quite amazing
+  what you can accomplish with clever combinations of <code>sed</code>,
+  <code>grep</code>, <code>xargs</code>, <code>wc</code>, <code>cut</code>, pipes, and short shell scripts.
+</p>
+<p>
+  In my opinion, it is not that XML is inherently resistent to
+  the modular treatment flat text files enjoy.  We just need to
+  learn from experience the best ways to componentize XML tools.
+  For example, in writing this tip, I had a few realistic sample
+  tasks in mind; but what I found was that even those tools that
+  have command-line facilities have not yet learned to "play
+  nice" with each other.  Working with multiple tools is not
+  intractable, it just requires a little bit of wrapping.
+</p>
+<p>
+  A fact to note is that quite a few people have written
+  versions--in various programming languages--of similar simple
+  tools.  Each version behaves a bit differently, but they tend
+  to accomplish the same overall task.  For this tip, I look at
+  the tools <code>xml_indexer</code>, <code>xmlcat</code>, and <code>xpath</code>--the first two
+  come from my Gnosis Utilities, the last is a Perl module
+  written by Matt Sergeant (get it from CPAN).
+</p>
+<h3>Finding Words In Xml Prose</h3>
+ <p>
+  I have written previously about <code>xml_indexer</code>, which creates an
+  index of the words within XML documents by their XPath.  For
+  example, you can index then search an XML document with:
+</p>
+<div class="code-sample"><h4>Indexing and searching on XPaths</h4><pre>
+% xml_indexer chap.xml
+% indexer events were
+/Users/dqm/chap.xml::/chapter/sect1[2]/sect2[1]/para[1]
+/Users/dqm/chap.xml::/chapter/sect1[2]/sect2[4]/para[3]
+1 files matched wordlist: ['events', 'mostly']
+Processed in 0.062 seconds (SlicedZPickleIndexer)
+
+</pre></div><p>
+  These commands display the elements within the XML document
+  <code>chap.xml</code> that contain the words <code>events</code> and <code>were</code> (not
+  necessarily in order or proximity). If other XML documents were
+  added to the index, matching occurrences in them would appear
+  also.   New searches are almost instantaneous, even if multiple
+  documents are indexed, by the way.
+</p>
+<p>
+  While it tells you a little bit to know that words occur at
+  particular XPaths within particular documents, the point of a
+  search is usually to see (or further process) the actual content
+  matches. For that, you need to employ a command-line <code>xpath</code>
+  tool; I have installed Perl's XML:XPath, whose behavior I like.
+</p>
+<p>
+  You <em>can</em> cut-and-paste discovered XPaths into the tool <code>xpath</code>.
+  E.g.:
+</p>
+<div class="code-sample"><h4>Manually looking at an XPath</h4><pre>
+% xpath chap.xml '/chapter/sect1[2]/sect2[4]/para[3]'
+Found 1 nodes:
+-- NODE --
+&lt;para&gt;It is not particularly remarkable that...
+...
+&lt;/para&gt;
+
+</pre></div><p>
+  This points to a nice modularity in the tools. Moreover, if the
+  XPath passed to <code>xpath</code> had wildcards in it, it might have
+  matched more than just the one node. Unfortunately, the output of
+  <code>indexer</code> does not have quite the right form to pipe to <code>xpath</code>,
+  to automate looking at the nodes with matched words: <code>indexer</code>
+  separates the filename from the XPath with "::", and <code>xpath</code> only
+  looks at one XPath at a time. We can do better.
+</p>
+<h3>A First Little Shell Script</h3>
+ <p>
+  There might be a way to manage the above "impedence mismatch"
+  using clever combinations of <code>xargs</code>, <code>apply</code>, pipes, and the
+  like.  But I found it easier to write a short (and reusable)
+  shell script:
+</p>
+<div class="code-sample"><h4>find-xml-elements</h4><pre>
+#!/bin/sh
+for hit in `indexer $@ 2&gt; /dev/null`
+do
+  echo $hit | sed 's/::/ /' &gt; loc.tmp
+  cat loc.tmp | xargs xpath 2&gt; /dev/null
+  echo
+done
+rm loc.tmp
+
+</pre></div><p>
+  As with other well-designed command-line tools, <code>indexer</code> and
+  <code>xpath</code> send informational messages to STDERR, the actual results
+  to STDOUT. For my script, I am not interested in the STDERR
+  messages. Now I can find all the nodes in which a list of words
+  occur as easily as:
+</p>
+<div class="code-sample"><h4>Searching XML elements for words</h4><pre>
+% find-xml-elements events were
+&lt;para&gt;Lest we forget some events in a recent decade...
+...
+Salem and by HUAC.&lt;/para&gt;
+&lt;para&gt;It is not particularly remarkable that...
+...
+being uncovered.&lt;/para&gt;
+
+</pre></div><p>
+  So far, so good.  What our search outputs is a series of XML
+  snippets, where each top-level element contains the searched
+  words.  However, the result is generally not quite a
+  well-formed XML document, since it is multiply-rooted.
+</p>
+<h3>Comparing Xml Document And Extracting Text</h3>
+ <p>
+  One difficulty in analyzing XML data is that XML documents can
+  contain variations in formatting that are irrelevant to their
+  semantic content. Some whitespace is "ignorable", the order of
+  attributes is discarded during parsing, empty elements may be
+  either self-closed or have an end-tag, and entities can be
+  encoded in a few different ways. In truth, even much whitespace
+  that is non-ignorable from a parser's perspective is nonetheless
+  insignificant from an application point-of-view; "pretty"
+  newlines and indenting are useful for people, and many
+  applications (optionally) perform such stylistic formatting.
+</p>
+<p>
+  There are a rather large number of tools that have been written
+  to compare XML documents in a semantically useful way. Most of
+  them have chosen the obvious name <code>xmldiff</code>, or something close
+  to it (use Google to find versions for various programming
+  languages). Underlying such a comparison of XML documents is a
+  <em>canonicalization</em> of the layout of each document. Once
+  inflexible algorithmic decisions have been made about the exact
+  rendering of an XML document, semantically similar documents are
+  easier to compare with generic tools like <code>diff</code>.
+</p>
+<p>
+  I use a Python script I wrote called <code>xmlcat</code>. The tool is not
+  complicated--it acts much like the standard <code>cat</code> utility, but
+  canonicalizes XML documents along the way. In a chance to use my
+  favorite word, I can note that the operation of <code>xmlcat</code> is
+  idempotent. The reason I like <code>xmlcat</code> over similar tools like
+  <code>xmlpp</code> (see Resources) is that it adds an option inspired by the
+  web browser <code>lynx</code>. If you pass the <code>--dump</code> argument to
+  <code>xmlcat</code>, it outputs only the textual content of an XML document,
+  eliminating the tags (using vertical whitespace is a moderately
+  pretty way).  For data-oriented XML, this capability is of
+  little use, but for marked-up prose, it is handy.
+</p>
+<h3>A Second Shell Script For Viewing Text</h3>
+ <p>
+  If you search XML documents of prose for content words, most
+  likely you are interested in the content more than you are the
+  markup.  Filtering with <code>xmlcat --dump</code> is exactly the trick to
+  remove unwanted XML tags.  However, directly piping the output
+  of <code>find-xml-elements</code> to <code>xmlcat</code> is not quite right, since
+  the output of <code>find-xml-elements</code> is not quite an entire
+  well-formed XML documents (it is fragments, as noted).  A short
+  shell script solves the problem:
+</p>
+<div class="code-sample"><h4>find-xml-text</h4><pre>
+#!/bin/sh
+for hit in `indexer $@ 2&gt; /dev/null`
+do
+  echo $hit | sed 's/::/ /' &gt; loc.tmp
+  cat loc.tmp | xargs xpath 2&gt; /dev/null | xmlcat --dump
+  echo
+done
+rm loc.tmp
+
+</pre></div><p>
+  The output from <code>find-xml-text</code> plays nice with standard text
+  utilites.  For example, I would like to display all the
+  paragraphs that contain some search terms, but remove any left
+  indent from their lines and limit line-length:
+</p>
+<div class="code-sample"><h4>Searching XML element text for words</h4><pre>
+% find-xml-text events were | sed 's/^ *//' | fmt -w 70
+Lest we forget some events in a recent decade...
+...
+...those in Salem and by HUAC.
+
+It is not particularly remarkable...
+...
+...being uncovered.
+
+</pre></div><h3>Resources</h3>
+ <p>
+  Kip Hampton wrote a worthwhile article last year looking at
+  Perl tools for command-line XML processing:
+</p>
+<blockquote>
+   <a href="http://www.xml.com/lpt/a/2002/04/17/perl-xml.html">http://www.xml.com/lpt/a/2002/04/17/perl-xml.html</a>
+</blockquote>
+<p>
+  The Perl tools <code>xmldiff</code> (compare XML documents) and <code>xmlpp</code> (XML
+  pretty printer) can be found at:
+</p>
+<blockquote>
+   <a href="http://software.decisionsoft.com/tools.html">http://software.decisionsoft.com/tools.html</a>
+</blockquote>
+<p>
+  Gnosis Utilies includes several of the utilities discussed in
+  this article, download it from:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/download/Gnosis_Utils-current.tar.gz">http://gnosis.cx/download/Gnosis_Utils-current.tar.gz</a>
+</blockquote>
+<p>
+  <cite>XML Matters #10</cite> discusses full text indexing of XML documents
+  by XPath:
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/xml/library/x-matters10.html">http://www-106.ibm.com/developerworks/xml/library/x-matters10.html</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author"> David
+  Mertz uses a wholly unstructured brain to write about structured
+  document formats. David may be reached at mertz@gnosis.cx; his
+  life pored over at<a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a> And buy his book:
+ <a href="http://gnosis.cx/TPiP/.">http://gnosis.cx/TPiP/.</a>
+</p>
+</body></html>

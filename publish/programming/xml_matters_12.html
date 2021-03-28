@@ -1,0 +1,393 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>XML MATTERS #12: The [xml2sql] Module -- Generating SQL Statements from DTDs and XML Documents -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="xml_matters_11.html" TITLE="XML MATTERS #11">
+<link REL="next" HREF="xml_matters_13.html" TITLE="XML MATTERS #13">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<h1>Xml Matters #12: The <em><code>xml2sql</code></em> Module</h1>
+<h2>Generating SQL Statements from DTDs and XML Documents</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Format Manipulator, Gnosis Software, Inc.<br>
+ May 2001<br>
+ <br>
+</p>
+<blockquote>
+    An ealier column explored the generation of XML documents
+    from SQL queries.  The reverse direction is equally possible,
+    but with its own set of contraints and complications.  That
+    is, how might one go about translating an XML document and
+    DTD back into an RDBMS storage format.  The public domain
+    utilities <code>xml2sql</code> and <code>dtd2sql</code> discussed by the author
+    generate SQL statements to create and fill a database, in a
+    consistent and reversible fashion.
+</blockquote>
+<h3>Introduction</h3>
+ <p>
+  Some earlier columns have discussed various data models, and
+  how XML fits into the picture.  In its simplest form, my
+  earlier (and continuing) conclusion was that both XML documents
+  and RDBMS's are going to be around for a good while longer.
+  This column, and its discussed utilities, continue my efforts
+  to make data and format transitions a little bit easier for
+  developers.  By using <em><code>dtd2sql</code></em> and <em><code>xml2sql</code></em>, programmers can
+  <em>automatically</em> move the contents of XML documents into SQL
+  databases (and get the information back out later).
+</p>
+<p>
+  <strong>Caveats</strong>.  The utilities presented--here and in the
+  earlier discussion of <em><code>sql2dtd</code></em> and <em><code>sql2xml</code></em>--will, hopefully,
+  ease the work of developers looking for quick and ad hoc
+  transformations between XML and SQL.  But do not assume that
+  these utilities substitute for database analysts.  Optimization,
+  normalization, and de-normalization are complex matters
+  requiring knowledge and experience.  The tools presented
+  provide good, workable, and easily deployed solutions; but
+  these solutions are only sometimes substitutes for custom
+  development.
+</p>
+<p>
+  Moreover, <em><code>xml2sql</code></em> and <em><code>dtd2sql</code></em> work best with XML documents
+  that contain table-oriented information to start with.  They do
+  a far less good job of transforming prose-oriented and
+  linear-oriented XML documents.  The limits imposed in this
+  regard are, essentially, identical to the limits imposed by the
+  <em><code>xml_objectify</code></em> library that <em><code>xml2sql</code></em> utilizes.  However, this
+  particular focus is not really so much of a limitation:  there
+  is really no way that <em>any</em> technique--even custom
+  development--can produce a very natural representation of
+  prose- and linear-data within an RDBMS framework.  The models
+  are just different, and <em><code>xml2sql</code></em> does about as good job as one
+  can.
+</p>
+<p>
+  Finally, <em><code>xml2sql</code></em> is not likely to be particularly fast or
+  efficient, nor is it designed to be.  The emphasis with this
+  utility is with portability and generality.  Therefore, rather
+  than call any database library--whether for a specific RDBMS or
+  via a mechanism like ODBC--[xml2sql] and <em><code>dtd2sql</code></em> create
+  simple textual SQL statements.  <em><code>dtd2sql</code></em> generates a list of
+  <code>CREATE TABLE</code> statements; <em><code>xml2sql</code></em> generates a list of
+  <code>INSERT INTO</code> statements.  It's up to the user or programmer to
+  feed these statements into an actual RDBMS.  But a beauty of
+  the arrangement is that these statements can be fed into any
+  vendor's RDBMS equally well.
+</p>
+<h3>Dirty Hands</h3>
+ <p>
+  The modules <em><code>xml2sql</code></em> and <em><code>dtd2sql</code></em> are probably best
+  introduced with their practical usage.  We'll circle back to
+  some theoretical issues in their design.
+</p>
+<p>
+  For purposes of testing, I created a simple testing script.
+  For development purposes, I used the popular open-source RDBMS
+  <code>mySQL</code>.  While <code>mySQL</code> as some limitations compared to more
+  sophisticated RDBMS's, it is a nice test platform.  The sample
+  DTD and XML document belong to an IBM tutorial I wrote (see
+  Resources for the collection).  My script is an OS/2 command
+  file, but it should work the same under Windows, and with only
+  slight modification under a Unix-like system:
+</p>
+<div class="code-sample"><h4>Test script for transferring XML to SQL</h4><pre>
+echo drop database test;       &gt; test.sql
+echo create database test;    &gt;&gt; test.sql
+echo use test;                &gt;&gt; test.sql
+python dtd2sql.py dwtut.dtd   &gt;&gt; test.sql
+python xml2sql.py haskell.xml &gt;&gt; test.sql
+mysql -u root -pPASSWORD test  &lt; test.sql
+
+</pre></div><p>
+  The first few lines simply wipe out and restore the <code>test</code>
+  database in <code>mySQL</code>.  In real-life, you would rarely want to
+  <code>drop</code> an existing database, but merely <code>INSERT</code> and <code>DELETE</code>
+  from tables.  But one likes to start fresh when testing.
+</p>
+<p>
+  When <em><code>dtd2sql</code></em> is run, it takes a DTD on either STDIN or from
+  the filename given on the command-line.  This DTD can be the
+  internal subset of an XML document, if you wish; or it can be
+  an external file.  However, the tool is limited to reading from
+  a single source at a time, and will not currently handle
+  complex multi-file DTD's, parametric entities, or an internal
+  subset that partially overrides and external definition.  As
+  mentioned, <em><code>dtd2sql</code></em> simply produces a set of <code>CREATE TABLE</code>
+  statements.
+</p>
+<p>
+  Let's look at one output line from <em><code>dtd2sql</code></em>, and pick apart
+  its pieces (some wrapping added for presentation):
+</p>
+<div class="code-sample"><h4>Sample CREATE TABLE statement from [dtd2sql]</h4><pre>
+CREATE TABLE a (
+    primary_key BIGINT UNSIGNED PRIMARY KEY,
+    seq INT UNSIGNED,
+    href BLOB,
+    PCDATA BLOB,
+    _XML BLOB,
+    foreign_key_p BIGINT UNSIGNED,
+    foreign_key_li BIGINT UNSIGNED,
+    foreign_key_prompt BIGINT UNSIGNED,
+    foreign_key_response BIGINT UNSIGNED
+);
+
+</pre></div><p>
+  Some of the column names are easily explained by the definition
+  of the <code>a</code> element itself; for others we need to look a little
+  deeper.
+</p>
+<div class="code-sample"><h4>DTD entry for &lt;a&gt; XML element</h4><pre>
+&lt;!--A hyperlink to some other resource.--&gt;
+&lt;!ELEMENT a (#PCDATA | code)* &gt;
+&lt;!ATTLIST a href CDATA #REQUIRED  &gt;
+
+</pre></div><p>
+  The <code>primary_key</code> column is created in every table.  So is the
+  <code>seq</code> column, although this latter is not always used for
+  anything meaningful.  The <code>href</code> column comes straight from the
+  identically named XML tag attribute.  And the <code>PCDATA</code> and
+  <code>_XML</code> columns are places to hold the actual element contents
+  (either with or without any embedded character-level markup).
+</p>
+<p>
+  The most interesting thing in the <code>CREATE TABLE</code> statement
+  shown is the several <code>foreign_key_*</code> columns.  Let's consider
+  those.
+</p>
+<h3>Creating Relations</h3>
+ <p>
+  According to the relational model, different tables are
+  connected to each other via a primary key/foreign key identity.
+  A JOIN in SQL is simply a way of saying that a field in one
+  table must correspond to another field in a different table.  A
+  <em>primary key</em> is a special thing in the relational model:  it
+  must be unique to each record (row) of a table.  Most of the
+  time, a database analyst will look at the deep structure of the
+  data, and figure out--in consultation with application
+  programmers and end users--what the best candidates are to
+  serve as primary keys.  These keys can be a concatenation of
+  multiple columns, and often identifiers like social-security
+  numbers, employee IDs, ISBNs, or part IDs are used in these
+  roles.
+</p>
+<p>
+  Obviously enough, <em><code>dtd2sql</code></em> cannot do all the background
+  research that a database analyst does.  All it has is a DTD (or
+  maybe, potentially an XML document).  On that basis, there is
+  no real way of determining which attributes or element contents
+  will be unique (if any).  Fortunately, <em><code>dtd2sql</code></em> can take the
+  road of some commercial RDBMS's, and simply eshew "natural"
+  primary keys.  Instead, we are able to choose wholly artificial
+  primary keys--ones that isolate the uniqueness requirement,
+  while refusing any data representation role.  I would argue
+  that such a pattern actually achieves better orthogonality in
+  database design than does the more common strategy of
+  identifying suitable "real world" data.  And the approach has
+  the additional advantage of giving every table's primary key
+  an identical and predictable name and format.
+</p>
+<p>
+  The primary keys used are random 18-digit integers.  Assuming
+  Python's <em><code>random</code></em> module is pretty good, the risk of collision
+  is pretty small.  However, no strict guarantee of non-collision
+  is created in the code (maybe in a later version).  So far, so
+  good.
+</p>
+<p>
+  The next step is making these primary keys usable for purposes
+  of SQL JOINs. To do that, we need to make sure that when an XML
+  element can contain a subelement, the subelement contains a
+  foreign key corresponding to the parent's primary key.
+  Admittedly, the most parsimonious manner of achieving the above
+  goal is to create a single <code>foreign_key</code> column for every
+  non-root XML element.  In that case, the SQL user who queried
+  the resultant database would need to <em>know</em> what JOINs would
+  produce results (say by reading the original DTD).
+</p>
+<p>
+  Throwing away parsimony, I opted for explicitness.  I create a
+  separate <code>foreign_key_*</code> column for every element that <em>might</em>
+  be a parent of the XML element a table corresponds to.  So in
+  the above <code>CREATE TABLE</code> example, <em><code>dtd2sql</code></em> identified these
+  DTD element definitions:
+</p>
+<div class="code-sample"><h4>Elements that might be parents of &lt;a&gt;</h4><pre>
+&lt;!ELEMENT p        (#PCDATA | code | img | br | i | b | a)* &gt;
+&lt;!ELEMENT li       (#PCDATA | code | img | br | i | b | a)* &gt;
+&lt;!ELEMENT prompt   (#PCDATA | code | img | br | i | b | a)* &gt;
+&lt;!ELEMENT response (#PCDATA | code | img | br | i | b | a)* &gt;
+
+</pre></div><p>
+  An advantage of the explicit approach of <em><code>dtd2sql</code></em> is that the
+  table structures created inherently contain a large part of the
+  information in the DTD (but not all of it, since quantifiers
+  are not differentiated thereby).
+</p>
+<h3>Walking The Winding Roads</h3>
+ <p>
+  Putting data into the tables created by <em><code>dtd2sql</code></em> is the job of
+  <em><code>xml2sql</code></em>.  Well, technically neither tool actually puts any
+  data anywhere, but just specifies what the data is.  You need
+  to use the tools that come with your RDBMS to actually load the
+  data.
+</p>
+<p>
+  The truth is that <em><code>xml2sql</code></em> does remarkably little.  It has
+  less than 50 lines of code at its heart (the <code>walkNodes()</code>
+  function).  And even those few lines are well documented and
+  make no effort to achieve conciseness through programming
+  tricks.  Of course, most of what <em><code>xml2sql</code></em> does is actually
+  done by <em><code>xml_objectify</code></em>.  The first step for <em><code>xml2sql</code></em> is to
+  create a "Pythonic" object using <em><code>xml_objectify</code></em>.  After that,
+  it is simple to recurse through all the nested attributes,
+  outputting "INSERT INTO" SQL statements as it goes.  Users of
+  an older version of <em><code>xml_objectify</code></em>, however, will need to grab
+  the latest one because of a slight change in the way XML
+  element names are "mangled" along the way.
+</p>
+<p>
+  Once you run <em><code>xml2sql</code></em> you get a bunch of SQL statments in
+  return.  This collection of statments can be redirected and
+  piped according to normal STDOUT behavior, which makes
+  combining <em><code>xml2sql</code></em> with RDBMS command-line tools
+  straightforward.  If you want to use <em><code>xml2sql</code></em> as a support
+  module, you can get the set of SQL statements as a Python list
+  (which might be handy for use with some database module).  A
+  typical produced statement looks like (wrapped for
+  presentation):
+</p>
+<div class="code-sample"><h4></h4><pre>INSERT INTO p
+       (primary_key, seq, foreign_key_text__column, PCDATA)
+VALUES (15447926390024014, 0, 527610371062647168,
+        "Navigating through the tutorial is easy:");
+
+</pre></div><p>
+  As described above, we can see from the form of this "INSERT
+  INTO" that a table had been created to correspond with the
+  <code>&lt;p&gt;</code> element in our DTD.  Actually, the element is only really
+  known to occur in the XML document; validation of the XML
+  document against the DTD is a job that needs to be handled
+  outside of these modules.  But assuming the XML document is
+  valid, the right tables and column were created by <em><code>dtd2sql</code></em>.
+</p>
+<p>
+  We can also see in the "INSERT INTO" that this particular <code>&lt;p&gt;</code>
+  tag is nested inside a <code>&lt;text-column&gt;</code> element (some name
+  mangling is needed to get valid SQL column names).  To wit,
+  that element that has the primary key <code>527610371062647168</code>.  It
+  turns out also that this <code>&lt;p&gt;</code> element has some PCDATA
+  contents; and that it has <code>seq</code> column value of zero.  The
+  meaning of that list bit is that this <code>&lt;p&gt;</code> element is all
+  alone within its container; had multiple <code>&lt;p&gt;</code> elements occured
+  in the same <code>&lt;text-column&gt;</code> they would be sequenced, beginning
+  with one.
+</p>
+<h3>Putting It Together</h3>
+ <p>
+  Once we have a bunch of data inside an RDBMS, we usually want
+  to get it back out in structured and useful ways.  Fortunately,
+  with a basic understanding of the primary key and foreign key
+  strategy employed, you can find anything you want.  In fact, in
+  many ways, the flexibility you have at this point is <em>better</em>
+  than you would have had with an XPATH query syntax.  Let's look
+  at an example:
+</p>
+<div class="code-sample"><h4>Selecting data from the RDBMS</h4><pre>
+SELECT "Paragraph", p.seq, p._XML
+  FROM title,panel,body,text__column TC,p
+ WHERE title.foreign_key_panel = panel.primary_key
+   AND body.foreign_key_panel = panel.primary_key
+   AND TC.foreign_key_body = body.primary_key
+   AND p.foreign_key_text__column = TC.primary_key
+   AND title.PCDATA="About Haskell"
+ ORDER BY p.seq
+;
+
+</pre></div><p>
+  A word or two of explanation is worthwhile.  The JOINs are all
+  of the same form:  a <code>foreign_key_X</code> field is JOIN'ed with the
+  <code>primary_key</code> of some table <code>X</code>.  Once all the joins are in
+  place, you can add a more substantative condition, along with
+  ORDER'ing, GROUP'ing, and the like.  In this case we want to
+  look at all the paragraphs (<code>&lt;p&gt;</code> elements) of the <code>&lt;panel&gt;</code>
+  whose <code>&lt;title&gt;</code> is "About Haskell."  The result looks something
+  like the below:
+</p>
+<div class="code-sample"><h4>SQL query against XML tutorial</h4><pre>
+C:\mysql2\bin&gt;mysql -u root -pgnosis test &lt; haskell.sql
+Paragraph  seq  _XML
+Paragraph  1    Haskell is just one of a number of functional programming...
+Paragraph  2    Among functional languages, Haskell is in many ways the...
+Paragraph  3    On a minor note, Haskell is syntactically easier to get...
+
+
+</pre></div><h3>Conclusion</h3>
+ <p>
+  This column has illustrated the command-line usage of <em><code>dtd2sql</code></em>
+  and <em><code>xml2sql</code></em>.  For quick testing and ad hoc shell usage, this
+  is probably the approach you will want to use.  However, as
+  with most things in Python, it is very simple to reuse the
+  modules within your own code.  The self-test code (the
+  command-line usage) provides a straightforward template for any
+  importing module to follow.  I look forward to hearing about
+  the wonderful uses readers manage to put these modules to--as
+  they have done for so many others.
+</p>
+<h3>Resources</h3>
+ <p>
+  The modules discussed in this article may be downloaded from:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/download/dtd2sql.py">http://gnosis.cx/download/dtd2sql.py</a>
+</blockquote>
+<p>
+  and:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/download/xml2sql.py">http://gnosis.cx/download/xml2sql.py</a>
+</blockquote>
+<p>
+  An archive of the supporting and data files used in this
+  article can be found at:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/download/xml_matters_12.zip">http://gnosis.cx/download/xml_matters_12.zip</a>
+</blockquote>
+<p>
+  The support module <em><code>xml_objectify</code></em> can be found at:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/download/xml_objectify.py">http://gnosis.cx/download/xml_objectify.py</a>
+</blockquote>
+<p>
+  In general, the Gnosis Software download directory contains a
+  variety of software I have produced, mostly for IBM
+  developerWorks columns and articles.  Often various versions of
+  a particular software module are available in the directory,
+  both the latest-and-greatest and earlier ones.  Take a look at:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/download/">http://gnosis.cx/download/</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz believes that without data, life itself would be
+  impossible... well, OK, at least the internet would get less
+  hype.  David may be reached at mertz@gnosis.cx; his life pored
+  over at<a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and
+  recommendations on this, past, or future, columns are welcomed.
+</p>
+</body></html>

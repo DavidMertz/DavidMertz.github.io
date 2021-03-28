@@ -1,0 +1,466 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Metaclass Programming in Python: -- Pushing Object Oriented Programming to the Next Level -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="metaclass_0.html" TITLE="Metaclass Programming in Python: #0">
+<link REL="next" HREF="metaclass_2.html" TITLE="Metaclass Programming in Python: #2">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Metaclass Programming In Python:</h1>
+<h2>Pushing Object Oriented Programming to the Next Level</h2>
+ <br>
+<p>David Mertz, Ph.D., Gnosis Software<br>
+ Michele Simionato, Ph.D., University of Pittsburgh<br>
+ December 2002<br>
+ <br>
+</p>
+<blockquote>
+    Most readers are already familiar with the concepts of
+    object-oriented programming:  inheritance, encapsulation,
+    polymorphism.  But the <em>creation</em> of objects of a given
+    class, with certain parents, is usually thought of as a "just
+    so" operation.  It turns out that a number of new programming
+    constructs become either easier, or possible at all, when you
+    can customize the process of object creation.  Metaclasses
+    enable certain types of "aspect oriented programming," e.g.
+    allow you to enhance classes with features like tracing
+    capabilities, object persistence, exception logging, and
+    more.
+</blockquote>
+<h3>An Object Oriented Programming Review</h3>
+ <p>
+  Let us start with a 30-second review of just what OOP is.  In
+  an object oriented programming language, you can define
+  <em>classes</em>, whose purpose is to bundle together related data and
+  behaviors.  These classes can inherit some or all of their
+  qualities from their <em>parents</em>, but they can also define
+  attributes (data) or methods (behaviors) of their own.  At the
+  end of the process, generally classes act as templates for the
+  creation of <em>instances</em> (also called simply <em>objects</em>, at
+  times).  Different instances of the same class will typically
+  have different data, but it will come in the same shape--e.g.
+  the <code>Employee</code> objects <code>bob</code> and <code>jane</code> both have a <code>.salary</code>
+  and a <code>.room_number</code>, but not the same room and salary as each
+  other.
+</p>
+<p>
+  Some OOP languages, including Python, allow for objects to be
+  <em>introspective</em> (also called <em>reflective</em>).  That is, an
+  instrospective object is able to describe itself:  What class
+  does the instance belong to?  What ancestors does that class
+  have?  What methods and attributes are available to the object?
+  Introspection lets a function or method that handles objects
+  make decisions based on what kind of object it is passed.  Even
+  without introspection, functions frequently branch based on
+  instance data--e.g. the route to <code>jane.room_number</code> differs
+  from that to <code>bob.room_number</code> because they are in different
+  rooms.  With introspection, you can also safely calculate the
+  bonus <code>jane</code> gets, while skipping the calculation for <code>bob'<em></em>
+  say, because 'jane</code> has a <code>.profit_share</code> attribute, or because
+  <code>bob</code> is an instance of the subclass <code>Hourly(Employee)</code>.
+</p>
+<h3>A Metaprogramming Rejoinder</h3>
+ <p>
+  The basic OOP system sketched above is quite powerful.  But
+  there is one element brushed over in the description.  In
+  Python (and other languages), classes are themselves objects
+  that can be passed around and introspected.  Since objects, as
+  stated, are produced using classes as templates, what acts as a
+  template for producing classes?  The answer, of course, is
+  <em>metaclasses</em>.
+</p>
+<p>
+  Python has always had metaclasses.  But the machinery involved
+  in metaclasses became much better exposed with Python 2.2.
+  Specifically, with version 2.2, Python stopped being a language
+  with just one special (mostly hidden) metaclass that created
+  every class object.  Now programmers can subclass the
+  aboriginal metaclass <code>type</code> and even dynamically generate
+  classes with varying metaclasses.  Of course, just because you
+  <em>can</em> manipulate metaclasses in Python 2.2, that does not
+  explain why you might want to.
+</p>
+<p>
+  You do not need to use custom metaclasses to manipulate the
+  production of classes, moreover.  A slightly less brain-melting
+  concept is a <em>class factory</em>.  An ordinary function can return
+  a class that was dynamically created within the function body.
+  In traditional Python syntax, you can write:
+</p>
+<div class="code-sample"><h4>Old fasioned Python 1.5.2 class factory</h4><PRE>Python 1.5.2 (<FONT COLOR=#1111CC>#0, Jun 27 1999, 11:23:01) [...]</FONT>
+Copyright 1991-1995 Stichting Mathematisch Centrum, Amsterdam
+&gt;&gt;&gt; <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="class_with_method"><FONT COLOR=#CC0000><B> class_with_method</B></FONT></A>(func):
+...     <FONT COLOR=#3333CC><B>class</B></FONT><A NAME="klass"><FONT COLOR=#CC0000><B> klass</B></FONT></A>: <FONT COLOR=#3333CC><B>pass</B></FONT>
+...     setattr(klass, func.__name__, func)
+...     <FONT COLOR=#3333CC><B>return</B></FONT> klass
+...
+&gt;&gt;&gt; <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="say_foo"><FONT COLOR=#CC0000><B> say_foo</B></FONT></A>(self): <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>'foo'</FONT>
+...
+&gt;&gt;&gt; Foo = class_with_method(say_foo)
+&gt;&gt;&gt; foo = Foo()
+&gt;&gt;&gt; foo.say_foo()
+foo</PRE></div><p>
+  The factory function <code>class_with_method()</code> dynamically creates
+  and returns a class that contains the method/function passed
+  into the factory.  The class itself is manipulated within the
+  function body before being returned.  The <em><code>new</code></em> module provides
+  a more concise spelling, but without the same options for
+  custom code within the body of the class factory, e.g.:
+</p>
+<div class="code-sample"><h4>Class factory in the [new] module (python)</h4><PRE>&gt;&gt;&gt; <FONT COLOR=#3333CC><B>from</B></FONT> new <FONT COLOR=#3333CC><B>import</B></FONT> classobj
+&gt;&gt;&gt; Foo2 = classobj(<FONT COLOR=#115511>'Foo2'</FONT>,(Foo,),{<FONT COLOR=#115511>'bar'</FONT>:<FONT COLOR=#3333CC><B>lambda</B></FONT> self:<FONT COLOR=#115511>'bar'</FONT>})
+&gt;&gt;&gt; Foo2().bar()
+<FONT COLOR=#115511>'bar'</FONT>
+&gt;&gt;&gt; Foo2().say_foo()
+foo</PRE></div><p>
+  In all these cases, the behaviors of the class (<code>Foo</code>, <code>Foo2</code>)
+  are not directly written as code, but are instead created by
+  calling functions at runtime, with dynamic arguments.  And it
+  should be emphasized that it is not merely the <em>instances</em> that
+  are so dynamically created, but the <em>classes</em> themselves.
+</p>
+<h3>Metaclasses: A Solution Looking For A Problem?</h3>
+ <blockquote>
+    <em><code>Metaclasses</code></em> are deeper magic than 99% of users should ever
+    worry about.  If you wonder whether you need them, you don't
+    (the people who actually need them know with certainty that
+    they need them, and don't need an explanation about why).
+    --Tim Peters
+</blockquote>
+<p>
+  Methods (i.e. of classes), like plain functions, can return
+  objects.  So in that sense it is obvious that class factories
+  can be classes just as easily as they can be functions.  In
+  particular, Python 2.2+ provides a special class called <code>type</code>
+  that is just such a class factory.  Of course, readers will
+  recognize <code>type()</code> as a less ambitious built-in function of
+  older Python versions--fortunately, the behaviors of the old
+  <code>type()</code> function are maintained by the <code>type</code> class (i.e.
+  <code>type(obj)</code> returns the type/class of the object <code>obj</code>).  The
+  new <code>type</code> class works as a class factory in just the same way
+  that the function <code>new.classobj</code> long has:
+</p>
+<div class="code-sample"><h4>'type' as class factory metaclass (python)</h4><PRE>&gt;&gt;&gt; X = type(<FONT COLOR=#115511>'X'</FONT>,(),{<FONT COLOR=#115511>'foo'</FONT>:<FONT COLOR=#3333CC><B>lambda</B></FONT> self:<FONT COLOR=#115511>'foo'</FONT>})
+&gt;&gt;&gt; X, X().foo()
+(&lt;<FONT COLOR=#3333CC><B>class</B></FONT> <FONT COLOR=#115511>'__main__.X'</FONT>&gt;, <FONT COLOR=#115511>'foo'</FONT>)</PRE></div><p>
+  But since <code>type</code> is now a (meta)class, you are free to subclass
+  it:
+</p>
+<div class="code-sample"><h4>'type' descendent as class factory (python)</h4><PRE>&gt;&gt;&gt; <FONT COLOR=#3333CC><B>class</B></FONT><A NAME="ChattyType"><FONT COLOR=#CC0000><B> ChattyType</B></FONT></A>(type):
+...     <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="__new__"><FONT COLOR=#CC0000><B> __new__</B></FONT></A>(cls, name, bases, dct):
+...         <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"Allocating memory for class"</FONT>, name
+...         <FONT COLOR=#3333CC><B>return</B></FONT> type.__new__(cls, name, bases, dct)
+...     <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="__init__"><FONT COLOR=#CC0000><B> __init__</B></FONT></A>(cls, name, bases, dct):
+...         <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"Init'ing (configuring) class"</FONT>, name
+...         super(ChattyType, cls).__init__(name, bases, dct)
+...
+&gt;&gt;&gt; X = ChattyType(<FONT COLOR=#115511>'X'</FONT>,(),{<FONT COLOR=#115511>'foo'</FONT>:<FONT COLOR=#3333CC><B>lambda</B></FONT> self:<FONT COLOR=#115511>'foo'</FONT>})
+Allocating memory <FONT COLOR=#3333CC><B>for</B></FONT> <FONT COLOR=#3333CC><B>class</B></FONT><A NAME="X"><FONT COLOR=#CC0000><B> X</B></FONT></A>
+Init'ing (configuring) <FONT COLOR=#3333CC><B>class</B></FONT><A NAME="X"><FONT COLOR=#CC0000><B> X</B></FONT></A>
+&gt;&gt;&gt; X, X().foo()
+(&lt;<FONT COLOR=#3333CC><B>class</B></FONT> <FONT COLOR=#115511>'__main__.X'</FONT>&gt;, <FONT COLOR=#115511>'foo'</FONT>)</PRE></div><p>
+  The magic methods <code>.__new__()</code> and <code>.__init__()</code> are special,
+  but in conceptually the same way they are for any other class.
+  The <code>.__init__()</code> method lets you configure the created object,
+  the <code>.__new__()</code> method lets you customize its allocation.  The
+  latter, of course, is not widely used, but exists for every
+  Python 2.2 new-style class (usually inherited but not
+  overridden).
+</p>
+<p>
+  There is one feature of <code>type</code> descendents to be careful about;
+  it catches everyone who first plays with metaclasses.  The
+  first argument to methods is conventionally called <code>cls</code> rather
+  than <code>self</code>, because the methods operate on the <em>produced</em>
+  class, not the metaclass.  Actually, there is nothing special
+  about this, all methods attach to their instances, and the
+  instance of a metaclass is a class.  A non-special name makes
+  this more obvious:
+</p>
+<div class="code-sample"><h4>Attaching class methods to produced classes (python)</h4><PRE>&gt;&gt;&gt; <FONT COLOR=#3333CC><B>class</B></FONT><A NAME="Printable"><FONT COLOR=#CC0000><B> Printable</B></FONT></A>(type):
+...     <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="whoami"><FONT COLOR=#CC0000><B> whoami</B></FONT></A>(cls): <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"I am a"</FONT>, cls.__name__
+...
+&gt;&gt;&gt; Foo = Printable(<FONT COLOR=#115511>'Foo'</FONT>,(),{})
+&gt;&gt;&gt; Foo.whoami()
+I am a Foo
+&gt;&gt;&gt; Printable.whoami()
+Traceback (most recent call last):
+TypeError:  unbound method whoami() [...]</PRE></div><p>
+  All this surpisingly non-remarkable machinery comes with some
+  syntax sugar that both makes working with metaclasses easier,
+  and confuses new users.  There are several elements to the
+  extra syntax.  The resolution order of these new variations is
+  tricky though.  Classes can inherit metaclasses from their
+  ancestors--notice that this is <strong>not</strong> the same thing as <em>having</em>
+  metaclasses as ancestors (another common confusion).  For
+  old-style classes, defining a global <code><cite>_metaclass_</cite></code> variable
+  can force a custom metaclass to be used.  But most of the time,
+  and the safest approach, is to set a <code><cite>_metaclass_</cite></code> class
+  attribute for a class that wants to be created via a custom
+  metaclass.  You must set the variable in the class definition
+  itself since the metaclass is not used is the attribute is set
+  later (after the class object has already been created).  E.g.:
+</p>
+<div class="code-sample"><h4>Setting metaclass with class attribute (python)</h4><PRE>&gt;&gt;&gt; <FONT COLOR=#3333CC><B>class</B></FONT><A NAME="Bar"><FONT COLOR=#CC0000><B> Bar</B></FONT></A>:
+...     __metaclass__ = Printable
+...     <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="foomethod"><FONT COLOR=#CC0000><B> foomethod</B></FONT></A>(self): <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>'foo'</FONT>
+...
+&gt;&gt;&gt; Bar.whoami()
+I am a Bar
+&gt;&gt;&gt; Bar().foomethod()
+foo</PRE></div><h3>Solving Problems With Magic (i)</h3>
+ <p>
+  So far, we have seen the basics of metaclasses.  But putting
+  metaclasses to work is more subtle.  The challenge with
+  utilizing metaclasses is that in typical OOP design, classes do
+  not really <em>do</em> much.  The inheritence structure of classes is
+  useful to encapsulate and package data and methods, but it is
+  typically instances that one works with in the concrete.
+</p>
+<p>
+  There are two general categories of programming tasks where we
+  think metaclasses are genuinely valuable.
+</p>
+<p>
+  The first, and probably more common category is where you do
+  not know at design time <em>exactly</em> what a class needs to do.
+  Obviously, you will have some idea about it, but some
+  particular detail might depend on information that is not
+  available until later.  "Later" itself can be of two sorts:
+  (a) When a library module is used by an application; (b) At
+  runtime when some situation exists.  This category is close to
+  what is often called "Aspect Oriented Programming" (AOP).  Let
+  us show what we think is an elegant example:
+</p>
+<div class="code-sample"><h4>Metaclass configuration at runtime (python)</h4><PRE>% cat dump.py
+<FONT COLOR=#1111CC>#!/usr/bin/python</FONT>
+<FONT COLOR=#3333CC><B>import</B></FONT> sys
+<FONT COLOR=#3333CC><B>if</B></FONT> len(sys.argv) &gt; 2:
+    module, metaklass  = sys.argv[1:3]
+    m = __import__(module, globals(), locals(), [metaklass])
+    __metaclass__ = getattr(m, metaklass)
+
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="Data"><FONT COLOR=#CC0000><B> Data</B></FONT></A>:
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="__init__"><FONT COLOR=#CC0000><B> __init__</B></FONT></A>(self):
+        self.num = 38
+        self.lst = [<FONT COLOR=#115511>'a'</FONT>,<FONT COLOR=#115511>'b'</FONT>,<FONT COLOR=#115511>'c'</FONT>]
+        self.str = <FONT COLOR=#115511>'spam'</FONT>
+    dumps   = <FONT COLOR=#3333CC><B>lambda</B></FONT> self: `self`
+    __str__ = <FONT COLOR=#3333CC><B>lambda</B></FONT> self: self.dumps()
+
+data = Data()
+<FONT COLOR=#3333CC><B>print</B></FONT> data
+
+% dump.py
+&lt;__main__.Data instance at 1686a0&gt;</PRE></div><p>
+  As you would expect, this application prints out a rather
+  generic description of the <code>data</code> object (a conventional
+  instance object).  But if <em>runtime</em> arguments are passed to the
+  application, we can get a rather different result:
+</p>
+<div class="code-sample"><h4>Adding external serialization metaclass (python)</h4><PRE>% dump.py gnosis.magic MetaXMLPickler
+&lt;?xml version=<FONT COLOR=#115511>"1.0"</FONT>?&gt;
+&lt;!DOCTYPE PyObject SYSTEM <FONT COLOR=#115511>"PyObjects.dtd"</FONT>&gt;
+&lt;PyObject module=<FONT COLOR=#115511>"__main__"</FONT> <FONT COLOR=#3333CC><B>class</B></FONT>=<FONT COLOR=#115511>"Data"</FONT> id=<FONT COLOR=#115511>"720748"</FONT>&gt;
+&lt;attr name=<FONT COLOR=#115511>"lst"</FONT> type=<FONT COLOR=#115511>"list"</FONT> id=<FONT COLOR=#115511>"980012"</FONT> &gt;
+  &lt;item type=<FONT COLOR=#115511>"string"</FONT> value=<FONT COLOR=#115511>"a"</FONT> /&gt;
+  &lt;item type=<FONT COLOR=#115511>"string"</FONT> value=<FONT COLOR=#115511>"b"</FONT> /&gt;
+  &lt;item type=<FONT COLOR=#115511>"string"</FONT> value=<FONT COLOR=#115511>"c"</FONT> /&gt;
+&lt;/attr&gt;
+&lt;attr name=<FONT COLOR=#115511>"num"</FONT> type=<FONT COLOR=#115511>"numeric"</FONT> value=<FONT COLOR=#115511>"38"</FONT> /&gt;
+&lt;attr name=<FONT COLOR=#115511>"str"</FONT> type=<FONT COLOR=#115511>"string"</FONT> value=<FONT COLOR=#115511>"spam"</FONT> /&gt;
+&lt;/PyObject&gt;</PRE></div><p>
+  The particular example uses the serialization style of
+  <em><code>gnosis.xml.pickle</code></em>, but the most current <em><code>gnosis.magic</code></em>
+  package also contains metaclass serializers <code>MetaYamlDump</code>,
+  <code>MetaPyPickler</code>, <code>MetaPrettyPrint</code>.  Moreover, a user of the
+  <code>dump.py</code> "application" can impose the use of any "MetaPickler"
+  she wishes, from any Python package that defines one.  Writing
+  an appropriate metaclass for this purpose will look something
+  like:
+</p>
+<div class="code-sample"><h4>Adding an attribute with a metaclass (python)</h4><PRE><FONT COLOR=#3333CC><B>class</B></FONT><A NAME="MetaPickler"><FONT COLOR=#CC0000><B> MetaPickler</B></FONT></A>(type):
+    <FONT COLOR=#115511>"Metaclass for gnosis.xml.pickle serialization"</FONT>
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="__init__"><FONT COLOR=#CC0000><B> __init__</B></FONT></A>(cls, name, bases, dict):
+        <FONT COLOR=#3333CC><B>from</B></FONT> gnosis.xml.pickle <FONT COLOR=#3333CC><B>import</B></FONT> dumps
+        super(MetaPickler, cls).__init__(name, bases, dict)
+        setattr(cls, <FONT COLOR=#115511>'dumps'</FONT>, dumps)</PRE></div><p>
+  The remarkable achievement of this arrangement is that the
+  application programmer need have no knowledge about what
+  serialization will be used--nor even whether serialization or
+  some other cross-sectional capability will be added <strong>at the
+  command-line</strong>.
+</p>
+<p>
+  Perhaps the most common use of metaclasses is similar to that
+  of MetaPicklers:  adding, deleting, renaming, or substituting
+  methods for those defined in the produced class.  In our
+  example a "native" <code>Data.dump()</code> method is replaced by a
+  different one from outside the application, at the time the
+  class <code>Data</code> is created (and therefore in every subsequent
+  instance).
+</p>
+<h3>Solving Problems With Magic (ii)</h3>
+ <p>
+  There is a programming niche where classes are often more
+  important than instances.  In a recent <cite>Charming Python</cite>, David
+  looked at "declarative mini-languages," which are Python
+  libraries whose program logic is expressed directly in class
+  declarations.  In such cases, using metaclasses to affect the
+  process of class creation can be quite powerful.
+</p>
+<p>
+  One class-based declarative framework is <em><code>gnosis.xml.validity</code></em>.
+  Under this framework, you declare a number of "validity
+  classes" that express a set of constraints about valid XML
+  documents.  These declarations are very close to those
+  contained in DTDs. For example, a "dissertation" document can
+  be configured with the code:
+</p>
+<div class="code-sample"><h4>'simple_diss.py' gnosis.xml.validity rules</h4><PRE><FONT COLOR=#3333CC><B>from</B></FONT> gnosis.xml.validity <FONT COLOR=#3333CC><B>import</B></FONT> *
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="figure"><FONT COLOR=#CC0000><B> figure</B></FONT></A>(EMPTY):      <FONT COLOR=#3333CC><B>pass</B></FONT>
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="_mixedpara"><FONT COLOR=#CC0000><B> _mixedpara</B></FONT></A>(Or):     _disjoins = (PCDATA, figure)
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="paragraph"><FONT COLOR=#CC0000><B> paragraph</B></FONT></A>(Some):    _type = _mixedpara
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="title"><FONT COLOR=#CC0000><B> title</B></FONT></A>(PCDATA):      <FONT COLOR=#3333CC><B>pass</B></FONT>
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="_paras"><FONT COLOR=#CC0000><B> _paras</B></FONT></A>(Some):       _type = paragraph
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="chapter"><FONT COLOR=#CC0000><B> chapter</B></FONT></A>(Seq):       _order = (title, _paras)
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="dissertation"><FONT COLOR=#CC0000><B> dissertation</B></FONT></A>(Some): _type = chapter</PRE></div><p>
+  If you try to instantiate the <code>dissertation</code> class without the
+  right component subelements, a descriptive exception is raised;
+  likewise for each of the subelements.  The proper subelements
+  will be generated from simpler arguments when there is only
+  one, unambiguous, way of "lifting" the arguments to the correct
+  types.
+</p>
+<p>
+  Even though validity classes are often (informally) based on a
+  pre-existing DTD, instances of these classes print themselves
+  as unadorned XML document fragments, e.g.:
+</p>
+<div class="code-sample"><h4>Basic validity classes document creation</h4><pre>
+&gt;&gt;&gt; from simple_diss import *
+&gt;&gt;&gt; ch = LiftSeq(chapter, ('It Starts','When it began'))
+&gt;&gt;&gt; print ch
+&lt;chapter&gt;&lt;title&gt;It Starts&lt;/title&gt;
+&lt;paragraph&gt;When it began&lt;/paragraph&gt;
+&lt;/chapter&gt;
+
+</pre></div><p>
+  By using a metaclass to create the validity classes, we can
+  generate a DTD out of the class declarations themselves (and
+  add an extra method to the classes while we do it).
+</p>
+<div class="code-sample"><h4>Imposing metaclass during module import (python)</h4><PRE>&gt;&gt;&gt; <FONT COLOR=#3333CC><B>from</B></FONT> gnosis.magic <FONT COLOR=#3333CC><B>import</B></FONT> DTDGenerator, \
+...                          import_with_metaclass, \
+...                          from_import
+&gt;&gt;&gt; d = import_with_metaclass(<FONT COLOR=#115511>'simple_diss'</FONT>,DTDGenerator)
+&gt;&gt;&gt; from_import(d,<FONT COLOR=#115511>'**'</FONT>)
+&gt;&gt;&gt; ch = LiftSeq(chapter, (<FONT COLOR=#115511>'It Starts'</FONT>,<FONT COLOR=#115511>'When it began'</FONT>))
+&gt;&gt;&gt; <FONT COLOR=#3333CC><B>print</B></FONT> ch.with_internal_subset()
+&lt;?xml version=<FONT COLOR=#115511>'1.0'</FONT>?&gt;
+&lt;!DOCTYPE chapter [
+&lt;!ELEMENT figure EMPTY&gt;
+&lt;!ELEMENT dissertation (chapter)+&gt;
+&lt;!ELEMENT chapter (title,paragraph+)&gt;
+&lt;!ELEMENT title (<FONT COLOR=#1111CC>#PCDATA)&gt;</FONT>
+&lt;!ELEMENT paragraph ((<FONT COLOR=#1111CC>#PCDATA|figure))+&gt;</FONT>
+]&gt;
+&lt;chapter&gt;&lt;title&gt;It Starts&lt;/title&gt;
+&lt;paragraph&gt;When it began&lt;/paragraph&gt;
+&lt;/chapter&gt;</PRE></div><p>
+  The package <em><code>gnosis.xml.validity</code></em> knows nothing about DTDs and
+  internal subsets.  Those concepts and capabilities are
+  introduced entirely by the metaclass <code>DTDGenerator</code>, without
+  <em>any</em> change made to either <em><code>gnosis.xml.validity</code></em> or
+  <code>simple_diss.py</code>.  <code>DTDGenerator</code> does not substitute its own
+  <code>.__str__()</code> method into classes it produces--you can still
+  print the unadorned XML fragment--but it a metaclass could
+  easily modify such magic methods.
+</p>
+<h3>Meta Conveniences</h3>
+ <p>
+  The package <em><code>gnosis.magic</code></em> contains several utilities for working
+  with metaclasses, as well as some sample metaclasses you can
+  use in aspect oriented programming.  The most important of
+  these utilities is <code>import_with_metaclass()</code>.  This function,
+  utilized in the above example, lets you import a 3rd party
+  module, but create all the module classes using a custom
+  metaclass rather than <code>type</code>.  Whatever new capability you
+  might want to impose on that 3rd party module can be defined in
+  a metaclass that you create (or get from somewhere else
+  altogether).  <em><code>gnosis.magic</code></em> contains some pluggable
+  serialization metaclasses; some other package might contain
+  tracing capabilities, or object persistence, or exception
+  logging, or something else.
+</p>
+<p>
+  The <code>import_with_metclass()</code> function illustrates several
+  qualities of metaclass programming:
+</p>
+<div class="code-sample"><h4>import_with_metaclass() from [gnosis.magic] (python)</h4><PRE><FONT COLOR=#3333CC><B>def</B></FONT><A NAME="import_with_metaclass"><FONT COLOR=#CC0000><B> import_with_metaclass</B></FONT></A>(modname, metaklass):
+    <FONT COLOR=#115511>"Module importer substituting custom metaclass"</FONT>
+    <FONT COLOR=#3333CC><B>class</B></FONT><A NAME="Meta"><FONT COLOR=#CC0000><B> Meta</B></FONT></A>(object): __metaclass__ = metaklass
+    dct = {<FONT COLOR=#115511>'__module__'</FONT>:modname}
+    mod = __import__(modname)
+    <FONT COLOR=#3333CC><B>for</B></FONT> key, val <FONT COLOR=#3333CC><B>in</B></FONT> mod.__dict__.items():
+        <FONT COLOR=#3333CC><B>if</B></FONT> inspect.isclass(val):
+            setattr(mod, key, type(key,(val,Meta),dct))
+    <FONT COLOR=#3333CC><B>return</B></FONT> mod</PRE></div><p>
+  One notable style in this function is that an ordinary class
+  <code>Meta</code> is produced using the specified metaclass.  But once
+  <code>Meta</code> is added as an ancestor, its descendent is also produced
+  using the custom metaclass.  In principle, a class like <code>Meta</code>
+  could carry with it <em>both</em> a metaclass producer <em>and</em> a set of
+  inheritable methods--the two aspects of its bequest are
+  orthogonal.
+</p>
+<h3>Resources</h3>
+ <p>
+  A useful book on metaclasses is:
+</p>
+<blockquote>
+    <cite>Putting Metaclasses to Work</cite> by Ira R. Forman, Scott Danforth,
+    Addison-Wesley 1999
+</blockquote>
+<p>
+  For metaclasses in Python specifically, Guido van Rossum's
+  essay, <cite>Unifying types and classes in Python 2.2</cite> is useful:
+</p>
+<blockquote>
+   <a href="http://www.python.org/2.2/descrintro.html">http://www.python.org/2.2/descrintro.html</a>
+</blockquote>
+<p>
+  David Mertz' <cite>Charming Python</cite> installment on declarative
+  mini-languages can be found at:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/publish/programming/charming_python_b11.txt">http://gnosis.cx/publish/programming/charming_python_b11.txt</a>
+</blockquote>
+<h3>About The Authors</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author 1">
+  David Mertz thought his brain would melt when he wrote about
+  continuations or semi-coroutines, but he put the gooey mess
+  back in his skull cavity and moved on to metaclasses.  David
+  may be reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.  His forthcoming
+  book <cite>Text Processing in Python</cite> has a webpage at
+ <a href="http://gnosis.cx/TPiP/.">http://gnosis.cx/TPiP/.</a>
+</p>
+<p>
+  <img src="http://gnosis.cx/general_images/m-simionato.png" alt="Pic of Author 2">
+  Michele Simionato is a plain, ordinary, theoretical physicist
+  who was driven to Python by a quantum fluctuation that could
+  well have passed without consequences, had he not met David
+  Mertz.  He will let his readers judge the final outcome.
+</p>
+</body></html>

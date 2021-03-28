@@ -1,0 +1,214 @@
+To prepare for a certification test, candidates are provided with a
+job role description to which a ( or a number of) certification tests
+are built , any prerequisite knowledge and skills one needs to possess
+before considering the certification, the test objectives (or tasks
+performed on the defined "job", or the skills measured on the test
+based on the parameters of the "job role" def'n ), and educational
+resources list that candidates use to prepare for a test based on the
+"test objectives" and, a pre-assessment/sample test, whose questions,
+in relation to content and difficulty, need to correlate back to the
+"test objectives".  All of these items, which tightly need to correlate
+to one another, are developed during the "test dev't session".
+
+The process begins by identifying the job role (in essence, the target
+audience) and the required prerequisite skills and knowledge.
+
+ 1. job role/target audience description - provides a generic
+    job role description that any candidate can identify with.
+    If an individual does not perform the job 100% of the time,
+    they may perform it part of the time as a result of their
+    day to day responsibilities.  This job role description is
+    purposely defined with specific parameters in order to hone
+    in on the intended measurable objectives.
+
+ 2. prerequisite knowledge & skills - knowledge & skills one
+    needs to possess before pursuing the particular test or
+    certification in question Note:  How to attain this
+    knowledge and skill is not part of our "recommended
+    educational resources" list.
+
+Once these two items are identified, the test blueprinting begins.
+
+ 1.3 test blueprint - contains the tasks one performs on the job
+     as defined in the job role description.  These tasks are
+     divided into meaningful categories (or dimensions of the job
+     role) and become the various sections of the test.  Each
+     task is weighted.  If a task is considered more important
+     and performed more frequently, the weighting will be greater
+     and, therefore, more test questions will be written to these
+     type of tasks.
+
+The task weighting then rolls up to the section weighting, giving
+some sections, greater prominence on the test than others.  The
+section weighting will be used to provide diagnostic feedback to
+a test taker informing them how they did on each section of the
+test.  For each task is also identified the skill level required
+to perform the task.  This information is used by test writers to
+write test questions at the appropriate skill level.  A
+comprehensive type question will not do when the task calls for
+application or analysis type skills.  This task listing, grouped
+into sections, with section heading, (but without the task or
+section weighting and performance skill level) are posted on the
+certification web site as the "test objectives".  The test
+question writers then write questions to each task at the
+required skill level ... in essence, at the same difficulty
+level.  For a true pre-assessment/sample test, it is recommended
+that the number of questions be the same as in the actual test
+... all questions per task testing similar skills but via
+different test questions.  There should be no repeats ... no
+question on the actual test as on the sample test.
+
+So to begin, the question writers of this Linux Sample test, will
+need to obtain the actual test blueprint before beginning to
+write the pre-assessment/sample test questions.
+
+(See attached file: Cert Perform. Levels.lwp)
+
+ 1.4 recommended educational resources list - contains a
+     step-by-step approach to prepare for a test based on the
+     "test objectives".  Whenever possible, the intent is to
+     develop both a Self-Study Approach for candidates who do not
+     want to miss time out of territory and study better on their
+     own, and a Tutor Approach which is a mix of self-study and
+     standup classroom courses for candidates to learn better by
+     way of being taught.  Great care is taken to ensure that
+     each approach covers all of the "test objectives" and the
+     recommended educational resources within are available ww.
+
+To write this Linux pre-assessment/sample test, here's some more
+info.  (Pls ignore the duplicate content ... felt it couldn't
+hurt repeating some of it.)
+
+ 1.5 pre-assessment/sample test - the pre-assessment/sample test
+     is built during the actual test dev't session, ensuring
+     tight correlation to the job role description, test
+     objectives, the actual test questions and recommended
+     educational resources.  The WebSphere pre-assessment/sample
+     tests contain the same number of questions as on the actual
+     tests, are written so each test question contains the same
+     difficulty as the questions on the actual test, have the
+     same section and task/objective weighting as the actual
+     tests, are delivered through a web-based assessment tool,
+     with diagnostic feedback provided on the Examination Score
+     Report that mimics the feedback provided to actual test
+     takers, and correlates back to the test objectives
+     (informing the test taker how he/she did on each section of
+     the test pre-assessment/sample test.)
+
+To be able to write these Linux sample test questions, to ensure
+no repeats to the actual test, the question writers, in addition
+to the test blueprinte will need to get a copy of the actual test
+(which may include more than one test form).
+
+Fyi, for reference, the pre-assessments/sample tests which are
+free-of-charge to test takers and easily accessible via ICE at
+http://certify.torolab.ibm.com.
+
+For the web-based assessment tool, ICE, the Linux
+pre-assessment/sample test need to be delivered in the Prometric
+format, a sample of which is attached.  Pls note, content in
+black is the format and content in blue is what the test question
+writers enter.  The completed sample test can delivered all in
+black ink.  ICE can accomodate accompanying exhibits, either one
+or more per questions.  The exhibits can be a combination of text
+exhibits or graphics.  If graphics are used, pls deliver the in
+gif files.
+
+(See attached file:  ICE Format for Sample Test 04_15_02.rtf)
+
+When delivering the pre-assessment/sample for ICE, pls do by
+following the example below.  Pls send me your sample tests with
+the equivalent details in your specifications.  When you send the
+sample test files, pls be aware that it takes at minimum 4
+business days before the sample can be live on ICE.
+
+Pre-Assessment/Sample Test for Test 158, IBM WebSphere
+Application Server, Advanced Single Server Edition for
+Multiplatforms, V4.0 ...  WebSphere based
+
+..Specifications
+
+Attached is file 158 SAMPLE 04_02_02 containing 53 questions, divided
+into 8 sections.  The section headings and the number of questions per
+section are as follows:
+
+ 1 Design and build reusable enterprise components ... has 15 %
+    weighting on the test and contains 8 questions; for each test
+    taken, all 8 questions need to be pulled from the question
+    pool
+
+ 2 Design and build web components for JavaServer Pages (JSPs)
+   and Servlets including IBM WebSphere specific features ... has
+   19 % weighting on the test and contains 10 questions; for each
+   test taken, all 10 questions need to be pulled from the
+   question pool
+
+ 3 Develop clients that access the enterprise components ... has
+   8 % weighting on the test and contains 4 questions; for each
+   test taken, all 4 questions need to be pulled from the
+   question pool
+
+ 4 Demonstrate understanding of database connectivity and
+   connection pooling within IBM WebSphere Application Server ...
+   has 4% weighting on the test and contains 2 questions; for
+   each test taken, both questions need to be pulled from the
+   question pool
+
+ 5 Handle EJB transaction issues ... has 11% weighting on the
+   test and contains 6 questions; for each test taken, all 6
+   questions need to be pulled from the question pool
+
+ 6 Develop J2EE components with IBM WebSphere Studio Application
+   Developer for Windows, V4.0.3 ... has 15% weighting on the
+   test and contains 8 questions; for each test taken, all 8
+   questions need to be pulled from the question pool
+
+ 7 Assemble enterprise applications and deploy them in IBM
+   WebSphere Application Server ... has 13% weighting on the test
+   and contains 7 questions; for each test taken, all 7 questions
+   need to be pulled from the question pool
+
+ 8 Use IBM WebSphere tools to validate aspects of the application
+   server, such as security, performance, connection pools, and
+   session management ... has 15% weighting on the test and
+   contains 8 questions; for each test taken, all 8 questions
+   need to be pulled from the question pool
+
+Please note:
+
+ a) The objective for each test taken, is for ICE to pull per
+    test, at random, all 53 questions from the question pool.
+
+ b) ICE is to pull in all options per question and advise the
+    test taker how many options make up the correct answer.
+
+ c) The Examination Score Report needs to show 1. the required
+    passing score of 63% out the overall achievable score out of
+    100%.  Hence, a person will need to get 33 questions correct
+    to earn a 63% passing score.  2. each section heading, the
+    percentage weighting (or percentage of the section) as
+    provided above, and per section, the test taker's achieved
+    percentage score out of 100% .  Pls present in 3 columns with
+    the heading (and section #) of Section, % of Test and Your
+    Score.
+
+ d) On the screen where all the pre-assessment/sample tests are
+    listed, Test 158 needs to be listed in numeric sequence.
+
+ e) The duration for this pre-assessment/sample test is 90 min.
+
+Believe that covers it .  If you need anything else, pls let me
+know.  ..  Oh, one final thing, once the test is complete and
+before its loaded onto ICE, I would strongly recommend that you
+review it to ensure all is as required.  If need be, my staff can
+make the necessary corrections within a day.  To this end, in
+order to load this Linux sample test onto ICE for developerWorks
+Live!, I propose we work to the following schedule:
+
+Apr. 29 - Duffy/Kim send sample test in Prometric format with
+          specifications to Helene (& cc Alex Xu)
+May 1 - Duffy/Kim review sample test on ICE driver before it goes live
+        and inform Alex Xu of any required corrections
+May 2 - Alex makes any final corrections/modifications
+May 3 - Linux sample is live
+

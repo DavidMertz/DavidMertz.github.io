@@ -1,0 +1,9 @@
+<!DOCTYPE addressbook SYSTEM "addressbook.dtd" >
+<?xml version="1.0" ?>
+<root attr1="foo
+
+bar">
+foo
+
+bar
+</root>

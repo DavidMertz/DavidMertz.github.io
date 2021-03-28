@@ -1,0 +1,145 @@
+PRODUCT REVIEW:
+PerlBuilder 2.0
+
+David Mertz, Ph.D.
+Gnosis Software, Inc.
+October 2000
+
+AT A GLANCE
+------------------------------------------------------------------------
+
+    Creator: Solutionsoft <info@solutionsoft.com>
+    Price/License: Commercial ($149 Standard, $249 Professional)
+    Home Page: http://www.solutionsoft.com/index.html
+    Requirements: Win32 or Linux (Professional only)
+
+
+BACKGROUND
+------------------------------------------------------------------------
+
+  OK, I have a confession to start this review.  Perl confuses
+  me.  Sure, I have written a script here and there to perform a
+  bit of text processing, and modified a few others.  But I am
+  far from being one of those Perl wizards who know just what
+  each funny symbol means in each unusual context.  Therefore, I
+  was quite excited by the advertised capabilities of Perl
+  Builder:
+
+    Whether you are a programmer or an HTML author/Website
+    designer without a programming background, Perl Builder 2.0
+    Standard makes it fast and easy to create and test scripts.
+
+    Perl Builder's powerful CGI Wizard lets you design
+    form-handling scripts visually. You can create scripts to
+    handle any HTML form, validate user input, save user data to
+    a file on your website, send multiple automatic emails, and
+    then display personalized HTML output to the user--all
+    without writing code!
+
+
+WHAT IS PERL BUILDER?
+------------------------------------------------------------------------
+
+  Here's the lowdown:  Perl Builder is a good IDE for working
+  with Perl projects--in fact, it is a *very* good IDE.  But
+  don't count on doing any realistic CGI projects without writing
+  mostly your own code.  A lot of products have floated claims of
+  "codeless" application development "wizards" or "assistants."
+  None of them lives up to promises, so it is no shock that Perl
+  Builder doesn't do this either.
+
+  Solutionsoft gave its marketers a bit too much rope; that was
+  a mistake, sure.  But Solutionsoft also let its developers
+  create a quite excellent Perl development environment; so any
+  sins are more than compensated.
+
+  Rather than focus on drag-and-drop everything, and endless
+  toolbars and widgets for every task (as some IDE's do), Perl
+  Builder chooses to create a good code editor accompanied by a
+  collection of all the most useful tools for running, testing,
+  timing, debugging, and understanding code.  In my opinion, this
+  is the right way to go.  The one limitation to Solutionsoft's
+  approach is that Perl Builder is not really of particular
+  facility in developing GUI applications; there is no widget
+  pallet or properties lists (how many Perl programmers really
+  use OOP anyway?).  But what Perl Builder sells itself on is its
+  ability to aid a developer of CGI's and batch scripts.  For
+  that, it is ideal.
+
+  The basic interface to Perl Builder is a multi-tabbed text
+  editor with a couple of special tabs for web-browser-like input
+  and output (and for simulation of standard output or piped
+  output). The text editor part is quite good (but obviously
+  specific to Perl-related files for many features).  You get
+  what you would expect in a programmers' text editor:  syntax
+  highlighting, bookmarks, indent/outdent of blocks, regular
+  expression search and replace (it *is* Perl, after all);
+  automation of commenting.  Per its IDE function, you get a nice
+  dialog called "Subroutine Navigator." You don't get folding
+  (which the free PythonWin has in about the same niche), which
+  might be nice. You also do not get text-document features like
+  wordwrap and reformatting options; but then, you don't need
+  those to edit Perl code.  One thing you *do* get is an
+  amazingly powerful editor macro language (no prize awarded for
+  guessing what it is).
+
+  Beyond the editor itself Perl Builder has the extra features
+  you want in an IDE.  You can set breakpoints in your code, and
+  variable watches, and timers.  It is easy to both debug and
+  profile your code in this manner.  With breakpoints, you get
+  the usual options about stepping through code and running to
+  other breakpoints.  Watches can include any variable you want,
+  but a quick watchlist of standard variables is available in
+  another dialog.  The dialogs associated with the various code
+  analysis functions are usually always-on-top windows that let
+  you see what is going on even as you are running or editing
+  code in the main frame.  Perl Builder does not use dockable
+  panes for these functions in the style of many MS applications
+  (the feel is similar to many XWindow interfaces, even though
+  Perl Builder's first home is MS-Windows).
+
+  The way that Perl Builder "simulates" a CGI is really quite
+  helpful.  You can enter input in a browser-like tabbed-pane,
+  and find the HTML output in another pane (with a button to
+  view it in an actual web browser).  For working with
+  command-line applications, the "Interactive I/O" floating
+  dialog is equally convenient.  Between these two simulations,
+  you can stay within Perl Builder for almost all of your
+  development cycle (one always wants to test the final thing in
+  the actual production environment, of course).  That makes for
+  a nice advantage over a plain text editor.
+
+  One thing I really like about Perl Builder is its help system.
+  Integrated into Perl Builder are both WinHelp versions of a
+  Perl function reference, a nice "pod Viewer", and links to a
+  variety of online (or locally mirrored) help documents.  When
+  viewing CPAN's standard Perl documentation, Perl Builder wraps
+  the help in a navigation frame, which works nicely.
+
+
+IS IT WORTH IT?
+------------------------------------------------------------------------
+
+  The final question about Perl Builder might be the toughest.
+  Perl is free as in both beer and speech.  A lot of Perl
+  developers probably have sentiments toward the latter sort of
+  freedom especially.  Perl Builder is nicely done, but in a way
+  doesn't do *all that much* more than some good free text
+  editors.  Is it worth giving up both a couple hundred dollars
+  and access to the IDE's source to use Perl Builder?  I guess my
+  answers is "probably" -- I am not particularly poor, but am
+  quite ideological.  So Perl Builder might be a mixed-bag for
+  me.  But in the end, using Perl Builder doesn't do anything to
+  restrict the source code I develop using it, and it is quite
+  likely to save me a fair number of hours of work in the
+  meantime (should I ever become less confused by Perl).
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  If David Mertz were more paraleiptically inclined, he might
+  deny his subliminal endorsement of another P--- language.  You
+  can reach him at mertz@gnosis.cx, and find copious biographical
+  details by rooting around at http://gnosis.cx/publish/.
+

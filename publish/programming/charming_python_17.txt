@@ -1,0 +1,349 @@
+CHARMING PYTHON #17 (20010156)
+Review of Python IDEs
+
+David Mertz, Ph.D.
+Accidental Ideologue, Gnosis Software, Inc.
+March, 2001
+
+    David looks at a half-dozen Python integrated development
+    environments, and compares features, platforms, and stability
+    across them.  He finds--perhaps as an unintended testament to
+    the open source model--that the free products seem to stack
+    up much better than the commercial ones.
+
+
+WHAT IS PYTHON?
+------------------------------------------------------------------------
+
+  Python is a freely available, very-high-level, interpreted
+  language developed by Guido van Rossum.  It combines a clear
+  syntax with powerful (but optional) object-oriented semantics.
+  Python is available for almost every computer platform you
+  might find yourself working on, and has strong portability
+  between platforms.
+
+
+THE RAW AND THE COOKED
+------------------------------------------------------------------------
+
+  I have had the opportunity in the last couple weeks to take a
+  fresh look--or a first look--at a number of Python development
+  environments.  While it will probably take a lot to sway me
+  from a tried-and-true "favorite text editor, plus command-line"
+  approach to Python development, interest in more comprehensive
+  integrated development environments (IDEs) for Python is
+  evident on Python discussion sites.
+
+  My overall impression of Python IDEs leads me to a somewhat
+  surprising conclusion.  Perhaps some general principle
+  underlays this, or perhaps it is merely chance.  In general, I
+  find the free tools quite a bit better than the commercial ones
+  that cost money.
+
+  Before I begin some reviews of actual IDEs, I should note a
+  couple tools I did -not- have an opportunity to look at, but
+  that readers might want to check out.  In my defense, there is
+  probably quite enough covered in this summary for readers (and
+  myself) to digest at once.
+
+  PythonWorks Pro 1.1, from PythonWare looks promising.  It
+  includes a [Tkinter] form designer, a modern editor, a
+  debugger, and sleek looking screenshots.  It is available for
+  Linux, Windows, and Solaris.  PythonWorks Pro is also a fairly
+  pricely $400 product.  Unfortunately, I did not obtain a review
+  copy of the final version in time for review.
+
+  Boa Constructor is a rather impressive looking open source
+  Python IDE, that includes a form designer for wxWindows.  It
+  also appears to have a decent editor, debugger, project
+  manager, and some other components.  Boa Constructor runs on
+  Win32 and X11 (with wxWindows for the appropriate platform
+  required).  Unfortunately, its home page bills its development
+  status as "pre-alpha"; as pretty as the screenshots are, I
+  felt it would be hard to recommend something in such an
+  apparently early stage of development.
+
+  Of course, the final class of tools not reviewed here are the
+  dozens of excellent text editors out there that include varying
+  Python-friendly features, such as syntax highlighting,
+  execution windows, code-folding, macros, and many other
+  features that even the best IDEs lack.  This is not the place
+  to try to cover those, but there is a lot to be said for your
+  favorite, and familiar, text editor.
+
+
+DRAWING A BASELINE
+------------------------------------------------------------------------
+
+  There are a number of more-or-less standard free tools
+  available for developing Python code.  In general, these tools
+  are stable, consistent, and well-established.  On the other
+  hand, the standard free tools are not necessarily all that
+  flashy.
+
+  *Idle* is a fairly basic IDE written in pure Python, using
+  [Tkinter].  Idle is part of all the standard Python
+  distributions, and is even written by Guido van Rossum himself
+  (at least originally, and in large part).  You should be able
+  to run Idle anywhere you can run Python and 'TK'.  Idle starts
+  out as an enhanced interactive shell window (with a bit better
+  cut-and-paste, scrollback, etc. than the basic interactive
+  prompt).  Add to that a Python-aware editor (no code-folding,
+  but nice syntax highlighting and code-completion),
+  class-browser, and debugger.  The menus are TK "tear-off"
+  style; that is, clicking on the dashed line at the top of any
+  pull-down menu will promote that menu to its own persistent
+  window.  The "Edit" menu in particular is nice if kept "docked"
+  at the side of your desktop.  Idle's debugger provides,
+  breakpoints, stepping and variable watches; but nothing so
+  fancy as poking at memory locations and variable contents, or
+  performing timings and other analyses.  Of course, usually my
+  own debugging style is some scattered 'print' statements, but
+  your mileage may vary.
+
+  A few glitches jump out in Idle--at least as of 0.6.  At least
+  on my Win95r2 machine (where I have been playing with it),
+  pop-up templates have an annoying habit of staying on screen
+  and blocking what you are trying to type.  Probably more
+  important is that it is really easy to freeze up Idle by
+  running an errant script.  For example, the code 'while 1:
+  x=1' winds up requiring a forced-close of Idle itself, not just
+  of that script's execution.  Obviously, one prefers not to
+  write such code in the first place, but even the plain-old
+  Python interactive session lets you kill it with a Ctrl-C (and
+  the session with it, admittedly).
+
+  *PythonWin* is, in most respects, a few steps better than Idle.
+  Of course, as the name suggests, this tool is only for Win32
+  users.  The easiest way to get PythonWin is probably to
+  download the ActivePython 2.0 distribution, which is quite
+  slick in itself (I installed build 203 for this column).
+  ActiveState's Python includes a good collection of extra
+  modules, with some selectable as extra downloads during the
+  installation, such as [NumPy] and [PIL].  In particular, one
+  extra is PythonWin (Idle is also there), and the useful
+  PythonCOM extensions for Windows scripting.  ActiveState makes
+  non-Windows distributions also, but some components will not be
+  relevant outside windows.
+
+  PythonWin is extremely comfortable to work with (as much as one
+  can be comfortable on Windows).  It has a nice editor, with
+  code-folding, syntax highligting, and code-completion.
+  PythonWin does not include any sort of form designer, as some
+  IDEs do; but it has an excellent debugger with watches, code
+  inspection, an interactive debug window, breakpoints, and
+  everything you would expect in a debugger.  For the most part,
+  PythonWin is stable, although once in a while some erratic
+  freezeups have occurred while working with it on a Win95r2
+  machine.  In appearance, PythonWin is fairly simple, but
+  attractive, and makes nice use of paned and dockable elements
+  (which I somewhat prefer to the Idle style of "many windows
+  everywhere" which is shared by some other IDEs).  PythonWin also
+  integrates with ActiveState's HtmlHelp version of Python
+  documentation, and with PythonCOM.
+
+  *MacPython IDE* is similar to PythonWin, modulo the platform
+  difference.  Like Idle and PythonWin, MacPython IDE comes with
+  its platform's standard distribution, and is free software
+  (written by Just van Rossum).  The first thing I recommend
+  doing after installing MacPython is grabbing the Advanced
+  Editor Patch (see Resources).  Applying the patch was flakey in
+  my attempt, but worked on the third try (I don't quite know
+  what the problem was at first); with the patch you get syntax
+  highlighting and some context-sensitive function/module help
+  functions.  Besides being standard, MacPython IDE is the only
+  IDE I know of for working with Python on the Mac. Fortunately,
+  Just van Rossum has created something that is both very
+  Pythonic and very Mac-like.
+
+  With MacPython IDE you get a Python command window (which is
+  more of a step for Macs, which have no command-line of their
+  own), an editor, a debugger, and even a profiler.  Within the
+  environment, you also have a function jump list, a module
+  browser, and a few miscellaneous tools.  The debugger is good,
+  but has no watches.  The editor is a bit crude "out of the
+  box", but the patch mentioned adds syntax highlighting; but
+  there is still no code-folding or code-completion (you do get
+  contextual function docstrings with the patch).  Building in a
+  profiler is something most of the IDEs do not include, so
+  MacPython stands out here.
+
+
+A FEW SECONDS OF LONGITUDE
+------------------------------------------------------------------------
+
+  Under the "free but not standard" category, I had a chance to
+  look at *Komodo*.  Komodo seems to have a fair amount of "buzz"
+  around it, but it is still in beta, so it is not certain how it
+  will pan out.  Komodo is a mutli-language, multi-platform IDE
+  from ActiveState.  In an interesting decision--that may or may
+  not amount to much--Komodo is based on the Mozilla framework.
+  At first brush, it would seem that a web-browser would not
+  necessarily have that much code that is useful for an IDE, but
+  ActiveState seems to have put it to good use (Mozilla is trying
+  to be a "platform" rather than just a browser, it is true).
+
+  The Beta 1.3 I looked at supports development of Python, Perl,
+  TCL, Javascript, and XML, with syntax highlighting of another
+  dozen languages thrown in (but not much more language-wise
+  yet).  The Python support is currently the strongest.  There is
+  a beta available currently for Win32 and Linux, but other
+  platforms might follow.
+
+  The best way to think of Komodo, in my opinion, is as a
+  superset of PythonWin. It does not share most of the same
+  codebase, as far as I know, but it has a very similar feel to
+  work with.  Because of the Mozilla heritage, Komodo is the
+  slickest -looking- product in my roundup; but for the same
+  reason it is also the slowest.  I would not recommend trying
+  Komodo on an older machine--it is usable on the 366Mhz Win95r2
+  machine I tested it on, but not speedy.  The debugger and
+  editor look and feel similar to PythonWin; but you can edit a
+  lot of extra languages, and debug Perl, as well as Python.
+  Plus you can run Komodo on Linux.  One quite clever and unique
+  Komodo feature is a "code check" feature that works like spell
+  checkers in recent wordprocessors:  problem code is marked with
+  a squiggly underline as you type; you can keep typing, but it
+  is a good reminder to go back to fix the problem before you are
+  done.  Komodo does -not- attempt to build in any sort of form
+  designer or graphical programming, but other than that it seems
+  quite well-rounded for a beta.
+
+
+CROSSING THE DATE LINE
+------------------------------------------------------------------------
+
+  Now let us look at ways to spend money on Python IDEs. One
+  imagines that commercial products would offer something extra
+  to merit their money cost.  In some respects they do; but
+  unfortunately, I found neither the $100 *WingIDE* nor the $80
+  *BlackAdder* (but $400 for redistribution of components)
+  sufficiently stable to recommend using them for live
+  development.  Nominal feautures are not worth much if you
+  cannot practically use the IDE.  Hopefully, both products will
+  improve with versions and patches.
+
+  *BlackAdder* is a QT-based development environment for Linux
+  and Windows.  Of the products covered in this column, it is the
+  only one with a form designer, and its form designer is itself
+  quite nicely done (for [PyQT] programming).  Like Delphi,
+  Visual Basic, and similar tools, you can place widgets on
+  palettes, and play with their attributes and behaviors in a
+  "properties" sheet The icons for elements have a somewhat
+  blockish look, especially when grayed out, but the aesthetic
+  issue is minor.  The source editor provides code-folding and
+  syntax highlighting, but not code-completion tips.  BlackAdder
+  has a decent debugger, on par with the free tools except for
+  the lack of watches.
+
+  Unfortunately, in testing V1.0 Beta 2, I encountered some
+  serious usability problems.  I tested the Mandrake, Slackware
+  and Windows packages (but not Debian or Redhat, although I
+  think the Linux variants are only packaging differences).
+  Various problems occurred everywhere (perhaps in part because
+  of reliance on exact OS versions and revisions).  For example,
+  the default font was far too small to read on both Linux and
+  Windows.  Changing the editor font required a quite tedious
+  process of individually changing the font for each of 20 syntax
+  markup elements (no "inherit font" option, as many text editors
+  and IDEs have).  Worse than this, under both Mandrake 7.1 and
+  a customized Slackware 7.1, the Python interpreter "terminates
+  unexpectedly" when BlackAdder launches.  You can edit files,
+  but not run them in the IDE.  My attempts to change Python
+  paths--and point to either Python 2.0 or Python 1.5.2 managed
+  to change the error message, but not fix things.  Further,
+  under Windows I found that some Python scripts would not open
+  under BlackAdder; I would get an "X is not a valid BlackAdder
+  file" instead.  There was no obvious pattern to this message.
+  These are the sorts of matters that one might be able to
+  resolve with some work--but if you've just shelled out $400,
+  you are usually not in a mood for debugging the product you
+  purchased.
+
+  *WingIDE* has the making of a quite nice IDE.  Its editor
+  includes syntax highlighting for a large number of languages,
+  although beyond that it is Python-oriented.  The source code
+  browser is wonderfully useful for browsing projects/modules
+  (presenting either navigable source, or docstring summaries).
+  The debugger is well arranged, although without watches.  The
+  editor has nice command-completion and a function jump list,
+  but no code-folding.  The project-oriented style of the IDE
+  would be useful for large products (better in this regard than
+  most of the free IDEs, except Komodo).  The overall interface
+  is somewhat similar to an enhanced Idle in using the "many
+  windows" arrangement familiar in many TK and XWindow
+  interfaces.  I prefer some use of docking and panes (but not
+  the excesses of MS Visual Studio, in this regard), but
+  different developers will like different styles of windowing.
+  WingIDE has a lot of promise as a development environment.
+
+  Like BlackAdder, however, WingIDE--in both the 1.0 and 1.1b3
+  versions I tested--has problems that make it difficult to
+  recommend for serious development.  There are some small
+  annoyances, like the annoying license key configuration
+  procedure, and the erratic--but mostly missing--tooltips for
+  toolbars.  Also, little warts exist like the absence of an
+  "open recent" menu item, and the fact you can only open an
+  interactive shell window when a program is running (not just to
+  experiment with code).  But those types of things are minor.
+  The killer is WingIDE's habit of randomly generating
+  segmentation faults on my Mandrake 7.1 box.  Everything dies in
+  these cases, and you lose anything you were working on.  "Save
+  often" may be good advice, but is not really enough to make
+  WingIDE usable fulltime.
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  Information on PythonWorks Pro 1.1, from PythonWare can be
+  found at:
+
+    http://www.pythonware.com/products/works/index.htm
+
+  The wxWindows/[wxPython]-based screen builder and development
+  environment, Boa Constructor, can be found at:
+
+    http://boa-constructor.sourceforge.net/
+
+  ActiveState's ActivePython 2.0 (for Win32) includes Mark
+  Hammond's PythonWin IDE, as well as a number of other goodies
+  (they also have Linux and Solaris versions).
+
+    http://activestate.com/Products/ActivePython/index.html
+
+  ActiveState's Komodo multi-language IDE is currently available
+  for Win32 and Linux:
+
+    http://activestate.com/Products/Komodo/index.html
+
+  A good starting point for MacPython information is:
+
+    http://python.org/download/download_mac.html
+
+  The Advanced Editor Patch, and other enhancements to the
+  MacPython IDE can be found at:
+
+    http://www.strout.net/python/mac/
+
+  The Kompany's BlackAdder homesite is at:
+
+    http://www.thekompany.com/
+
+  Read Archaeopteryx' official WingIDE information at:
+
+    http://archaeopteryx.com/
+
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz is blessed with the virtues of laziness, and
+  impatience, and in his wisdom wishes to warn the world that
+  hubris should not be confused with chutzpah or machismo.  David
+  may be reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/.  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+

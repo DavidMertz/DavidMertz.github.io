@@ -1,0 +1,404 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>XML MATTERS #4 -- Getting Comfortable with the DocBook XML Dialect -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="xml_matters_3.html" TITLE="XML MATTERS #3">
+<link REL="next" HREF="xml_matters_5.html" TITLE="XML MATTERS #5">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<h1>Xml Matters #4</h1>
+<h2>Getting Comfortable with the DocBook XML Dialect</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Archivist, Gnosis Software, Inc.<br>
+ October 2000<br>
+ <br>
+</p>
+<blockquote>
+    This column continues the discussion of DocBook begun in <cite>XML
+    Matters #3</cite>.  In this column we will look at some DocBook tags
+    in greater detail, and also look at the actual composition of
+    DocBook documents.  In the next column, we will examine ways
+    to transform DocBook documents to other formats using XLST
+    (Extensible Stylesheet Language Transformations)..
+</blockquote>
+<h3>What Is Xml? What Is Docbook?</h3>
+ <p>
+  XML is a simplified dialect of the Standard Generalized Markup
+  Language (SGML).  Many readers will be most familiar with SGML
+  via one particular document type, HTML.  XML documents are
+  similar to HTML in being composed of text interspersed with and
+  structured by markup tags in angle-brackets.  But XML
+  encompasses many systems of tags that allow XML documents to be
+  used for many purposes:  magazine articles and user
+  documentation, files of structured data (like CSV or EDI
+  files), messages for interprocess communication between
+  programs, architectural diagrams (like CAD formats), and many
+  other purposes.  A set of tags can be created to capture any
+  sort of structured information one might want to represent,
+  which is why XML is growing in popularity as a common standard
+  for representing diverse information.
+</p>
+<p>
+  DocBook is an SGML dialect developed by O'Reilly and HaL
+  Computer Systems in 1991.  It is currently maintained by the
+  Organization for the Advancement of Structured Information
+  Standards (OASIS).  The purpose of DocBook is to describe the
+  content of articles, books, technical manuals, and other prose
+  documents.  DocBook has a focus on technical writing styles,
+  but is general enough to describe everything that goes into
+  most styles of prose writing.  An XML variant of the DocBook
+  DTD is also available (and is the one that will be discussed in
+  this article, inasmuch as small details differ).
+</p>
+<h3>Introduction</h3>
+ <p>
+  DocBook is a rather complicated DTD with hundreds of elements.
+  Few people will be familiar with all the elements of DocBook;
+  but fortunately, there is really no need to know all of DocBook
+  in order to work with it productively.  The basic elements are
+  arranged in a logical way, and most elements follow the similar
+  patterns for nesting of child elements.
+</p>
+<p>
+  The key to working with DocBook is having a good reference
+  handy while you are working.  I am personally partial to using
+  a written text (which now means O'Reilly's excellent text, see
+  Resources), but the identical material is also available online
+  (see Resources).  There are two general approaches to creating
+  DocBook content (I have played with both in the process of
+  working on these columns): use a specialized XML editor, or use
+  a generic text editor plus an external validator.  The main
+  thing is that DocBook is detailed enough that you will need
+  some automation in assuring conformance to the DTD; it is easy
+  to make small typos.  You can, of course work for stretches and
+  validate only occassionally (fixing minor glitches should not
+  take long).
+</p>
+<p>
+  If you decide to use a specialized XML editor, you will
+  probably be presented with some assistance in entering elements
+  and attributes.  Many of these programs provide context
+  sensitive prompts for available (sub-)tags, or at least lists
+  of tags that exist in the current (DocBook) DTD.  On the down
+  side though, specialized editors are generally less flexible in
+  other ways than good general purpose text editors.
+</p>
+<p>
+  Unfortunately, the quality of tools available for working with
+  XML is still disappointing (at least to me).  I have tested a
+  fairly large number of XML validation and transformation tools,
+  and almost all of them fail in some respects when trying to
+  work with DocBook.  Specifically, I have yet to locate a wholly
+  accurate command-line XML validator (reader suggestions are
+  greatly welcomed).  What I have settled for as good-enough is
+  using XML Spy under Win32 (see Resources for my review of this
+  product), and Xeena under other (Java-supporting) platforms.
+  Both of these do a good job of validation, although with more
+  overhead than should really be necessary.  Hopefully, these
+  matters will improve over time.
+</p>
+<h3>Elements</h3>
+ <p>
+  The first thing to do in preparing an XML DocBook document is
+  to prepare its declaration.  We already saw a couple examples
+  of this in the previous column, but without explanation of what
+  was going on.  Let us look at a document template, and see what
+  is going on with it:
+</p>
+<div class="code-sample"><h4></h4><pre>&lt;?xml version="1.0"?&gt;
+&lt;!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+                  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+   &lt;!ENTITY Zizek "&amp;Zcaron;i&amp;zcaron;ek"&gt;
+   &lt;!ENTITY Mocnik "Mo&amp;ccaron;nik"&gt;
+]&gt;
+&lt;?xml-stylesheet type="text/xsl" href="chapter.xsl"?&gt;
+&lt;chapter&gt;
+   &lt;!-- The actual chapter contents are here --&gt;
+&lt;/chapter&gt;
+
+</pre></div><p>
+  The very first thing that occurs is the <code>&lt;?xml&gt;</code> declaration <em></em>
+  this is just there to show that the document is XML.  The next
+  thing we include is the document type declaration (that is, the
+  <code>&lt;!DOCTYPE&gt;</code> tag).  It is worth looking in some detail at what
+  makes up the document type declaration.
+</p>
+<p>
+  The first thing to notice in the <code>&lt;!DOCTYPE&gt;</code> tag is that it
+  includes immediately the name of the root element that will be
+  used in this specific document.  It is an important decision
+  what type of root element to use <em></em> basically it says what
+  purpose this document will serve, at least in broad terms.  The
+  choice of root element generally determines the rough size of
+  the document in question.  At the broadest scale, a declaration
+  might be for a <code>set</code>, which includes two or more <code>book's.  Use
+  this if what is intended is a whole reference collection, or
+  the like (notice that we will not necessarily put everything in
+  the same <em>file</em> though, we might use inclusions, as sketched in
+  the previous column).  More likely, you will be creating a
+  'book</code>, which is a collection of <code>part's or 'chapter's
+  (plus some other bits at the same conceptual level as
+  chapters/parts).  Or even more modestly, you might be creating
+  a 'chapter</code> or an <code>article</code>.  That is what we are working on, a
+  chapter.  In practice, a <code>chapter</code> or <code>article</code> is the smallest
+  conceptual part used for a DocBook document.
+</p>
+<p>
+  Continuing with the "attributes" of the <code>&lt;!DOCTYPE&gt;</code>
+  declaration, we next see the PUBLIC identifier and the system
+  identifier.  The part that comes after the word PUBLIC is an
+  SGML feature, and you do not really need to use it in XML
+  documents.  But if you <em>do</em> include it, be sure to spell it in
+  exactly the way indicated in the actual DTD.  The actual DTD is
+  indicated in the system identifier as a URL.  That is where all
+  the actual DocBook definitions live (go ahead and download the
+  URL, if you'd like to look at it; it references a number of
+  other files in the same domain).  Spell this right also, or
+  else your validating programs won't be able to find the DTD.
+</p>
+<p>
+  Inside the square brackets in the '&lt;!DOCTYPE&gt; tag is the
+  "internal subset." This is an odd name, but all it amounts to
+  is a way to declare some special features of your specific
+  document.  In this case, we create a couple aliases for names
+  that are hard to type on a US keyboard.
+</p>
+<p>
+  After the document type declaration tag, we have a processing
+  instruction in our example.  This part is not really necessary,
+  and we will not go into detail about XSLT until the next
+  column.  But the idea here is very similar to that with
+  cascading style sheets (CSS) for HTML documents.  We added a
+  reference to an XSL document that contains some rules for how
+  we plan on transforming the DocBook document.  A processing
+  instruction like this is quite optional, even for a
+  transformation tool (much as with CSS).  Depending on the tool
+  used, you can generally specify a transformation using whatever
+  XSLT you want.  Adding the processing instruction is just a
+  polite suggestion about one way to do it.
+</p>
+<p>
+  The final bit is the root element mentioned.  We already
+  effectively promised to use the <code>&lt;chapter&gt;</code> tag in the
+  declaration, so we better follow our promise, and put it in.
+  Everything the makes up the blood-and-guts of the chapter goes
+  inside this root element.
+</p>
+<h3>Writing A Chapter</h3>
+ <p>
+  A <code>&lt;chapter&gt;</code> has a similar structure to an <code>&lt;appendix&gt;</code> or a
+  <code>&lt;preface&gt;</code>.  An <code>&lt;article&gt;</code> is mostly the same structure also
+  (the main difference is that the front-matter of an article is
+  generally enclosed in an <code>&lt;artheader&gt;</code> element).  Things like
+  chapters, articles, prefaces, bibliographies, and so on, are
+  all kinds of "components" of documents.  That is to say, a
+  component is something that addresses the same topic in a
+  moderate specficity.  As with writing in general, judgement
+  calls are necessary to decide just how close together ideas
+  are.  But the words used for elements is a good for their
+  English meanings.
+</p>
+<p>
+  A component, in turn, has some front-matter, followed by some
+  sections and/or block elements.  <code>&lt;title&gt;</code> is usually required
+  as front-matter for components, and also for sections.  Most
+  other front-matter is optional, but might include author
+  information, abstracts, graphics, or other information that has
+  more to do with <em>describing</em> a component than really
+  <em>constituting</em> the component.  Let's look at an example a
+  valid, but hightly abridged, chapter (assume declarations as
+  discussed):
+</p>
+<div class="code-sample"><h4></h4><pre>&lt;chapter&gt;
+  &lt;title&gt;Hegemony, and Other Passing Fads&lt;/title&gt;
+  &lt;epigraph&gt;
+    &lt;attribution&gt;
+      Gould, 1987b, quoting Gunnar Myrdal, &lt;citetitle&gt;An
+      American Dilemma&lt;/citetitle&gt; (1944)
+    &lt;/attribution&gt;
+    &lt;para&gt;
+      But there must be still other countless errors of the
+      same sort that no living man can yet detect, because
+      of the fog within which our type of Western culture
+      envelops us.  Cultural influences have set up the
+      assumptions about the mind, the body, and the
+      universe with which we begin; pose the questions we
+      ask; influence the facts we seek; determine the
+      interpretations we give these facts; and direct our
+      reaction to these interpretations and
+      conclusions.
+    &lt;/para&gt;
+  &lt;/epigraph&gt;
+
+  &lt;sect1&gt;
+    &lt;title&gt;Day-Care Devil Worshipers&lt;/title&gt;
+    &lt;!-- para's, sect2's, epigraph's, and other block elements --&gt;
+  &lt;/sect1&gt;
+  &lt;sect1&gt;
+    &lt;!-- more blocks --&gt;
+  &lt;/sect1&gt;
+&lt;/chapter&gt;
+
+</pre></div><p>
+  For a moderately large component, you will probably want to
+  divide it into sections (as above).  But for a short component,
+  you have the option of launching directly into block elements.
+</p>
+<p>
+  Let us clarify what these things mean.  A block element is
+  basically either a paragraph, or something at the same
+  conceptual/hierarchical level as a paragraph (such as a list,
+  and equation, an illustration, and so on).  The only thing
+  "smaller" than a block element is an inline element.  Most
+  usually, a block element will be set apart from other blocks
+  with vertical whitespace, framing boxes, or the like; an inline
+  element will be continuous with the words around it, but might
+  be marked by a different font, color, hyperlink, or the like.
+  As an example, in the above chapter, the epigraph is much like
+  a short section.  It contains two blocks: the attribution, and
+  the epigraph <code>&lt;para&gt;</code> (a different epigraph might be multiple
+  paragraphs).  This atttibution contains a <code>&lt;citetitle&gt;</code>, but
+  that citation will likely be rendered inline when printed,
+  perhaps by italics or underlining.  Or maybe it will be a
+  hotlink to the bibliography if rendered to HTML.
+</p>
+<p>
+  Sections are bigger than blocks, and are in fact just a list of
+  blocks.  How big they are is for authorial and editorial
+  judgement.  But there are two main strategies for making
+  sections.  You can either use the <code>&lt;sect1&gt;</code>, <code>&lt;sect2&gt;</code>...
+  <code>&lt;sect5&gt;</code> hierarchy, or you can use the <code>&lt;section&gt;</code> element
+  nested recursively.  For my own purpose--writing
+  philosophical prose--I felt that explicitly numbered section
+  levels was better.  I had a distinct sense of how important
+  each type of section <em>must</em> be, and the numbering matched that
+  well.  However, for something like a technical reference, you
+  are more likely to consider that your material might be nested
+  in different places and different depths appropriately.  In
+  that case, the <code>&lt;section&gt;</code> element works better (and can nest
+  to more than five levels).  There are some other specialized
+  block types, but the above are the most general ones.
+</p>
+<h3>Until Next Time</h3>
+ <p>
+  The elements and structure outlined here is enough to get
+  started on creating your own DocBook documents.  Take a look at
+  those I created (see Resources) for some more details, or also
+  check out the more extensive tag documentation in the
+  Resources.  In the next column we will get around to
+  transforming our DocBook source document into some other
+  formats, and introduce extensible stylesheet language
+  transformations (useful outside DocBook also).
+</p>
+<h3>Resources</h3>
+ <p>
+  OASIS's recommendations on XML tools:
+</p>
+<blockquote>
+   <a href="http://www.oasis-open.org/docbook/tools/index.html">http://www.oasis-open.org/docbook/tools/index.html</a>
+</blockquote>
+<p>
+  IBM alphaWorks' Xeena XML Editor (free-of-cost license):
+</p>
+<blockquote>
+   <a href="http://www.alphaworks.ibm.com/tech/xeena">http://www.alphaworks.ibm.com/tech/xeena</a>
+</blockquote>
+<p>
+  David Mertz XML Spy Review:
+</p>
+<blockquote>
+   <a href="http://webreview.com/wr/pub/2000/09/01/feature/index04.html">http://webreview.com/wr/pub/2000/09/01/feature/index04.html</a>
+</blockquote>
+<p>
+  Icon Information-Systems' XML Spy Homepage (commercial XML
+  editor):
+</p>
+<blockquote>
+   <a href="http://www.xmlspy.com/">http://www.xmlspy.com/</a>
+</blockquote>
+<p>
+  Scholarly Technology Group's Web-based XML Validation (source
+  available and liberally licensed):
+</p>
+<blockquote>
+   <a href="http://www.stg.brown.edu/service/xmlvalid/">http://www.stg.brown.edu/service/xmlvalid/</a>
+</blockquote>
+<p>
+  SoftQuad's XMetal Homepage (commercial XML editor):
+</p>
+<blockquote>
+   <a href="http://softquad.com/index_main.html">http://softquad.com/index_main.html</a>
+</blockquote>
+<p>
+  Extensibility's XML Instance (commercial XML editor):
+</p>
+<blockquote>
+   <a href="http://www.extensibility.com/products/xml_instance/index.htm">http://www.extensibility.com/products/xml_instance/index.htm</a>
+</blockquote>
+<p>
+  Sabletron XSL Processor (open source):
+</p>
+<blockquote>
+   <a href="http://www.gingerall.com/charlie-bin/get/webGA/act/sablotron.act">http://www.gingerall.com/charlie-bin/get/webGA/act/sablotron.act</a>
+</blockquote>
+<p>
+  By all means, the best place to get started in a more detailed
+  understanding of DocBook is.  The ink-on-paper version is:
+</p>
+<blockquote>
+    <cite>DocBook:  The Definitive Guide</cite>, Norman Walsh &amp; Leonard
+    Muellner, O'Reilly, Cambridge, MA 1999.
+</blockquote>
+<p>
+  If you wish to use an electronic version, refer to:
+</p>
+<blockquote>
+   <a href="http://www.docbook.org/tdg/index.html">http://www.docbook.org/tdg/index.html</a>
+</blockquote>
+<p>
+  Organization for the Advancement of Structured Information
+  Standards (OASIS) home page:
+</p>
+<blockquote>
+   <a href="http://www.oasis-open.org/">http://www.oasis-open.org/</a>
+</blockquote>
+<p>
+  The obscure philosophy dissertation I have undertaken to
+  convert will probably have minimal interest to most XML
+  developers (or even make much sense).  But the markup might
+  well be of some interest as an example.  Both one possible HTML
+  presentation and the XML/DocBook source are at the below links:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/publish/mertz/chap5.html">http://gnosis.cx/publish/mertz/chap5.html</a>
+</blockquote>
+<blockquote>
+   <a href="http://gnosis.cx/publish/mertz/chap5.xml">http://gnosis.cx/publish/mertz/chap5.xml</a>
+</blockquote>
+<p>
+  Files used and mentioned in this article:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/download/xml_matters_4.zip">http://gnosis.cx/download/xml_matters_4.zip</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz became disenchanted with the academy and became a
+  technical journalist: post hoc ergo propter hoc. David may be
+  reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+</p>
+</body></html>

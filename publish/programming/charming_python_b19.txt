@@ -1,0 +1,414 @@
+CHARMING PYTHON #B19: DParser for Python.
+Exploring Another Python Parser
+
+David Mertz, Ph.D.
+Grammar Hacker, Gnosis Software, Inc.
+June, 2004
+
+    DParser is a simple but powerful tool for parsing, written by J.
+    Plevyak. "DParser for Python" gives Python programmers a seamless
+    interface to DParser. In a manner similar to Spark or PLY, grammar
+    rules are input to DParser using Python function documentation
+    strings. This article looks at Dparser for Python, and compares it
+    to other parsers covered in previous installments.
+
+WHY LOOK AT DPARSER, TOO?
+------------------------------------------------------------------------
+
+  There are many Python parser libraries out there. I have written
+  discussions of mx.TextTools, SimpleParse, SPARK, in this column; and
+  of PLY in my book. Offhand, I know to exist PyGgy, Yapps, PLEX, PyLR,
+  PyParsing, TPG, and I have vague recollections of reading
+  announcements of a half dozen others. This is a category where users
+  might be frustrated not by the dearth, but by the glut of high quality
+  libraries.
+
+  What distinguishes DParser from all the others? Well, like PLY and
+  Spark, DParser for Python utilizes function documentation strings to
+  indicate its productions.  This style lets you put action code right
+  inside a production, for events that should occur when a particular
+  grammar rule is fulfilled; the production-in-docstring style also lets
+  you manipulate parse trees as parsing occurs.  In contast to PLY or
+  Spark, DParser itself is written in C, and so likely considerably
+  faster than pure-Python parsers.  DParser for Python is a fairly thin
+  wrapper around an underlying C library--callbacks into Python take
+  some extra time, but the basic parsing is a C speeds.  For this
+  article, however, I have not attempted any specific benchmarks, so
+  exactly how fast or slow DParser is compared to other parsers is not
+  something I can directly comment on.
+
+  In my own mind, I remain quite fond of SimpleParse's approach.
+  SimpleParse is a wrapper to the fast mx.TextTools library (also
+  written in C) that cleanly separates an EBNF grammar language from
+  Python code. Usually using SimpleParse means generating a parse tree
+  in one function call, then traversing this tree in separate code.  For
+  very large parsed documents, such a two step approach might be
+  inefficient, but I find it easier to understand code written this way.
+
+  Still, enough of my readers have recommended Dparser for Python that
+  it warrants a look, even given my preference for an isolated EBNF
+  definition. By the way, as you will see in the examples, DParser uses
+  no separate tokenization pass, just straight parsing. You can control
+  whitespace recognization (that separates parse symbols) by defining
+  the reserved 'd_whitespace()' function; this amounts to being able to
+  tokenize however you like.
+
+FINDING A LONGEST PRODUCTION
+------------------------------------------------------------------------
+
+  As a first example of a DParser for Python program, I created a
+  grammar that looks for several patterns that are subproductions of one
+  aonther.  This grammar handles a problem similar to the "dangling
+  else" issue for many parsers.  That is: how do you know when to stop
+  looking for larger productions (e.g. is an "if" followed by an
+  "else"?).  My grammar looks at phrases that might contain words
+  starting with "a", with "b" and with "c", in that order.  All
+  non-included words are just part of the "head" or "tail" of the
+  phrase.  A couple examples illustrate this, first the program itself:
+
+      #------------------------ Parser abc.py -------------------------#
+      #!/usr/bin/env python2.3
+      "Identify sequence of a-, b-, c- words"
+      #
+      #-- The grammar
+      def d_phrase(t, s):
+          'phrase : words ( ABC | AB | A ) words'
+          print "Head:", ''.join(s[0])
+          print t[1][0]+":", ''.join(s[1])
+          print "Tail:", ''.join(s[2])
+      def d_words(t):
+          'words : word*'
+      def d_word(t):
+          'word : "[a-z]+" '
+      def d_A(t):
+          '''A : "a[a-z]*" '''
+          return 'A'
+      def d_AB(t):
+          '''AB : A "b[a-z]*" '''
+          return 'AB'
+      def d_ABC(t):
+          '''ABC : AB "c[a-z]*" '''
+          return 'ABC'
+      #
+      #-- Parse STDIN
+      from dparser import Parser
+      from sys import argv, stdin
+      phrase, arg = stdin.read(), argv[-1]
+      Parser().parse(phrase,
+                     print_debug_info=(arg=='--debug'))
+
+
+  Let us run the parser against a few phrases to illustrate:
+
+      #--------------- Simple to parse phrases ------------------------#
+      $ echo -n "alpha" | ./abc.py
+      Head:
+      A: alpha
+      Tail:
+      echo -n "xavier alpha beta charlie will" | ./abc.py
+      Head: xavier
+      ABC: alpha beta charlie
+      Tail: will
+      $ echo -n "mable delta xavier bruce" | ./abc.py
+      Traceback (most recent call last): [...]
+      dparser.SyntaxError:
+      syntax error, line:1
+      mable delta xavier bruce[syntax error]
+
+  So far, so good, apparently.  My grammar finds an ABC when it is
+  available, but settles for an A, or AB, when that is all there is to
+  find.
+
+  But in truth, my grammar has a lot of problems in it when it
+  encounters ambiguous grammars. In most cases, it appears that DParser
+  will fall into an infinite loop when it cannot decide how to parse a
+  phrase--probably the worst outcome; at least a traceback or reported
+  error would tell you what went wrong.  Sometimes (on my Mac OSX
+  machine, at least), it produces a "Bus error" instead.  I do not like
+  either of those cases.
+
+ADDRESSING AMBIGUITY
+------------------------------------------------------------------------
+
+  Since all of the terminal productions have the same priority, the
+  parser cannot decide how to parse something like:
+
+      #------------ Trying to parse an ambiguous phrase ---------------#
+      $ echo -n "alex bruce alice benny carl" | ./abc.py
+
+  Is this an 'AB' followed by 'words'? Is it 'words' followed by 'ABC'?
+  For that matter, is it all 'words' (made of of five 'word'
+  productions), and should raise a 'dparser.SyntaxError'? I wind up with
+  a "Bus error" or a frozen task rather than a parse. In the prior
+  examples, the ambiguity happened to work out because of the eagerness
+  of each production: once an 'ABC' was found, the leading and trailing
+  'words' fell into place.
+
+  It is quite confusing, actually, to understand exactly why the prior
+  grammar -works- in those cases it does; more confusing, in a way, that
+  understanding why it sometimes does not work.
+
+  Let us say that our desire in parsing a phrase is to find an 'ABC'
+  production whenever one exists, even if some other production (i.e. an
+  'AB') is satisfied first in left-to-right traversal.  We can do that
+  by elevating the priority of the 'ABC' terminal production:
+
+      #------- Revised d_ABC() production function for abc2.py --------#
+      def d_ABC(t):
+          'ABC : AB "c[a-z]*" $term 1'
+          return 'ABC'
+
+  If a priority is not specified, a production is priority 0.
+  Otherwise, any positive or negative integer may be used to rank
+  productions.  Now we can run:
+
+      #------------- Successfully finding late ABC --------------------#
+      $ echo -n "alex bruce alice benny carl" | ./abc2.py
+      Head: alex bruce
+      ABC: alice benny carl
+      Tail:
+
+  Notice that alternatives within the '(ABC|AB|A)' alternation are all
+  tried before the parser looks for the trailing 'words'.  So this
+  succeeds without any priority specification:
+
+      #------------ No ambiguity issue between A and AB ---------------#
+      $ echo -n "alex alice benny" | ./abc.py    Head: alex
+      AB: alice benny
+      Tail:
+
+  I found some difficult to explain anamolies in the behavior of DParser
+  in the face of ambiguity. For example, adding, a trailing 'word' that
+  is definitely not an 'A' convinces the parser to work--but -only- if
+  run with debugging information!
+
+      #----------- Erratic behavior in face of ambiguity --------------#
+      $ echo -n "alex bruce alice benny carl dave" | ./abc.py
+      [...process freezes...]
+      $ echo -n "alex bruce alice benny carl dave" | ./abc.py --debug
+      [...debugging trace of speculative and final productions...]
+      Head: alex bruce
+      ABC: alice benny carl
+      Tail: dave
+
+  Either way, the priority specification in 'abc2.py' resolves the parse
+  in either case.
+
+  It is rather subtle and hard to understand exactly when ambiguities
+  are resolved. Basically, productions are fulfilled as they are seen,
+  left-to-right, and each one tries to grab as many words as it can,
+  left-to-right. Backtracking happens only when something is
+  unambiguously wrong in a lookahead.  Roughly, anyway.
+
+A LITTLE ON DEBUGGING
+------------------------------------------------------------------------
+
+  One thing I like about DParser is its option to display debugging
+  information.  Seeing this does not necessarily make it obvious how to
+  create a correct grammar, but at least it provides nice insight into
+  the actions a parser takes when processing a particular phrase.  For
+  example:
+
+      #------- Showing a trace of speculative productions
+      $ echo -n "alex alice benny carl dave" | ./abc2.py --debug
+                     d_words ???:
+                         d_A ???:     alex
+                      d_word ???:     alex
+                     d_words ???:
+                    d_phrase ???:     alex
+                     d_words ???:     alex
+                         d_A ???:     alice
+                      d_word ???:     alice
+                     d_words ???:
+                     d_words ???:     alice
+                    d_phrase ???:     alex alice
+                    d_phrase ???:     alex alice
+                     d_words ???:     alex alice
+                      d_word ???:     benny
+                        d_AB ???:     alice benny
+                     d_words ???:     benny
+                     d_words ???:     alice benny
+                     d_words ???:
+                    d_phrase ???:     alex alice benny
+                    d_phrase ???:     alex alice benny
+                    d_phrase ???:     alex alice benny
+                     d_words ???:     alex alice benny
+                      d_word    :     alex
+                     d_words    :     alex
+                         d_A    :     alice
+                        d_AB    :     alice benny
+                       d_ABC ???:     alice benny carl
+                     d_words ???:
+                    d_phrase ???:     alex alice benny carl
+                       d_ABC    :     alice benny carl
+                      d_word ???:     dave
+                     d_words ???:     dave
+                    d_phrase ???:     alex alice benny carl dave
+                      d_word    :     dave
+                     d_words    :     dave
+                    d_phrase    :     alex alice benny carl dave
+      Head: alex
+      ABC: alice benny carl
+      Tail: dave
+
+  The productions followed by question marks are speculative attempts;
+  those without are final productions actually followed.  Related to
+  this, DParser gives you the capability to take actions differentially
+  when a production is entered either speculatively or on a final parse.
+  But default, the actions in a function body are only performed ona
+  final parse.  But you may specify either of two extra arguments to a
+  production to handle speculative parses (there are also a number of
+  other optional arguments not discussed in this article):
+
+      #------------- Actions during speculative parsing ---------------#
+      def d_prod1(t, spec_only):
+          'prod1 : this that+ other?'
+          print "Speculative parse of prod1"
+      def d_prod2(t, spec):
+          'prod2: spam* eggs toast'
+          if spec:
+              print "Speculative parse of prod2"
+          else:
+              print "Final parse of prod2"
+
+  Of course, all the information displayed by my speculative productions
+  is also displayed (in slightly different form) by using the
+  'print_debug_info' argument to 'dparser.Parser.parse()'.  But you
+  could also decide to take other actions--trigger external events, for
+  example.
+
+MORE ON PRIORITIES
+------------------------------------------------------------------------
+
+  The earlier use of an assigned priority for the 'ABC' production was a
+  little bit of a hack, I confess.  But in cases of straightforward
+  ambiguity, fine tuning terminal priorities is a great tool.  Let me
+  give another grammar with a straightforward ambiguity:
+
+      #----------- Term-for-term ambiguous grammar, ibm.py ------------#
+      def d_phrase(t, s):
+          'phrase : word ( vowel | caps | threeletter ) word'
+          print "Head:", ''.join(s[0])
+          print t[1][0]+":", ''.join(s[1])
+          print "Tail:", ''.join(s[2])
+      def d_word(t): 'word : "[A-Za-z]+" '
+      def d_vowel(t):
+          'vowel : "[AEIOUaeiou][A-Za-z]*"'
+          return 'VOWEL'
+      def d_caps(t):
+          'caps : "[A-Z]+"'
+          return 'CAPS'
+      def d_threeletter(t):
+          'threeletter : "[A-Za-z][A-Za-z][A-Za-z]"'
+          return '3LETT'
+      #-- Parse STDIN
+      from dparser import Parser
+      from sys import stdin
+      Parser().parse(stdin.read())
+
+  The productions for 'vowel', 'caps' and 'threeletter' are not
+  necessarily distinct, they can all grab an overlapping set of words,
+  e.g.:
+
+      #--------- When DParser detects ambiguity gracefully ------------#
+      $ echo -n "Read IBM developerWorks" | ./ibm.py
+      Traceback (most recent call last): [...]
+      dparser.AmbiguityException:  [...]
+
+  Of course, you might get lucky with a particular phrase:
+
+      #--------- Fortuitous avoindance of parse ambiguity -------------#
+      $ echo -n "Read GNOSIS website" | ./ibm.py
+      Head: Read
+      CAPS: GNOSIS
+      Tail: website
+
+  Rather than hope for good luck, let us explicitly indicate a priority
+  between productions:
+
+      #------------- Resolving ambiguous term, ibm2.py ----------------#
+      def d_vowel(t):
+          'vowel : "[AEIOUaeiou][A-Za-z]*" $term 3'
+          return 'VOWEL'
+      def d_caps(t):
+          'caps : "[A-Z]+" $term 2'
+          return 'CAPS'
+      def d_threeletter(t):
+          'threeletter : "[A-Za-z][A-Za-z][A-Za-z]" $term 1'
+          return '3LETT'
+
+  Now every phrase would like to identify middle word types in a
+  specific order (only of ones possible, of course):
+
+      #--------------- Disambiguated parse results --------------------#
+      $ echo -n "Read IBM developerWorks" | ./ibm2.py
+      Head: Read
+      VOWEL: IBM
+      Tail: developerWorks
+      $ echo -n "Read XYZ journal" | ./ibm2.py
+      Head: Read
+      CAPS: XYZ
+      Tail: journal
+
+MAKING A DECISION
+------------------------------------------------------------------------
+
+  Despite its recommendation by several readers, I am only lukewarm
+  about DParser.  It has quite a few powerful switches and options to
+  productions that I have not gone into--for example, specifying
+  associativity; overall the DParser language is quite robust.  And I
+  strongly suspect DParser for Python will run significantly faster than
+  most pure-Python parsers.
+
+  However, I still cannot work up a complete enthusiasm for the function
+  docstring style of parsers; obviously, many excellent Python
+  programmers disagree with me on this.  But I also found some of the
+  parse results a little bit mystifying: Why succeed in debug mode, but
+  not standard mode? Exactly when does ambiguity come up? Developing a
+  grammer with any parsing tool produces similar surprises, but I
+  somehow found DParser's particularly surprising; SimpleParse, for
+  example, surprised me less.  Probably if I knew more about the
+  ins-and-outs of underlying parsing algorithms it would make more
+  sense; in my relative ignorance, I am probably a lot like 95%+ of my
+  readers though.  There are people who know more about parsing than I
+  do; but in truth, most programmers know still less.
+
+RESOURCES
+------------------------------------------------------------------------
+
+  Several earlier installments have looked at other parsers for Python.
+  Spark and PLY are similar to DParser in using docstrings of functions
+  to describe productions.  mx.TextTools is a lower-level state machine,
+  and SimpleParse makes use of a non-Python EBNF syntax to describe
+  grammars (and translates it to fast mx.TextTools operations, behind
+  the scenes).
+
+    SimpleParse:
+    http://www-106.ibm.com/developerworks/linux/library/l-simple.html
+
+    Spark:
+    http://www-106.ibm.com/developerworks/linux/library/l-spark.html
+
+    gnosis.xml.validity:
+    http://www-106.ibm.com/developerworks/linux/library/l-cpdec.html
+
+    mx.TextTools:
+    http://gnosis.cx/publish/programming/charming_python_14.html
+
+  My book, _Text Processing in Python_ discusses both SimpleParse
+  and mx.TextTools (borrowing from my corresponding developerWorks
+  articles), but adds a discussion of PLY.  You can read the book
+  online, or buy it at fine bookstores:
+
+    http://gnosis.cx/TPiP/
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz thinks that artificial languages are perfectly natural,
+  but natural languages seem a bit artificial. David may be reached at
+  mertz@gnosis.cx; his life pored over at http://gnosis.cx/publish/.
+  Check out David's book _Text Processing in Python_
+  (http://gnosis.cx/TPiP/).
+

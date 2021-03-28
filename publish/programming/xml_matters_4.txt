@@ -1,0 +1,357 @@
+XML MATTERS #4
+Getting Comfortable with the DocBook XML Dialect
+
+David Mertz, Ph.D.
+Archivist, Gnosis Software, Inc.
+October 2000
+
+    This column continues the discussion of DocBook begun in _XML
+    Matters #3_.  In this column we will look at some DocBook tags
+    in greater detail, and also look at the actual composition of
+    DocBook documents.  In the next column, we will examine ways
+    to transform DocBook documents to other formats using XLST
+    (Extensible Stylesheet Language Transformations)..
+
+WHAT IS XML? WHAT IS DOCBOOK?
+------------------------------------------------------------------------
+
+  XML is a simplified dialect of the Standard Generalized Markup
+  Language (SGML).  Many readers will be most familiar with SGML
+  via one particular document type, HTML.  XML documents are
+  similar to HTML in being composed of text interspersed with and
+  structured by markup tags in angle-brackets.  But XML
+  encompasses many systems of tags that allow XML documents to be
+  used for many purposes:  magazine articles and user
+  documentation, files of structured data (like CSV or EDI
+  files), messages for interprocess communication between
+  programs, architectural diagrams (like CAD formats), and many
+  other purposes.  A set of tags can be created to capture any
+  sort of structured information one might want to represent,
+  which is why XML is growing in popularity as a common standard
+  for representing diverse information.
+
+  DocBook is an SGML dialect developed by O'Reilly and HaL
+  Computer Systems in 1991.  It is currently maintained by the
+  Organization for the Advancement of Structured Information
+  Standards (OASIS).  The purpose of DocBook is to describe the
+  content of articles, books, technical manuals, and other prose
+  documents.  DocBook has a focus on technical writing styles,
+  but is general enough to describe everything that goes into
+  most styles of prose writing.  An XML variant of the DocBook
+  DTD is also available (and is the one that will be discussed in
+  this article, inasmuch as small details differ).
+
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  DocBook is a rather complicated DTD with hundreds of elements.
+  Few people will be familiar with all the elements of DocBook;
+  but fortunately, there is really no need to know all of DocBook
+  in order to work with it productively.  The basic elements are
+  arranged in a logical way, and most elements follow the similar
+  patterns for nesting of child elements.
+
+  The key to working with DocBook is having a good reference
+  handy while you are working.  I am personally partial to using
+  a written text (which now means O'Reilly's excellent text, see
+  Resources), but the identical material is also available online
+  (see Resources).  There are two general approaches to creating
+  DocBook content (I have played with both in the process of
+  working on these columns): use a specialized XML editor, or use
+  a generic text editor plus an external validator.  The main
+  thing is that DocBook is detailed enough that you will need
+  some automation in assuring conformance to the DTD; it is easy
+  to make small typos.  You can, of course work for stretches and
+  validate only occassionally (fixing minor glitches should not
+  take long).
+
+  If you decide to use a specialized XML editor, you will
+  probably be presented with some assistance in entering elements
+  and attributes.  Many of these programs provide context
+  sensitive prompts for available (sub-)tags, or at least lists
+  of tags that exist in the current (DocBook) DTD.  On the down
+  side though, specialized editors are generally less flexible in
+  other ways than good general purpose text editors.
+
+  Unfortunately, the quality of tools available for working with
+  XML is still disappointing (at least to me).  I have tested a
+  fairly large number of XML validation and transformation tools,
+  and almost all of them fail in some respects when trying to
+  work with DocBook.  Specifically, I have yet to locate a wholly
+  accurate command-line XML validator (reader suggestions are
+  greatly welcomed).  What I have settled for as good-enough is
+  using XML Spy under Win32 (see Resources for my review of this
+  product), and Xeena under other (Java-supporting) platforms.
+  Both of these do a good job of validation, although with more
+  overhead than should really be necessary.  Hopefully, these
+  matters will improve over time.
+
+
+ELEMENTS
+---------------------------------------------------------------------
+
+  The first thing to do in preparing an XML DocBook document is
+  to prepare its declaration.  We already saw a couple examples
+  of this in the previous column, but without explanation of what
+  was going on.  Let us look at a document template, and see what
+  is going on with it:
+
+      <?xml version="1.0"?>
+      <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+                        "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+         <!ENTITY Zizek "&Zcaron;i&zcaron;ek">
+         <!ENTITY Mocnik "Mo&ccaron;nik">
+      ]>
+      <?xml-stylesheet type="text/xsl" href="chapter.xsl"?>
+      <chapter>
+         <!-- The actual chapter contents are here -->
+      </chapter>
+
+  The very first thing that occurs is the '<?xml>' declaration --
+  this is just there to show that the document is XML.  The next
+  thing we include is the document type declaration (that is, the
+  '<!DOCTYPE>' tag).  It is worth looking in some detail at what
+  makes up the document type declaration.
+
+  The first thing to notice in the '<!DOCTYPE>' tag is that it
+  includes immediately the name of the root element that will be
+  used in this specific document.  It is an important decision
+  what type of root element to use -- basically it says what
+  purpose this document will serve, at least in broad terms.  The
+  choice of root element generally determines the rough size of
+  the document in question.  At the broadest scale, a declaration
+  might be for a 'set', which includes two or more 'book's.  Use
+  this if what is intended is a whole reference collection, or
+  the like (notice that we will not necessarily put everything in
+  the same -file- though, we might use inclusions, as sketched in
+  the previous column).  More likely, you will be creating a
+  'book', which is a collection of 'part's or 'chapter's
+  (plus some other bits at the same conceptual level as
+  chapters/parts).  Or even more modestly, you might be creating
+  a 'chapter' or an 'article'.  That is what we are working on, a
+  chapter.  In practice, a 'chapter' or 'article' is the smallest
+  conceptual part used for a DocBook document.
+
+  Continuing with the "attributes" of the '<!DOCTYPE>'
+  declaration, we next see the PUBLIC identifier and the system
+  identifier.  The part that comes after the word PUBLIC is an
+  SGML feature, and you do not really need to use it in XML
+  documents.  But if you -do- include it, be sure to spell it in
+  exactly the way indicated in the actual DTD.  The actual DTD is
+  indicated in the system identifier as a URL.  That is where all
+  the actual DocBook definitions live (go ahead and download the
+  URL, if you'd like to look at it; it references a number of
+  other files in the same domain).  Spell this right also, or
+  else your validating programs won't be able to find the DTD.
+
+  Inside the square brackets in the '<!DOCTYPE> tag is the
+  "internal subset." This is an odd name, but all it amounts to
+  is a way to declare some special features of your specific
+  document.  In this case, we create a couple aliases for names
+  that are hard to type on a US keyboard.
+
+  After the document type declaration tag, we have a processing
+  instruction in our example.  This part is not really necessary,
+  and we will not go into detail about XSLT until the next
+  column.  But the idea here is very similar to that with
+  cascading style sheets (CSS) for HTML documents.  We added a
+  reference to an XSL document that contains some rules for how
+  we plan on transforming the DocBook document.  A processing
+  instruction like this is quite optional, even for a
+  transformation tool (much as with CSS).  Depending on the tool
+  used, you can generally specify a transformation using whatever
+  XSLT you want.  Adding the processing instruction is just a
+  polite suggestion about one way to do it.
+
+  The final bit is the root element mentioned.  We already
+  effectively promised to use the '<chapter>' tag in the
+  declaration, so we better follow our promise, and put it in.
+  Everything the makes up the blood-and-guts of the chapter goes
+  inside this root element.
+
+
+WRITING A CHAPTER
+----------------------------------------------------------------------
+
+  A '<chapter>' has a similar structure to an '<appendix>' or a
+  '<preface>'.  An '<article>' is mostly the same structure also
+  (the main difference is that the front-matter of an article is
+  generally enclosed in an '<artheader>' element).  Things like
+  chapters, articles, prefaces, bibliographies, and so on, are
+  all kinds of "components" of documents.  That is to say, a
+  component is something that addresses the same topic in a
+  moderate specficity.  As with writing in general, judgement
+  calls are necessary to decide just how close together ideas
+  are.  But the words used for elements is a good for their
+  English meanings.
+
+  A component, in turn, has some front-matter, followed by some
+  sections and/or block elements.  '<title>' is usually required
+  as front-matter for components, and also for sections.  Most
+  other front-matter is optional, but might include author
+  information, abstracts, graphics, or other information that has
+  more to do with -describing- a component than really
+  -constituting- the component.  Let's look at an example a
+  valid, but hightly abridged, chapter (assume declarations as
+  discussed):
+
+      <chapter>
+        <title>Hegemony, and Other Passing Fads</title>
+        <epigraph>
+          <attribution>
+            Gould, 1987b, quoting Gunnar Myrdal, <citetitle>An
+            American Dilemma</citetitle> (1944)
+          </attribution>
+          <para>
+            But there must be still other countless errors of the
+            same sort that no living man can yet detect, because
+            of the fog within which our type of Western culture
+            envelops us.  Cultural influences have set up the
+            assumptions about the mind, the body, and the
+            universe with which we begin; pose the questions we
+            ask; influence the facts we seek; determine the
+            interpretations we give these facts; and direct our
+            reaction to these interpretations and
+            conclusions.
+          </para>
+        </epigraph>
+
+        <sect1>
+          <title>Day-Care Devil Worshipers</title>
+          <!-- para's, sect2's, epigraph's, and other block elements -->
+        </sect1>
+        <sect1>
+          <!-- more blocks -->
+        </sect1>
+      </chapter>
+
+  For a moderately large component, you will probably want to
+  divide it into sections (as above).  But for a short component,
+  you have the option of launching directly into block elements.
+
+  Let us clarify what these things mean.  A block element is
+  basically either a paragraph, or something at the same
+  conceptual/hierarchical level as a paragraph (such as a list,
+  and equation, an illustration, and so on).  The only thing
+  "smaller" than a block element is an inline element.  Most
+  usually, a block element will be set apart from other blocks
+  with vertical whitespace, framing boxes, or the like; an inline
+  element will be continuous with the words around it, but might
+  be marked by a different font, color, hyperlink, or the like.
+  As an example, in the above chapter, the epigraph is much like
+  a short section.  It contains two blocks: the attribution, and
+  the epigraph '<para>' (a different epigraph might be multiple
+  paragraphs).  This atttibution contains a '<citetitle>', but
+  that citation will likely be rendered inline when printed,
+  perhaps by italics or underlining.  Or maybe it will be a
+  hotlink to the bibliography if rendered to HTML.
+
+  Sections are bigger than blocks, and are in fact just a list of
+  blocks.  How big they are is for authorial and editorial
+  judgement.  But there are two main strategies for making
+  sections.  You can either use the '<sect1>', '<sect2>'...
+  '<sect5>' hierarchy, or you can use the '<section>' element
+  nested recursively.  For my own purpose--writing
+  philosophical prose--I felt that explicitly numbered section
+  levels was better.  I had a distinct sense of how important
+  each type of section -must- be, and the numbering matched that
+  well.  However, for something like a technical reference, you
+  are more likely to consider that your material might be nested
+  in different places and different depths appropriately.  In
+  that case, the '<section>' element works better (and can nest
+  to more than five levels).  There are some other specialized
+  block types, but the above are the most general ones.
+
+
+UNTIL NEXT TIME
+----------------------------------------------------------------------
+
+  The elements and structure outlined here is enough to get
+  started on creating your own DocBook documents.  Take a look at
+  those I created (see Resources) for some more details, or also
+  check out the more extensive tag documentation in the
+  Resources.  In the next column we will get around to
+  transforming our DocBook source document into some other
+  formats, and introduce extensible stylesheet language
+  transformations (useful outside DocBook also).
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  OASIS's recommendations on XML tools:
+
+    http://www.oasis-open.org/docbook/tools/index.html
+
+  IBM alphaWorks' Xeena XML Editor (free-of-cost license):
+
+    http://www.alphaworks.ibm.com/tech/xeena
+
+  David Mertz XML Spy Review:
+
+    http://webreview.com/wr/pub/2000/09/01/feature/index04.html
+
+  Icon Information-Systems' XML Spy Homepage (commercial XML
+  editor):
+
+    http://www.xmlspy.com/
+
+  Scholarly Technology Group's Web-based XML Validation (source
+  available and liberally licensed):
+
+    http://www.stg.brown.edu/service/xmlvalid/
+
+  SoftQuad's XMetal Homepage (commercial XML editor):
+
+    http://softquad.com/index_main.html
+
+  Extensibility's XML Instance (commercial XML editor):
+
+    http://www.extensibility.com/products/xml_instance/index.htm
+
+  Sabletron XSL Processor (open source):
+
+    http://www.gingerall.com/charlie-bin/get/webGA/act/sablotron.act
+
+  By all means, the best place to get started in a more detailed
+  understanding of DocBook is.  The ink-on-paper version is:
+
+    _DocBook:  The Definitive Guide_, Norman Walsh & Leonard
+    Muellner, O'Reilly, Cambridge, MA 1999.
+
+  If you wish to use an electronic version, refer to:
+
+    http://www.docbook.org/tdg/index.html
+
+  Organization for the Advancement of Structured Information
+  Standards (OASIS) home page:
+
+    http://www.oasis-open.org/
+
+  The obscure philosophy dissertation I have undertaken to
+  convert will probably have minimal interest to most XML
+  developers (or even make much sense).  But the markup might
+  well be of some interest as an example.  Both one possible HTML
+  presentation and the XML/DocBook source are at the below links:
+
+    http://gnosis.cx/publish/mertz/chap5.html
+
+    http://gnosis.cx/publish/mertz/chap5.xml
+
+  Files used and mentioned in this article:
+
+    http://gnosis.cx/download/xml_matters_4.zip
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author:  http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz became disenchanted with the academy and became a
+  technical journalist: post hoc ergo propter hoc. David may be
+  reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/.  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+
+

@@ -1,0 +1,378 @@
+CHARMING PYTHON #B10: The SimPy Simulation Language
+Modelling Discrete Simultaneous Events
+
+David Mertz, Ph.D.
+Simulacrum, Gnosis Software, Inc.
+Octorber, 2002
+
+    The stochastic behavior of real-world systems is often
+    difficult to understand or predict.  Sometimes it is possible
+    rigorously to demonstrate statistical properties of
+    systems--e.g. average, worst-case, and best-case performance
+    features.  But at other times situations like resource
+    contentions, deadlocks, race conditions, and other pitfalls
+    of concrete designs only become evident when you actually run
+    (or simulate) a system.  [SimPy] is a Python package that
+    allows you very easily to create models of discrete event
+    systems.
+
+
+ARRIVING AT [SimPy]
+------------------------------------------------------------------------
+
+  I learned of the [SimPy] package when I was contacted by one of
+  its creators, Klaus Mueller.  Dr. Mueller had read the
+  _Charming Python_ installments that presented techniques for
+  using Python 2.2+ generators to implement semi-coroutines and
+  "weightless" threads.  In particular--and much to my
+  gratification--he found that these techniques were useful for
+  implementing Simula-67 style simulations in Python.
+
+  It turned out that Tony Vignaux and Chang Chui had previously
+  created another Python library that was conceptually closer to
+  Simscript, and that used standard threading rather than my
+  semi-coroutine technique.  Working together, the group
+  determined that the generator-based style was much more
+  efficient, and recently launched a GPL'd project on
+  SourceForge, called [SimPy], currently at beta status.
+  Professor Vignaux hopes to use the unified [SimPy] package in
+  his future university teaching; I believe the library is also
+  quite applicable to a variety of applied problems.
+
+  Prior to my recent correspondence and investigation, I
+  confessedly had no background in simulation as a programming
+  field.  I suspect most readers of this installment share my
+  limitation.  Although there is some novelty involved in the way
+  one thinks about this style of programming, simulations are
+  useful for understanding the behavior of resource limited
+  real-life systems.  Whether you are interested in limited
+  bandwidth networks, automobile traffic behavior, market and
+  commercial optimization, biological/evolutionary interactions,
+  or other "stochastic" systems, [SimPy] provides a simple Python
+  tool for such modelling.
+
+  This column installment uses a fairly simple example of a
+  grocery store checkout area with multiple aisles.  Using the
+  presented simulation, we can ask questions about the economic
+  and wait-time implications of various modifications to scanner
+  technologies, shopper habits, staffing needs, and so on.  The
+  nice thing about this modelling is that it lets you make policy
+  decisions in advance while having a clear idea of the
+  implications of changes made.  Obviously, most readers will not
+  run a grocery store specifically, but the techniques are
+  general for a large variety of systems.
+
+
+SIMULATION CONCEPTS
+------------------------------------------------------------------------
+
+  There are just three abstract/parent classes provided
+  by the [SimPy] library, and these correspond to the three basic
+  concepts of a simulation.  A number of other general functions
+  and constants are used to control the run of a simulation, but
+  the important concepts are tied with the classes.
+
+  The central concept in a simulation is a -process-.  A process
+  is simply an object that does something, then sometimes waits
+  for a while before it is ready to do a next thing.  In [SimPy]
+  you can also "passivate" a process, which means that it will
+  not do anything further unless called upon to do so by another
+  process.  It is often useful to think of a process as trying to
+  complete a goal.  Often a process is programmed as a loop in
+  which multiple actions are performed.  Betweeen each action,
+  you insert a Python "yield" statement, which lets the
+  simulation scheduler carry out the actions of each waiting
+  process before returning control.
+
+  Many of the actions that processes perform depend on using
+  -resources-.  A resource is simply anything that is limited in
+  availability.  In a biological model, a resource might be a
+  food supply; in a network model, a resource could be a router
+  or a finite-bandwidth channel; in our market simulation, a
+  resource is a checkout aisle.  The only thing a resource does
+  is restrict its usage to one particular process at any given
+  time.  Under the [SimPy] programming model, a process alone
+  determines how long it wants to retain a resource, the resource
+  itself is just passive.  In a real-life system, the [SimPy]
+  model may or may not fit the conceptual scheme--it is easy to
+  think of resources that inherently limit their utilization
+  (e.g. a server computer that severs a connection if it does not
+  get a satisfactory response in a required timeframe).  But as a
+  programming matter, it does not matter greatly whether a
+  process or a resource is the "active" party (just make sure you
+  understand your intention).
+
+  The final [SimPy] class is a -monitor-.  A monitor is not
+  really essential, but merely a convenience.  All a monitor does
+  is record events reported to it, and save statistics about
+  those events (averages, counts, variances, etc).  The provided
+  'Monitor' class is a useful tool for logging simulation
+  measures, but you could record events by any other technique
+  you wished also.  In fact, my example subclasses 'Monitor' to
+  provide some (slight) enhanced capabilities.
+
+
+PROGRAMMING A SIMULATION
+------------------------------------------------------------------------
+
+  Most of the time in my articles, I present sample applications
+  all at once, but in this case I think it is more useful to walk
+  the reader through each step of the grocery store application
+  instead.  You can clip together each portion if you wish; the
+  [SimPy] authors will include my example in future releases.
+
+  The first step in a [SimPy] simulation is a few general import
+  statements:
+
+      #----- Importing the SimPy library -----#
+      #!/usr/bin/env python
+      from __future__ import generators
+      from SimPy import Simulation
+      from SimPy.Simulation import hold, request, release, now
+      from SimPy.Monitor import Monitor
+      import random
+      from math import sqrt
+
+  Some of the examples accompanying [SimPy] use an "import *"
+  style, but I prefer to be more explicit about the namespaces I
+  populate.  For Python 2.2--which is the minimum version needed
+  for [SimPy]--you will need to import the generators feature as
+  indicated.  After Python 2.3, this will not be necessary.
+
+  For my application, I define a few runtime constants that
+  describe the scenarios I am interested in during a particular
+  simulation run.  As I change the scenario, I must edit these
+  constants within the main script.  If this were a more
+  fleshed-out application, I might configure these parameters
+  with command-line options, environment variables, or a
+  configuration file.  But for now, this style is adequate:
+
+      #----- Configuring the simulation parameters -----#
+      AISLES = 5         # Number of open aisles
+      ITEMTIME = 0.1     # Time to ring up one item
+      AVGITEMS = 20      # Average number of items purchased
+      CLOSING = 60*12    # Minutes from store open to store close
+      AVGCUST = 1500     # Average number of daily customers
+      RUNS = 10          # Number of times to run the simulation
+
+  The main thing our simulation needs to do is define one or more
+  processes.  For the grocery store simulation, the process we
+  are interested in is a customer who checks out at an aisle.
+
+      #----- Defining what a customer does -----#
+      class Customer(Simulation.Process):
+          def __init__(self):
+              Simulation.Process.__init__(self)
+              # Randomly pick how many items this customer is buying
+              self.items = 1 + int(random.expovariate(1.0/AVGITEMS))
+          def checkout(self):
+              start = now()           # Customer decides to check out
+              yield request, self, checkout_aisle
+              at_checkout = now()     # Customer gets to front of line
+              waittime.tally(at_checkout-start)
+              yield hold, self, self.items*ITEMTIME
+              leaving = now()         # Customer completes purchase
+              checkouttime.tally(leaving-at_checkout)
+              yield release, self, checkout_aisle
+
+  Each customer has decided to purchase a certain number of items
+  (our simulation does not cover the selection of items from the
+  grocery aisles, a customer simply arrives at checkout with his
+  cart).  I am not confident that exponential-variate
+  distribution is genuinely an accurate model here--at the low
+  end it feels right, but I feel like there should be a fuzzy
+  top limit on how many items a real-life shopper ever buys.  In
+  any case, you can see how easy it would be to adjust our
+  simulation should better model information become available.
+
+  The actions a customer takes are the thing to focus on.  The
+  "execution method" of a customer is '.checkout()'.  This
+  process method is often named '.run()' or '.execute()', but in
+  my example, '.checkout()' seemed most descriptive.  You can use
+  whatever name you wish.  The only real -actions- taken by a
+  'Customer' object are checking the simulated time at a couple
+  points, and logging some durations to the 'waittime' and
+  'checkouttime' monitors.  But in between the actions, are the
+  crucial 'yield' statements.  In the first case, the customer
+  requests a resource (a checkout aisle).  The customer cannot do
+  anything else until she gets the needed resource.  Once she gets
+  to the checkout aisle, the customer actually checks out--which
+  takes an amount of time proportionate to the number of items
+  she purchases.  Finally, once she is through the checkout, the
+  customer releases the resource so that other customers can use
+  it.
+
+  The above code defines what a customer Class does, but we need
+  to create some actual customer objects before we run a
+  simulation.  We -could- generate a customer object for each
+  customer who will shop during the day, and assign each one an
+  appropriate checkout time.  But a more parsimonious approach is
+  to let a factory object generate the needed customer objects
+  "as each customer enters the store."  The simulation is not
+  really interested simultaneously in all the customers that will
+  shop during a day, but only in the ones who contend for
+  checkout aisles at the same time.  Notice that the
+  'Customer_Factory' class is itself part of the simulation--it
+  is a process.  Despite possible associations with manufactured
+  robot workers, a la Fritz Lang's _Metropolis_, you should just
+  think of the customer factory as a programming convenience; it
+  does not correspond directly to anything in the modelled
+  domain.
+
+      #----- Generating the customer stream -----#
+      class Customer_Factory(Simulation.Process):
+          def run(self):
+              while 1:
+                  c = Customer()
+                  Simulation.activate(c, c.checkout())
+                  arrival = random.expovariate(float(AVGCUST)/CLOSING)
+                  yield hold, self, arrival
+
+  As I mentioned earlier, I want to collect some statistics that
+  the current [SimPy] 'Monitor' class does not address.  Namely,
+  I am not just interested in the average checkout time, but also
+  the worst case in a given scenario.  So I created an enhanced
+  monitor that collects minimum and maximum tallied values.
+
+      #----- Watching the simulation with a monitor -----#
+      class Monitor2(Monitor):
+          def __init__(self):
+              Monitor.__init__(self)
+              self.min, self.max = (int(2**31-1),0)
+          def tally(self, x):
+              Monitor.tally(self, x)
+              self.min = min(self.min, x)
+              self.max = max(self.max, x)
+
+  The final step in our simulation is to actually -run- it.  In
+  most of the standard examples, a simulation is run just once.
+  But for my grocery store, I decided to loop through several
+  simulations, each one corresponding to a day of business.  This
+  turns out to be a good idea, since some statistics differ
+  fairly significantly from day to day (as different random
+  values are used for customer arrivals and item counts).
+
+      #----- Running the simulation day-by-day -----#
+      for run in range(RUNS):
+          waittime = Monitor2()
+          checkouttime = Monitor2()
+          checkout_aisle = Simulation.Resource(AISLES)
+          Simulation.initialize()
+          cf = Customer_Factory()
+          Simulation.activate(cf, cf.run(), 0.0)
+          Simulation.simulate(until=CLOSING)
+
+          #print "Customers:", checkouttime.count()
+          print "Waiting time average: %.1f" % waittime.mean(), \
+                "(std dev %.1f, maximum %.1f)" % (sqrt(waittime.var()),waittime.max)
+          #print "Checkout time average: %1f" % checkouttime.mean(), \
+          #      "(standard deviation %.1f)" % sqrt(checkouttime.var())
+      print 'AISLES:', AISLES, '  ITEM TIME:', ITEMTIME
+
+
+SOME OUTCOMES (AND WHAT THEY MEAN)
+------------------------------------------------------------------------
+
+  When I first thought of my grocery store model, I thought a
+  simulation would answer a few direct questions.  For example, I
+  imagined that an owner might have a choice between buying
+  improved scanners (reducing 'ITEMTIME') or hiring more clerks
+  (increasing 'AISLES').  I thought I would just run the
+  simulation under each scenario--assuming given labor and
+  technology costs--and determine which was cheaper.
+
+  Once I played with the simulation, I realized something that is
+  probably more interesting than I had anticipated.  Looking at
+  all my collected data, I noticed that I did not know -what- it
+  was I was trying to optimize.  For example, is it more
+  important to reduce -average- checkout time, or to reduce the
+  -worst case- time?  Which makes for better overall customer
+  satisfaction?  Moreover, how do I compare the time a customer
+  spends waiting to arrive at a checkout aisle with the time
+  spent ringing up the items?  In my personal experience, I get
+  impatient waiting in the line, but I feel less worried once
+  my items are being rung up (even if it takes a while).
+
+  I do not know the answers to these types of considerations--I
+  do not actually own or run a grocery store, I just invented the
+  problem.  But having a simulation would let me determine
+  exactly what the tradeoffs were; and it is simple enough to
+  tweak behaviors (including those not yet explicitly
+  parameterized--e.g. do customers -really- arrive consistently
+  throughout the day).
+
+  Let me show just one closing example that proves the value of
+  the model.  I wrote above that the behavior of complex systems
+  is hard to conceptualize.  Here is something I consider a proof
+  of that fact.  What do you think happens when available aisles
+  are reduced from six to five (with other parameters constant).
+  I would initially expect -slightly- worst checkout times.  The
+  reality is different:
+
+      #----- Two sample runs with varying aisles -----#
+      % python Market.py
+      Waiting time average: 0.5 (std dev 0.9, maximum 4.5)
+      Waiting time average: 0.3 (std dev 0.6, maximum 3.7)
+      Waiting time average: 0.4 (std dev 0.8, maximum 5.6)
+      Waiting time average: 0.4 (std dev 0.8, maximum 5.2)
+      Waiting time average: 0.4 (std dev 0.8, maximum 5.8)
+      Waiting time average: 0.3 (std dev 0.6, maximum 5.2)
+      Waiting time average: 0.5 (std dev 1.1, maximum 5.2)
+      Waiting time average: 0.5 (std dev 1.0, maximum 5.4)
+      AISLES: 6   ITEM TIME: 0.1
+
+      % python Market.py
+      Waiting time average: 2.1 (std dev 2.3, maximum 9.5)
+      Waiting time average: 1.8 (std dev 2.3, maximum 10.9)
+      Waiting time average: 1.3 (std dev 1.7, maximum 7.3)
+      Waiting time average: 1.7 (std dev 2.1, maximum 9.5)
+      Waiting time average: 4.2 (std dev 5.6, maximum 21.3)
+      Waiting time average: 1.6 (std dev 2.6, maximum 12.0)
+      Waiting time average: 1.3 (std dev 1.6, maximum 7.5)
+      Waiting time average: 1.5 (std dev 2.1, maximum 11.2)
+      AISLES: 5   ITEM TIME: 0.1
+
+  Rather than being 1/5 worse or something like that, eliminating
+  one checkout aisle causes average waiting time to increase by
+  around 4 times.  Moreover, the unluckiest customer (during
+  these particular runs) goes from a 6 minute wait to a 21 minute
+  wait.  If I were the manager, I think knowing this threshhold
+  condition would be extremely important to customer
+  satisfaction.  Who would have known?
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  The homepage for [SimPy] has a number of useful documents that
+  detail both its API and give examples of working with [SimPy].
+  Given its beta status at the time of this writing, some
+  elements of [SimPy] may still change over time:
+
+    http://simpy.sourceforge.net/
+
+  Implementing "weightless threads" with Python generators
+
+    http://www-106.ibm.com/developerworks/library/l-pythrd.html
+
+  Generator-based state machines
+
+    http://www-106.ibm.com/developerworks/library/l-pygen.html
+
+  Iterators and simple generators
+
+    http://www-106.ibm.com/developerworks/library/l-pycon.html
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz exists virtually.  With a bit of disappointment he
+  suspects that _Neuromancer_ style direct interfaces between
+  brain and net will not quite come around during his lifetime;
+  but with a bit of dread, he imagines the civil liberties
+  implications of what will happen in 50 years.  David may be
+  reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/.  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+

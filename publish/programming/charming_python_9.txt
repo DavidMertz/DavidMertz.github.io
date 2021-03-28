@@ -1,0 +1,420 @@
+CHARMING PYTHON #9 (20000052)
+TK programming in Python: Tips for Beginners
+
+David Mertz, Ph.D.
+Super model, Gnosis Software, Inc.
+October 2000
+
+    Built into most distributions of Python you will find the
+    'TK' GUI library developed by Scriptics for use with TCL.
+    'TK' is available for a large number of computer platforms,
+    and its Python interface, [TKinter], is available almost
+    equally widely.  This column introduces a programmer to
+    [TKinter] by means of source code samples and usage
+    explanations.  The project used as an example is a port of
+    the Txt2Html front-end discussed in an earlier article to a
+    GUI environment.
+
+
+WHAT IS PYTHON? WHAT IS TK?
+------------------------------------------------------------------------
+
+  Python is a freely available, very-high-level, interpreted
+  language developed by Guido van Rossum.  It combines a clear
+  syntax with powerful (but optional) object-oriented semantics.
+  Python is available for almost every computer platform you
+  might find yourself working on, and has strong portability
+  between platforms.
+
+  TK is a widely used graphics library developed by John
+  Ousterhout, and most closely associated with the TCL language
+  also developed by Ousterhout.  TK started out--in 1991--as an
+  X11 library, but since that time it has been ported to
+  virtually every popular GUI.  Bindings for TK have been written
+  for many popular languages (and for many small languages too),
+  including the [Tkinter] module for Python.  TK is as close as
+  Python comes to having a "standard" GUI.
+
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  This column has a lot of parallels with my earlier "Curses
+  programming in Python" column.  Both 'curses' and 'TK' are
+  widely used user interface libraries.  And despite the fact
+  that 'curses' targets text consoles, and 'TK' GUIs, working
+  with both libraries is surprisingly similar.  Understanding the
+  basic notions of windows and event loops is the first step to
+  programming with either library.  Once you have got those
+  concepts down, all you really need is a reference to the
+  widgets available.  Well, a good reference, and a moderate
+  amount of practice.
+
+  In this column--much as with the 'curses' one--we'll be limiting
+  ourselves to the features of [Tkinter] itself.  Since the
+  [Tkinter] module is part of many Python distributions, you have
+  a good chance of having it available without requiring users to
+  download support libraries or other Python modules.  The
+  Resources section gives pointers to several collections of
+  higher-level widgets for various UI purposes.  But you can do a
+  lot with [Tkinter] itself, even construct your own new
+  high-level widgets.  Getting used to the base [Tkinter] module
+  is a good way to familiarize yourself with the 'TK' way of
+  thinking, even if you go on to use extra widget collections.
+
+  The author should also make a confession to readers--but a
+  useful one, perhaps.  I am no wizened expert at 'TK' programming.
+  In fact, my 'TK' programming experience stretches back about
+  three days (with a few glances at some of the references in the
+  Resources prior to that).  Maybe it was not an entirely
+  painless three days, but at the end of them, I feel like I have
+  a pretty good grasp of working with [Tkinter].  The moral here
+  is that 'TK' itself, and the Python [Tkinter] wrapper are both
+  extraordinarily well-designed and friendly libraries that are
+  about the easiest way to start GUI programming I can think of.
+
+
+THE APPLICATION
+------------------------------------------------------------------------
+
+  As a test application for this article, the author will discuss
+  a wrapper he has written for the 'Txt2Html' program introduced
+  in "Charming Python #3", whose techniques were discussed
+  further in subsequent columns.  'Txt2Html' works in several
+  ways, but for purposes of this article, we are interested in
+  'Txt2Html' as a command-line format conversion program.  One
+  way to operate 'Txt2Html' is to feed it a bunch of command-line
+  arguments indicating various aspects of the conversion to be
+  performed, and let the application run as a batch process.  For
+  occassional usage, it might be friendlier for users to be
+  presented with an interactive selection screen that leads users
+  through conversion options, and provides visual feedback of
+  options selected, before performing the actual conversion.
+
+  The application 'tk_txt2html' is structured in terms of
+  a familiar topbar menu with drop-downs and nested submenus.
+  Even beyond the similarities of 'TK' and 'curses' event loops,
+  this application -looks- a lot like the 'curses' version
+  discussed in "Charming Python #6" -- at least in terms of the
+  basic parts of the screens and UI techniques.  'TK' gives us a
+  bit more starting material than 'curses' did, so things like
+  the menus can rely on inherent [Tkinter] classes, rather than
+  being built "from scratch."  'tk_txt2html' has somewhat fewer
+  lines of code than does 'curses_txt2html', while simultaneously
+  doing a bit more.  But they are in the same ballpark.  Beyond
+  the capability for selecting each configuration option, a
+  scrolling help box is created with the TK Text widget, an about
+  box used the Message widget, and a series of history lines help
+  flex 'TK's dynamic geometry management a little bit.  Of
+  course, as with most interactive applications, some user input
+  is caught with 'TK's Entry widget.
+
+  Probably it is worth looking at the application in action
+  before going on with the explanation of its code:
+
+  {Screenshot of tk_txt2html.py:
+   http://gnosis.cx/publish/programming/cp9.gif}
+
+
+The Basics
+------------------------------------------------------------------------
+
+  There are really exactly three things that a [Tkinter] program
+  has to do:
+
+      #--------- Minimum possible [Tkinter] program -----------#
+      import Tkinter        # import the Tkinter module
+      root = Tkinter.Tk()   # create a root window
+      root.mainloop()       # create an event loop
+
+  The sample program is a perfectly legitimate [Tkinter] program
+  (maybe not a perfectly -good- on, since it doesn't even manage
+  "hello world").  But the only thing actually missing from our
+  first sample program is some widgets to populate the root
+  window we have created.  Once we enhance our program with
+  widgets, this same root '.mainloop()' method call will handle
+  all the interaction with our widgets without further programmer
+  intervention.
+
+  Let's take a look at the more realistic main() function of
+  'tk_txt2html.py'.  Notice that I prefer to perform an 'import
+  Tkinter' statement to the 'from Tkinter import *' that John
+  Grayson uses throughout his book (see Resources).  It is not so
+  much that I am worried about namespace pollution (the usual
+  caveat for 'from ... import *' statements); rather, I want to
+  make it explicit when I am using [Tkinter] classes, and not
+  risk confusion with my own functions and clases.  I recommend
+  you do this, at least as you begin working with [Tkinter]:
+
+      #------------ tk_txt2html main() function ---------------#
+      def main():
+          global root, history_frame, info_line
+          root = Tkinter.Tk()
+          root.title('Txt2Html TK Shell')
+          init_vars()
+
+          #-- Create the menu frame, and menus to the menu frame
+          menu_frame = Tkinter.Frame(root)
+          menu_frame.pack(fill=Tkinter.X, side=Tkinter.TOP)
+          menu_frame.tk_menuBar(file_menu(), action_menu(), help_menu())
+
+          #-- Create the history frame (to be filled in during runtime)
+          history_frame = Tkinter.Frame(root)
+          history_frame.pack(fill=Tkinter.X, side=Tkinter.BOTTOM, pady=2)
+
+          #-- Create the info frame and fill with initial contents
+          info_frame = Tkinter.Frame(root)
+          info_frame.pack(fill=Tkinter.X, side=Tkinter.BOTTOM)
+
+          # first put the column labels in a sub-frame
+          LEFT, Label = Tkinter.LEFT, Tkinter.Label   # shortcut names
+          label_line = Tkinter.Frame(info_frame, relief=Tkinter.RAISED, borderwidth=1)
+          label_line.pack(side=Tkinter.TOP, padx=2, pady=1)
+          Label(label_line, text="Run #", width=5).pack(side=LEFT)
+          Label(label_line, text="Source:", width=20).pack(side=LEFT)
+          Label(label_line, text="Target:", width=20).pack(side=LEFT)
+          Label(label_line, text="Type:", width=20).pack(side=LEFT)
+          Label(label_line, text="Proxy Mode:", width=20).pack(side=LEFT)
+
+          # then put the "next run" information in a sub-frame
+          info_line = Tkinter.Frame(info_frame)
+          info_line.pack(side=Tkinter.TOP, padx=2, pady=1)
+          update_specs()
+
+          #-- Finally, let's actually do all that stuff created above
+          root.mainloop()
+
+  There are a number of things to notice about our simple 'main()' function.
+
+    - Every widget has a parent.  Whenever we create a widget,
+    the first argument to the instance creation is the parent of
+    that new widget.
+
+    - When other arguments are used besides a parent, they are
+    passed in Python's pass-by-name style.  This gives us lots of
+    flexibility about what options we want to override the
+    defaults on, and which we are happy to leave be.
+
+    - A number of (Frame) widget instances are global variables.
+    It would be possible to pass these around from function to
+    function, and maintain a theoretical purity about scoping.
+    Doing that is much more trouble than it is worth.  The basic
+    UI elements of our application are perfectly appropriate for
+    any function to play with; making them global just makes this
+    explicit.  Of course, you should use a good naming convention
+    when you use global variables (Pythonistas seem to hate
+    Hungarian notation, so don't use that ^-)).
+
+    - After a widget is created, it needs to call a geometry
+    manager method to let 'TK' know where to put the widget.  A
+    lot of magic goes into 'TK' 's calculation of the details,
+    especially when windows are resized or widgets are added
+    dynamically.  But you need to let 'TK' know which set of
+    incantations to use, for your part.
+
+
+GEOMETRY MANAGERS
+------------------------------------------------------------------------
+
+  'TK' (and therefore [Tkinter]) has three geometry managers to
+  choose from:  '.pack()', '.grid()' and '.place()'.  Only the
+  first two are used by 'tk_txt2html', although '.place()' can be
+  used for the most fine-grained (and therefore complicated)
+  control.  Most of the time, you will use '.pack()'.
+
+  You are certainly allowed to call the '.pack()' method of a
+  widget with no arguments.  If you do that, you can certainly
+  count on the widget winding up -somewhere- in your application.
+  But you probably want to provide some slight hints by way of
+  named argument.  The most important such hint is the 'side'
+  argument.  Options are LEFT, RIGHT, TOP, and BOTTOM (note that
+  those words are variables in the [Tkinter] namespace).
+
+  A lot of the magic of '.pack()' comes from the fact that
+  widgets can be nested.  In particular, the Frame widget does
+  little more than act as a container for other widgets (maybe
+  show borders of various types).  So a particularly handy way of
+  organizing things is to pack together several frames in the
+  orientations you want them, then later add other widgets within
+  each frame.  Frames (or any other widgets) get packed in the
+  order their '.pack()' methods are called.  So if two widgets
+  both want to have 'side=TOP', it is first-come-first-serve.
+
+  '.grid()' is also used a bit in 'tk_txt2html' (mostly just to
+  play with it though).  The idea of the grid geometry manager is
+  that a parent widget is divided into invisible graph-paper
+  lines.  When a widget calls '.grid(row=3, column=4)' it is
+  requesting (of its parent) that if be placed on the third row
+  and fourth column.  The total number of rows and columns is
+  just a matter of looking at the requests made by all the
+  siblings.
+
+  Don't forget to apply a geometry manager to your widgets, or
+  else you'll be surprised not to see them in your application.
+
+
+MENUS
+------------------------------------------------------------------------
+
+  [Tkinter] makes creating menus quite painless.  If you want,
+  you can even have different fonts, pictures, checkboxes, and
+  all sorts of fancy child widgets populate your menus.  Our
+  application is simpler than that though.  The menus for
+  'tk_txt2html' were all created with the line we saw above:
+
+      menu_frame.tk_menuBar(file_menu(), action_menu(), help_menu())
+
+  But this line might mystify as much as it clarifies, by itself.
+  Most of the work (but still a small amount) lives in the
+  functions I have called  '*_menu()'.  Let's look at the simplest
+  one:
+
+      #------------- Creating a drop-down menu ----------------#
+      def help_menu():
+          help_btn = Tkinter.Menubutton(menu_frame, text='Help', underline=0)
+          help_btn.pack(side=Tkinter.LEFT, padx="2m")
+          help_btn.menu = Tkinter.Menu(help_btn)
+          help_btn.menu.add_command(label="How To", underline=0, command=HowTo)
+          help_btn.menu.add_command(label="About", underline=0, command=About)
+          help_btn['menu'] = help_btn.menu
+          return help_btn
+
+  Basically, a drop-down menu consists of a Menubutton widget
+  that has a Menu widget as a child.  The Menubutton needs to be
+  '.pack()'d to the appropriate location (or '.grid()'d, etc.),
+  but the Menu widget instead has items added with the
+  '.add_command()' method.  There is an odd little assignment to
+  the Menubutton's dictionary in the above:  just do the same in
+  your own code.
+
+
+GETTING USER INPUT
+------------------------------------------------------------------------
+
+  We have seen to display output (the Label widget was used
+  above, see the full source for some use of the Text widget and
+  the Message widget also).  And we have also seen how to create
+  menus.  Probably the most significant remaining UI issue is
+  getting user field input (and the last UI issue for this
+  introduction).
+
+  The basic widget for field input is Entry.  Using this is
+  simple, but might be a little bit different than you would
+  expect from Python's 'raw_input()' or [curses]' '.getstr()'.
+  That is, 'TK's Entry widget does not return a value for an
+  assignment context, but rather takes an argument for the field
+  object to be populated.  For example, this is the function that
+  allows the user to specify an input file:
+
+      #------------- Receiving user field input ---------------#
+      def GetSource():
+          get_window = Tkinter.Toplevel(root)
+          get_window.title('Source File?')
+          Tkinter.Entry(get_window, width=30,
+                        textvariable=source).pack()
+          Tkinter.Button(get_window, text="Change",
+                         command=lambda: update_specs()).pack()
+
+  Again, there are a few things to look at here.  We have created
+  a new Toplevel widget for this input.  That is, input occurs in
+  its own dialog box in this example.  The input field is created
+  by creating an Entry widget, and specifying a 'textvariable'
+  argument.  But there is a bit more to this still.
+
+  The 'textvariable' argument does not specify a simple string
+  variable, but is instead a StringVar object.  In our case, the
+  'init_vars()' function that was called from 'main()' contained
+  these lines:
+
+      source = Tkinter.StringVar()
+      source.set('txt2html.txt')
+
+  What this did was create an object suitable for taking user
+  input, and then give it an initial value.  Once this object
+  exists, it is modified immediately every time a change is made
+  within an Entry widget that links to it.  The change occurs for
+  every keystroke within the Entry widget, not just upon
+  termination of a read, in the style of 'raw_input()'.
+
+  Once we want to do something with the value a user entered, we
+  use the '.get()' method of our StringVar instance, for example:
+
+      source_string = source.get()
+
+
+FINALLY
+------------------------------------------------------------------------
+
+  The techniques outlined here--and especially those additional
+  ones used in the full application source code should get you
+  started with [Tkinter] programming.  Play with it a bit, it is
+  not hard to work with.  One nice thing is that the 'TK'
+  library may be accessed by many languages other than Python
+  also, so what you learn using Python's [Tkinter] module is
+  mostly transferrable elsewhere.
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  A good online starting point for [Tkinter] information (and
+  downloads) is:
+
+    http://python.org/topics/tkinter/
+
+  Several extra widget collections are available to save you some
+  time in constructing complex UIs. PMW (Python Mega Widgets) is
+  one written 100% in Python, and widely used in the Python
+  community.  Several widget collections can be found at:
+
+    http://python.org/topics/tkinter/widgets.html
+
+  Fredrik Lundh has written a good tutorial for [Tkinter] that
+  contains much more detail than this article:
+
+    http://www.pythonware.com/library/tkinter/introduction/index.htm
+
+  A couple printed books are worth checking out also.  The first
+  is a good intro to TK itself.  The second is specific to
+  Python, with a lot of use of the PMW collection in its
+  examples:
+
+    _TCK/TK in a Nutshell_, Paul Raines & Jeff Tranter, O'Reilly,
+    1999. ISBN 1-56592-433-9
+
+    _Python and Tkinter Programming_, John E. Grayson, Manning,
+    2000. ISBN 1-884777-81-3
+
+  A very nice distribution of Python has been created recently by
+  ActiveState.  This distribution includes [TKinter] and a
+  variety of other nice packages and modules not contained in
+  most other distributions.  (They even have an ActivePerl
+  distribution for those inclined towards that other scripting
+  language).  Find it at:
+
+    http://activestate.com/Products/ActivePython/Download.html
+
+  Scriptics (the maintainers and creators of TK) has been renamed
+  as Ajuba Solutions.  It can still be found at:
+
+    http://www.scriptics.com/home.html
+
+  For many comparisons, take a look at "Curses programming in
+  Python:"
+
+    http://gnosis.cx/publish/programming/charming_python_6.html
+
+  Files used and mentioned in this article:
+
+    http://gnosis.cx/download/charming_python_9.zip
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz writes many apocopetic articles.  David may be
+  reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/.  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+
+

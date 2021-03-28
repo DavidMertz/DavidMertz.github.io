@@ -1,0 +1,125 @@
+Tue 03-27-2001
+
+Hi Rosemary,
+
+I write this evaluation as a letter to you, as a first brush.  We
+can work on formatting it in a more formal style as that seems
+appropriate.
+
+My impression of JSP Explorer is that it does one interesting
+thing moderately well.  At the same time, it is hard for me to
+imagine a realistic payment model for making JSP Explorer into a
+successful commercial product.  The task performed is
+sufficiently limited that it would not be difficult for a CS
+instructor (in an educational context) or a programming team
+administrator (in a business context) to set up something similar
+with a few hours work.  Moreover, individual web users have built
+up expectations of finding utilities of similar scope on
+freely-available websites[1] (Slinn does provide that JSP Explorer
+is free for a class of users).  Against that backdrop, it is
+difficult to get users to pay for a "one-trick pony."
+
+Before proceeding, I should provide a few words of background for
+what JSP Explorer -is-.  Java Server Pages (JSP) are one of
+several technologies for delivering dynamic content in which the
+processing occurs at the server, and clients are web browsers
+that present simple HTML.  This is in contrast to more active
+clients--which basically amount to either Java applets run in a
+browser, or to custom client apps (that are either unrelated or
+loosely related to web browsers).  Technologies similar to JSP
+are ColdFusion, ASP, PHP, CGI/FastCGI, mod_perl, mod_python,
+Zope, and a few others.  Like several of others in this list, the
+general style of JSP is to intersperse plain HTML with special
+sections of programming code.  The webserver processes the
+special sections when they are encountered, which generally adds
+additional content to the HTML pages the code is embedded in.
+For JSP, as you would guess, the embedded language is Java.
+
+JSP Explorer is a tool that lets a user interactively enter Java
+code--optionally embedded in some surrounding HTML code--and
+present as a result the webpage that a webserver would deliver
+upon processing the Java/HTML.  In some ways this is similar to
+interactive windows in Java IDEs (or even simple test programs
+with the raw JDK--which is the plain command-line version of a
+Java development environment, basically).  However, with a Java
+IDE, what you can look at is the result of running *client-side*
+Java code, which possibly differs from the results of running
+similar code on the server-side.  A number of excellent Java IDEs
+are available free-of-cost, by the way.  For what it is worth,
+however, beyond some basic changes such as 'System.out' becoming
+'out' in JSP, the overall principles of Java programming are not
+much different for JSP versus client-side (character-mode) Java.
+
+I would describe JSP Explorer, as I look at it today, as a work
+in progress.  In some minor ways, it still appears a bit crude.
+Some icons do not fit in their frames in my browser (even with a
+high resolution display).  The entry window for JSP samples also
+stretches past its frame.  The online documentation includes
+several simple examples with "Try It" buttons, but these buttons
+produce Javascript errors, and not the sample results (you can
+cut-and-past the provided code to get the results).  The visual
+layout is a bit crowded (maybe targetting a new output window
+would work better).  These types of issues can be improved
+without a huge effort, but as a commercial product, polish would
+be important.
+
+One concern I have with JSP Explorer is a security issue.
+Running arbitrary untrusted code is rarely a good idea.  Java has
+its "sandbox", but this is limited in a JSP context, where access
+to server resources are inherently required.  A few calls, like
+System.exit(), System.out, and System.err are disabled, but it is
+far from clear that every possible security hole is covered.  I
+am pretty sure that a malicious user could bring down the
+webserver that hosts JSP Explorer, or at least make it perform
+very poorly.  Various such attacks might overrun memory usage,
+CPU cycles, disk space, sockets and connections, and so on, even
+if they could not get directly at protected resources such as
+files, passwords, etc.  While such security problems could not
+damage users as such, they could make JSP Explorer itself
+unusable.
+
+The users of JSP Explorer would primarily be educational
+users--students (either academic, or workplace training) who were
+trying to become familiar with JSP techniques.  To a lesser
+extent, programmers who do occassional JSP work, but primarily
+work in other areas, could benefit from testing out quick sample
+code to determine what JSP did.  I would not, however, envision
+JSP Explorer to be of benefit to large scale JSP development,
+which very quickly moves beyond the "snippet testing" level of
+coding.
+
+The area where I think JSP Explorer could potentially become a
+much more useful tool would be if it were to support multiple
+JSP-enabled web-servers, and multiple JDK versions.  Although Sun
+claims from time-to-time that Java is "write once, run
+everywhere", the parody, "write once, debug everywhere" is
+probably closer to the truth.  I'm not sure what platform Slinn
+is using exactly, but whatever it is, non-trivial code samples
+are likely to perform somewhat differently on different
+platforms.  These differences are likely to depend on OS and
+version, Java version/level, and webserver (a number support JSP
+extensions).  For someone developing JSP code that might get
+implemented on multiple web-servers, a basic "sanity" check to
+make sure it really -did- the expected thing across a number of
+platforms would be valuable (however, any such check would still
+be less than an iron-clad guarantee, lots of things can still
+manage to go wrong).  Of course, for JSP Explorer to test against
+many platforms, it would have to be hosted on these many
+platforms, and some connecting code would need to route code
+snippets to each such host.
+
+Yours, David...
+
+------------------------------------------------------------------------
+[1] Just three examples of utilities of similar range--but
+completely different purpose--are my own CGI version of Txt2Html
+(which does the least of my examples, by far), STG's online XML
+validator at:
+  http://www.stg.brown.edu/service/xmlvalid/
+Or the BabelFish machine translator at:
+  http://babelfish.altavista.com/
+These online utilities perform a single task (the fish perhaps a
+number of tasks if you count all the language mappings), and are
+made available for free (perhaps as good publicity for their
+various authors).
+

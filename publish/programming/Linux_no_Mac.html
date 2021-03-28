@@ -1,0 +1,664 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>Linux no Mac</title>
+</head>
+<body>
+<h1> Linux no Mac: uma introdu&ccedil;&atilde;o aos programadores POWER</h1>
+<p><span style="font-weight: bold;">01 Mar 2004, por </span><a
+ href="mailto:mertz@gnosis.cx?cc=editor@macpress.com.br"><span
+ style="font-weight: bold;">David Mertz, Ph.D</span>.</a></p>
+<p>Mesmo que a maioria dos usu&aacute;rios do Linux o tratem como um
+sistema
+operacional para suas caixas brancas x86, o Linux roda igualmente bem
+em m&aacute;quinas PowerPC. David lan&ccedil;a um olhar para o Linux no
+PowerPC e na
+linha de m&aacute;quinas PPC produzidas pela Apple, onde a
+op&ccedil;&atilde;o de usar o
+Linux &eacute; de grande valor para muitos usu&aacute;rios.</p>
+<h2>Sobre o PowerPC</h2>
+<p>A arquitetura POWER descreve uma fam&iacute;lia de CPUs RISC que
+surgiu de
+um cons&oacute;rcio formado pela IBM, Apple e Motorola. Dentro desta
+fam&iacute;lia,
+os mais avan&ccedil;ados chips POWER4 s&atilde;o usados em
+v&aacute;rias m&aacute;quinas de m&eacute;dio
+porte da IBM (veja os links em <a
+ href="file:///Users/davidmertz/Documents/MacPress.html#servico">MP.Servi&ccedil;o</a>
+para mais informa&ccedil;&otilde;es sobre as linhas de hardware e
+software iSeries e
+pSeries da IBM); em computadores pessoais, esta&ccedil;&otilde;es de
+trabalho ou
+servidores de grupos de trabalho, a linha PowerPC dos chips POWER
+&eacute;
+usada em uma vasta linha de m&aacute;quinas da Apple Computer para o
+consumidor final. Os chips da fam&iacute;lia PowerPC - especialmente os
+da
+Motorola - s&atilde;o usados tamb&eacute;m em v&aacute;rios sistemas
+embutidos e
+especializados, incluindo PCs compat&iacute;veis com o phoenix, a
+encarna&ccedil;&atilde;o
+atual do Amiga, de pequenos fabricantes.</p>
+<p>As inter-rela&ccedil;&otilde;es entre os diversos chips da
+arquitetura POWER s&atilde;o
+similares aquelas do mundo x86 - em sua grande parte, chips das
+&uacute;ltimas
+gera&ccedil;&otilde;es prov&ecirc;m compatibilidade com as anteriores
+enquanto oferecem
+novas capacidades e avan&ccedil;os. Dentro das
+ramifica&ccedil;&otilde;es da fam&iacute;lia
+PowerPC, m&aacute;quinas da Apple de cinco anos atr&aacute;s usavam os
+modelos de
+chips 601, 603 e 604. Os modelos atuais defasaram o G3 mas continuam
+usando o similar G4, ambos chips de 32 bits, rodando em diversas
+velocidades de clock; O rec&eacute;m introduzido G5 &eacute; um chip da
+IBM de 64
+bits que adicionou principalmente instru&ccedil;&otilde;es
+multim&iacute;dia especializadas
+aos modelos do chip POWER4.</p>
+<p>A base de todos estes chips, da perspectiva do desenvolvedor Linux,
+&eacute; que todos eles rodam o Linux bem e felizes. Para a
+fam&iacute;la de chips
+PowerPC, est&atilde;o dispon&iacute;veis excelentes
+distribui&ccedil;&otilde;es amig&aacute;veis ao
+usu&aacute;rio e que oferecem suporte comercial. A IBM tamb&eacute;m
+instala o Linux
+para consumidores das m&aacute;quinas POWER4 topo de linha.</p>
+<h2>Ent&atilde;o voc&ecirc; quer rodar Linux - Porqu&ecirc; comprar um
+PowerPC?</h2>
+<p>Os sistemas "padr&atilde;o" para rodar o Linux s&atilde;o
+inquestionavelmente
+m&aacute;quinas x86. Seja baseada em CPUs da Intel, AMD, Cyrix,
+Transmeta ou
+de pequenos fabricantes, a arquitura x86 e bem conhecida e forma a
+grande maioria dos computadores pessoais, esta&ccedil;&otilde;es de
+trabalho e
+pequenos servidores. Seguir a maioria &eacute; certamente seguro.</p>
+<p>Para muitos usu&aacute;rios do Linux, a melhor raz&atilde;o para
+comprar um
+PowerPC ser&aacute;, simplesmente, a linha de m&aacute;quinas bem
+projetadas e com
+pre&ccedil;os razo&aacute;veis disponibilizadas pela Apple.
+Reconhecidamente, a linha
+G4 - da linha de base - n&atilde;o se mant&eacute;m relativamente
+compar&aacute;vel em pre&ccedil;o
+com m&aacute;quinas x86 no que diz respeito ao poder de processamento.
+Os G4s
+n&atilde;o ficam t&atilde;o atr&aacute;s, mas ficam um pouco. Contudo,
+a Apple fabrica
+alguns dos melhores laptops dispon&iacute;veis da perspectiva
+ergon&ocirc;mica,
+est&eacute;tica, do uso com bateria e do peso. Essas
+caracter&iacute;sticas s&atilde;o mais
+importantes para mim num laptop, do que a pura mastiga&ccedil;&atilde;o
+de n&uacute;meros.
+No desktop, os modelos G4 diferenciam-se mais na perspectiva
+est&eacute;tica e
+ergon&ocirc;mica - por exemplo, na compacta&ccedil;&atilde;o da
+montagem cantil&eacute;ver da
+Apple nos monitores tela plana dos iMacs. Todas as m&aacute;quinas da
+Apple,
+al&eacute;m disso, t&ecirc;m uma boa reputa&ccedil;&atilde;o de
+durabilidade e confiabilidade -
+incluindo seus servidores para montagem em racks, que s&atilde;o bons
+para
+clusters e arranjos de servidores.</p>
+<p>No topo, as torres G5 da Apple s&atilde;o compar&aacute;veis em
+velocidade ao mais
+r&aacute;pido dos derivados das CPUS e sistemas x86; em outras
+palavras, o
+Intel Itanium e o AMD Athlon64. Testes de velocidade entre os
+tr&ecirc;s
+competidores s&atilde;o uma saco bagun&ccedil;ado, mas todos os
+tr&ecirc;s chips obt&ecirc;m
+performance similar (todos s&atilde;o notavelmente r&aacute;pidos e se
+encaixam em
+aplica&ccedil;&otilde;es de mastiga&ccedil;&atilde;o de
+n&uacute;meros). Al&eacute;m disso, no pre&ccedil;o, as torres
+G5 da Apple parecem ser vendidas por menos do que
+configura&ccedil;&otilde;es
+compar&aacute;veis de marcas x86 como Dell, Gateway, HP e outros
+renomados
+revendores de PC (cotradizendo a reputa&ccedil;&atilde;o da Apple de
+imp&ocirc;r um pre&ccedil;o <em>premium</em>).
+Vale a pena dizer que a Apple contribuiu com otimiza&ccedil;&otilde;es
+para o GCC3+
+gerar c&oacute;digo objeto PPC de qualidade similar a dos compiladores
+x86 ICC
+da Intel ou VisualAge C++ da IBM (que s&atilde;o discutivelmente
+melhores que
+o GCC no x86).</p>
+<p>No fim do dia, as diferencas entre o Linux/x86 e o Linux/PPC
+s&atilde;o
+notavelmente m&iacute;nimas. Este artigo cobrir&aacute; com um pouco
+mais de detalhes
+as distribui&ccedil;&otilde;es abaixo, mas geralmente, no Linux/PPC
+voc&ecirc; pode usar os
+mesmos gerenciadores de janelas, rodar os mesmos utilit&aacute;rios,
+hospedar
+os mesmos servidores e assim por diante, como voc&ecirc; faria em
+qualquer
+sistema x86. A menos que voc&ecirc; olhe para o hardware f&iacute;sico
+- ou como um
+raro usu&aacute;rio que necessita de caracter&iacute;sticas de
+performance precisas
+em v&aacute;rias opera&ccedil;&otilde;es (por exemplo, sua
+aplica&ccedil;&atilde;o &eacute; desenvolvida
+especialmente em torno de uma extens&atilde;o de vetor particular) -
+voc&ecirc; n&atilde;o
+precisar&aacute; nem mesmo saber em qual arquitetura voc&ecirc;
+est&aacute; rodando o
+Linux. A tela ser&aacute; exatamente a mesma, muitos arquivos de
+configura&ccedil;&atilde;o
+conter&atilde;o os mesmos ajustes e os mesmos bytes sair&atilde;o
+atrav&eacute;s dos cabos.</p>
+<h2> Ent&atilde;o voc&ecirc; tem um Mac - Porqu&ecirc; rodar o Linux?</h2>
+<p>Em um grau supreendente, sistemas operacionias (outros que
+n&atilde;o
+aqueles da altamente propriet&aacute;ria Microsoft) tornaram-se
+commodities.
+Isto significa que muitas aplica&ccedil;&otilde;es verticais
+est&atilde;o a uma mera
+recompila&ccedil;&atilde;o de dist&acirc;ncia de rodar igualmente bem
+no Linux, FreeBSD,
+SunOS, Irix, AIX ou mesmo no Mac OS X; em alguns casos, mesmo este
+passo n&atilde;o &eacute; necess&aacute;rio, j&aacute; que as ABIs (<em>Application
+Binary Interfaces</em>, Interfaces Bin&aacute;rias de
+Aplica&ccedil;&otilde;es) suportam bin&aacute;rios estrangeiros.</p>
+<p>Se voc&ecirc; comprou uma m&aacute;quina da Apple nos &uacute;ltimos
+anos, ela veio com
+um sistema operacional pr&eacute;-instalado de alta qualidade, derivado
+do
+Unix, chamado OS X. O OS X tem um kernel e uma cole&ccedil;&atilde;o de
+utilit&aacute;rios
+de base chamado Darwin, que est&aacute; sob a licen&ccedil;a <em>Free
+Software</em>
+(Software Livre) e &eacute; derivado (em parte) do FreeBSD - os
+&uacute;nicos
+elementos propriet&aacute;rios est&atilde;o na GUI (Graphical User
+Interface, ou
+Interface Gr&aacute;fica do Usu&aacute;rio, o Aqua) e na
+cole&ccedil;&atilde;o de aplica&ccedil;&otilde;es ao
+usu&aacute;rio final e de administra&ccedil;&atilde;o do sistemas que
+v&ecirc;m embutidas no OS X.
+Mesmo o X11 (especificamente o XFree86, n&atilde;o importanto a
+implica&ccedil;&atilde;o do
+nome) &eacute; suportado no no OS X, nos modos tela-cheia e <em>rootless</em>;
+"<em>rootless</em>"
+aqui significa que aplica&ccedil;&otilde;es X11 rodam lado a lado com
+aplica&ccedil;&otilde;es
+nativas do Aqua. Voc&ecirc; pode rodar o Apache no OSX, voc&ecirc; pode
+rodar o
+servidor NcFTP; voc&ecirc; pode at&eacute; mesmo rodar o GIMP ou o
+KOffice. Porqu&ecirc;
+se preocupar em instalar o Linux?</p>
+<p>H&aacute; um n&uacute;mero de cen&aacute;rios onde faz mais sentido
+rodar o Linux em sua
+m&aacute;quina da Apple do que rodar o OS X. A primeira
+situa&ccedil;&atilde;o - uma que
+ter&aacute; mais apelo aos entusiastas do que aos usu&aacute;rios
+corporativos - ser&aacute;
+quando o Mac em quest&atilde;o &eacute; uma m&aacute;quina antiga. O OS
+X &eacute; totalmente n&atilde;o
+suportado, ou pelo menos verdadeiramente moroso, em Macs antigos: 603,
+604 ou mesmo nos primeiros G3. O Linux pode ser bastaste &aacute;gil
+nestes
+sistemas mais velhos; e o Linux &eacute; muito mais &uacute;til como
+servidor, ou em
+muitos casos mesmo como um desktop, que o Mac OS 9 (ou anteriores) que
+vinham com estas m&aacute;quinas antigas. Entretanto, o segmento dos
+entusiastas &eacute; completamente restrito, ou pelo menos n&atilde;o
+precisa
+procurar conselhos aqui.</p>
+<p>Uma situa&ccedil;&atilde;o mais importante onde o Linux vale a pena
+como sistema
+operacional para as m&aacute;quinas G3, G4 ou G5 da Apple &eacute;
+quando voc&ecirc; quer
+assegurar uma interface de sistema/usu&aacute;rio uniforme entre
+diferentes
+m&aacute;quinas. Muitas empresas, companhias de hospedagem, escolas ou
+instala&ccedil;&otilde;es de pesquisa ter&atilde;o uma mistura de
+sistemas x86 e PPC para
+seus usu&aacute;rios. Enquanto voc&ecirc; pode recompilar muitas
+aplica&ccedil;&otilde;es
+espec&iacute;ficas do Linux para o OS X, fazer isto n&atilde;o permite
+a todos os
+sistemas terem uma uniformiza&ccedil;&atilde;o da GUI, dos arquivos de
+configura&ccedil;&atilde;o,
+estruturas de diret&oacute;rios e um ambiente de
+constru&ccedil;&atilde;o entre as v&aacute;rias
+m&aacute;quinas mantidas. "Linux em todo lugar" assegura um grau muito
+elevado
+de consist&ecirc;ncia.</p>
+<p>Uma coisa em partigular que pode confundir os desenvolvedores Linux
+sobre o OS X &eacute; sua sobreposi&ccedil;&atilde;o de duas
+organiza&ccedil;&otilde;es de diret&oacute;rio
+distintas - os tradicionais <span class="code">/etc/</span>, <span
+ class="code">/usr/local/</span>, <span class="code">/sbin/</span> e
+outros presentes em sistemas Linux/Unix e os <span class="code">/Applications/</span>,
+<span class="code">/Library/</span>, <span class="code">/System/</span>
+do Mac OS 9. A hierarquia <span class="code">/sw/</span>
+criada pelo Fink, adicionalmente, &eacute; quase uma terceira camada.
+Al&eacute;m
+disso, ainda que o OS X tenha um servidor X11 embutido, eu j&aacute;
+encontrei
+uma variedade de pequenos problemas (atualiza&ccedil;&otilde;es de
+tela, associa&ccedil;&atilde;o
+de teclas etc.) usando aplica&ccedil;&otilde;es X11 nele - o Linux e um
+bom
+gerenciador de janelas, como o KDE ou GNOME, constitui um ambiente
+muito mais uniforme neste caso.</p>
+<p>Independente dos desenvolvedores que queiram usar seus desktops ou
+laptops PPC, companhias de hospedagem Web podem querer apresentar um
+sistema previs&iacute;vel aos seus clientes que mantenham sites via
+SSH, FTP
+ou interfaces baseadas na Web - desconsiderando que um dom&iacute;nio
+esteja
+hospedado em um chip PPC ou x86. Ainda em torno dos servidores, o Linux
+oferece v&aacute;rias vantagens sobre o OS X, mesmo sobre a
+vers&atilde;o servidor do
+OS X. Uma das maiores for&ccedil;as do Linux &eacute; a variedade de
+sistemas de
+arquivos que foram desenvolvidos ou portados para ele: ext2, ext3,
+ReiserFS, JFS da IBM, XFS da SGI etc. Cada um destes possuem suas
+pr&oacute;prias qualidades, muitas vezes espec&iacute;ficas a
+cen&aacute;rios de uso
+particulares (hospedagem Web, servidor de streaming multim&iacute;dia,
+RDBMS
+etc.) Enquanto a vers&atilde;o servidor do OS X suporta uma
+vers&atilde;o avan&ccedil;ada do
+HFS+, com <em>journaling</em> e sensibilidade &agrave; caixa opcional
+nos
+nomes de arquivos, ele n&atilde;o se compara &agrave; gama de
+op&ccedil;&otilde;es de sistemas de
+arquivos do Linux. Devo mencionar tamb&eacute;m - sem super enfatizar -
+uma
+pequena quest&atilde;o de custo: uma vers&atilde;o para clientes
+ilimitados do Mac OS
+X Server custar&aacute; a voc&ecirc; US$ 1.000,00 por m&aacute;quina,
+enquanto o Linux ser&aacute;
+livre de custos (e mesmo um contrato de suporte de um dos fornecedores
+das distribui&ccedil;&otilde;es &eacute; muito mais barato que isto). A
+advert&ecirc;ncia aqui &eacute;
+que se as ferramentas de administra&ccedil;&atilde;o do OS X Server
+livram sua equipe
+de IS (Information Services, ou Servi&ccedil;os da
+Informa&ccedil;&atilde;o) de ao menos um
+pouco de trabalho por dia, a despesa de mil d&oacute;lares pode se
+pagar
+rapidamente.</p>
+<h2>Distribui&ccedil;&otilde;es</h2>
+<p>Para este artigo, eu instalei e avaliei quatro
+distribui&ccedil;&otilde;es do
+Linux para m&aacute;quinas PowerPC: Debian, Knoppix, Yellow Dog e
+Mandrake.
+Todas foram instaladas e testadas em um iMac G4. Eu percebi que duas
+das distribui&ccedil;&otilde;es s&atilde;o bem polidas e f&aacute;ceis
+de usar, compar&aacute;veis &agrave;s
+melhores distribui&ccedil;&otilde;es do Linux para x86; as outras duas
+eu descreveria
+como "ainda n&atilde;o est&atilde;o prontas". Existem tamb&eacute;m
+algumas outras
+distribui&ccedil;&otilde;es - e outras certamente surgir&atilde;o com o
+tempo. Eu prcurei
+prover uma compara&ccedil;&atilde;o completa de cada
+distruibui&ccedil;&atilde;o que os leitores
+possam escolher, mas simplesmente obter um senso do "estado da arte" -
+n&atilde;o &eacute; minha inten&ccedil;&atilde;o desprezar as
+distribui&ccedil;&otilde;es que eu n&atilde;o testei.</p>
+<p>As duas distribui&ccedil;&otilde;es que achei menos atrativas foram
+o Debian
+(Woody) e a Knoppix. A &uacute;ltima &eacute; uma criatura interessante
+que eu achei
+&uacute;til em m&aacute;quinas x86. O Knoppix usa um CD "<em>live boot</em>"
+- isto
+&eacute;, a inicializa&ccedil;&atilde;o a partir do CD do Knoppix
+dar&aacute; a voc&ecirc; um ambiente
+Linux funcionando com o KDE, OpenOffice e uma boa cole&ccedil;&atilde;o
+de
+utilitr&aacute;rios. Usando o Knoppix, n&atilde;o h&aacute; a
+necessidade de criar qualquer
+parti&ccedil;&atilde;o ou ajustes de boot em um PC, e voc&ecirc; pode
+levar o CD do Knoppix
+para v&aacute;rias m&aacute;quinas para ter uma
+configura&ccedil;&atilde;o uniforme em cada uma
+delas. Infelizmente, testando em tr&ecirc;s sistemas distintos, o
+Knoppix/PPC
+n&atilde;o gerenciou bem o boot: o KDE n&atilde;o carregou e caiu num
+cr&uacute; ambiente
+TWM que n&atilde;o obt&eacute;m o modo de v&iacute;deo de forma
+adequada (problemas de mapas
+de cores e tamanho). A rede, inclu&iacute;ndo a sem fio, contudo, foi
+reconhecida corretamente; dai voc&ecirc; pode usar as ferramentas da
+linha de
+comando. Conforme o Knoppix/PPC recebe mais polimento - ou algo
+parecido - ele ser&aacute; uma maneira &uacute;til de rodar o Linux de
+forma n&atilde;o
+destrutiva em m&aacute;quinas com o Mac OS X j&aacute; instalado (veja
+os links em <a
+ href="file:///Users/davidmertz/Documents/MacPress.html#servico">MP.Servi&ccedil;o</a>
+para artigos completos sobre o Knoppix).</p>
+<p>Os problemas que eu tive com o Debian/PPC s&atilde;o provavelmente
+similares aqueles que os usu&aacute;rios dedicados do Debian mais amam
+em sua
+distribui&ccedil;&atilde;o na hora de come&ccedil;ar. A
+instala&ccedil;&atilde;o &eacute; restrita a uma ocupa&ccedil;&atilde;o
+em modo texto, com nenhuma op&ccedil;&atilde;o para mudan&ccedil;a de
+configura&ccedil;&atilde;o caso um
+"Y" ou "N" (sim ou n&atilde;o) fatal seja pressionado. Conforme
+voc&ecirc; vai
+cometendo enganos e l&ecirc; cada tela de configura&ccedil;&atilde;o
+atentamente, a
+instala&ccedil;&atilde;o segue bem. Ela at&eacute; mesmo encontra
+automaticamente na rede
+quaisquer m&oacute;dulos que possam n&atilde;o estar nos CDs de
+instala&ccedil;&atilde;o. Muitos
+utilit&aacute;rios e aplicativos instalados - GCC, Python, o kernel,
+Open
+Office etc, estar&atilde;o com suas vers&otilde;es um pouco
+atr&aacute;s das mais recentes,
+mas as ferramentas mais usadas est&atilde;o dispon&iacute;veis em
+pacotes Debian (e
+assim alcan&ccedil;&aacute;veis usando o maravilhoso <span class="code">apt-get</span>).
+Contudo, o problema matador que eu encontrei no Debian/PPC foi a
+inabilidade de fazer o X11 funcionar nele - a instala&ccedil;&atilde;o
+pareceu
+completamente desatenta a qualquer modelo de placa de v&iacute;deo
+remotamente
+relevante, e quaisquer tentativas p&oacute;s instala&ccedil;&atilde;o
+provaram-se tamb&eacute;m
+infrut&iacute;feras. Estou certo que existam usu&aacute;rios do
+Debian/PPC que
+conseguiram contornar essas quest&otilde;es de
+configura&ccedil;&atilde;o mas, comparada &agrave;
+facilidade de instala&ccedil;&atilde;o das outras
+distribui&ccedil;&otilde;es, tenho problemas em
+recomendar o Debian aos usu&aacute;rios.</p>
+<p>O Yellow Dog (Sirius/3.0.1) e o Mandrake (Bamboo/9.1) t&ecirc;m
+distruibui&ccedil;&otilde;es muito agrad&aacute;veis para o PowerPC. Em
+geral, eu recomendo
+o Yellow Dog sobre o Mandrake para a maioria dos usu&aacute;rios, mas
+cada tem
+suas vantagens e fraquezas. O fato do fabricante do Yellow Dog, a Terra
+Soft Solutions, se especializar em sistemas PowerPC provavelmente o
+leva a ter um pouco mais de aten&ccedil;&atilde;o com pequenos detalhes
+do ajuste do
+Linux para o PPC. Por outro lado, para usu&aacute;rios corporativos
+visanto
+uma completa consist&ecirc;ncia podem preferir o Mandrake para
+m&aacute;quinas x86 e
+PPC.</p>
+<p> O Yellow Dog e o Mandrake usam uma atrativa e amig&aacute;vel
+instala&ccedil;&atilde;o
+com GUIs; talvez uma leve vantagem v&aacute; para o Mandrake pela sua
+lista de
+passos pendentes e completados &agrave; esquerda da &aacute;rea de
+di&aacute;logo, mas eu,
+contudo, prefiro a est&eacute;tica das telas do Yellow Dog. Os dois
+sistemas
+v&ecirc;m com uma ampla cole&ccedil;&atilde;o de aplicativos e
+utilit&aacute;rios: Gnome/KDE,
+OpenOffice, XFree86 4.3, Mozilla, Mac-on-Linux, v&aacute;rios
+servidores. Para
+muitos aplicativos e utilit&aacute;rios (e o kernel), o Yellow Dog vem
+com
+vers&otilde;es um pouco mais recentes, geralmente apenas uma
+diferen&ccedil;a de
+micro vers&atilde;o, n&atilde;o uma vers&atilde;o menor inteira. Em
+qualquer caso, nem o
+Yellow Dog e nem o Mandrake tiveram qualquer dificuldade em reconhecer
+minha rede, placa gr&aacute;fica, parti&ccedil;&otilde;es, mouse,
+teclado, e assim por
+diante. Contudo, experimentei uma falha com a primeira tentativa do
+Yellow Dog em reiniciar o X11 - precisei rodar o <span class="code">/usr/X11R6/bin/Xautoconfig</span>
+uma vez para resolver o problema.</p>
+<p>Algumas diferen&ccedil;as entre o Mandrake e o Yellow Dog
+sobressaem. A
+organiza&ccedil;&atilde;o do menu e o tema s&atilde;o um pouco
+diferentes no gerenciador de
+janelas KDE que eu selecionei (padr&atilde;o para os dois), mas os dois
+sistemas foram bastante razo&aacute;veis (e configur&aacute;veis uma
+vez que o
+sistema esteja instalado, em qualquer caso). A sele&ccedil;&atilde;o de
+pacotes
+cont&ecirc;m op&ccedil;&otilde;es similares para "<em>personal</em>", "<em>server</em>"
+e "<em>workstation</em>"
+(com personaliza&ccedil;&atilde;o permitida). Eu realmente gostei da
+ferramenta
+DiskDrake do Mandrake para o gerenciamento de parti&ccedil;&otilde;es.
+Este
+utilit&aacute;rio gr&aacute;fico permite que voc&ecirc; adicione,
+apague, redimensione sem
+destruir, formate e manipule parti&ccedil;&otilde;es de outros modos
+(mas n&atilde;o h&aacute;
+redimensionamento sem destrui&ccedil;&atilde;o no HFS+). Dentre outras
+coisas, o
+DiskDrake me permitiu escolher o formato da(s) minha(s)
+parti&ccedil;&atilde;o(&otilde;es)
+do Mandrake durante a instala&ccedil;&atilde;o, ao inv&eacute;s de
+simplesmente padronizar
+para o ext3 como o Yellow Dog fez (mas eu pude adicionar ainda uma
+parti&ccedil;&atilde;o ReiserFS extra depois, facilmente, no Yellow
+Dog). E eu estou,
+de maneira geral, bastante impressionado com o <em>Control Center</em>
+(Centro de Controle) do Mandrake, em ambos x86 e PPC, n&atilde;o porque
+ele
+fa&ccedil;a qualquer coisa &uacute;nica, mas porque ele unifica tarefas
+de
+configura&ccedil;&atilde;o numa mesma interface.</p>
+<p>Apesar das vantages do Mandrake, minha raz&atilde;o final para
+preferir o
+Yellow Dog &eacute; seu sistema de gerenciamento de pacotes. O Yellow
+Dog
+parece ser algo como um sistema h&iacute;brido: ele usa RPMs durante a
+instala&ccedil;&atilde;o, mas tamb&eacute;m instala o <span
+ class="code">apt-get</span> para atualiza&ccedil;&otilde;es
+posteriores do sistema. Eu n&atilde;o olhei nas entranhas da
+instala&ccedil;&atilde;o, mas eu pude digitar <span class="code">apt-get
+install OpenOffice</span>
+em uma linha e ter cada depend&ecirc;ncia resolvida corretamente, todos
+os
+350 megabytes de arquivos baixados e os links adicionaos ao meu menu
+KDE sem ter que reiniciar o X11. Depois de gastar muitas horas brigando
+com depend&ecirc;ncias RPM, este foi um prod&iacute;gio para se anotar.
+E claro, eu
+fui mimado pelo uso do Fink no Mac OS X, que faz exatamente a mesma
+coisa (e &eacute; baseado no apt-get).</p>
+<h2>Particionamento, gerenciamento multi-boot e emula&ccedil;&atilde;o</h2>
+<p>O Linux/PPC tem uma desvantagem importante em rela&ccedil;&atilde;o
+ao Linux/x86:
+na &eacute;poca da cria&ccedil;&atilde;o deste artigo, n&atilde;o
+haviam ainda ferramentas para
+reparticionamento n&atilde;o destrutivo de parti&ccedil;&otilde;es HFS+
+(ao menos nenhuma
+que seja p&oacute;s alpha e pode rodar do OS X ou Linux). Infelizmente,
+isto
+significa que voc&ecirc; n&atilde;o pode configurar facilmente um
+sistema multi-boot
+a partir de um sistema Mac OS X existente; distribui&ccedil;&otilde;es
+Linux/x86 mais
+recentes prov&ecirc;m uma capacidade an&aacute;loga de adicionar o
+Linux a um
+sistema Windows pr&eacute; existente. &Eacute; simples particionar
+destrutivamente um
+drive e ent&atilde;o instalar o OS X em uma das novas
+parti&ccedil;&otilde;es; s&oacute; que fazer
+isto significa perder seus dados e configura&ccedil;&otilde;es do
+sistema
+(backup/restaura&ccedil;&atilde;o pode funcionar, mas fazer isto pode
+ser
+complicado). E claro, se voc&ecirc; quer simplesmente uma
+m&aacute;quina Linux
+dedicada, isto n&atilde;o &eacute; algo que voc&ecirc; deva se
+preocupar.</p>
+<p>Particionar e preparar o <em>bootstrap</em> funciona um pouco
+diferente em m&aacute;quinas da Apple se comparado &agrave;s x86.
+Espec&iacute;ficamente, o
+Open Firmware da Apple (uma vers&atilde;o avan&ccedil;ada do BIOS que
+os usu&aacute;rios do
+Linux conhecem dos PCs x86) vive em uma pequena parti&ccedil;&atilde;o
+"Apple
+Bootstrap" (hda2) para carregar o sistema operacional subsequente de
+uma das parti&ccedil;&otilde;es regulares. O mapa de
+parti&ccedil;&otilde;es tamb&eacute;m ocupa a hda1,
+da&iacute;, a primeira parti&ccedil;&atilde;o na qual voc&ecirc;
+instalar&aacute; qualquer sistema
+operacional ocupar&aacute; pelo menos a hda3. Durante a
+inicializa&ccedil;&atilde;o da
+m&aacute;quina - usando a ferramenta de multi-boot <span class="code">yaboot</span>
+- seu processo de boot seguir&aacute; atrav&eacute;s de dois
+est&aacute;gios, ao inv&eacute;s de uma camada nos <em>boot loaders</em>
+na MBR dos x86, como o lilo e o grub o fazem. No primeiro
+est&aacute;gio, voc&ecirc;
+ter&aacute; a escolha de inicializar, por exemplo, do HD, CD-ROM ou do
+Open
+Firmware; assumindo que voc&ecirc; inicialize do HD, voc&ecirc; pode
+ter a op&ccedil;&atilde;o de
+inicializar de v&aacute;rios sistemas operacionais/vers&otilde;es que
+vivem em suas
+parti&ccedil;&otilde;es normais.</p>
+<p>Configurar o <span class="code">yaboot</span> geralmente &eacute;
+similar a trabalhar com o <span class="code">lilo</span>. Um arquivo
+chamado <span class="code">/etc/yaboot.conf</span> cont&eacute;m
+op&ccedil;&otilde;es para v&aacute;rios sistemas, kerneis,
+parti&ccedil;&otilde;es e assim por diante; o formato &eacute; muito
+similar ao <span class="code">lilo.conf</span>. Quando voc&ecirc;
+tiver configurado propriamente o <span class="code">yaboot.conf</span>,
+voc&ecirc; carregar&aacute; o <span class="code">yaboot</span> na
+parti&ccedil;&atilde;o bootstrap usando o comando <span class="code">ybin</span>
+(como root, claro). Para saber informa&ccedil;&otilde;es de
+parti&ccedil;&atilde;o, voc&ecirc; deve usar a ferramenta <span
+ class="code">pdisk</span> ao inv&eacute;s do tradicional <span
+ class="code">fdisk</span>
+dos sistemas Linux/x86. Denovo, a interface &eacute; similar, mas
+n&atilde;o
+completamente a mesma, nestas ferramentas. Para usu&aacute;rios do
+Mandrake, a
+ferramenta baseada em GUI DiskDrake &eacute; muito mais amig&aacute;vel
+e mais
+flex&iacute;vel para fazer a mesma coisa. Usando o <span class="code">yaboot</span>,
+voc&ecirc; pode escolher entre m&uacute;ltiplas
+distribui&ccedil;&otilde;es Linux e/ou vers&otilde;es do Mac OS na hora
+do boot.</p>
+<p>Uma coisa legal de rodar o Linux em m&aacute;quinas PPC &eacute;
+que, desta forma,
+voc&ecirc; pode rodar a ferramenta Software Livre Mac-on-Linux. Ela
+funciona
+de maneira parecida ao que o comercial VMWare faz em m&aacute;quinas
+x86. Um
+sistema Mac OS completo (que pode ser o OS X ou uma vers&atilde;o
+anterior,
+como o Mac OS 9) roda dentro de uma janela em uma tela do Linux/X11. De
+fato, voc&ecirc; pode rodar m&uacute;ltiplas vers&otilde;es do Mac OS
+simultaneamente, cada
+uma delas com sua pr&oacute;pria janela virtual. O Mac OS viver&aacute;
+em uma
+esp&eacute;cia de "caixa" onde ele n&atilde;o poder&aacute; ver seu
+ambiente Linux, mas
+instru&ccedil;&otilde;es PPC rodar&atilde;o todavia em velocidade
+nativa total. Assumindo
+que voc&ecirc; tenha mem&oacute;ria suficiente para rodar tal caixa, o
+Mac-on-Linux
+dar&aacute; a voc&ecirc; um bom meio de continuar usando suas
+aplica&ccedil;&otilde;es Mac OS
+enquanto estiver no Linux - mesmo aplica&ccedil;&otilde;es
+propriet&aacute;rias para as
+quais voc&ecirc; n&atilde;o possui o c&oacute;digo fonte. Nenhuma
+necessidade de
+recompila&ccedil;&atilde;o como seria necess&aacute;rio se voc&ecirc;
+tivesse que mover aplica&ccedil;&otilde;es
+do Linux para o ambiente do OS X.<br>
+</p>
+<h2>MP.Servi&ccedil;o<br>
+</h2>
+<li>Leia o <a target="_blank"
+ href="http://en.wikipedia.org/wiki/IBM_POWER">resumo
+da hist&oacute;ria da arquitetura POWER</a>.</li>
+<li>Saiba mais detalhes espec&iacute;ficos da <a target="_blank"
+ href="http://en.wikipedia.org/wiki/PowerPC">hist&oacute;ria
+do PowerPC</a>.</li>
+<li>Veja algumas <a target="_blank"
+ href="http://www.rietman.biz/%7Ewijnand/linux/mac/index.html?main">informa&ccedil;&otilde;es
+gen&eacute;ricas sobre
+distribui&ccedil;&otilde;es Linux/PPC, al&eacute;m de dicas de
+instala&ccedil;&atilde;o adicionais</a>.</li>
+<li>Para saber os &uacute;ltimos avan&ccedil;os do Linux em
+PowerPCs de 32 e 64 bits, visite o <a target="_blank"
+ href="http://www.penguinppc.org/">penguinppc.org</a>.</li>
+<li>A Terra Soft Solutions &eacute; o fabricante do <a target="_blank"
+ href="http://www.yellowdoglinux.com/">Yellow Dog Linux</a>
+e tamb&eacute;m oferece sistemas PowerPC sob medida - como revenda
+Apple e
+sistemas pr&oacute;prios - com vers&otilde;es do Yellow Dog pr&eacute;
+instaladas.</li>
+<li>O Mandrake.com oferece mais informa&ccedil;&otilde;es sobre a <a
+ target="_blank" href="http://www.linux-mandrake.com/en/ppc.php3">distribui&ccedil;&atilde;o
+PowerPC Linux do Mandrake</a>.</li>
+<li>Mais informa&ccedil;&otilde;es sobre o <a target="_blank"
+ href="http://www.debian.org/">Debian Linux</a> podem
+ser encontradas no debian.org.</li>
+<li>O <a target="_blank" href="http://www.knoppix.org/">site
+oficial do Knoppix</a> &eacute; mantido pelo autor da
+distribui&ccedil;&atilde;o, Klaus Knopper.</li>
+<li>Saiba o <a target="_blank" href="http://www.maconlinux.org/">estado
+atual do Mac-on-Linux</a>.</li>
+<li>Os servidores iSeries e pSeries da IBM podem rodar o Linux em
+seus
+processadores POWER. Para mais informa&ccedil;&otilde;es sobre estes
+sistemas, visite
+as p&aacute;ginas do Linux nos IBM eServer <a target="_blank"
+ href="http://www-1.ibm.com/servers/eserver/iseries/linux/">iSeries</a>
+e <a target="_blank"
+ href="http://www-1.ibm.com/servers/eserver/pseries/linux/">pSeries</a>.</li>
+<li>Voc&ecirc; encontrar&aacute; uma grande variedade de
+softwares de avalia&ccedil;&atilde;o
+dispon&iacute;veis para os iSeries e pSeries rodando Linux, bem como
+documenta&ccedil;&atilde;o e recursos de aprendizado, no <a
+ target="_blank"
+ href="http://www-106.ibm.com/developerworks/offers/linux-speed-start/download-p.html">centro
+de download do Linux dos iSeries e pSeries</a>.</li>
+<li>"<a target="_blank"
+ href="http://www-106.ibm.com/developerworks/linux/library/l-ppc/">PowerPC
+assembly</a>" (developerWorks, julho de 2002)
+&eacute; uma introdu&ccedil;&atilde;o ao uso da linguagem assembly no
+PPC sob o Linux.</li>
+<li>"<a target="_blank"
+ href="http://www-106.ibm.com/developerworks/eserver/articles/davis_ia32.html">Porting
+IA32 Applications to Linux PowerPC</a>" e "<a target="_blank"
+ href="http://www-106.ibm.com/developerworks/eserver/articles/davis_64_linux.html">Porting
+Intel Applications to 64 bit Linux PowerPC</a>"
+s&atilde;o excelentes recursos para aqueles que procuram mudar suas
+aplica&ccedil;&otilde;es para a plataforma PPC.</li>
+<li>Para uma vis&atilde;o geral completa sobre a arquitetura
+PowerPC, leia os tr&ecirc;s fasc&iacute;culos do "<a target="_blank"
+ href="http://www-106.ibm.com/developerworks/eserver/articles/archguide.html">PowerPC
+Architecture Book</a>".</li>
+<li>Ainda no dom&iacute;nio de desenvolvimento nos eServer
+encontra-se o "<a target="_blank"
+ href="http://www-106.ibm.com/developerworks/eserver/articles/power4_mem.html">POWER4
+and shared memory synchronization</a>".</li>
+<li>Encontre mais recursos para desenvolvedores Linux na <a
+ target="_blank" href="http://www-106.ibm.com/developerworks/linux/">se&ccedil;&atilde;o
+Linux do developerWorks</a>.</li>
+<h2>Sobre o Autor</h2>
+<p>David Mertz &eacute; propriet&aacute;rio e consultor chefe da
+Gnosis Software,
+Inc., cujo slogan corporativo &eacute; "N&oacute;s Sabemos das Coisas!"
+(e sabemos
+mesmo). Voc&ecirc; pode encontrar o David pelo email <a
+ href="mailto:mertz@gnosis.cx">mertz@gnosis.cx</a>; voc&ecirc; pode
+saber aspectos de sua vida em sua <a target="_blank"
+ href="http://gnosis.cx/publish/">p&aacute;gina pessoal</a>.
+Conhe&ccedil;a seu livro, "<a target="_blank"
+ href="http://gnosis.cx/TPiP">Text Processing in Python</a>".</p>
+<div align="right">Traduzido por Deny Dias.<br>
+"<a target="_blank"
+ href="http://www-106.ibm.com/developerworks/library/l-pmac.html?ca=dgr-lnxw01LinuxMac">Linux
+on Mac: a POWER programmer's primer</a>", em
+20/01/2004, IBM developerWorks.<br>
+Direitos de tradu&ccedil;&atilde;o e publica&ccedil;&atilde;o para a
+l&iacute;ngua portuguesa gentilmente cedidos ao MacPress pelo autor.</div>
+</body>
+</html>

@@ -1,0 +1,402 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>CHARMING PYTHON #3 -- My first web-based filtering proxy -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="charming_python_2.html" TITLE="CHARMING PYTHON #2">
+<link REL="next" HREF="charming_python_4.html" TITLE="CHARMING PYTHON #4">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<h1>Charming Python #3</h1>
+<h2>My first web-based filtering proxy</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Flutist, Gnosis Software, Inc.<br>
+ June 2000<br>
+ <br>
+</p>
+<blockquote>
+    This article examines Txt2Html, a public-domain working
+    project created by the author to illustrate Python
+    programming techniques.  <code>Txt2Html</code> is a "web-based filtering
+    proxy"--a program that reads web-based documents for the
+    user, then presents a modified page to the user's browser.
+    In order to accomplish these tasks, <code>Txt2Html</code> runs as a CGI
+    program, queries outside web resources, and makes use of
+    regular-expressions; each of these general-purpose sub-tasks
+    is explained, clarified, and demonstrated in this article.
+</blockquote>
+<h3>What Is Python?</h3>
+ <p>
+  Python is a freely available, very-high-level, interpreted
+  language developed by Guido van Rossum.  It combines a clear
+  syntax with powerful (but optional) object-oriented semantics.
+  Python is available for almost every computer platform you
+  might find yourself working on, and is highly portable between
+  platforms.
+</p>
+<h3>Introduction To 'Txt2Html'</h3>
+ <p>
+  In the course of writing articles in this series, the author
+  faced a quandry about the best format to write in.
+  Wordprocessor formats are proprietary, and conversions between
+  formats tend to be imperfect and troublesome (and they bind
+  one to proprietary tools; contrary to an open-source spirit).
+  HTML is fairly neutral--and is probably the form you are
+  reading this article in--but it also adds tags that are easy to
+  mistype (or commits one to an HTML-enhanced editor).  DocBook
+  is an interesting XML format that can be converted to many
+  target formats, and has the right semantics for technical
+  articles (or books); but like HTML, there are lots of tags to
+  worry about during the writing process.  LaTeX is great for
+  sophisticated typography; but lots of tags again, and these
+  articles don't need typographic sophistication.
+</p>
+<p>
+  For real ease of composition--and especially for platform and
+  tool neutrality--plain ASCII just cannot be beat.  Beyond
+  completely plain text, however, the internet (especially
+  Usenet) has prompted the development of an informal standard of
+  "smart ASCII" documents.  "Smart ASCII" adds just a little bit
+  of extra semantic content and context in ways that look
+  "natural" in text displays.  Emails, newsgroup posts, FAQs,
+  project READMEs, and other electronic documents often include a
+  few typographic/semantic elements like asterisks around
+  emphasized words, underscores surrounding titles, vertical and
+  horizontal whitespace to describe textual relations, selective
+  ALLCAPS, and a few other tidbits.  Project Guttenburg is a
+  wonderful effort that put quite a bit of thought into its own
+  consideration of formats, and decided on "smart ASCII" as the
+  best choice for preserving and distributng great books for a
+  long time.  Even if these articles won't live as such literary
+  classics, the decision was made to write them as "smart ASCII",
+  and automate any conversions to other formats with handy Python
+  scripts.
+</p>
+<p>
+  <code>Txt2Html</code> started out as a simple file converter, as the name
+  suggests.  But the internet posed several obvious enhancements
+  to the tool.  Since many of the documents one might want to
+  view in an "html-ized" form live somewhere at the end of
+  http: or ftp: links, the tool should really handle such remote
+  documents straightforwardly (without the need for a
+  download/convert/view cycle).  And since the target of the
+  conversion is HTML after all, what we would generally want to
+  do with the target is view it in a web-browser.  Putting these
+  things together, it emerged that <code>Txt2Html</code> should be a
+  "web-based filtering proxy." Fancy words there, maybe even
+  "fully buzzword compliant." What it amounts to is the idea that
+  a program might read a web-page (or other resource) on your
+  behalf, massage the contents in some way, then present you with
+  something that is <strong>better</strong> than the original page (at least for
+  some particular purpose).  A good example of such a tool is the
+  Babelfish translation service.  After running a URL through
+  Babelfish, you see a webpage that looks pretty much like the
+  original one, but has the pleasant feature of having words in
+  a language you can read instead of in a language you do not
+  understand.  In a way, all the search-engines that present
+  little synopses of the pages they find for a search do the same
+  thing.  But those search-engines (by design) take a lot more
+  liberty with the formatting and appearance of a target page,
+  and leave out a lot more.  <code>Txt2Html</code> is certainly a lot less
+  ambitious than Babelfish is; but conceptually, both do largely
+  the same thing.  See the resources for some more examples, some
+  rather humorous.
+</p>
+<p>
+  Best of all, <code>Txt2Html</code> uses a number of programming techniques
+  that are common to a lot of different web-oriented uses of
+  Python.  This article will introduce those techniques, and give
+  some pointers on coding techniques and the scope of some Python
+  modules.  Note: the actual module in <code>Txt2Html</code> is called
+  <em><code>dmTxt2Html</code></em> to avoid conflict with the naming of a module
+  written by someone else.
+</p>
+<h3>Using The <em><code>cgi</code></em> Module</h3>
+ <p>
+  Python's <em><code>cgi</code></em> module--in the standard distribution--is a
+  godsend for anyone developing "Common Gateway Interface"
+  applications in Python.  You could create CGI's without it, but
+  you wouldn't want to.
+</p>
+<p>
+  Most typically, one interacts with CGI applications by means of
+  an HTML form.  One fills out some values in the form that
+  specify details of the action to be performed, then call on the
+  CGI to perform its action using your specifications.  For
+  example, the <code>Txt2Html</code> documentation uses this example for a
+  calling HTML form (the one generated by <code>Txt2Html</code> itself is a
+  bit more complicated, and may change; but the example will work
+  perfectly well, even from within your own web pages):
+</p>
+<div class="code-sample"><h4>HTML form to call 'Txt2Html'</h4><pre>
+&lt;form method="get" action="http://gnosis.cx/cgi-bin/txt2html.cgi"&gt;
+  URL: &lt;input type="text" name="source" size=40&gt;
+  &lt;input type="submit" name="go" value="Display!"&gt;
+&lt;/form&gt;
+
+</pre></div><p>
+  You may include many input fields within an HTML form, and the
+  fields can be of a number of different types (text, checkboxes,
+  picklists, radio buttons, etc.).  Any good book on HTML can
+  help a beginner with creating custom HTML forms.  The main
+  thing to remember here is that each field has a <code>name</code>
+  attribute, and that name is used later to refer to the field in
+  our CGI script.  Another detail worth knowing about is that
+  forms can have one of two <code>method</code> attributes: "get" and
+  "post".  The basic difference is that the "get" method encodes
+  all the details of how the form was filled out right into the
+  URL generated (by including a bunch of "URL encoded" stuff
+  after the URL indicated in the <code>action</code> attribute).  Using this
+  method makes it easier for a user to save a specific query for
+  later reuse.  Then again, if you do not want users to save
+  queries, use the "post" method.
+</p>
+<p>
+  The Python script that gets called by the above form does an
+  <code>import cgi</code> to make sorting out its calling form easy.  One
+  thing this module does is hide any details of the difference
+  between "get" and "post" methods from the CGI script.  By the
+  time the call is made, this is not a detail the CGI creator
+  needs to worry about.  The main thing done by the CGI module is
+  to treat all the fields in the calling HTML form in a
+  dictionary-like fashion.  What you get is not <strong>quite</strong> a
+  Python dictionary, but it is close enough to be easy to work
+  with:
+</p>
+<div class="code-sample"><h4>Using Python [cgi] module</h4><PRE><FONT COLOR=#3333CC><B>import</B></FONT> cgi, sys
+cfg_dict = {<FONT COLOR=#115511>'target'</FONT>: <FONT COLOR=#115511>'&lt;STDOUT&gt;'</FONT>}
+sys.stderr = sys.stdout
+form = cgi.FieldStorage()
+<FONT COLOR=#3333CC><B>if</B></FONT> form.has_key(<FONT COLOR=#115511>'source'</FONT>):
+    cfg_dict[<FONT COLOR=#115511>'source'</FONT>] = form[<FONT COLOR=#115511>'source'</FONT>].value</PRE></div><p>
+  There are a couple little details to notice in the above few
+  lines.  One trick we do is to set <code>sys.stderr = sys.stdout</code>.
+  By doing this, if our script encounters an untrapped error, the
+  traceback will display back to the client browser.  This can
+  save a lot of time in debugging a CGI application.  But it
+  might not be what you want users to see (or it might, if they
+  are likely to report problem details to you).  Next, we read
+  the HTML form values into the dictionary-like <code>form</code> instance.
+  Much like a true Python dictionary, <code>form</code> has a <code>.has_key()</code>
+  method.  However, unlike a Python dictionary, to actually pull
+  off the value within a key, we have to look at the <code>.value</code>
+  attribute for the key.
+</p>
+<p>
+  From here, we have everything in the HTML form in plain Python
+  variables, and we can handle them as in any other Python
+  program.
+</p>
+<h3>Using The <em><code>urllib</code></em> Module</h3>
+ <p>
+  Like most things Python, <em><code>urllib</code></em> makes a whole bunch of
+  complicated things happen in an obvious and simple way.  The
+  <code>urlopen()</code> function in <em><code>urllib</code></em> treats any remote
+  resource--whether http:, ftp:, or even gopher:-- just like it
+  was a local file.  Once you grab a remote (pseudo-)filehandle
+  using <code>urlopen()</code>, you can do everything you would with the
+  filehandle of a local (read-only) file:
+</p>
+<div class="code-sample"><h4>Using Python [urllib] module</h4><PRE><FONT COLOR=#3333CC><B>from</B></FONT> urllib <FONT COLOR=#3333CC><B>import</B></FONT> urlopen
+<FONT COLOR=#3333CC><B>import</B></FONT> string
+source = cfg_dict[<FONT COLOR=#115511>'source'</FONT>]
+<FONT COLOR=#3333CC><B>if</B></FONT> source == <FONT COLOR=#115511>'&lt;STDIN&gt;'</FONT>:
+    fhin = sys.stdin
+<FONT COLOR=#3333CC><B>else</B></FONT>:
+    <FONT COLOR=#3333CC><B>try</B></FONT>:
+        fhin = urlopen(source)
+    <FONT COLOR=#3333CC><B>except</B></FONT>:
+        ErrReport(source+<FONT COLOR=#115511>' could not be opened!'</FONT>, cfg_dict)
+        <FONT COLOR=#3333CC><B>return</B></FONT>
+doc = <FONT COLOR=#115511>''</FONT>
+<FONT COLOR=#3333CC><B>for</B></FONT> line <FONT COLOR=#3333CC><B>in</B></FONT> fhin.readlines():   <FONT COLOR=#1111CC># Need to normalize line endings!</FONT>
+    doc = doc+string.rstrip(line)+<FONT COLOR=#115511>'\n'</PRE></FONT></div><p>
+  One minor problem that this author has encountered is that
+  depending on the end-of-line convention used on the platform
+  that produced the resource and on your own platform, some odd
+  things can happen to the resulting text (this appears to be a
+  bug in <em><code>urllib</code></em>).  The cure for this problems is to perform
+  the little <code>.readlines()</code> loop in the above code.  Doing this
+  gives you a string that has the right end-of-line conventions
+  for the platform you are running on, regardless of what the
+  source resource looked like (within reason, presumably).
+</p>
+<h3>Using The <em><code>re</code></em> Module</h3>
+ <p>
+  There is certainly a lot more to regular expressions than can
+  fit into this article.  A widely read reference book on the
+  topic is listed under Resources.  The <em><code>re</code></em> module is fairly
+  widely used in <code>Txt2Html</code> to identify various textual patterns
+  in the source texts.  A moderately complex example is worth
+  looking at.
+</p>
+<div class="code-sample"><h4>Using Python [re] module</h4><PRE><FONT COLOR=#3333CC><B>import</B></FONT> re
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="URLify"><FONT COLOR=#CC0000><B> URLify</B></FONT></A>(txt):
+    txt = re.sub(<FONT COLOR=#115511>'((?:http|ftp|gopher|file)://(?:[^ \n\r&lt;\)]+))(\s)'</FONT>,
+                 <FONT COLOR=#115511>'&lt;a href="\\1"&gt;\\1&lt;/a&gt;\\2'</FONT>, txt)
+    <FONT COLOR=#3333CC><B>return</B></FONT> txt</PRE></div><p>
+  <code>URLify()</code> is a nice little function to do pretty much what it
+  says.  If something that looks like a URL is encountered in the
+  "smart ASCII" file, it is converted into an actual hotlink to
+  that same URL within the HTML output.  Let us look at what the
+  <code>re.sub()</code> is doing.  First, in broadest terms, the function's
+  purpose is to "match what is in the first pattern, then replace
+  it with the second pattern, using the third argument as the
+  string to operate on." Good enough, not much different from
+  <code>string.replace()</code> in those terms.
+</p>
+<p>
+  The first pattern has several elements.  Notice the parentheses
+  first:  the highest level consists of two pairs: a complicated
+  bunch of stuff followed by <code>(\s)</code>.  Sets of parentheses match
+  "subexpressions" that can potentially make up part of the
+  replacement pattern.  The second subexpression, <code>(\s)</code> just
+  means "match any whitespace character (and let us refer back to
+  the particular type of whitespace it was).  So let's look at
+  the first subexpression.
+</p>
+<p>
+  Python regular expressions have a couple tricks of their own.
+  One such trick is the <code>?:</code> operator at the beginning of a
+  subexpression.  This means "match a subpattern, but don't
+  include the match in the back-references." So let us examine
+  the subexpression
+</p>
+<blockquote>
+    <code>((?:http|ftp|gopher|file)://(?:[^ \n\r&lt;\)]+))</code>.
+</blockquote>
+<p>
+  First notice that this subexpression is itself composed of two
+  child subexpressions, with some stuff in the middle that is not
+  part of any child subexpression.  However, each of the children
+  starts with <code>?:</code>, which means that they get matched, but don't
+  count for reference purposes.  The first of these
+  "non-reference" child subexpressions just says "match something
+  that looks like <code>http</code> <strong>or</strong> that looks like <code>ftp</code> <strong>or</strong> ...".
+  Next we get the short string <code>://</code> which means to match
+  anything that looks exactly like it (simple, huh?). Finally, we
+  get the second child subexpression, which other than the "don't
+  refer" operator consists of some stuff in square brackets, and
+  a plus sign.
+</p>
+<p>
+  In regular expressions, square brackets just mean "match any
+  character in the brackets." However, if the first character is
+  a caret (^), the meaning is reversed, and it means "match
+  anything <strong>not</strong> in the next characters."  So we are looking for
+  stuff that is <strong>not</strong> a space, CR, LF, "&lt;" or ")" (notice also
+  that characters that have special meaning to regular
+  expressions can be "escaped" by having a "\" in front of them).
+  The plus sign at the end means "match one or more of the last
+  thing" (asterisk is for "zero or more", and question-mark is
+  for "zero or one").
+</p>
+<p>
+  This regular expression has a bunch to digest, but if you walk
+  through it a few times, you can see that this is what a URL has
+  to look like.
+</p>
+<p>
+  Next is the replacement chunk.  This is simpler.  The parts
+  that look like <code>\\1</code> and <code>\\2</code> (or <code>\\3</code>, <code>\\4</code>, etc., if we
+  needed them) are those "back references" discussed.  They mean
+  "the pattern matched by the first (second) subexpression of the
+  match expression. All the rest of the stuff in the replacement
+  chunk just is what it is: some characters that are easily
+  recognized as HTML codes.  One little thing that is a bit
+  subtle is that we bother to match <code>\\2</code>--which looking above is
+  just a whitespace character.  One might ask, "why bother? why
+  not just insert a space as a literal?" Fair question, and we do
+  not really <strong>need</strong> to do what we did for HTML.  But
+  aesthetically, it is better to let the HTML output stay as
+  much as possible like the source text file was before our our
+  HTML markup.  Particularly, let us keep the line-breaks as
+  line-breaks, and spaces as spaces (and tabs as tabs).
+</p>
+<h3>Resources</h3>
+ <p>
+  To obtain or use Txt2Html, just point at it on the author's
+  website.  The navigation bar attached to the top of all proxied
+  pages (by default) will include a link to download all the
+  source files.
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/cgi-bin/txt2html.cgi">http://gnosis.cx/cgi-bin/txt2html.cgi</a>
+</blockquote>
+<p>
+  This article as "smart ASCII" text.
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/publish/programming/charming_python_3.txt">http://gnosis.cx/publish/programming/charming_python_3.txt</a>
+</blockquote>
+<p>
+  Project Guttenburg Homepage.
+</p>
+<blockquote>
+   <a href="http://somewhere.or.another/guttenburg/">http://somewhere.or.another/guttenburg/</a>
+</blockquote>
+<p>
+  Ka-Ping Yee's list and discussion of what he calls "mediators"
+  (and why he doesn't think "proxy" covers it).
+</p>
+<blockquote>
+   <a href="http://www.lfw.org/ping/mediator.html">http://www.lfw.org/ping/mediator.html</a>
+</blockquote>
+<p>
+  Babelfish Homepage.  Translate web pages from one language to
+  another.
+</p>
+<blockquote>
+   <a href="http://babel.altavista.com/">http://babel.altavista.com/</a>
+</blockquote>
+<p>
+  The Malkovich web-based filtering proxy (there is no point
+  trying to explain, you just have to see this one!).
+</p>
+<blockquote>
+   <a href="http://www.lfw.org/jminc/">http://www.lfw.org/jminc/</a>
+</blockquote>
+<p>
+  Strictly for those over 18, a funny web-based filtering proxy
+  can be found here.
+</p>
+<blockquote>
+   <a href="http://pornolize.com/">http://pornolize.com/</a>
+</blockquote>
+<p>
+  The Anonymizer: a genuinely useful filtering proxy for folks
+  who want to browse the web without leaking information about
+  their personal identity (not just cookies, but also IP address,
+  browser version, OS, or other information potentially
+  correlated with identity).
+</p>
+<blockquote>
+   <a href="http://www.anonymizer.com/">http://www.anonymizer.com/</a>
+</blockquote>
+<p>
+  Friedl, Jeffrey E. F., <cite>Mastering Regular Expressions</cite>,
+  O'Reilly, Cambridge, MA 1997 is a fairly standard and
+  definitive reference on RegEx's.
+</p>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz is not really quite sure if the open source
+  movement is a dinner party.  But he would certainly like to
+  think that proprietary intellectual property is a paper tiger.
+  His own ideas, certainly, want to be free.  David may be
+  reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+</p>
+</body></html>

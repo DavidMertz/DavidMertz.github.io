@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="file:///C|/Program%20Files/SoftQuad/XMetaL%202/display/developerWorks.css" type="text/css"?>
+<!DOCTYPE article SYSTEM "article.dtd">
+<article ratings="auto" toc="auto"> <seriestitle>Tip</seriestitle> 
+<papertitle>Subelement contents versus tag
+attributes</papertitle><subtitle>Design issues in XML formats</subtitle> 
+<author company=" Gnosis Software, Inc." jobtitle="Gesticulator"
+ name="David Mertz, Ph.D." email="mertz@gnosis.cx"><img
+src="http://gnosis.cx/cgi-bin/img_dqm.cgi"/> David Mertz uses a wholly
+unstructured brain to write about structured document formats. David may be
+reached at mertz@gnosis.cx; his life pored over at
+http://gnosis.cx/publish/.</author> <date month="October" year="2001"/> 
+<zone name="xml"/> <meta name="KEYWORDS" content="Mertz"/> <abstract> In this
+tip, dW columnist David Mertz advises when to use tag attributes and when to
+use subelement contents to represent data. Learn what considerations go into
+designing a DTD, Schema, or just an ad hoc XML format. You'll also learn when
+attributes and contents are interchangeable, and when they aren't. Code samples
+show the options. </abstract><p> An odd thing about XML is that it provides two
+almost, but not quite, equivalent ways of spelling "this is the data." One way
+to indicate a data value is to put it inside a subelement; another way is to
+put it in attribute values. Because there is not usually an obvious answer for
+when of each of the two approaches is appropriate, XML is not
+entirely<i>orthogonal</i> (which is computer-science speak for "each construct
+does one thing, and no other construct does the same thing"). This tip offers
+some guidance for when to use subelements and when to use attributes.</p><p>One
+time when you do <i>not</i> need to decide what data goes where is when you are
+handed an XML dialect specification to follow -- given to you as a DTD or as a
+W3C XML Schema, or described informally or by example. If you are not making
+the choices, do not worry about the suggestions in this tip. Often, though,
+developers need to <i>design</i> the exact XML dialect to use for a process. If
+that is your case, read on.</p><p> One thing to keep in mind is the difference
+between XML documents that merely need to be well-formed, and those that need
+to be <i>valid</i> relative to some DTD/Schema. Validity is much more rigorous;
+it allows you to insist that certain data be present and be structured in a
+certain way. For the very same reason, it is much more work to make sure a
+given document production process conforms with validity requirements. Both
+approaches have advantages; imposing a DTD adds complexity to the
+element/attribute issue, but there are tradeoffs in both cases. These tradeoffs
+are discussed below.</p><p><heading refname="h1" type="major" toc="yes">Is data
+order important?</heading></p><p> If you want to use a DTD, subelements are
+strictly ordered, while attributes are unordered. In well-formed-only XML
+documents, you are free to play with order; after all, <i>any</i> tag can go
+inside <i>any</i>other tag, at any depth, in this case. In both cases,
+attributes are usually better for unordered data, but for XML documents with a
+DTD, use of attributes is is almost required for this type of data</p><p> For
+example, you might have a list of contacts each of whom <i>must</i> have a
+name, age, and telephone number. But there is no logical sense in which age
+<i>precedes</i> telephone number. The attributes are thus unordered. In this
+case, attributes are more intuitive. Compare the brief XML documents in
+listings 1 and 2:</p><code type="section"><heading refname="code1" type="code" toc="yes">Listing 1. Attribute data for contacts</heading>
+&lt;?xml version="1.0" ?&gt;
+&lt;!DOCTYPE contacts SYSTEM "attrs.dtd" &gt;
+&lt;contacts&gt;
+  &lt;contact
+     name="Jane Doe"
+     age="74"
+     telephone="555-3412" /&gt;
+  &lt;contact name="Chieu Win" telephone="555-8888" age="44" /&gt;
+&lt;/contacts&gt;</code><code type="section"><heading refname="code2" type="code" toc="yes">Listing 2. Subelement data for contacts</heading>
+&lt;?xml version="1.0" ?&gt;
+&lt;!DOCTYPE contacts SYSTEM "subelem.dtd" &gt;
+&lt;contacts&gt;
+  &lt;contact&gt;
+    &lt;name&gt;Jane Doe&lt;/name&gt;
+    &lt;age&gt;74&lt;/age&gt;
+    &lt;telephone&gt;555-3412&lt;/telephone&gt;
+  &lt;/contact&gt;
+  &lt;contact&gt;
+    &lt;name&gt;Chieu Win&lt;/name&gt;
+    &lt;telephone&gt;555-8888&lt;/telephone&gt;
+    &lt;age&gt;44&lt;/age&gt;
+  &lt;/contact&gt;
+&lt;/contacts&gt;
+</code><p> Imagine the DTD that is implied by each XML format. For the
+attribute-oriented form in <a href="#code1">Listing 1</a>, it might be:</p><code type="section"><heading refname="code3" type="code" toc="yes">Listing 3. Attribute DTD for contacts document</heading>
+&lt;!ELEMENT contacts (contact*)&gt;
+&lt;!ELEMENT contact EMPTY&gt;
+&lt;!ATTLIST contact name      CDATA #REQUIRED
+                  age       CDATA #REQUIRED
+                  telephone CDATA #REQUIRED &gt;
+</code><p> A subelement-oriented DTD to do the same thing could look like
+Listing 4.</p><code type="section"><heading refname="code4" type="code" toc="yes">Listing 4. Subelement DTD for contacts document (try #1)</heading>
+&lt;!ELEMENT contacts  (contact*)&gt;
+&lt;!ELEMENT contact   (name,age,telephone)&gt;
+&lt;!ELEMENT name      (#PCDATA)&gt;
+&lt;!ELEMENT age       (#PCDATA)&gt;
+&lt;!ELEMENT telephone (#PCDATA)&gt;
+</code><p> The obvious problem with the DTD in Listing 4 is that the simple
+example in <a href="#code2">Listing 2</a> is invalid under the DTD (even though
+it has the data we want). The subelements are out of order. The sidebar shows
+how you can use unordered subelements with a DTD, but unless there is a
+different compelling reason, it is better to use the attribute-style for
+unordered data.</p><sidebar><p><heading type="minor" toc="yes"
+refname="h2">Simulating Unordered Subelements</heading></p><p>You could create
+a DTD that makes the XML document in Listing 2 valid by including the
+definition, as in Listing 5.</p><code type="section"><heading refname="code5" type="code" toc="yes">Listing 5. A DTD that defines contact-list subelements very flexibly</heading>&lt;!ELEMENT contact   (name?,age?,telephone?)+&gt;
+</code><p> However, the DTD in Listing 5 allows far too much flexibility. You
+could have contact elements with no name, and ones with several ages -- neither
+of which meets the semantic requirements. To get what we really want would
+require the extremely cumbersome definition in Listing 6.</p><code type="section"><heading refname="code6" type="code" toc="yes">Listing 6. A cumbersome but accurate DTD for contact-list elements</heading>&lt;!ELEMENT contact  ((name,age,telephone)|
+                    (name,telephone,age)|
+                    (age,name,telephone)|
+                    (age,telephone,name)|
+                    (telephone,name,age)|
+                    (telephone,age,name))&gt;
+</code><p> The DTD in Listing 6 is ugly, and it gets uglier at a factorial rate
+with more data points. Plus, making a DTD stricter than is semantically
+necessary for data producers is also undesirable (for example, imposing the
+first subelement DTD).</p></sidebar><p>
+<heading refname="" type="major" toc="yes">Does multiple data occur at the same
+level?</heading> </p><p> If the same type of data occurs many times within an
+object, subelements win, hands down. For example, in the contact-list scenario,
+a <code type="inline">contacts</code> object contains many <code type="inline">contact</code>objects. In this case, it is clear that each contact should be described
+within a child element of the <code type="inline">contacts</code> element.</p><p> In real-life, however, developers often creep away from
+this design principle in the course of making revisions. Here is how it
+happens: First, you find that each Flazbar has a flizbam attached to it (and a
+flizbam is described by a datum). Good enough, it seems like an obvious choice
+to save the extra verbosity of a subelement and create a <code type="inline">flizbam</code> attribute for the <code type="inline">Flazbar</code> tag. A while down the road -- after you have written wonderful
+production code for handling Flazbars -- you discover that in some situations a
+Flazbar can have two flizbams. Not a problem: with very little change to your
+installed code, you just change the DTD to contain:</p><code type="section">&lt;!ATTLIST Flazbar flizbam   CDATA #REQUIRED
+                  flizbam2  CDATA #IMPLIED&gt;
+</code><p> With the amended code, your old XML documents are still valid, but
+new ones work also. After a while you discover the <i>third</i> flizbam....</p>
+<p> It is hard to avoid being tempted into this design pitfall. Data and
+objects evolve over time, and singular things frequently become dual or
+multiple. Some XML programmers eschew attributes altogether for this reason,
+but I think that goes too far. My advice is to think <i>carefully</i> at the
+design stage about whether a singular datum might have siblings later on. If
+there is a reasonable probabilty of multiple siblings in the future, use
+subelements from the start. If you can be reasonably confident that a data
+object will remain unique, stick with attributes.</p><p>
+<heading refname="" type="major" toc="yes">Is whitespace preservation
+required?</heading> </p><p> After normalization of attributes, you can count on
+every token in an attribute being separated from its neighbors by whitespace.
+But that is <i>all</i> you can count on. For readability by developers, you can
+add vertical and horizontal whitespace to long attribute values without any
+problem (in fact, you <i>should</i> do this). But once those readable
+attributes go through an XML parser, the layout of the attribute will probably
+be somewhat different than in the source XML.</p><p>If whitespace is important,
+subelements are a better choice. For instance, if you are representing
+something like source code or poetry, where exact spacing matters, stick to
+element contents. </p><p><heading refname="" type="major" toc="yes">Does
+readability count?</heading></p><p> Ideally, XML should be a format computers
+read, not one humans read. But -- fortunately or unfortunately -- programmers
+are humans too; and for the forseeable future, we are going to spend a lot of
+time reading, writing, and debugging XML files. It is positively painful to
+read XML that is formatted with only machines in mind (no whitespace, or
+nonsensical whitespace).</p><p>Personally, I find it much easier to read and
+write attribute-oriented XML formats than subelement-oriented ones. Look again
+at the<a href="#code1">Listing 1 and Listing 2</a> above to see what I mean.
+Neither is horrible to read, but the attribute version in Listing 2 is easier.
+And better still to write, because you do not need to worry about capricious
+subelement ordering.</p><p><heading refname="" type="major"
+toc="yes">Conclusion</heading></p><p> I have pointed to some cases where
+subelements or attributes are more desirable. Keeping the principles addressed
+in mind can lead to clearer and cleaner XML document formats. Unfortunately,
+sometimes the real situation falls into multiple cases (pointing in opposite
+directions). And a lot of times, data designs change enough to invalidate
+previous motivations. Use the rules given in this tip where possible, but above
+all "use (informed) common sense."</p><resourcelist><ul><li>Everything you
+really <i>need</i> to know about XML is in the<a
+href="http://www.w3.org/TR/REC-xml">Extensible Markup Language (XML) 1.0</a>
+W3C Recommendation. Of course, understanding exactly what this signifies
+requires some subtlety.</li><li> The XML Cover Pages has some tips on
+<a href="http://xml.coverpages.org/elementsAndAttrs.html">Using Elements and
+Attributes</a>. That page also contain pointers to a number of articles, each
+giving contrary advice about what criteria to use in deciding between
+attributes and elements. That is why we programmers get paid the big
+bucks!</li><li>One way to view the distinction between attributes and elements
+is in terms of <a
+href="http://www.xmleverywhere.com/newsletters/20000525.htm">"Document-Centric"
+vs. "Data-Centric"</a> documents. </li><!--  **Need more Resources here. At least three, please. And please, in editing, put the resrouce entries in our style, with the link embedded in the text rather than standing alone. Compare this entry with the one in the version submitted to us. Thanks. -Nancy   -->
+<li>Check out<a
+href="http://www-106.ibm.com/developerworks/xml/library/x-tips.html">other
+tips</a> published in the XML zone of developerWorks on this index
+page.</li></ul></resourcelist></article>

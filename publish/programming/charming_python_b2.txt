@@ -1,0 +1,354 @@
+CHARMING PYTHON: Installment #B2
+Anygui: The universal graphical Python interface to come
+
+David Mertz, Ph.D.
+Random Proponent, Gnosis Software, Inc.
+October, 2001
+
+    A very interesting project in the Python world has entered
+    early development.  The [anygui] project is intended as a
+    wrapper API for a large number of underlying graphic
+    toolkits.  Once fully developed, a Python programmer will be
+    able to call a common [anygui] function--for example, to create
+    a window--then have the "best available" toolkit do the work.
+    On Windows, the Win32 API might be used (or wxWindows);
+    on MacOS, native calls; on BeOS, Bethon; on Linux, TKinter or
+    GTK; on a telnet screen, ncurses--all depending on what is
+    installed and available on a given machine.  This article
+    discusses the current development state of [anygui], and the
+    goals of the project.
+
+
+WHAT IS PYTHON?
+------------------------------------------------------------------------
+
+  Python is a freely available, very-high-level, interpreted
+  language developed by Guido van Rossum.  It combines a clear
+  syntax with powerful (but optional) object-oriented semantics.
+  Python is available for almost every computer platform you
+  might find yourself working on, and has strong portability
+  between platforms.
+
+
+INTRODUCTION: WRITE ONCE, DISPLAY ANYWHERE!
+------------------------------------------------------------------------
+
+  One of the great promises of Java, some years back when it was
+  new, was the idea that one could "write once, run anywhere."
+  At first, the user interface for Java was conceived mostly as
+  applets embedded in web browsers.  After a while, independent
+  AWT applications became a more current notion.  AWT, in turn,
+  was generally superseded by Swing.  Swing became Beans
+  (building on Swing, but with additional requirements).  Along
+  the way, Swing classes moved around, and were added and
+  substracted from Java versions.
+
+  A popular joke about Java is that it is "write once, -debug-
+  everywhere."  At the least, one certainly cannot write a Java
+  application, and then feel any great confidence that it will
+  run on the machine of every user of your application--unless
+  you are willing to require considerable work by every user to
+  get Java versions and configurations exactly right for your
+  particular application.  Whether the application runs depends
+  on the Java version, and even on the particular vendor and
+  platform of the Java Virtual Machine (JVM) installed.
+
+  In most respects, scripting languages like Python, Perl and TCL
+  have better portability than Java does.  For most Python
+  scripts, for example, one can feel quite confident that a
+  script delivered to multiple users will run correctly and
+  identically on each target machine (possibly subject to a
+  minimum version requirement--which is much simpler and more
+  reliable than with Java).  Of course, Java has many strong
+  points besides raw portability:  static typing (for those who
+  want it), huge class libraries, excellent documentation,
+  careful design choices).  But those language considerations are
+  not what I am interested in here.
+
+  The one aspect where a Python script falls far short of a Java
+  application in terms of portability is in user interface.  For
+  a command-line tool, no problem.  But as soon as you want
+  complex user interaction--especially explicitly graphical
+  interfaces--Python offers practically nothing.  Java, for all
+  its glitches and gotchas, really does usually provide Swing and
+  AWT basics for every platform with a JVM.  Python, to the
+  contrary, simply does not have any "standard" GUI library.
+
+  Many people have stated their desire for a standard Python GUI.
+  [Tkinter] comes moderately close--it has stable versions for
+  Windows and Unix/X Window Sytem, and a passable MacOS version.
+  But you also need TCL and TK installed on the system, and
+  "minor" platforms like BeOS and OS/2 are left out.  Various
+  advocates have suggested that some other library/binding would
+  be a better choice (there are many to choose from , see
+  Resources).  But each one supports a the subset of desired
+  platforms; and most importantly, none has been uniformly
+  accepted (and therefore, none comes standard with Python
+  distributions).  What one is left with is no way of writing an
+  application with a user interface, and being sure that actual
+  -users- can interface with it.
+
+
+RETHINKING THE PROBLEM
+------------------------------------------------------------------------
+
+  The Java philosophy has been to create a standard set of
+  capabilities that every JVM must implement.  The Java GUI
+  exists by decree.  A Pythonic approach might come from a
+  different direction.  Instead of commanding every machine to
+  obey a certain API, figure out just what a given machine -can-
+  do, then work from there.  An API can emerge merely as a
+  wrapper for what underlying platforms already do.
+
+  [aygui] does exactly what one would expect once one arrives at
+  the Python way of thinking.  Taking both its name and attitude
+  from the [anydbm] module which finds the "best available"
+  database backend at runtime, [anygui] finds the best available
+  GUI backend on the sytem an [anygui] application is running on.
+  The emphasis of [anygui] is to provide a -usable- set of
+  interface elements that will work with every backend;
+  particular backends might themselves be capable of more
+  advanced interfaces, but [anygui] sticks to what is common to
+  them all.
+
+  As of this writing, [anygui] is still an alpha-level project.
+  For a subset of targetted backends, [anygui] does a pretty good
+  job already.  But since the goal is to be a (near-)universal
+  wrapper, having a subset working is obviously not enough.
+  Ultimately, if [anygui] succeeds in its goals, it will make
+  sense to include [anygui] as a standard Python package with
+  every Python distribution (much as [anydbm] or [xml.sax] are
+  with included despite system-dependent backends).  The point,
+  after all, would be to make sure that every user already has
+  it.  By the way, [anygui] is pure Python; nothing in C/C++ or
+  other lower-level languages is requires by [anygui] itself (of
+  course, if it is to be useful, [anygui] should find some
+  supporting GUI library).
+
+
+PLATFORMS AND PICTURES
+------------------------------------------------------------------------
+
+  For this column installment, I have taken a quick look at most
+  of the working backends.  There are a few more that are not yet
+  implemented, or are only partially functional.  In the working
+  list are [Tkinter], Java Swing, [win32all], [PyGTK], and
+  [wxPython].  BeOS native (with Bethon) is only slightly
+  working, but that might improve with a new daily build.  PyQT
+  and MacOS native are planned, and have development leads, but
+  no implementations of these wrappers have been created yet; of
+  course, this could also change any time.  There also has been
+  some discussion of a direct 'xlib' backend, but no one has
+  currently volunteered to lead that one.
+
+  All the above graphical toolkits work, or will work, in a
+  fairly similar manner.  I confess that my knowledge of most of
+  the backend toolkits is weak--but from what I can see, the
+  [anygui] API is largely similar to [Tkinter].  Essentially, the
+  strategy is to create a bunch of widgets with callbacks, then
+  enter a main event loop.
+
+  There are a few other backends that might exist in the future
+  that break with the mold of the "normal" GUI toolkits.  In some
+  ways, these seem the most interesting, or at least novel.  One
+  planned backend is supposed to be led by your writer--but he
+  has been remiss in developing initial versions.  Hopefully
+  matters will be better by the time you read this.  My own
+  little niche backend is 'ncurses'.  If this is present, it
+  opens the possibility of running an [anygui] application even
+  on a text-mode terminal such as a SSH/telnet session (or just
+  plain Unix boxes without the X Window System).
+
+  Along the lines of a [curses] backend, [anygui]'s project lead,
+  Magnus Lie Hetland, has suggested a plain line-oriented
+  fallback interface, maybe using 'readlines' support.  Under
+  this scenario, menus would be reduced to prompts, followed by
+  option selection, followed by feedback or results, and so on.
+  The hypothetical [anygui.backends.textgui] would need nothing
+  except STDIN and STDOUT to work, which is an interesting
+  minimum for a program that might otherwise run--unchanged--in a
+  sophisticated graphical, event-driven, WIMP interface (windows,
+  icons, mouse pointer).  Of course, so far it is just an idea.
+
+  One more oddball idea is equally interesting.  Everyone has a
+  web browser (almost), even if that browser happens to be 'lynx'
+  or 'links'.  Python's standard [webbrowser] module allows a
+  flexible launch of a "best available" web browser, in a manner
+  similar to [anygui] and its cousins.  If that browser
+  communicates with some sort of LOCALHOST server, all the basic
+  interface devices one would want are available right in the web
+  browser (buttons, input fields, text areas, graphics, etc).
+  This backend is also in the planning stage.
+
+  A picture is worth a thousand words (at least sometimes).
+  Since my editors, with good reason, do not want to publish a
+  ten thousand word tome for this installment, let us take a look
+  at a few screenshots instead.  For illustration, a little toy
+  application that plays with buttons, and enabling inactive ones
+  is used (and its source is shown below).  A couple text labels
+  are also included.  Other widget examples are contained in the
+  'test' directory of the [anygui] distribution.
+
+  The first thing worth looking at is what we might think of as
+  the "default default" backend, [Tkinter].  This version looks
+  and acts pretty much as it should.  However, the
+  'win.destroy()' call is a bit funny--it doesn't immediately
+  destroy the window (and close the application), but rather
+  turns it into a ghost that disappears once it gets too much
+  attention (like moving the window).  Like I said, we are in
+  alpha stages.  The example was run under Win98:
+
+    {Button application under Tkinter (on Win98):
+     http://gnosis.cx/publish/programming/lyric_tk.gif}
+
+  Running under Windows, one also has an option of using Windows
+  native calls with the [win32all] module.  The ActivePython
+  distribution, from ActiveState, has this by default; otherwise
+  you need to obtain the module separately (also from
+  ActiveState).  Overall, this binding was the best behaved one I
+  looked at--but that just reflects the version I tested on.
+  Labels are placed a little differently than on [Tkinter], which
+  indicates that one might not get precisely the same visual
+  aesthetics between backends:
+
+    {Button application under Win32 (on Win98):
+     http://gnosis.cx/publish/programming/lyric_msw.gif}
+
+  Next, I decided to move to a very different platform.  Running
+  Jython under OS/2 Warp 4, I got the below result.  For some
+  reason text labels got a gratuitous '<html>' prepended to them.
+  But other than a fairly minor glitch, it starts to be
+  impressive to run identical code on a platform so different:
+
+    {Button application under Java Swing (on OS/2 Warp 4):
+     http://gnosis.cx/publish/programming/lyric_java.gif}
+
+  Moving next to a Linux platform, I ran my identical application
+  on a system to [PyGTK] installed.  Just for fun, I ran it under
+  several different window managers.  First Enlightenment:
+
+    {Button application under GTK (on Enlightenment):
+     http://gnosis.cx/publish/programming/lyric_gtk_e.gif}
+
+  Then WindowMaker:
+
+    {Button application under GTK (on WindowMaker):
+     http://gnosis.cx/publish/programming/lyric_gtk_wm.gif}
+
+  Everything inside the window frame is the same with different
+  window managers.  Label justification and sizing was a bit
+  different from under Windows (a few extra pixels would be
+  needed to avoid cutting off words).  I wasn't easily able to
+  install [wxPython] on any of my systems, but the results should
+  be similar.
+
+  The BeOS backend is in a more crude state right now.  Even my
+  toy application fails.  However, the basic 'Window' class works
+  OK:
+
+    {Window test application on BeOS r5:
+     http://gnosis.cx/publish/programming/windows_beos.gif}
+
+
+SOME SELF-SAME CODE
+------------------------------------------------------------------------
+
+  The code that runs on all the witnessed platforms is quite
+  simple.  In my example, the first half of the program is simply
+  a switch to allow manual selection of the backend to use from
+  the command-line.  In production code, you would not want that;
+  but for early testing, something like what I do is helpful.
+  Note, however, that all the tests whose screenshots are shown
+  were simply run without any command-line options--selection of
+  a backend was automatic.  Let us look at the code:
+
+      #------- 'button.py' text application for [anygui] ------#
+      import sys
+      if len(sys.argv)==1 or sys.argv[1].upper()=='DEFAULT':
+          from anygui import Window, Button, Application, Label
+      elif sys.argv[1].upper()=='TK':
+          from anygui.backends.tkgui import Window, Button, Application, Label
+      elif sys.argv[1].upper()=='MSW':
+          from anygui.backends.tkgui import Window, Button, Application, Label
+      elif sys.argv[1].upper()=='BEOS':
+          from anygui.backends.beosgui import Window, Button, Application, Label
+      elif sys.argv[1].upper()=='GTK':
+          from anygui.backends.gtkgui import Window, Button, Application, Label
+      elif sys.argv[1].upper()=='JAVA':
+          from anygui.backends.javagui import Window, Button, Application, Label
+      elif sys.argv[1].upper()=='WX':
+          from anygui.backends.wxgui import Window, Button, Application, Label
+
+      def say_hello():
+          global bye
+          print "Hello, world!"
+          bye._set_enabled(1)
+      app = Application()
+      win = Window(width=150, height=150, title="Beatles Lyric")
+      win.add(Label(x=10, y=10, width=140, text = "I don't know why you say..."))
+      bye = Button(x=30, y=40, width=70, height=30, text="Goodbye",
+                   action=lambda: win.destroy(), enabled=0)
+      win.add(bye)
+      win.add(Label(x=10, y=70, width=120, height=32, text = "When I say..."))
+      hi = Button(x=30, y=100, width=70, height=30, text="Hello", action=say_hello)
+      win.add(hi)
+      win.show()
+      app.run()
+
+  The skeleton of an application consists of just four steps:
+  (1) create an application; (2) create one or more windows; (3)
+  add some widgets to the windows; (4) call the 'app.run()'
+  event-loop.  Widget options are all passed as named parameters.
+
+
+CONCLUSION
+------------------------------------------------------------------------
+
+  Everything one needs to write basic "get some data, process it,
+  and display some results" applications is already in the
+  current alpha of [anygui].  The discussion lists contain a lot
+  of interesting topics about more nuanced event-handling, view
+  models, and so on.  And moreover, the [anygui] API is yet to be
+  officially documented.  In terms of promise, however, [anygui]
+  excites me more than any Python library I've seen in a good
+  while.  It is almost hard to imagine how convenient it will be
+  able to transparently get a sophisticated user interface
+  everywhere Python itself runs--all without changing a line of
+  code for platform specifics.
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  The place to start exploring [anygui] is at its SourceForge
+  page.  From there, you can read the developer mailing lists,
+  the documentation, download the latest version, and so on:
+
+    http://anygui.sourceforge.net/
+
+  Cameron Laird has prepared a quite extensive list GUI bindings
+  for Python.  Laird's list contains brief comments about the
+  status of each, and links to relevant project pages:
+
+    http://starbase.neosoft.com/~claird/comp.lang.python/python_GUI.html
+
+  Damond Walker's [tinter] and Laurent Pelecq's enhanced
+  [ctinter] can be found at the below link.  [curses] itself is a
+  standard Python module (that needs to have the actual 'ncurses'
+  library to work):
+
+    http://home.iximd.com/~dwalker/tinter.htm
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz is steeped in syncretism; about the only thing that
+  enlivens him even more than a good interactive multimedia
+  library is the thought of a return of punch cards and
+  batch-processing systems.  David may be reached at
+  mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/.  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+

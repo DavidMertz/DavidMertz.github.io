@@ -1,0 +1,432 @@
+XML MATTERS #36: EVM2003 and XML
+Practical XML data design and manipulation for voting systems
+
+David Mertz, Ph.D.
+Muckamuck, Gnosis Software, Inc.
+May 2004
+
+    In this installment David discusses his practical experiences
+    developing interrelated XML data formats for the EVM2003 Free
+    Software project. Some design principle of format subsetting emerge.
+    As well, David looks at how an application-specific meaning for XML
+    document equivalence can be programmed, and why canonicalization is
+    insufficient.
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  For the last 10 months I been involved in an organization called the
+  Open Voting Consortium (OVC) and an associated Free Software project
+  called EVM2003. OVC's aim is to replace the closed-source electronic
+  voting machines, from proprietary vendors, specifically those that
+  fail to prove a voter-verifiable paper ballot. As readers of this site
+  well know, software is inevitably prone to errors and to malicious
+  tampering; it is hard to find "just trust" us a satisfying answer to
+  the danger of votes directly misrecorded onto electronic-only storage
+  devices.
+
+  The EVM2003 project, hosted on Sourceforge, is a worldwide community
+  effort to build a reference implementation of elections software that
+  meets a set of specifications emerging from OVC; the latter hopes to
+  act as a kind of standards body for elections systems.  EVM2003 is
+  programmed in Python--with various supporting libraries--and uses XML
+  for (almost) all of its data storage/configuration requirements.
+
+  There are many details to OVCs specifications, many of them still
+  evolving. Issues like the security analysis and full threat model are
+  outside the scope of this article, but are being considered carefully
+  by many of the worlds leaders in computer security and elections
+  technology (with yours truly contributing to this aspect). But it is
+  worth quickly outlining an envisioned system before delving into the
+  XML formats and source code that might support it. Understand, by the
+  way, that the code and formats I present in this installment are
+  preliminary attempts at both; while they are likely to change in
+  details, however, I hope that much of the design will carry forward to
+  voting systems eventually used by U.S. voters, or by those in other
+  nations.
+
+  An -OVC-compliant- polling place will contain several types of
+  computer stations. Voting stations will come with both a
+  GUI/touchscreen interface a reading-impaired interface that allows
+  blind voters (and others) to vote using headphones and keypresses.
+  Either type of station prints out an official ballot after a voter
+  completes her selections. A sighted and literate voter may read the
+  face of this ballot to make sure it records her intended votes; a
+  vision- or reading-impaired voter may, as an alternative, take the
+  ballot to an independent, non-networked station that will read back
+  recorded votes over headphones (the ballot vocalization station). Once
+  verified, a paper ballot is placed in an ordinary locked ballot box.
+  At the end of the day, poll workers reconcile the official paper
+  ballots with the anonymous electronic records from the EVMs,
+  accounting for spoiled ballots, test ballots, and so on, to provide
+  extra checks against tampering. At higher levels--county, state,
+  etc.--precincts are aggregated (called "canvassing" in elections
+  nomenclature), and various other integrity checks are peformed.
+
+EVM2003 AND XML
+------------------------------------------------------------------------
+
+  EVM2003 uses or produces three closely related types of XML files. At
+  the initial stage, an election at a given place/precinct and date--and
+  perhaps for a specific party ballot--is data driven by a ballot file
+  'ballot-election.xml' file. In production, this file will be uniquely
+  named to indicate place, date, party (if applicable), and natural
+  language (where multilingual ballots are provided). For example, a
+  production ballot XML data file might have a name like:
+  'election-20041102-US-MA-Franklin-2390-Dem-EN.xml' or
+  'election-20041102-US-MA-Hampshire-3451-Rep-ES.xml'. This exact naming
+  convention is merely my suggestion, but it indicated the type of
+  information I would expect to find (all of the identifying information
+  is also contained in the content of the data files, so the XML might
+  be stored in, e.g., an RDBMS rather than on a filesystem).
+
+  After a voter has voted, an electronic ballot image (EBI) is stored,
+  as an XML file, on the voting station; the collection of stored EBIs
+  is written to removable media--in randomized order to preserve voter
+  anonymity--such as a CD-R. The information contained in an EBI should
+  exactly match the information represented on an official printed
+  ballot, though a ballot will contain various formatting such as and
+  font choices, placement, rules, and boxes to make verification
+  visually easy for voters.  During the reconcilliation process, poll
+  workers scan the paper ballots to produce -reconstructed- ballot
+  images (REBIs).  These REBIs might not be byte-wise identical to their
+  corresponding EBIs, even if no error occurs.  For example, in the demo
+  system (and perhaps for production), we decided to represent votes as
+  barcodes to make scanning simpler; but our barcode only records the
+  fact of a write-in vote, not the write-in name itself.  Jurisdictions
+  differ greatly on when and whether write-in names will be counted, so
+  this is fine to establish boundary conditions for requiring visual
+  examination of write-in names on ballots.
+
+  EBIs and REBIs have a special, and rather elegant, relation to ballot
+  files.  An EBI or REBI is almost a proper subset of a ballot file.
+  That is, you create an EBI simply by removing non-selected choices
+  from a ballot file, and renaming the root element from '<ballot>' to
+  '<cast_ballot>'.  An effect of this relation is that a '<cast_ballot>'
+  XML file is (almost) a valid--but simpler--ballot XML file.  The
+  subset relation I state is violated in a couple minor ways within the
+  current CVS snapshot of EVM2003, but it could easily be enforced with
+  minimal modification.  For example, in 'ballot-election.xml',
+  '<contest>' elements have an 'allow_writein' element that is
+  superfluous for and not included in (R)EBIs.  And symmetrically, the
+  root element '<cast_ballot>' contains an attribute 'source' to
+  distinguish EBIs from REBIs ('voting_machine' versus 'ballot_scan').
+
+  If the proper subset relation is enforced in production systems, it
+  provides the somewhat nice property that ballot files and EBIs conform
+  to an identical DTD/Schema, providing a basic consistency guarantee.
+  Even if we decide that precise subsetting is unnecessary, the close
+  similarity of EBIs and ballot XML files makes debugging and
+  development easier on developers (and our frail memories).
+
+XML SAMPLES
+------------------------------------------------------------------------
+
+  Some sample XML files will help readers get a sense of the formats I
+  have described. The official DTDs or Schemas (hopefully using RelaxNG
+  in production) are still enough subject to change that I do not want
+  to fixate on those. To save space, I simplify the demonstration
+  election OVC has used, but keep at least one example of each contest
+  type. First, the ballot file:
+
+      #-------------------- ballot-election.xml -----------------------#
+      <ballot election_date="2008-11-04" country="US" state="CA"
+              county="Santa Clara County" precinct="2216">
+        <contest ordered="No" coupled="Yes"
+                 allow_writein="Yes" name="Presidency">
+          <selection party="Reform"
+                     name="President">Martin Luther King</selection>
+          <selection party="Reform"
+                     name="Vice President">John Anderson</selection>
+          <selection party="Workers"
+                     name="President">Helen Keller</selection>
+          <selection party="Workers"
+                     name="Vice President">Amelia Earhart</selection>
+          <selection party="Socialist"
+                     name="President">V. I. Lenin</selection>
+          <selection party="Socialist"
+                     name="Vice President">Karl Marx</selection>
+        </contest>
+        <contest ordered="No" coupled="No"
+                 allow_writein="Yes" name="Senator">
+          <selection party="Green">Frances E. Willard</selection>
+          <selection party="Libertarian">Lucy Stone</selection>
+          <selection party="Democrat">Karl Menninger</selection>
+          <selection party="Labor">William Lloyd Garrison</selection>
+        </contest>
+        <contest ordered="No" coupled="No" allow_writein="No"
+                 name="Transportation Initiative">
+          <summary>
+            <scope>Constitutional Amendment Article X, Section 19</scope>
+            <type>initiative</type>
+            <title>California Transportation Initiative For Statewide Solor
+              Powered Magnetic Levitation System</title>
+          </summary>
+          <description>
+            To reduce traffic and increase travel alternatives, this amendment
+            provides for development of a high speed solor powered magnetic
+            levitation system to run along Interstate 5.  Construction to begin
+            November 1, 2004.
+          </description>
+          <selection>Yes</selection>
+          <selection>No</selection>
+        </contest>
+        <contest ordered="Yes" coupled="No" allow_writein="Yes"
+                 name="County Commissioner">
+          <selection>William Hewlett</selection>
+          <selection>Steve Wozniak</selection>
+          <selection>William Shockely</selection>
+          <selection>Gordon Moore</selection>
+          <selection>Philip Kahn</selection>
+        </contest>
+      </ballot>
+
+  Some of the attributes of '<contest>' merit further explanation.
+  Contests may be 'ordered' in order to allow ranked preference votes.
+  Ranked preference votes let a voter assign a first, second, third,
+  etc. preference among a number of candidates--there are many different
+  methods for "scoring" those ranks (all outside the scope of this
+  article), but "Instant Runoff" is probably the least rare in the U.S.
+  In any case, since a few jurisdictions use ranked preference voting,
+  our ballot XML format needs to accomodate it. Missing from the current
+  ballot DTD is an attribute to indicate the maximum number of ranks
+  that are assignable--we will need to add this soon.
+
+  Contests can either allow write-in votes, or not. In the example, it
+  makes little sense to write-in a vote on a Yes/No initiative; other
+  types of contests may or may not allow write-ins, depending on
+  jurisdictional rules.  The 'name' of attribute is straightforward, it
+  simply describes what a contest is in a short phrase.  In some
+  contests, child elements may be needed to present the details of a
+  contest to voters (such as initiative descriptions).  Again, the exact
+  content is jurisdiction dependent.
+
+  The attribute 'coupled' is probably a hack, but it is not clear what
+  the right approach is.  In U.S. presidential election, we have a
+  peculiar system in which votes for a President and Vice-President must
+  be paired together--no Chinese-menu selection of "one of each" even
+  though both candidate names still appear.  For now, our design lists
+  each candidate within a '<selection>' element, but if 'coupled' is set
+  to 'Yes', candidates are presented two-at-a-time rather than
+  individually.
+
+  A cast ballot (EBI), as I described, roughly subsets a raw ballot; but
+  a few details are changed too. EBIs will follow a naming convention
+  that indicates both the place and date of the election, and also a
+  distinct ballot-id 'number' (not reused per machine):
+
+      #------ v-20081104-US-CA-Santa_Clara_County-2216-1274.xml -------#
+      <cast_ballot election_date="2008-11-04" country="US" state="CA"
+                   county="Santa Clara County" precinct="2216"
+                   number="1274" serial="213" source="voting_machine">
+        <contest ordered="No" coupled="Yes" name="Presidency">
+          <selection writein="No" name="President">V. I. Lenin</selection>
+          <selection writein="No" name="Vice President">Karl Marx</selection>
+        </contest>
+        <contest ordered="No" coupled="No" name="Senator">
+          <selection writein="No">William Lloyd Garrison</selection>
+        </contest>
+        <contest ordered="No" coupled="No" name="Transportation Initiative">
+          <selection writein="No">Yes</selection>
+        </contest>
+        <contest ordered="Yes" coupled="No" name="County Commissioner">
+          <selection writein="Yes">David Packard</selection>
+          <selection writein="No">Gordon Moore</selection>
+          <selection writein="No">William Hewlett</selection>
+        </contest>
+      </cast_ballot>
+
+  Notice that the attibute 'writein' appears within '<selection>'
+  tags now.  In a sense, we could deduce whether a vote is a write-in by
+  looking at a corresponding 'ballot-election.xml' file contains a given
+  '<selection>' PCDATA content, but using the attribute adds some useful
+  redundancy.  If a non-write-in candidate fails to match the raw
+  ballot, that is a sure sign we have a data integrity problem.  But
+  some jurisdictions only count specific write-in names if certain
+  threshholds are met (contest margin-of-victory, total write-ins, etc);
+  we may never need to look at the content of selections indicated as
+  'writein="Yes"'.
+
+COMPARING XML BALLOTS
+------------------------------------------------------------------------
+
+  I have mentioned that the programming for EVM2003 was done in Python;
+  as well, the XML access is performed using my Gnosis Utilities
+  library, specifically 'gnosis.xml.objectify'. Using this library makes
+  operations on ballot or EBI files particularly painless. For example,
+  information on contests and candidates is loaded into some Python data
+  structures with the code:
+
+      #---------- ballot-election.xml to Python conversion ------------#
+      from gnosis.xml.objectify import make_instance
+      ballot = make_instance(xml_data)
+      contnames, cont = [], {}
+      for contest in ballot.contest:
+          name = contest.name
+          contnames.append(name)
+          if contest.coupled=="No":
+              cont[name] = [select.PCDATA for select in contest.selection]
+              if contest.allow_writein=="Yes":
+                  cont[name].append("")
+          else:
+              cont[name] = []
+              for n in range(0, len(contest.selection), 2):
+                  cont[name].append([s.PCDATA for s in contest.selection[n:n+2]])
+              if contest.allow_writein=="Yes":
+                  cont[name].append(["",""])
+
+  The function 'make_instance()' generally reduces thought of the
+  XML-ness of data formats to a single line, after that it's just
+  Python.
+
+  A special issue comes up in comparing EBIs with each other, or to
+  REBIs. Or rather, several related issues. As I mentioned, REBIs are
+  not generally byte-wise identical to their corresponding EBIs because
+  write-in names are not recorded in full on barcodes. But more
+  generally, OVC intends to set standards for data formats, not simply
+  produce them with specific code.  Third party code should be able to
+  produce and process EBIs; for example, to confirm tabulation was
+  performed accurately.
+
+  The document equality question applies to many classes of XML
+  documents: When are two documents "identical" according to application
+  requirements. Conforming to the same DTD or Schema is a very minimal
+  necessary condition; and XML canonicalization can remove many trivial
+  syntactic variants. But as a rule, meaningful identity cannot be
+  expressed by Schemas alone. For example, it is strictly an
+  application-level issue to decide when the order of child elements is
+  meaningful and when it is incidental.
+
+  The Gnosis Utilities library provides a rather elegant way, in my
+  opinion, to customize the meaning of equality. You may define a custom
+  class with equality and inequality tests to hold all XML documents
+  with the root element '<cast_ballot>'. The module
+  'evm2003.utils.equiv' injects an application specific equality test
+  into EBI Python objects, and may also be used as a command-line tool
+  to compare EBIs/REBIs. Let us look at it, including the detailed
+  docstring:
+
+      #--------------- evm2003.utils.equiv.py module ------------------#
+      """Compare ballot XML files for equivalence
+      .
+      This file may be imported as a module or used as a command-line ballot
+      comparison tool. If imported, e.g.:
+      .
+          >>> import evm2003.utils.equiv
+          >>> from gnosis.xml.objectify import make_instance
+          >>> a = make_instance('scanned.xml')
+          >>> b = make_instance('stored.xml')
+          >>> a == b
+          1
+      .
+      At the command-line:
+      .
+          % python equiv.py scanned.xml stored.xml
+      .
+      (lack of any output means success, in that ultra-terse Unix-philosophy
+      way).
+      .
+      We implement custom .__eq__() and .__ne__() methods specific to cast
+      ballots.  Injecting such methods is the recommended technique for enhancing
+      gnosis.xml.objectify objects.
+      .
+      The files scanned.xml and stored.xml documents were used to test this.
+      They differ in several non-significant respects:
+          (1) the top-level attributes occur in a different order;
+          (2) non-ordered multi-select contests have selections in a different
+              order;
+          (3) Write-in votes have different PCDATA content (i.e. nothing for
+              scanned.xml).
+      """
+      import gnosis.xml.objectify
+      import sys
+      class cast_ballot(gnosis.xml.objectify._XO_):
+          def __eq__(self, other):
+              metadata = '''election_date country state county
+                            number precinct serial'''.split()
+              for attr in metadata:
+                  if getattr(self, attr) != getattr(other, attr):
+                      return 0
+              by_name = lambda a, b: cmp(a.name, b.name)
+              self.contest.sort(by_name)
+              other.contest.sort(by_name)
+              for my, your in zip(self.contest, other.contest):
+                  if my.name != your.name or \
+                     my.ordered != your.ordered or \
+                     my.coupled != your.coupled:
+                      return 0
+                  if my.ordered == "No":
+                      # Compare non-writeins (but don't know if same num writeins)
+                      my_select = dict([(x.PCDATA,None) for x in my.selection
+                                                        if x.writein=="No"])
+                      your_select = dict([(x.PCDATA,None) for x in your.selection
+                                                          if x.writein=="No"])
+                      if my_select != your_select:
+                          return 0
+                      continue
+                  for my_select, your_select in zip(my.selection, your.selection):
+                      if (my_select.writein, your_select.writein) == ("Yes","Yes"):
+                          pass
+                      elif my_select.PCDATA != your_select.PCDATA:
+                          return 0
+              return 1
+          def __ne__(self, other):
+              return not self == other
+      #-- Namespace injection
+      gnosis.xml.objectify._XO_cast_ballot = cast_ballot
+      #-- Command-line operation
+      if __name__=='__main__':
+          a, b = map(gnosis.xml.objectify.make_instance, sys.argv[1:3])
+          if a != b:
+              print sys.argv[1], "and", sys.argv[2], "are NOT equivalent ballots!"
+
+   I think there is no need to explain the principles of EBI equivalence
+   in more detail than the docstring gives.  The sample code suffices as
+   an illustration of a similar consideration that arises in very many
+   XML processing applications.
+
+CONCLUSION
+------------------------------------------------------------------------
+
+  Quite aside from its political import, I feel a certain satisfaction
+  in working with a Free Software project where XML is so clearly just
+  the -right- data storage format to use. In many contexts, XML is
+  something that you force on yourself because it "seems like the way to
+  go"--but in a few, the fit is absolutely perfect. In projects that
+  intersect with standards, I think, XML has a particularly strong case
+  in its favor since so many interoperable parsers and binding libaries
+  are available (many of which I have written about here). But also, in
+  projects like EVM2003 where the self-documentation of data formats is
+  important, while data volume is moderate, XML fits like a glove.
+
+RESOURCES
+------------------------------------------------------------------------
+
+  The EVM2003 project is hosted by Sourceforge:
+
+    http://evm2003.sourceforge.net/
+
+  The Open Voting Consortium website is:
+
+    http://openvoting.org/
+
+  You can download Gnosis Utilities at:
+
+    http://gnosis.cx/download/Gnosis_Utils-current.tar.gz
+
+  Or browse the Gnosis Utilities package, including its documentation
+  at:
+
+    http://gnosis.cx/download/gnosis/
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz feels that procedural democracy requires that the technical
+  instruments of governance be open for public inspection, every bit as
+  much as it requires the legal acts of government remain so open. David
+  may be reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/. Suggestions and recommendations on this,
+  past, or future, columns are welcomed. Check out David's book _Text
+  Processing in Python_ at http//gnosis.cx/TPiP/.

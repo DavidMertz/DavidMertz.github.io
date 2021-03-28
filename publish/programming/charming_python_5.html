@@ -1,0 +1,405 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>CHARMING PYTHON #5 -- Text Processing in Python: Tips for Beginners -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="charming_python_4.html" TITLE="CHARMING PYTHON #4">
+<link REL="next" HREF="charming_python_6.html" TITLE="CHARMING PYTHON #6">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+<table border="1" bgcolor="#e0ffe0"><tr><td>
+<b>Note:</b> You are welcome to read this older introductory article, 
+of course; but if you found your way here, you might be interested in 
+reading <a href="http://gnosis.cx/TPiP/">the book I wrote with the 
+same main title [http://gnosis.cx/TPiP/]</a>.
+</td></tr></table>
+
+<h1>Charming Python #5</h1>
+<h2>Text Processing in Python: Tips for Beginners</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Assistant Snake Handler, Gnosis Software, Inc.<br>
+ June 2000<br>
+ <br>
+</p>
+<blockquote>
+    Python shares a strength in text processing with several
+    popular scripting languages.  Python excels as a tool for
+    searching, modifying, and otherwise manipulating textual
+    data.  This article reviews for a programmer fist learning
+    Python the various text processing facilities built into
+    Python.  Some general concepts of regular expressions are
+    explained, as well as some advice given on when to use, and
+    not to use, regular expressions in text processing tasks.
+</blockquote>
+<h3>What Is Python?</h3>
+ <p>
+  Python is a freely available, very-high-level, interpreted
+  language developed by Guido van Rossum.  It combines a clear
+  syntax with powerful (but optional) object-oriented semantics.
+  Python is available for almost every computer platform you
+  might find yourself working on, and has strong portability
+  between platforms.
+</p>
+<h3>Language Features</h3>
+ <p>
+  As in most programming languages, strings are a basic type in
+  Python.  In common with most high-level languages (and
+  especially scripting languages), Python strings are of
+  indefinite length.  All issues of declarations and memory
+  allocation to hold strings (or other values) goes on "behind
+  the scenes" where a Python programmer does not need to give
+  much thought to it. Python also has several convenient
+  behaviors surrounding string variables that do not exist in
+  other high-level languages.
+</p>
+<p>
+  In Python, strings are "immutable sequences." One can refer to
+  elements or subsequences of strings in the same manner as with
+  any sequence.  However, strings (like tuples) cannot be
+  modified "in place." A great flexibility with Python sequences
+  comes with the "slice" operation.  In a natural-looking way
+  (similar to a spreadsheet format), one can refer to a slice
+  (i.e. subsequence) of a string.  The below interacive session
+  illustrates the use of strings and slicing:
+</p>
+<div class="code-sample"><h4>Python interactive session</h4><PRE>&gt;&gt;&gt; s = <FONT COLOR=#115511>"mary had a little lamb"</FONT>
+&gt;&gt;&gt; s[0]          <FONT COLOR=#1111CC># index is zero-based</FONT>
+<FONT COLOR=#115511>'m'</FONT>
+&gt;&gt;&gt; s[3] = <FONT COLOR=#115511>'x'</FONT>    <FONT COLOR=#1111CC># changing element in-place fails</FONT>
+Traceback (innermost last):
+  File <FONT COLOR=#115511>"&lt;stdin&gt;"</FONT>, line 1, <FONT COLOR=#3333CC><B>in</B></FONT> ?
+TypeError: object doesn't support item assignment
+&gt;&gt;&gt; s[11:18]      <FONT COLOR=#1111CC># 'slice' a subsequence</FONT>
+<FONT COLOR=#115511>'little '</FONT>
+&gt;&gt;&gt; s[:4]         <FONT COLOR=#1111CC># empty slice-begin assumes zero</FONT>
+<FONT COLOR=#115511>'mary'</FONT>
+&gt;&gt;&gt; s[4]          <FONT COLOR=#1111CC># index 4 is not included in slice [:4]</FONT>
+<FONT COLOR=#115511>' '</FONT>
+&gt;&gt;&gt; s[5:-5]       <FONT COLOR=#1111CC># can use "from end" index with negs</FONT>
+<FONT COLOR=#115511>'had a little'</FONT>
+&gt;&gt;&gt; s[:5]+s[5:]   <FONT COLOR=#1111CC># slice-begin &amp; slice-end are complementary</FONT>
+<FONT COLOR=#115511>'mary had a little lamb'</PRE></FONT></div><p>
+  Another powerful operation on strings is the simple <code>in</code>
+  keyword.  Two intuitive and useful constructs on strings come
+  with the keyword:
+</p>
+<div class="code-sample"><h4>Python interactive session</h4><PRE>&gt;&gt;&gt; s = <FONT COLOR=#115511>"mary had a little lamb"</FONT>
+&gt;&gt;&gt; <FONT COLOR=#3333CC><B>for</B></FONT> c <FONT COLOR=#3333CC><B>in</B></FONT> s[11:18]: <FONT COLOR=#3333CC><B>print</B></FONT> c,  <FONT COLOR=#1111CC># print each char in slice</FONT>
+...
+l i t t l e
+&gt;&gt;&gt; <FONT COLOR=#3333CC><B>if</B></FONT> <FONT COLOR=#115511>'x'</FONT> <FONT COLOR=#3333CC><B>in</B></FONT> s: <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>'got x'</FONT>   <FONT COLOR=#1111CC># test for char occurence</FONT>
+...
+&gt;&gt;&gt; <FONT COLOR=#3333CC><B>if</B></FONT> <FONT COLOR=#115511>'y'</FONT> <FONT COLOR=#3333CC><B>in</B></FONT> s: <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>'got y'</FONT>   <FONT COLOR=#1111CC># test for char occurence</FONT>
+...
+got y</PRE></div><p>
+  There are several variations on composing string literals in
+  Python. Single and double quotes may both be used, just so long
+  as opening and closing tokens match.  Python offers two
+  variations on quoting that are frequently useful.
+  Triple-quoting is often the easiest means of composing strings
+  that contain line breaks (or contain quotes as literals), for
+  example:
+</p>
+<div class="code-sample"><h4>Python interactive session</h4><PRE>&gt;&gt;&gt; s2 = <FONT COLOR=#115511>"""Mary had a little lamb
+... its fleece was white as snow
+... and everywhere that Mary went
+... the lamb was sure to go"""</FONT>
+&gt;&gt;&gt; <FONT COLOR=#3333CC><B>print</B></FONT> s2
+Mary had a little lamb
+its fleece was white as snow
+<FONT COLOR=#3333CC><B>and</B></FONT> everywhere that Mary went
+the lamb was sure to go</PRE></div><p>
+  Either single quoted or triple-quoted strings may be preceded
+  by the letter "r" to indicate that regular expression special
+  characters should not be interpreted by Python.  I.e.:
+</p>
+<div class="code-sample"><h4>Python interactive session</h4><PRE>&gt;&gt;&gt; s3 = <FONT COLOR=#115511>"this \n and \n that"</FONT>
+&gt;&gt;&gt; <FONT COLOR=#3333CC><B>print</B></FONT> s3
+this
+ <FONT COLOR=#3333CC><B>and</B></FONT>
+ that
+&gt;&gt;&gt; s4 = r<FONT COLOR=#115511>"this \n and \n that"</FONT>
+&gt;&gt;&gt; <FONT COLOR=#3333CC><B>print</B></FONT> s4
+this \n <FONT COLOR=#3333CC><B>and</B></FONT> \n that</PRE></div><p>
+  In r-strings, the backslash that might otherwise compose an
+  escaped character in a Python string is treated as a regular
+  backslash.  See the below discussion of regular expressions to
+  see why this is useful.
+</p>
+<h3>Files And String Variables</h3>
+ <p>
+  Most of the time when we talk about "text processing," what we
+  want to process is the content of a file.  It is quite easy in
+  Python to pull the contents out of a text file and into string
+  variables (which is where they need to be for most
+  manipulations, at some point).  File objects have three methods
+  related to reading: <code>.read()</code>, <code>.readline()</code>, <code>.readlines()</code>.
+  Each of these may take an argument to limit the amount of data
+  read at one time, but the most common use is without an
+  argument.  <code>.read()</code> reads in a file's entire contents at once,
+  generally in the context of placing those contents into a
+  string variable.  For sequential line-oriented processing, or
+  if a file is likely to be larger than available memory, don't
+  use this method.  But use <code>.read()</code> to get the most direct
+  string representation of a file's contents.  <code>.readline()</code> and
+  <code>.readlines()</code> are very similar.  They are both used in
+  constructs like:
+</p>
+<div class="code-sample"><h4>Python .readlines() example</h4><PRE>fh = open(<FONT COLOR=#115511>'c:\\autoexec.bat'</FONT>)
+<FONT COLOR=#3333CC><B>for</B></FONT> line <FONT COLOR=#3333CC><B>in</B></FONT> fh.readlines():
+    <FONT COLOR=#3333CC><B>print</B></FONT> line</PRE></div><p>
+  The difference between <code>.readline()</code> and <code>.readlines()</code> is that
+  the latter, like <code>.read()</code>, reads in an entire file at once.
+  <code>.readlines()</code> automatically parses the read contents into a
+  list of lines, thereby enabling the <code>for ... in ...</code> construct
+  common in Python.  Using <code>.readline()</code> reads in just a single
+  line from a file at a time, and is generally much slower than
+  <code>.readlines()</code>.  Really the only reason to use the
+  <code>.readline()</code> version is if you expect to read very large
+  files that might exceed available memory.
+</p>
+<p>
+  Sometimes one wants to "reverse" the usual process of reading (or
+  writing) strings from files, and instead treat strings
+  themselves in a file-like manner.  This would usually occur in
+  a context where one has a high-level function (including a
+  number of standard modules) that wants to do something with a
+  file object.  Fortunately, creating a "virtual file" in memory
+  may be easily done using the <em><code>cStringIO</code></em> module (the <em><code>StringIO</code></em>
+  module can be used instead in cases where subclassing the
+  module is required; but a beginner is unlikely to need to do
+  this).
+</p>
+<div class="code-sample"><h4>Python interactive session</h4><PRE>&gt;&gt;&gt; <FONT COLOR=#3333CC><B>import</B></FONT> cStringIO
+&gt;&gt;&gt; fh = cStringIO.StringIO()
+&gt;&gt;&gt; fh.write(<FONT COLOR=#115511>"mary had a little lamb"</FONT>)
+&gt;&gt;&gt; fh.getvalue()
+<FONT COLOR=#115511>'mary had a little lamb'</FONT>
+&gt;&gt;&gt; fh.seek(5)
+&gt;&gt;&gt; fh.write(<FONT COLOR=#115511>'ATE'</FONT>)
+&gt;&gt;&gt; fh.getvalue()
+<FONT COLOR=#115511>'mary ATE a little lamb'</PRE></FONT></div><p>
+  Keep in mind, however, that a <em><code>cStringIO</code></em> "virtual file",
+  unlike a real file, is not persistent.  It will be gone when
+  the program completes execution if other steps are not taken to
+  save it (such as saving it to a real file, or using the
+  <em><code>shelve</code></em> module, or using a database system).
+</p>
+<h3>Standard Module <em><code>string</code></em></h3>
+ <p>
+  The <em><code>string</code></em> module is probably the most generally useful
+  module in Python 1.5.* standard distributions.  In fact, it
+  appears that many of the facilities of the <em><code>string</code></em> module will
+  exist as built-in methods of strings in 1.6 and above (but
+  those have not been released at the time of this writing).
+  Most certainly, any program performing text processing
+  tasks should probably begin with the line:
+</p>
+<div class="code-sample"><h4></h4><pre>import string
+
+</pre></div><p>
+  A general rule-of-thumb is that if you <strong>can</strong> do a task using the
+  <em><code>string</code></em> module, that is the <strong>right</strong> way to do it.  In contrast
+  to <em><code>re</code></em>, <em><code>string</code></em> functions are generally much faster, and in
+  most cases they are easier to understand and maintain.
+  Third-party Python modules (some fast ones written in C) are
+  available for specialized tasks.  But portability and
+  familiarity still suggest sticking with <em><code>string</code></em> wherever
+  possible (which is not always, but is probably more often than
+  programmers coming from some other languages think is
+  possible).
+</p>
+<p>
+  The <em><code>string</code></em> module contains several types of things.  One type
+  of thing in <em><code>string</code></em> is strings of common constants.  For
+  example,
+</p>
+<div class="code-sample"><h4>Python interactive session</h4><PRE>&gt;&gt;&gt; <FONT COLOR=#3333CC><B>import</B></FONT> string
+&gt;&gt;&gt; string.whitespace
+<FONT COLOR=#115511>'\011\012\013\014\015 '</FONT>
+&gt;&gt;&gt; string.uppercase
+<FONT COLOR=#115511>'ABCDEFGHIJKLMNOPQRSTUVWXYZ'</PRE></FONT></div><p>
+  Although one could write these constants by hand, the <em><code>string</code></em>
+  versions more-or-less assure that the constants used will be
+  correct for the national language and platform the Python
+  script gets run on.
+</p>
+<p>
+  The next type of useful thing in <em><code>string</code></em> is functions to
+  transform strings in common ways (and uncommon ways can
+  generally be composed of several common transformations).  For
+  example:
+</p>
+<div class="code-sample"><h4>Python interactive session</h4><PRE>&gt;&gt;&gt; <FONT COLOR=#3333CC><B>import</B></FONT> string
+&gt;&gt;&gt; s = <FONT COLOR=#115511>"mary had a little lamb"</FONT>
+&gt;&gt;&gt; string.capwords(s)
+<FONT COLOR=#115511>'Mary Had A Little Lamb'</FONT>
+&gt;&gt;&gt; string.replace(s, <FONT COLOR=#115511>'little'</FONT>, <FONT COLOR=#115511>'ferocious'</FONT>)
+<FONT COLOR=#115511>'mary had a ferocious lamb'</PRE></FONT></div><p>
+  There are many other tranformations that are not specifically
+  illustrated, and the Python manuals contain details on them.
+</p>
+<p>
+  Yet another useful type of thing in <em><code>string</code></em> is functions to
+  report features of strings without themselves returning
+  strings.  These functions return numbers indicating various
+  features, e.g.:
+</p>
+<div class="code-sample"><h4>Python interactive session</h4><PRE>&gt;&gt;&gt; <FONT COLOR=#3333CC><B>import</B></FONT> string
+&gt;&gt;&gt; s = <FONT COLOR=#115511>"mary had a little lamb"</FONT>
+&gt;&gt;&gt; string.find(s, <FONT COLOR=#115511>'had'</FONT>)
+5
+&gt;&gt;&gt; string.count(s, <FONT COLOR=#115511>'a'</FONT>)
+4</PRE></div><p>
+  The final type of thing in <em><code>string</code></em> is a very Pythonic oddball.
+  The pair <code>.split()</code> and <code>.join()</code> provide a quick way to
+  convert between strings and tuples.  This is useful to do
+  remarkably often.  Usage is straightforward:
+</p>
+<div class="code-sample"><h4>Python interactive session</h4><PRE>&gt;&gt;&gt; <FONT COLOR=#3333CC><B>import</B></FONT> string
+&gt;&gt;&gt; s = <FONT COLOR=#115511>"mary had a little lamb"</FONT>
+&gt;&gt;&gt; L = string.split(s)
+&gt;&gt;&gt; L
+[<FONT COLOR=#115511>'mary'</FONT>, <FONT COLOR=#115511>'had'</FONT>, <FONT COLOR=#115511>'a'</FONT>, <FONT COLOR=#115511>'little'</FONT>, <FONT COLOR=#115511>'lamb'</FONT>]
+&gt;&gt;&gt; string.join(L, <FONT COLOR=#115511>"-"</FONT>)
+<FONT COLOR=#115511>'mary-had-a-little-lamb'</PRE></FONT></div><p>
+  Of course, in real-life usage, we would be likely to do
+  something else with a list besides <code>.join()</code> it right back
+  together (probably something involving our familiar <code>for ... in
+  ...</code> construct).
+</p>
+<h3>Standard Module <em><code>re</code></em></h3>
+ <p>
+  The <em><code>re</code></em> module obsoletes the <em><code>regex</code></em> and <em><code>regsub</code></em> modules that
+  you may see used in some older Python code.  While there are a
+  few, limited advantages to <em><code>regex</code></em> still, they are minor and
+  not worth using in new code.  The obsolete modules are likely
+  to be dropped from future Python releases, and 1.6 is also
+  likely to have an interface-compatible improved <em><code>re</code></em> module.
+  So stick with <em><code>re</code></em> for regular expressions.
+</p>
+<p>
+  Regular expressions are a complicated topic.  One could write a
+  book on such a topic; in fact, a number of people have!
+  However, this article will try to capture the "gestalt" of
+  regular expressions, and let the reader work futher from there.
+  A regular expression is a way of describing a pattern that
+  might occur in a text.  Do these characters occur? In this
+  order? Are subpatterns repeated the right number of times? Do
+  other subpatterns exclude a match? Conceptually, regular
+  expressions are actually very close to the way one would
+  intuitively describe a pattern in a natural language.  The
+  trick is encoding this description in the compact syntax of
+  regular expressions.
+</p>
+<p>
+  When approaching a regular expression, treat it as its own
+  little (or big) programming problem.  Even though only one or
+  two lines of code may be involved, those lines will effectively
+  incorporate a small program.  The first thing to start with is
+  the smallest bits.  Any regular expression, at its lowest
+  level, will involve matching particular "character classes."
+  The simplest character class is a single character, which is
+  just included in the pattern as a literal.  Frequently, we want
+  to allow matching of a class of characters.  One means of
+  indicating a class is by surrounding it in square braces;
+  within the braces both an enumeration of characters and ranges
+  indicated with a dash may be used.  There are also a number of
+  named character classes that may be abbreviated, and that will
+  be accurate for platform and national language.  Some examples:
+</p>
+<div class="code-sample"><h4>Python interactive session</h4><PRE>&gt;&gt;&gt; <FONT COLOR=#3333CC><B>import</B></FONT> re
+&gt;&gt;&gt; s = <FONT COLOR=#115511>"mary had a little lamb"</FONT>
+&gt;&gt;&gt; <FONT COLOR=#3333CC><B>if</B></FONT> re.search(<FONT COLOR=#115511>"m"</FONT>, s): <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"Match!"</FONT>      <FONT COLOR=#1111CC># char literal</FONT>
+...
+Match!
+&gt;&gt;&gt; <FONT COLOR=#3333CC><B>if</B></FONT> re.search(<FONT COLOR=#115511>"[@A-Z]"</FONT>, s): <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"Match!"</FONT> <FONT COLOR=#1111CC># char class</FONT>
+...     <FONT COLOR=#1111CC># match either at-sign or capital letter</FONT>
+...
+&gt;&gt;&gt; <FONT COLOR=#3333CC><B>if</B></FONT> re.search(<FONT COLOR=#115511>"\d"</FONT>, s): <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"Match!"</FONT>     <FONT COLOR=#1111CC># digits class</FONT>
+...</PRE></div><p>
+  Character classes are "atomic" in regular expressions.  Usually
+  what we want to do in useful expressions is compose "molecules"
+  out of different character classes.  We compose larger
+  expressions by a combination of <strong>grouping</strong> and by indicating
+  <strong>repetition</strong>.  Grouping is performed with parentheses: any
+  subexpression contained in parentheses is treated as if it were
+  atomic for purposes of further grouping or repetition.
+  Repetition is indicated by one of several operators.  "*" means
+  "zero or more"; "+" means "one or more"; "?" means "zero or
+  one".  For example, look at the expression:
+</p>
+<div class="code-sample"><h4></h4><pre>ABC([d-w]*\d\d?)+XYZ
+
+</pre></div><p>
+  For a string to match this expression, it must contain
+  something that starts with "ABC" and ends with "XYZ"--but what
+  else must it have? The subexpression in the middle is
+  <code>([d-w]*\d\d?)</code>, and that is followed by the "one or more"
+  operator.  So at least one thing matching the subexpression
+  must occur... or it could be a thousand things matching the
+  subexpression.  So the string, "ABCXYZ" will not match, because
+  it does not have the requisite stuff in the middle.
+</p>
+<p>
+  Just what is the requisite middle subexpression? It must
+  contain <strong>zero or more</strong> letters in the range <code>d-w</code>.  It is
+  important to notice that zero letters is a valid match, which
+  may be counterintuitive if you use the English word "some" to
+  describe it.  Next we must have <strong>exactly one</strong> digit; then <strong>zero
+  or one</strong> additional digits.  The first digit character class has
+  no repitition operator, so it simply occurs once.  The second
+  digit character class has the "?" operator.  Overall, it
+  amounts to either one or two digits.  Some strings matched by
+  the regular expression are:
+</p>
+<div class="code-sample"><h4></h4><pre>ABC1234567890XYZ
+ABCd12e1f37g3XYZ
+ABC1XYZ
+
+</pre></div><p>
+  A few expressions <strong>not</strong> matched by the regular expression are
+  below (try to think through why these do not match):
+</p>
+<div class="code-sample"><h4></h4><pre>ABC123456789dXYZ
+ABCdefghijklmnopqrstuvwXYZ
+ABcd12e1f37g3XYZ
+ABC12345%67890XYZ
+ABCD12E1F37G3XYZ
+
+</pre></div><p>
+  It takes a bit of practice to get used to creating and
+  understanding regular expressions.  But once they are mastered,
+  a great deal of expressive power is obtained.  That said, it is
+  often easy to jump into using a regular expression to solve a
+  problem that could actually be solved using simpler (and
+  faster) tools, such as <em><code>string</code></em>.
+</p>
+<h3>Resources</h3>
+ <p>
+  Friedl, Jeffrey E. F., <cite>Mastering Regular Expressions</cite>,
+  O'Reilly, Cambridge, MA 1997 is a fairly standard and
+  definitive reference on RegEx's.
+</p>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz has been a programmer and a writer for nearly two
+  decades; but David Mertz has only written <strong>about</strong> programming
+  of late (and enjoys it greatly).  David Mertz, in "real life,"
+  is a wayward humanities academic, lured by lucre to IT.  David
+  Mertz is fond of anaphora (and of alliteration).  David may be
+  reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+</p>
+</body></html>

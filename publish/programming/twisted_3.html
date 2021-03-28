@@ -1,0 +1,426 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>LINUX ZONE FEATURE: The Twisted Framework -- Part Three, Stateful Web Servers and Templating -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="twisted_2.html" TITLE="LINUX ZONE FEATURE: The Twisted Framework #2">
+<link REL="next" HREF="twisted_4.html" TITLE="LINUX ZONE FEATURE: The Twisted Framework #4">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Linux Zone Feature: The Twisted Framework</h1>
+<h2>Part Three, Stateful Web Servers and Templating</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Selector, Gnosis Software, Inc.<br>
+ June, 2003<br>
+ <br>
+</p>
+<blockquote>
+    In the previous installment of this series, David looked at some higher-level techniques for writing Web services, including serving dynamic pages using the .rpy extension. In this article, he moves on to look at dynamic Web serving, and how to generate dynamic Web pages using the Woven application for templating pages.
+</blockquote>
+<h3>Interacting With A Web Browser</h3>
+ <p>
+  In the last installment of this series, we looked at dynamic
+  web pages served by Twisted using the <code>.rpy</code> extension.  But
+  those initial versions of a <em>weblog server</em> were only minimally
+  dynamic.  HTML tags were used to force a page to refresh
+  periodically, and upon each refresh a bit of calculation was
+  done to determine the relevant recent hits.  But there was no
+  user configuration aspect to the server.
+</p>
+<p>
+  The first thing we will look at in this installment, therefore,
+  is how to configure user interaction into the same basic dynamic
+  page framework we looked at before. But even before that, let me
+  include a quick reminder of how to launch a Twisted web server
+  for readers who may not have seen the prior installments.
+</p>
+<p>
+  Creating an "pickled application" is usually the best approach,
+  and it can be done purely with command line options.  You do
+  not <em>have</em> to do it this way.  If you like, you are free to
+  include some extra capabilities inside the basic webserver
+  (such as maintaining persistent data across users and
+  sessions), but it is not necessary to write any custom code.
+  Creating the pickled application looks something like:
+</p>
+<div class="code-sample"><h4></h4><pre>mktap web --path ~/twisted/www --port 8080
+
+</pre></div><p>
+  Launching it consists of:
+</p>
+<div class="code-sample"><h4></h4><pre>twistd -f web.tap
+
+</pre></div><p>
+  That's it.  Any HTML or <code>.rpy</code> files that happen to be in the
+  <code>~/twisted/www</code> base directory (or subdirectories) will be
+  served to clients on port 8080.  Actually, you can serve
+  whatever file type you like, but the <code>.rpy</code> files will be
+  treated as special dynamic scripts.
+</p>
+<p>
+  The dynamic page <code>config_refresher.rpy</code> is a bit longer than
+  any presented in the prior installment; much of that is simply
+  the fact that it includes HTML templates in its body rather
+  than importing them.   Let us first look at the setup code
+</p>
+<div class="code-sample"><h4>Dynamic script config_refresher.py (setup)</h4><PRE><FONT COLOR=#3333CC><B>from</B></FONT> twisted.web <FONT COLOR=#3333CC><B>import</B></FONT> resource, server
+<FONT COLOR=#3333CC><B>from</B></FONT> persist <FONT COLOR=#3333CC><B>import</B></FONT> Records
+<FONT COLOR=#3333CC><B>from</B></FONT> webloglib <FONT COLOR=#3333CC><B>import</B></FONT> log_fields, COLOR
+<FONT COLOR=#3333CC><B>from</B></FONT> urllib <FONT COLOR=#3333CC><B>import</B></FONT> unquote_plus as uqp
+
+fieldnames = <FONT COLOR=#115511>"""ip timestamp request status
+                bytes referrer agent"""</FONT>.split()
+field_dict = dict(zip(fieldnames, range(len(fieldnames)))</PRE></div><p>
+  Other than a few imports that we have seen in prior installments,
+  I map field names to their positions in the tuple returned by
+  <code>log_fields()</code>. Do notice also the use of a custom <em><code>persist</code></em>
+  module that will hold the weblog in memory within the Twisted web
+  server, so that the whole log file does not need to be read each
+  time any client requests some records. Next the HTML templates:
+</p>
+<div class="code-sample"><h4>config_refresher.py script (templates)</h4><PRE>TOP = <FONT COLOR=#115511>'''&lt;html&gt;&lt;head&gt;&lt;title&gt;Weblog Refresher&lt;/title&gt;
+  &lt;META HTTP-EQUIV="Refresh" CONTENT="30"/&gt;&lt;/head&gt;
+  &lt;body&gt;
+  &lt;table border="1" width="100%%"&gt;
+  &lt;tr bgcolor="yellow"&gt;
+  &lt;form action="http://gnosis.cx:8080/config_refresher.rpy"
+        method="GET"&gt;
+    &lt;td&gt; IP  &lt;input type="checkbox" name="ip" %s/&gt; &lt;/td&gt;
+    &lt;td&gt; Timestamp &lt;input type="checkbox" name="timestamp" %s/&gt;&lt;/td&gt;
+    &lt;td&gt; Request &lt;input type="checkbox" name="request" %s/&gt;&lt;/td&gt;
+    &lt;td&gt; Status &lt;input type="checkbox" name="status" %s/&gt;&lt;/td&gt;
+    &lt;td&gt; Bytes  &lt;input type="checkbox" name="bytes" %s/&gt;&lt;/td&gt;
+    &lt;td&gt; Referrer &lt;input type="checkbox" name="referrer" %s/&gt;&lt;/td&gt;
+    &lt;td&gt; Agent &lt;input type="checkbox" name="agent" %s/&gt;&lt;/td&gt;
+    &lt;td&gt; &lt;input type="submit" value="Change Fields"&gt;&lt;/td&gt;
+  &lt;/form&gt;
+  &lt;/td&gt;&lt;/tr&gt;
+  &lt;table border="0" cellspacing="0" width="100%%"&gt;'''</FONT>
+ROW = <FONT COLOR=#115511>'&lt;tr bgcolor=" %s"&gt;%s&lt;/tr&gt;\n'</FONT>
+END = <FONT COLOR=#115511>'&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;'</FONT>
+COLOR = [<FONT COLOR=#115511>'white'</FONT>,<FONT COLOR=#115511>'lightgray'</FONT>]
+END = <FONT COLOR=#115511>'''&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;'''</PRE></FONT></div><p>
+  Setting up an HTML form is not too mysterious, but one little
+  trick in the example is to interpolate the string "checked"
+  into those checkboxes in the HTML that have been checked.
+</p>
+<div class="code-sample"><h4>config_refresher.py script (persistence)</h4><PRE>records = registry.getComponent(Records)
+<FONT COLOR=#3333CC><B>if</B></FONT> <FONT COLOR=#3333CC><B>not</B></FONT> records:
+   records = Records()
+   registry.setComponent(Records, records)</PRE></div><p>
+  The Twisted registry works as described in the last
+  installment--it is simply the place where the latest records in
+  the web log file are held.  Finally, we create a <code>Resource</code>, with
+  a corresponding <code>.render()</code> method--this does this actual page
+  creation:
+</p>
+<div class="code-sample"><h4>config_refresher.py script (rendering)</h4><PRE><FONT COLOR=#3333CC><B>class</B></FONT><A NAME="Resource"><FONT COLOR=#CC0000><B> Resource</B></FONT></A>(resource.Resource):
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="render"><FONT COLOR=#CC0000><B> render</B></FONT></A>(self, request):
+        showlist = []
+        <FONT COLOR=#3333CC><B>for</B></FONT> field <FONT COLOR=#3333CC><B>in</B></FONT> request.args.keys():
+            showlist.append(field_dict[field])
+        showlist.sort()
+        checked = [<FONT COLOR=#115511>""</FONT>] * len(fieldnames)
+        <FONT COLOR=#3333CC><B>for</B></FONT> n <FONT COLOR=#3333CC><B>in</B></FONT> showlist:
+            checked[n] = <FONT COLOR=#115511>'checked'</FONT>
+        request.write(TOP % tuple(checked))
+        odd = 0
+        <FONT COLOR=#3333CC><B>for</B></FONT> rec <FONT COLOR=#3333CC><B>in</B></FONT> records.getNew():
+            hit = [field.strip(<FONT COLOR=#115511>'"'</FONT>) <FONT COLOR=#3333CC><B>for</B></FONT> field <FONT COLOR=#3333CC><B>in</B></FONT> log_fields(rec)]
+            flds=<FONT COLOR=#115511>'\n'</FONT>.join([<FONT COLOR=#115511>'&lt;td&gt;%s&lt;/td&gt;'</FONT>%hit[n] <FONT COLOR=#3333CC><B>for</B></FONT> n <FONT COLOR=#3333CC><B>in</B></FONT> showlist])
+            request.write(ROW % (COLOR[odd],
+                                 uqp(flds).replace(<FONT COLOR=#115511>'&amp;amp;'</FONT>,<FONT COLOR=#115511>' &amp;'</FONT>)))
+            odd = <FONT COLOR=#3333CC><B>not</B></FONT> odd
+        request.write(END)
+        request.finish()
+        <FONT COLOR=#3333CC><B>return</B></FONT> server.NOT_DONE_YET
+resource = Resource()</PRE></div><p>
+  The main new thing in this <code>Resource</code> is the access to the
+  <code>request.args</code> attribute. Generally, this attribute is similar to
+  the Python <em><code>cgi</code></em> modules <code>FieldStorage</code> class--it collects any
+  information passed with the page request, both GET and PUT data.
+  Twisted's request data is a dictionary of passed values--in our
+  case we are just interested in which checkboxes fields are passed
+  in and which not.  But it would follow the same pattern if we
+  wanted to check some values stored in <code>request.args</code>--perhaps
+  you might add options to filter based on field values, for
+  example (and choose this with a text entry or an HTML listbox).
+</p>
+<h3>Templating With Woven</h3>
+ <p>
+  The dynamic pages we have looked at so far have all been
+  conceptually fairly similar to a CGI approach.  Twisted
+  asynchronous server is faster--and it especially saves time to
+  avoid the overhead of opening a new process for each script
+  request.  But <em><code>fastcgi</code></em> or <em><code>mod_python</code></em> achieve a similar
+  speedup.  There is nothing all that special about Twisted in
+  this regard.
+</p>
+<p>
+  One way to move web application development to a higher level
+  is to use <em><code>Woven</code></em>.  In concept, <em><code>Woven</code></em> is somewhat similar to
+  PHP, ASP (Active Server Pages), or JSP (Java Server Pages).
+  That is, <em><code>Woven</code></em> XHTML pages are not simply the pages delivered
+  to browsers, but rather templates or skeletons of pages that
+  are filled in programmatically.  However, the separation
+  between code and HTML is a bit different in <em><code>Woven</code></em> than in
+  those page-embedding technologies.  You do not write Python
+  code directly inside a <em><code>Woven</code></em> template.  Instead you define a
+  series of custom XHTML attributes on normal tags that let
+  external code enhance and manipulate the page in preparation
+  for delivery to the browser client.
+</p>
+<p>
+  The <code>model</code> attribute determines the data that is used
+  for expanding the XHTML element it is attached to.  The idea
+  is that a Model represents the "business logic" of an
+  application--how the data content of a page is determined.
+  The <code>view</code> attribute, in contrast determines the particular
+  presentation of the generated data.  There is also the concept
+  of a Controller in <em><code>Woven</code></em> which is the code that combines the
+  Model with the View of a node (i.e. an XHTML element).  This
+  last part is usually handled by a <code>Page</code> object, which is a
+  class that can be specialized.
+</p>
+<p>
+  The nomenclature behind <em><code>Woven</code></em> is admittedly a bit difficult;
+  and unfortunately, the HOWTO documents at the Twisted Matrix
+  website do almost as much to obscure matters as they do to
+  illuminate them. It is hard going to figure out exactly how to
+  use <em><code>Woven</code></em>. I do not yet claim to wholly understand <em><code>Woven</code></em>
+  concepts myself, but Twisted user Alex Levy
+  (&lt;mesozoic@polynode.com&gt;) was kind enough to help me through
+  developing the example I present below.  Still, there is quite
+  a bit you can do with <em><code>Woven</code></em>, so it is worth working through.
+</p>
+<p>
+  The first step for a <em><code>Woven</code></em> application is to develop a
+  template file (or files).  These are simply XHTML files with
+  special attributes, e.g.:
+</p>
+<div class="code-sample"><h4>WeblogViewer.xhtml template</h4><pre>
+&lt;html&gt;
+&lt;head&gt;
+  &lt;title&gt;Weblog Viewer&lt;/title&gt;
+  &lt;meta HTTP-EQUIV="Refresh" CONTENT="30" /&gt;
+  &lt;style type="text/css"&gt;&lt;!--
+    div.info {
+      background-color: lightblue;
+      padding: 2px dotted; }
+    table th, table td {
+      text-align: left;
+      cellspacing: 0px;
+      cellpadding: 0px; }
+    table.log {
+      border: 0px;
+      width: 100%; }
+    table.log tr.even { background-color: white; }
+    table.log tr.odd  { background-color: lightgray; }
+  --&gt;&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="info"&gt;
+  You are displaying the contents of
+  &lt;code model="filename" view="Text"&gt;filename&lt;/code&gt;.
+  &lt;/div&gt;
+  &lt;table border="0" cellspacing="0" width="100%"
+         class="log" model="entries" view="List"&gt;
+    &lt;tr bgcolor="yellow" pattern="listHeader"&gt;
+      &lt;th&gt;Referrer&lt;/th&gt;&lt;th/&gt;
+      &lt;th&gt;Resource&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr pattern="listItem" view="alternateColor"&gt;
+      &lt;td model="referrer" view="Text"&gt;
+          Referrer&lt;/td&gt;
+      &lt;td&gt;-&amp;gt;&lt;/td&gt;
+      &lt;td model="request_resource" view="Text"&gt;
+          Resource&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr pattern="emptyList"&gt;
+      &lt;td colspan="2"&gt;There is nothing to display.&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/table&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+
+</pre></div><p>
+  Alex Levy developed this template, and showing better style
+  than I have in my examples, used CSS2 to control the exact
+  presentation of elements.  Obviously, the basic layout of the
+  page is the same with or without the style sheet.
+</p>
+<p>
+  Notice that the <code>&lt;table&gt;</code> element is assigned the view "List",
+  which is a basic <em><code>Woven</code></em> View, as is "Text"--on the other hand,
+  "alternateColor" is a customized view that we define in code
+  below.  Some elements have a <code>pattern</code> attribute which is used
+  by the controlling View to locate matching children.  In
+  particular a List view is composed of an optional <code>listHeader</code>,
+  some <code>listItem</code> children (one template tag, but expanded
+  during generation), and an <code>emptyList</code> child in case the Model
+  does not locate any data.  These patterns are standard
+  attributes that a List view uses, other views would utilize
+  other patterns for expansion.
+</p>
+<p>
+  The code for this version of a weblog server creates a custom
+  Twisted sever. Rather than update based on requests by clients,
+  we add a repeated callback to the <code>update()</code> function to the
+  server's Reactor; this is substantially the same as with the
+  <code>tlogmaker.py</code> in the prior installment.  Let us look at the
+  setup code first before we examine the customized Page
+  resource:
+</p>
+<div class="code-sample"><h4>WeblogViewer.py custom Twisted server</h4><PRE><FONT COLOR=#3333CC><B>import</B></FONT> webloglib as wll
+<FONT COLOR=#3333CC><B>import</B></FONT> os, sys
+<FONT COLOR=#3333CC><B>from</B></FONT> urllib <FONT COLOR=#3333CC><B>import</B></FONT> unquote_plus as uqp
+<FONT COLOR=#3333CC><B>from</B></FONT> twisted.internet <FONT COLOR=#3333CC><B>import</B></FONT> reactor
+<FONT COLOR=#3333CC><B>from</B></FONT> twisted.web <FONT COLOR=#3333CC><B>import</B></FONT> microdom
+<FONT COLOR=#3333CC><B>from</B></FONT> twisted.web.woven <FONT COLOR=#3333CC><B>import</B></FONT> page, widgets
+
+logfile = <FONT COLOR=#115511>'../access-log'</FONT>
+LOG = open(logfile)
+RECS = []
+NUM_ROWS = 25
+
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="update"><FONT COLOR=#CC0000><B> update</B></FONT></A>():
+    <FONT COLOR=#3333CC><B>global</B></FONT> RECS
+    RECS.extend(LOG.readlines())
+    RECS = RECS[-NUM_ROWS*3:]
+    reactor.callLater(5, update)
+update()</PRE></div><p>
+  The interesting stuff comes with our customization of the class
+  <code>twisted.web.woven.page.Page</code>.  Most of what we do is magic, in
+  the sense that you need to define specially-named attributes and
+  methods.
+</p>
+<div class="code-sample"><h4>WeblogViewer.py Twisted server (continued)</h4><PRE><FONT COLOR=#3333CC><B>class</B></FONT><A NAME="WeblogViewer"><FONT COLOR=#CC0000><B> WeblogViewer</B></FONT></A>(page.Page):
+    <FONT COLOR=#115511>"""A Page used for viewing Apache access logs."""</FONT>
+    templateDirectory = <FONT COLOR=#115511>'~/twisted/www'</FONT>
+    templateFile = <FONT COLOR=#115511>"WeblogViewer.xhtml"</FONT>
+
+    <FONT COLOR=#1111CC># View factories and updates</FONT>
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="wvupdate_alternateColor"><FONT COLOR=#CC0000><B> wvupdate_alternateColor</B></FONT></A>(self, request, node, data):
+        <FONT COLOR=#115511>"""Makes our table rows alternate CSS classes"""</FONT>
+        <FONT COLOR=#1111CC># microdom.lmx is very handy; another example is located here:</FONT>
+        <FONT COLOR=#1111CC># http://twistedmatrix.com/documents/howto/picturepile#auto0</FONT>
+        tr = microdom.lmx(node)
+        tr[<FONT COLOR=#115511>'class'</FONT>] = (<FONT COLOR=#115511>'odd'</FONT>,<FONT COLOR=#115511>'even'</FONT>)[data[<FONT COLOR=#115511>'_number'</FONT>]%2]
+
+    <FONT COLOR=#1111CC># Model factories</FONT>
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="wmfactory_filename"><FONT COLOR=#CC0000><B> wmfactory_filename</B></FONT></A>(self, request):
+        <FONT COLOR=#115511>"""Returns the filename of the log being examined."""</FONT>
+        <FONT COLOR=#3333CC><B>return</B></FONT> os.path.split(logfile)[1]
+
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="wmfactory_entries"><FONT COLOR=#CC0000><B> wmfactory_entries</B></FONT></A>(self, request):
+        <FONT COLOR=#115511>"""Return list of dict objects representing log entries"""</FONT>
+        entries = []
+        <FONT COLOR=#3333CC><B>for</B></FONT> rec <FONT COLOR=#3333CC><B>in</B></FONT> RECS:
+            hit = [field.strip(<FONT COLOR=#115511>'"'</FONT>) <FONT COLOR=#3333CC><B>for</B></FONT> field <FONT COLOR=#3333CC><B>in</B></FONT> wll.log_fields(rec)]
+            <FONT COLOR=#3333CC><B>if</B></FONT> hit[wll.status] == <FONT COLOR=#115511>'200'</FONT> <FONT COLOR=#3333CC><B>and</B></FONT> hit[wll.referrer] != <FONT COLOR=#115511>'-'</FONT>:
+                <FONT COLOR=#1111CC># We add _number so our alternateColor view will work.</FONT>
+                d = {<FONT COLOR=#115511>'_number'</FONT>: len(entries),
+                     <FONT COLOR=#115511>'ip'</FONT>: hit[wll.ip],
+                     <FONT COLOR=#115511>'timestamp'</FONT>: hit[wll.timestamp],
+                     <FONT COLOR=#115511>'request'</FONT>: hit[wll.request],
+                     <FONT COLOR=#115511>'request_resource'</FONT>: hit[wll.request].split()[1],
+                     <FONT COLOR=#115511>'status'</FONT>: hit[wll.status],
+                     <FONT COLOR=#115511>'bytes'</FONT>: hit[wll.bytes],
+                     <FONT COLOR=#115511>'referrer'</FONT>: uqp(hit[wll.referrer]).\
+                                     replace(<FONT COLOR=#115511>'&amp;amp;'</FONT>,<FONT COLOR=#115511>' &amp;'</FONT>),
+                     <FONT COLOR=#115511>'agent'</FONT>: hit[wll.agent],
+                    }
+                entries.append(d)
+        <FONT COLOR=#3333CC><B>return</B></FONT> entries[-NUM_ROWS:]
+resource = WeblogViewer()</PRE></div><p>
+  There are three categories of things that our custom Page does.
+  The first sets up the template to use with this resource.
+</p>
+<p>
+  The second defines a custom View, using the magic method prefix
+  <code>wv</code> (Woven view). All we really do in the custom view is set the
+  <code>class</code> attribute to one of two values from the CSS stylesheet,
+  to make alternating rows of display have a different color. But
+  you could manipulate the node however you like, using a
+  DOM-like API.
+</p>
+<p>
+  The third category is interesting.  We define two Models using
+  methods with <code>wmfactory_</code> prefixed to the name of the Model
+  itself.  Since <code>filename</code> is displayed in a Text view, it is
+  best to return a string.  And likewise, <code>entries</code> displayed in
+  a List view should get a list of entries as return value.  But
+  what about the Models <code>referrer</code> and <code>request_resource</code> that
+  are used in the XHTML template? No custom methods were defined
+  for these models.  However, the <code>listItem</code> pattern that
+  surrounds nodes with these Models has a dictionary made
+  available to it--the <code>entries</code> dict returned by
+  <code>.wmfactory_entries()</code>.  And this dictionary, in turn, contains
+  keys for <code>request_resource</code> and <code>referrer</code>; you do not need a
+  custom method to support a Model, a dictionary with the
+  necessary key works fine.  Since the View for the <code>referrer</code>
+  node is Text, so said dictionary should contain a string for a
+  value (but if not, Woven makes good efforts to coerse it).
+</p>
+<p>
+  Creating a custom server based on the custom <code>WeblogViewer.py</code>
+  resource works as we have seen before.  Create a server, then
+  launch it:
+</p>
+<div class="code-sample"><h4></h4><pre>% mktap web --resource-script=WeblogViewer.py --port 8080
+% twistd -f web.tap
+
+</pre></div><h3>In The Last Part</h3>
+ <p>
+  The introduction has only scratched the surface of Woven.
+  There are whole labyrinths within that package; but I hope the
+  example I presented gives a bit of the feel for the templating
+  system.
+</p>
+<p>
+  In the final installment of this series on Twisted, I will pick
+  up some odds and ends, and take a look at a few of the
+  specialized protocols and servers contained in the Twisted
+  package.
+</p>
+<h3>Resources</h3>
+ <p>
+  Twisted Matrix comes with quite a bit of documentation, and
+  many examples.  Browse around its homepage to glean a greater
+  sense of how Twisted Matrix works, and what has been
+  implemented with it (or wait for the next installments here):
+</p>
+<blockquote>
+   <a href="http://twistedmatrix.com">http://twistedmatrix.com</a>
+</blockquote>
+<p>
+  You can read about the Woven templating framework at:
+</p>
+<blockquote>
+   <a href="http://twistedmatrix.com/documents/howto/woven">http://twistedmatrix.com/documents/howto/woven</a>
+</blockquote>
+<p>
+  A simple version of a weblog server was presented in the
+  developerWorks tip, <cite>Use Simple API for XML as a long-running
+  event processor</cite>:
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/xml/library/x-tipasysax.html">http://www-106.ibm.com/developerworks/xml/library/x-tipasysax.html</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz believes that it is turtles all the way down. David
+  may be reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a> And buy his book: <cite>Text Processing
+  in Python</cite> (http://gnosis.cx/TPiP/).
+</p>
+</body></html>

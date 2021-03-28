@@ -1,0 +1,486 @@
+Sharing Computers on a Linux (or Heterogeneous) Network: Part Two
+More VNC, DToC, remote X, and security
+
+David Mertz, Ph.D.
+Gnosis Software, Inc.
+December, 20001
+
+  This article is the second of two comparing SSH, remote X, and
+  VNC, and other technologies as ways of remotely running
+  applications.  In this part, I take a look at some VNC
+  configuration issues, glance at IBM's Desktop on Call,
+  introduce remote X, and talk a bit about security.
+
+
+Introduction
+------------------------------------------------------------------------
+
+  In the first part of this pair of articles on "Sharing
+  Computers," I described my heterogeneous local network, and how
+  I use it to compare and test applications on different OS's and
+  architectures.  Several technologies exist to allow a user at
+  one workstation to run an application that lives on another
+  computer.  SSH provides text terminals to remote computers; the
+  X Window System can be used to display interactive applications
+  on different workstations than where they actually run; VNC can
+  act as a "remote-control" to an entire remote desktop.  Each
+  technology has advantages and disadvantages.  They all run on
+  Linux, but different variations (host or remote) allow
+  interaction with various other OS environments (for
+  heterogeneous networks).  Using combinations of these tools, I
+  can sit at one workstation (the one with the best monitor,
+  keyboard and chair), and run, test, and time applications on a
+  bunch of platforms--usually without rebooting anything.
+
+  The earlier article introduced SSH and VNC.  This one talks a
+  bit more about VNC, then moves on to remote X and security.
+
+
+Background on My Network Setup
+------------------------------------------------------------------------
+
+  My local network has seven nodes on it--named Apollo, Bacchus,
+  Chaos, Delphi, Echo, and Gaia.  These nodes are assigned local
+  IP addresses 192.168.1.101 through 192.168.1.107, in the
+  obvious order.  For the most part, the same physical machine
+  gets the same IP address when multi-booted to different OS's
+  (but sometimes I use DHCP, which assigns addresses above
+  192.168.1.200).  The whole thing sits behind a hardware
+  firewall/router, and I trust the firewall enough that I am
+  perhaps not as paranoid as I should be about the services that
+  run on the local machines.  Those readers who need to share
+  computers over the public internet should worry a bit more
+  about security matters than I do.  The above details will let a
+  readers follow some shell examples that I give below.  The
+  machine I actually sit at is Bacchus, and has IP address
+  192.168.1.102.
+
+
+Configuring VNC
+------------------------------------------------------------------------
+
+  We saw earlier how to launch VNC on a Linux platform, and
+  considered some issues about screen geometry and color-depth.
+  But we left aside consideration of some important matters
+  around configuring and using VNC.  In this article we focus
+  only on the usage of Unix-like 'Xvnc' servers, other systems
+  have similar concepts but implement configuration differently
+  (often through menus and dialogs instead of command-lines and
+  configuration files).
+
+  The first time 'vncserver' runs within a given user account, it
+  asks you to specify the password VNC clients will need to use
+  to connect.  In addition, some default configuration files are
+  created.  Let us take a look at this first run:
+
+      #---------- Creating default VNC configuration ------------#
+      [vnc-user@fury vnc-user]$ vncserver
+
+      You will require a password to access your desktops.
+
+      Password:
+      Verify:
+
+      New 'X' desktop is fury.gnosis.lan:3
+
+      Creating default startup script /home/vnc-user/.vnc/xstartup
+      Starting applications specified in /home/vnc-user/.vnc/xstartup
+      Log file is /home/vnc-user/.vnc/fury.gnosis.lan:3.log
+
+  Here we create a VNC session.  The default resolution is used
+  when nothing to the contrary is specified on the command
+  line--the default geometry is 1024x768, and the default
+  color-depth is 8-bit.  The previous article showed how to
+  create a script file that used other resolutions.
+
+  The noteworthy thing in the initiation is the '~/.vnc/xstartup'
+  file that is created during the first run.  This file controls
+  what happens when the VNC session is created--most notably,
+  which window manager is used.  The first time '~/.vnc/xstartup'
+  is created, the window manager specified is 'twm', which is an
+  extremely minimal window manager that is present on nearly
+  every X Window System machine.  On the plus side, the minimal
+  nature of 'twm' makes it about the most bandwidth friendly way
+  possible to run VNC.  On the minus side, 'twm' lacks most of
+  the bells-and-whistles of a full "desktop manager" like KDE,
+  Gnome of WindowMaker.  Many users will want to edit their
+  'xstartup'--below is an example I have modified:
+
+      #-------------- Customized VNC 'startup' ----------------#
+      #!/bin/sh
+      xrdb $HOME/.Xresources
+      xsetroot -solid grey
+      #xterm -geometry 80x24+10+10 -ls -title "$VNCDESKTOP Desktop" &
+      #twm &
+      #exec wmaker
+      exec startkde
+
+  In the example, I have commented out the default 'twm', and
+  also the default launch of an 'xterm'.  I have commented out,
+  as well, the launch of WindowMaker that I used for a while.  I
+  did not actually delete those lines in case I want to restore
+  them later.  What I actually do with this account is launch
+  KDE.  However, I have configured this particular KDE desktop to
+  avoid color gradients on the background and title bars, and
+  use a minimum of animation effects.  Minimizing the busyness of
+  the desktop makes KDE easier on the channel bandwidth.  Similar
+  principles apply to whatever window manager you prefer.
+
+  One final note is on killing VNC sessions you have launched.
+  You need to do this on the server end (including from a
+  'vncviewer' window, which will sever the connection once you
+  kill the server; but this causes no harm).  A quick way to see
+  what VNC sessions have been launched is with 'ps -ax | grep vnc'
+  If you want, you can use the Linux 'kill' command to end a
+  session, but this can leave some dangling semaphore files that
+  you will later need to manually delete.  The cleaner approach
+  is usually 'vncserver -kill :1'--but if you want to force-kill
+  a user VNC process from the root account, use the 'kill'
+  command.
+
+Desktop on Call and eComStation
+------------------------------------------------------------------------
+
+  Readers of these my columns, and of this pair of articles, may
+  have been slightly surprised by my occassional references to
+  using OS/2, which has diminished in popularity (and even more
+  in IBM attention) for a number of years.  My "official" story
+  is probably the observation that the Workplace Shell of OS/2
+  Warp is still far ahead of any GUI that has appeared on Linux,
+  Windows, MacOS, or even BeOS.  The WPS really is that good--but
+  the actual reason for my continuing usage is mostly inertia on
+  my part.  Over the years, I have built up a large set of tools
+  I am familiar and comfortable with on OS/2, and they work well
+  with each other.  I've never quite managed to fill all the gaps
+  for my daily use when I boot to other systems (90% happiness
+  still requires an occassional reboot).
+
+  Given my stubbornness, I was exciting recently to receive a
+  reviewer's copy of Serenity Systems' eComStation, which is an
+  enhancement and rebundling of IBM's Warp 4.5/Workspace on
+  Demand by a third-party licensee. eComStation (eCS) was
+  released just this year, and includes both all the newest
+  patches to the "Warp core" and a bunch of extra tools.
+
+  One of the tools included with eCS is an IBM product called
+  "Desktop on Call (DToC)."  Versions of DToC server are also
+  available for Windows and Linux, but are hard to buy in the
+  USA.  What DToC does is a lot like what VNC does.  The DToC
+  server piggybacks on the HTTP protocol (and by default uses
+  port 80) to serve a "remote desktop" across a network--either a
+  LAN or the internet.  The client application for DToC is any
+  webbrowser with JavaScript and Java enabled.  Basically, just
+  like the VNC-java client, a webbrowser is the connection
+  interface to DToC. And DToC has the exact same issue with
+  locally captured keystrokes, multi-key sequences, and
+  bandwidth/resolution tradeoffs as VNC does.
+
+  There are a couple advantages DToC has over VNC.  The security
+  issues are integrated into DToC, rather than travelling through
+  other layers and translations that you need to configure
+  separately.  The piggybacking on HTTP means that DToC gets
+  through a firewall more easily than VNC does (but that is both
+  good and bad).  As well, within DToC one gets a file transfer
+  interface, so no separate FTP, Samba, NFS, or similar file
+  transfer server necessarily needs to run on the server machine,
+  as long as DToC is running (as you would need with VNC).  On
+  the down side, DToC feels a bit less responsive than VNC
+  overall--not terrible, but a little less good.
+
+  Another tool bundled with eCS is an X Server called Hoblink
+  X11.  I have not experimented with that yet, but when I do,
+  this might bring even better integration into the OS/2 node(s)
+  of my local network (but Linux still does the best job of
+  "playing nice").
+
+
+Remote X Window System
+------------------------------------------------------------------------
+
+  The X Window System is a remarkably nice software idea.  All
+  the more so given that it was first invented in 1984 (before
+  Microsoft Windows 1.0, and just slightly after the first
+  Macintosh).  For most Linux users, the X Window System (or
+  "X11", but properly speaking -not- "X Windows") is probably
+  just the API that their window manager calls to display GUI
+  applications locally.  But X11 is actually something more
+  interesting.
+
+  X11 always has a client and a server, even when both of them
+  run on the same physical machine.  The X client and X server
+  are probably the opposite of what one would initially think
+  they are.  An X server is a device that is willing to "serve" a
+  display capability to an underlying application.  An X client
+  is a particular application that would like some X server to
+  provide it with a place to put its visual output.
+
+  Running on a local workstation, the server and client
+  communicate over a purely internal channel, and one does not
+  much need to think about it.  But when there are local and
+  remote machines involved, the local one is usually the X server
+  and the remote one is usually the X client.  However, once in a
+  while, you might want something to get displayed at a
+  workstation you are not at, and the roles could be reversed.
+
+  The X Window System itself is really just an API that has calls
+  like "draw a window at these coordinates".  To actually do much
+  with the X Window System, you usually run a -window manager- on
+  top of it, which lets you do things like move windows, minimize
+  them, and launch new X clients.
+
+  Let us take a look at how we might launch a remote application
+  (X client) to display on a local workstation.  All the machines
+  in the demonstration are Linux, but other systems with X
+  servers and clients will work in a similar manner.  The first
+  thing we want to do is figure out what IP address our local
+  machine uses; 'ifconfig' is a good tool to do this:
+
+      #---- Finding IP address of local machine (X Server) ----#
+      [root@bacchus /root]# ifconfig eth0
+      eth0      Link encap:Ethernet  HWaddr 00:48:54:83:82:AD
+                inet addr:192.168.1.102  Bcast:192.168.1.255  Mask:255.255.255.0
+                UP BROADCAST RUNNING  MTU:1500  Metric:1
+                RX packets:15933 errors:0 dropped:0 overruns:0 frame:0
+                TX packets:10426 errors:0 dropped:0 overruns:0 carrier:0
+                collisions:0 txqueuelen:100
+                Interrupt:10 Base address:0xe800
+
+  Next we want to make sure that an application on the remote
+  machine will have local permission to use our local X server:
+
+      #---- Setting X Server authorization (1st remove all) ---#
+      [root@bacchus /root]# xhost -
+      access control enabled, only authorized clients can connect
+      [root@bacchus /root]# xhost +192.168.1.106
+      192.168.1.106 being added to access control list
+
+  Next we will need to be able to launch an application to run on
+  the remote machine.  We -could- go to the physical machine (or
+  get someone else to), but most of the time opening a remote
+  shell session is the easiest thing (here the insecure 'telnet'
+  method is used):
+
+      #----- Connecting to remote machine Fury (X Client) -----#
+      [root@bacchus /root]# telnet -l quilty 192.168.1.106
+      Trying 192.168.1.106...
+      Connected to 192.168.1.106.
+      Escape character is '^]'.
+      Password:
+      Last login: Tue Nov 27 18:07:51 from 192.168.1.201
+
+  If all goes well, the remote machine will automatically detect
+  the machine that is connecting.  But see below for what to do
+  otherwise:
+
+      #---- Check DISPLAY environment var on X Client Fury ----#
+      [quilty@fury quilty]$ echo $DISPLAY
+      bacchus.gnosis.lan:0
+
+  Now we can launch an X client.  For the example, the trivial
+  (but cute) application 'xeyes' is used (it displays of pair of
+  eyes on screen that follow the mouse cursor):
+
+      #--- Launch an app on X Client to display on X Server ---#
+      [quilty@fury quilty]$ xeyes &
+      [1] 9939
+
+  *Some failures in launching remote application*
+
+  Occassionally something goes wrong in the above sequence.  Let
+  us look at some typical problems:
+
+      #---------- Connect to remote machine Delphi ------------#
+      [root@bacchus /root]# /usr/local/bin/ssh quilty@192.168.1.104
+      quilty@192.168.1.104's password:
+      Last login: Wed Nov 28 01:06:08 2001 from 192.168.1.201
+      Linux 2.2.19.
+
+  Try to above sequence:
+
+      #--- Check DISPLAY environment var on X Client Delphi ---#
+      quilty@delphi:~$ echo $DISPLAY
+
+      quilty@delphi:~$ xeyes &
+      [1] 17668
+      quilty@delphi:~$ Error: Can't open display:
+
+      [1]+  Exit 1                  xeyes
+
+  Since there was no value automatically detected for the
+  'DISPLAY' environment variable, the X client has no idea where
+  it has no idea which server will do the displaying for it:
+
+      #----- No (or wrong) DISPLAY was set, 'export' value ----#
+      quilty@delphi:~$ export DISPLAY=192.168.1.102:0
+      quilty@delphi:~$ xeyes &
+      [1] 17669
+      quilty@delphi:~$ Xlib: connection to "192.168.1.102:0.0" refused by server
+      Xlib: Client is not authorized to connect to Server
+      Error: Can't open display: 192.168.1.102:0
+
+      [1]+  Exit 1                  xeyes
+
+  Making progress, but Bacchus hasn't authorized Delphi to use
+  its X server yet (we need to switch to a local xterm to fix
+  this):
+
+      #-------- X Server refused connection, enable it --------#
+      [root@bacchus /root]# xhost +192.168.1.104
+      192.168.1.104 being added to access control list
+
+  All is well:
+
+      #--- Launch an app on X Client to display on X Server ---#
+      quilty@delphi:~$ xeyes &
+      [1] 17670
+
+
+Security Issues
+------------------------------------------------------------------------
+
+  In the first part of this series we mentioned that both VNC and
+  remote X11 are insecure over internet channels.  The whole
+  remote diplay gets shipped unencrypted over public routers.  I
+  do not worry on my private LAN, behind my firewall.  But if I
+  wanted to use these techniques to share remote computers across
+  the world (or even across town), the VNC or X11 protocols
+  should be "layered" over SSH.  There is really no loss in doing
+  this, and SSH even (optionally) adds its own compression layer
+  to enhance performance.  But you need to configure it.
+
+  To configure VNC-over-SSH, the best thing to do is to read the
+  article "Making VNC more secure using SSH."  That is well
+  written, and says everything I might.
+
+  Layering X over SSH is pretty easy to.  Assuming you are using
+  OpenSSH, you will need to modify a file called 'sshd_config' to
+  allow this.  Different Linux distributions put this file in
+  somewhat different places.  Mandrake 7.1 keeps it at
+  '/usr/local/etc/'; Slackware 7.0 uses'/etc/ssh/'.  In any case,
+  what you want to make sure the file contains is:
+
+      X11Forwarding yes
+
+  You will need to restart the 'sshd' daemon to activate the
+  setting.
+
+  Actually launching an X client to display on the local X server
+  is even easier once 'sshd' is configured correctly:
+
+      #------- Using 'sshd' X11 forwarding with X client ------#
+      [quilty@bacchus quilty]$ ssh -X quilty@192.168.1.104
+      quilty@192.168.1.104's password:
+      Last login: Fri Nov 30 16:53:03 2001 from 192.168.1.102
+      Linux 2.2.19.
+      quilty@delphi:~$ echo $DISPLAY
+      delphi:10.0
+      quilty@delphi:~$ xeyes &
+      [1] 201
+
+  Notice that even though we connected to Delphi, the 'DISPLAY'
+  variable seems to indicate the X server is on Delphi.  It is,
+  in a way, but the X server in question is the SSH daemon that
+  ships the display to the appropriate remote computer.
+
+
+Resources
+------------------------------------------------------------------------
+
+VNC Resources
+
+  The AT&T homesite for Virtual Network Computing is:
+
+    http://www.uk.research.att.com/vnc/
+
+  The document "Making VNC more secure using SSH" is a clear
+  description of using VNC and SSH together on Unix-like machines:
+
+    http://www.uk.research.att.com/vnc/sshvnc.html
+
+  If you want to use a Windows client instead, please look at
+  "SSH-protected VNC:  the case of the Windows client and the
+  Unix server":
+
+    http://www.uk.research.att.com/vnc/sshwin.html
+
+  Official versions of VNC for many platforms can be found at the
+  VNC homesite, including Linux, Solaris, Win32, MacOS (68k and
+  PPC, but not OSX specific), OSF, WinCE, and Java sources.
+
+    http://www.uk.research.att.com/vnc/download.html
+
+  The AT&T VNC site provides links to port of VNC for numerous
+  additional platforms.  Those can be found at:
+
+    http://www.uk.research.att.com/vnc/platforms.html
+
+Desktop on Call
+
+  -eComStation- is a rebundling and enhanced version of IBM's
+  OS/2 Warp/Workspace on Demand that puts a particular emphasis
+  on playing well in heterogeneous network environments.
+  Information can be found at:
+
+    http://www.ecomstation.com/index.phtml
+
+  A somewhat out of date IBM page describing -Desktop on Call- can be found
+  at the below URL.  There seem to be more recent IBM Japanese pages about
+  DTOC (where IBM is selling the product more actively, apparently), but
+  unfortunately, I cannot read Japanese in order to point to a specific
+  page:
+
+    http://www-6.ibm.com/jp/esbu/E/dtoc/features1.html
+
+  Serenity Systems, who provides a version of -Desktop on Call- as part of
+  eComStation, provides an online version of the DTOC v4.0 manual:
+
+    http://www.serenity-systems.com/DTOC/Manual.htm
+
+X Window Resources
+
+  The homesite for -XFree86- is the best place to look everything
+  related to this popular Free software X Window implementation:
+
+    http://xfree86.org/
+
+  Technically, XFree86 is a clone of the official X Window
+  System (much as Linux is a "clone" of Unix(tm)).  In practical
+  terms, you do not need to worry about what is
+  official--all the versions play nice with each other.  For
+  information on the official system (including available source
+  code), look at:
+
+    http://www.x.org/
+
+  Some commercial implementations of the X Window System are
+  available also.  For example, -Accelertated-X-:
+
+    http://www.xinside.com/
+
+  -Metro-X-:
+
+    http://www.metrolink.com/products/MetroX/metroxdesktop.html
+
+  -HOBLink X11- is available for the full range off MS-Windows
+  platforms (Win3.1 through Windows 2000), and for OS/2.  The
+  OS/2 version is bundled with Serenity Systems' eComStation.
+
+    http://www.hobsoft.com/products/x11/x11server.html
+
+Other Stuff
+
+  Just for the fun, users might want to check out the "Graphical
+  User Interface Timeline," which might help provide some
+  historical context for X11 and other GUIs:
+
+    http://pla-netx.com/linebackn/guis/guitimeline.html
+
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz is all things to all people.  Computers crash at
+  the very sight of him.  David may be reached at
+  mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/.  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+

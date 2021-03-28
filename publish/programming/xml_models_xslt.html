@@ -1,0 +1,546 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>XML Programming Paradigms (part three) -- Declarative Programming with XML Stylesheet Language Transformations -- </title>
+<style>
+             {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+em           {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt}
+ul, ol, li   {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+tt           {font-family: mono, courier}
+pre          {font-family: mono; font-size: 9pt}
+th           {font-family: mono, courier; font-size: 8pt}
+
+.code-sample {background-color: #CCCCCC}
+.sidebar     {background-color: #FFFFCC}
+.title       {font-size: medium; color: #3333CC}
+.subtitle    {font-size: 9pt; color: #3333CC}
+.subhead     {font-size: 12pt}
+.input       {background: #FFFFFF; color: #000000; font-weight: normal}
+</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<p><strong class="title">Xml Programming Paradigms (part Three)</strong><br>
+<strong class="subtitle">Declarative Programming with XML Stylesheet Language Transformations</strong></p>
+ <br>
+<p>David Mertz, Ph.D.            <mertz@gnosis.cx><br>
+ Gnosis Software, Inc.         http://gnosis.cx/publish/<br>
+ December 2001<br>
+ <br>
+</p>
+<blockquote>    This series looks at several distinct conceptual models that
+    exist for manipulation of XML documents.  XML Stylesheet
+    Language Transformations (XSLT) is a declarative approach to
+    the transformation of XML documents.  We look at why a
+    declarative description of document tranformations is
+    desirable?  Why use an XML dialect, as XSLT does, to describe
+    the transformations?  What libaries, modules and tools
+    perform XSLT?  Source code examples of XSLT stylesheets and
+    how they are used to produce output documents are also
+    contained in this article.
+</blockquote><p><strong class="subhead">About This Series</strong></p>
+ <p>  As XML has developed into a widely used data format, a number
+  of programming models have arisen for manipulating XML
+  documents.  Some of these models--or "paradigms"--have been
+  enshrined as standards, while others remain only informally
+  specified (but equally widely used nonetheless).  In a general
+  way, the several models available for manipulating XML
+  documents closely mirror the underlying approaches and
+  techniques that programmers in different traditions bring to
+  the task of working with XML.  It is worth noticing that
+  "models" are at a higher level of abstraction than a particular
+  programming language; most of the models discussed in this
+  series are associated with APIs that have been implemented in
+  multiple programming languages.
+</p>
+<p>  In part, the richness of available XML programming models
+  simply allows programmers and projects to work in the ways that
+  are most comfortable and familiar to them.  In many ways, there
+  is overlap--at least in achievable outcomes--between all the
+  XML programming models.  However, different models also carry
+  with them specific pros and cons in the context of XML
+  manipulation; and these might urge the use of particular models
+  for particular projects.  This series of five articles aims to
+  provide readers with an overview of the costs, benefits, and
+  motivations for all of the major approaches to programmatic
+  manipulation of XML documents (manipulation here, should be
+  understood also to mean "using XML to drive or communicate
+  other application processes").
+</p>
+<p>  This article addresses extensible stylesheet language
+  transformations (XSLT), version 1.0 of which is a W3C
+  Recommendation, and vesion 2.0 of which is currently a W3C
+  Working Draft.  In contrast to object-oriented and event-driven
+  paradigms discussed in earlier installments, XSLT brings a
+  declarative programming style to transformations of XML
+  documents.  The first article, Part 1, discussed the OOP-style
+  Document Object Model (DOM), which is a W3C Recommendation.
+  Part 2 discussed the Simple API for XML (SAX) and similar
+  event-driven and procedural styles of XML programming.  In Part
+  4, we will see the application of full-fledged Functional
+  Programming (FP) techniques to XML manipulation--these in some
+  ways unify the earlier models (but are less commonly used).
+  The final installment, Part 5, will look briefly at a number of
+  tools and techniques that did not quite fit into the previous
+  discussion, but that readers would do well to be aware of.
+</p>
+<p><strong class="subhead">Xslt's Conceptual Framework</strong></p>
+ <p>  XSLT lives at a somewhat odd level in the world of program data
+  and programming languages.  An XSLT "program" is itself a valid
+  XML document, which looks a bit data-like.  However, most any
+  programming language could treat its own source files as data,
+  so this circularity does not necessarily amount ot all that
+  much.  In a more significant way, XSLT files are generally
+  thought of more as "instructions" or "configurations" than as
+  <em>real</em> programs.  For example, Steven Holzner writes in <cite>Inside
+  XSLT</cite> that:
+</p>
+<blockquote>    XSLT can be read by XSLT processors, which work on XML
+    documents for you--all you have to do is create an XSLT
+    stylesheet that specifies that rules you want to apply to
+    transform one document into another.  No programming is
+    needed <em><code>...</code></em>
+</blockquote><p>  In a sense, I think Holzner is plainly wrong.  Writing an XSLT
+  <strong>is</strong> programming of a certain sort.  But the distinctions
+  between "programs" and "rule files" is gradual, the line of Python
+  programming that reads:
+</p>
+<p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>INDEX_SIZE_ERR = 1
+
+</pre>
+</td></tr></table></p>
+<p>  Looks a lot like the <code>sendmail.cf</code> configuration line that reads:
+</p>
+<p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>O LogLevel=9
+
+</pre>
+</td></tr></table></p>
+<p>  Or the <code>.ncftp</code> configuration line:
+</p>
+<p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>logsize=10240
+
+</pre>
+</td></tr></table></p>
+<p>  Or even the LaTeX instruction:
+</p>
+<p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>\setlength\parindent{0pt}
+
+</pre>
+</td></tr></table></p>
+<p>  When figuring out which such similar lines to include for a
+  given purpose, the distinction about "how complex" the
+  determination is more germane to the issue of whether it is
+  "programming" than is a point about whether the underlying
+  "language" is Turing-complete, merely a pushdown automaton, or
+  whatever (and many readers probably have no immediate intuition
+  or knowledge about the above examples).
+</p>
+<h3>What to do and how to do it
+</h3> <p>  It turns out that from a computer-science perspective, XSLT is
+  a "complete" programming language.  Dimitre Novatchev
+  (dnovatchev@yahoo.com) has written an as-yet-unpublished
+  article that I recently reviewed which shows that some fully
+  general functional programming techniques can be implemented
+  in XSLT using a "hack" on namespaces in XSLT.
+</p>
+<p>  Whatever might be technically possible, however, XSLT is not
+  well suited for general programming.  Moreover, in its
+  predominant everyday usage, Holzner correctly characterizes
+  XSLT.  XSLT is a way of <em>describing</em> the way you would like an
+  XML document to be processed, it is not an application program
+  that does the processing.  The actual mechanics of using XSLT
+  reinforce the common conception.  An actual transformation is
+  peformed either from a command-line, or from a function call
+  (from many programming languages).  In either case, the XML
+  document to be processed and the XSLT stylesheet are the two
+  "input" elements to the actual processing.  For example:
+</p>
+<p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>% xsltproc mystyle.xslt mydoc.xml &gt; output.xml
+
+</pre>
+</td></tr></table></p>
+<p>  Or within an application program (from C/C++ in the example):
+</p>
+<p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>out = xsltApplyStylesheet(mystyle, mydoc, parms);
+
+</pre>
+</td></tr></table></p>
+<p>  As background to understanding what XSLT does, it is important
+  to understand the difference between <em>declarative</em> and
+  <em>imperative</em> programming.  The most commonly used programming
+  languages--including those normally used with DOM or SAX--are
+  predominantly imperative in style.  In C, C++, Java, Python,
+  Perl, TCL, Visual Basic, Delphi, shell script and most other
+  languages, a computer program basically lists a temporal
+  collection of steps that the programmer wants the computer to
+  take.  Branching, looping, and subroutine calling mean that the
+  program does not usually start at the first line, end at the
+  last line, and visit each line between in order.  But each
+  actual run of an imperative program consists of actions that
+  are peformed for their side-effects--e.g. storing a value to
+  a mutable variable or causing I/O to occur.
+</p>
+<p>  A SAX application is an obvious imperative system.  It says--in
+  short--respond to this tag, respond to that tag, then respond
+  to yet another tag, until some termination is reached.  But a
+  DOM application is equally imperative.  An early step is
+  usually "build the DOM" tree; but after that a series of
+  actions like moving and creating nodes occurpy the application.
+  Often near the end, a modified DOM tree is written back to XML.
+</p>
+<h3>Declarative languages
+</h3> <p>  In contrast to the most used imperative programming language,
+  there also exists a number of <em>declarative</em> programming
+  languages.  These are often divided into logical and functional
+  variants; Prolog and Mercury are in the former category, while
+  Haskell, ML, Clean, Lisp, Scheme and others are in the latter
+  camp.  XSLT is also clearly and strongly in the declarative
+  family of programming languages (it is a bit too limited,
+  however, to be fully either "functional" or "logical").
+  Moreover, even "little languages" like specialized
+  configuration files can be considered declarative also.
+  Depending on just how limited they are, such configuration
+  files may or may not be programming languages, but they are
+  <em>declarative</em> either way.
+</p>
+<p>  Declarative programming has much more in common with
+  mathematics than does traditional imperative programming (which
+  is closer to certain engineering or mechanical practices).
+  Consider a set of linear equations like the below:
+</p>
+<p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>10x + 5y -  7z + 1 = 0
+17x + 5y - 10z + 3 = 0
+ 5x - 4y +  3z - 6 = 0
+
+</pre>
+</td></tr></table></p>
+<p>  One "declares" a certain collection of relations must obtain.
+  There is no temporal order in these declarations.  And no
+  "assignment" is really made to variables in this mathematical
+  sense.
+</p>
+<p>  In order to solve these equations with a computer, ultimately
+  the CPU will carry out some series of instructions in linear
+  temporal order.  But a declarative programmer does not want or
+  need to worry about what the CPU actually does.  She merely
+  writes down statments of facts that make up the specification.
+  Sometimes those statments involve intermediate placeholders and
+  functions (in the mathematical sense of "function"), but these
+  intermediaries are themselves unordered and non-assigning.
+</p>
+<p>  Rather than a set of mathematical relations, what an XSLT
+  stylesheet declares is simply what occurs in the output of a
+  stylesheet application.  How it gets there is not for a
+  programmer/developer to worry about.  The XSLT creator just
+  indicates <strong>what</strong> goes in the output.  In this sense an XSLT
+  stylesheet is a sort of template for a result.
+</p>
+<p><strong class="subhead">Xslt At Work</strong></p>
+ <p>  To get a sense of what XSLT does, it is best to look at some
+  real-world examples.  What is presented here will not explore
+  the full richness of the XSLT tag set, but it will give a feel
+  for the most important tags.
+</p>
+<p>  I have a document that I have marked up in a popular XML
+  dialect called DocBook, which is well suited to academic
+  books--the example document is one chapter of a larger
+  work, and therefore has a <code>&lt;chapter&gt;</code> element as its root.  We
+  will use that for some below examples of XSLT stylesheets that
+  templatize an HTML version of a DocBook XML document.  That is,
+  the processing we are interested in for the example is
+  transforming a DocBook dialect XML document into an HTML output
+  format.  While this type of application is common, one could
+  equally well create an XML or cutom-format output from the
+  processing.
+</p>
+<h3>A trivial stylesheet
+</h3> <p>  The most important tag in XSLT stylesheets is probably
+  <code>&lt;xsl:apply-templates&gt;</code>.  Generally, every template will
+  include this tag somewhere in its body.  The purpose of this
+  tag is to allow a developer to declare that "whenever
+  such-and-such is encountered in the input, put the following in
+  the output":
+</p>
+<p><strong>Minimal Chapter XSLT Document (minimal.xls)</strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>
+&lt;xsl:stylesheet version="1.0"
+     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+     xmlns="http://www.w3.org/TR/xhtml1/strict"&gt;
+  &lt;xsl:output method="html" indent="yes" encoding="UTF-8"/&gt;
+  &lt;xsl:template match="chapter"&gt;
+    ----- Start of Chapter -----
+    &lt;xsl:apply-templates/&gt;
+  &lt;/xsl:template&gt;
+  &lt;xsl:template match="*"&gt;
+    ##### Unmatched Element in Source #####
+  &lt;/xsl:template&gt;
+&lt;/xsl:stylesheet&gt;
+
+</pre>
+</td></tr></table></p>
+<p>  When we run an XSLT processor using this stylesheet and a
+  DocBook chapter, we get something like:
+</p>
+<p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>----- Start of Chapter -----
+##### Unmatched Element in Source #####
+##### Unmatched Element in Source #####
+##### Unmatched Element in Source #####
+
+</pre>
+</td></tr></table></p>
+<p>  This output is not all that useful, but it lets us see what the
+  stylesheet is doing.  The root element of a chapter is the
+  <code>&lt;chapter&gt;</code> element.  That matches, and announces the chapter
+  starts.  Within the <code>&lt;chapter&gt;</code> element various children occur,
+  each such child is called something other than <code>chapter</code>, and
+  so will pass matching to the "*" template.
+</p>
+<p>  There is one other important XSLT tag to notice in the
+  <code>minimal.xls</code> example.  The <code>&lt;xsl:apply-template/&gt;</code> element is
+  used when we want to indicate something additional is contained
+  in the output which needs to be determined based on the
+  particular input XML document.  For example, when a <code>&lt;chapter&gt;</code>
+  element is encountered, we want to write some literal
+  characters in the output, but we also want to let the <strong>content</strong>
+  of the input <code>&lt;chapter&gt;</code> element trigger other template elements.
+  On the other hand, for the generic <code>match="*"</code> pattern in the
+  above example, we output some characters, but do not look for
+  anything else to do.
+</p>
+<h3>A semi-useful stylesheet
+</h3> <p>  Now for something that produces some real HTML output when
+  processed:
+</p>
+<p><strong>Valid HTML Outputter XSLT Document</strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>
+&lt;xsl:stylesheet version="1.0"
+     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+     xmlns="http://www.w3.org/TR/xhtml1/strict"&gt;
+  &lt;xsl:output method="html" indent="yes" encoding="UTF-8"/&gt;
+  &lt;xsl:template match="chapter"&gt;
+    &lt;html&gt;
+      &lt;head&gt;
+        &lt;title&gt;
+        &lt;xsl:value-of select="title"/&gt;
+        &lt;/title&gt;
+      &lt;/head&gt;
+      &lt;body&gt;
+        &lt;xsl:apply-templates/&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+  &lt;/xsl:template&gt;
+  &lt;xsl:template match="chapter/title"&gt;
+    &lt;hr&gt;&lt;/hr&gt;
+    &lt;h1&gt;&lt;xsl:apply-templates/&gt;&lt;/h1&gt;
+  &lt;/xsl:template&gt;
+  &lt;xsl:template match="para"&gt;
+    &lt;p&gt;&lt;xsl:apply-templates/&gt;&lt;/p&gt;
+  &lt;/xsl:template&gt;
+  &lt;xsl:template match="*"&gt;
+    ##### Unmatched Element in Source #####
+  &lt;/xsl:template&gt;
+&lt;/xsl:stylesheet&gt;
+
+</pre>
+</td></tr></table></p>
+<p>  This HTML-outputter shows some realistic features of an XSLT
+  stylesheet.  Inside the <code>chapter</code> match template, we lay out
+  the HTML document we want to produce.  There is little special
+  about the XHTML tags inside the template match; any text we put
+  there will appear in the output (but we cannot include tags
+  that are not in the <code>xsl</code> or default XHTML namespace).  Within
+  the HTML <code>&lt;title&gt;</code> element, we use the <code>&lt;xsl:value-of&gt;</code>
+  instruction to insert the <code>&lt;title&gt;</code> subelement required inside
+  a <code>&lt;chapter&gt;</code> in DocBook.  In the HTML <code>&lt;body&gt;</code> element, we
+  pass control on to other templates (presumably quite a few for
+  all of DocBook; but most are not yet included in the example).
+</p>
+<p>  The next template after <code>chapter</code> is <code>chapter/title</code>.  This
+  means to match a <code>&lt;title&gt;</code> element, but only if it occurs
+  directly inside a <code>&lt;chapter&gt;</code>.  If we had wanted we could have
+  simply matched <code>title</code> and thereby specified the output format
+  of every <code>&lt;title&gt;</code> element in the source document.  But we
+  eventually want to format chapter titles differently from
+  <code>&lt;sect1&gt;</code> titles, <code>&lt;sect2&gt;</code> titles, and so on.  We perform a
+  general match with <code>para</code> in the example (but it never actually
+  matches, because <code>&lt;para&gt;</code> can only occur inside tags we have
+  not yet matched).  For good measure, we still match "*" which
+  lets us see that our stylesheet is not complete when we examine
+  its output.
+</p>
+<h3>Rounding out our XSLT stylesheet
+</h3> <p>  So far we have declared enough about our desired output format
+  to get some minimal HTML markup.  But most of our input XML
+  document is still ignored.  This might be what is desired for
+  certain purposes, but our goal here is to come up with a way of
+  formatting as HTML most or all of the DocBook original.  The
+  Resources section has links to some additional XSLT stylesheets
+  that complete the specification.  But conceptually, the full
+  specification looks like an mere elaboration of the basic
+  stylesheet.
+</p>
+<p>  There is one particular XSLT construct worth mentioning here
+  still.  We have seen that the <code>&lt;xsl:apply-templates/&gt;</code> are able
+  to "descend" into elements of an input XML document.  This
+  descent is basically just a form of recursion--a technique that
+  should be familiar to all programmers.  Matching templates by
+  descent is not the only trick XSLT can do, however.  You can
+  also do conditional outputting, sorting, pull out source
+  attributes, and looping over children.  For this column, let us
+  look at looping:
+</p>
+<p><strong>XSLT template for looping over subelements</strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>
+&lt;xsl:template match="simplelist"&gt;
+  &lt;ul&gt;
+    &lt;xsl:for-each select="member"&gt;
+      &lt;li&gt;&lt;xsl:apply-templates/&gt;&lt;/li&gt;
+    &lt;/xsl:for-each&gt;
+  &lt;/ul&gt;
+&lt;/xsl:template&gt;
+
+</pre>
+</td></tr></table></p>
+<p>  Rather than descend to every subelement in a <code>simplelist</code>, we
+  just assume subelements are all <code>&lt;member&gt;</code> elements.  The
+  <code>&lt;xsl:for-each&gt;</code> works much like a nested template, and also
+  much like a programming-language loop construct.  The contents
+  of the <code>&lt;xsl:for-each&gt;</code> element will go to the output for every
+  subelement that matches the <code>select</code> attribute.  Within the
+  loop, the contents of the current <code>&lt;member&gt;</code> element become the
+  active node that descends down to the <code>&lt;xsl:apply-templates/&gt;</code>
+  tag we find inside the loop.  That is, each thing in the list
+  might have further markup inside it, and we pass formatting of
+  those elements to their appropriate templates (for text nodes,
+  they are just ouput in literal form).
+</p>
+<p><strong class="subhead">The Good And The Bad Of Xslt</strong></p>
+ <p>  Having presented a glimpse of XSLT in action, I should come
+  clean with my own opinion.  I really do not like XSLT very
+  much, despite its widespread popularity.  At heart, I do not
+  think there is anything that XSLT does better than
+  alternatives, and would therefore be unlikely to choose this
+  technology in a situation where I had design control.  I'll try
+  to describe why.  But understand in my explanation, that the
+  author is in a very distinct minority; a large number--maybe a
+  majority--of developers seem enormously enthused by XSLT.
+</p>
+<p>  One can understand the character of XSLT from the above few
+  examples.  Each XSLT element declares something about what goes
+  in the output, and contains a "picture" of that output.  At
+  runtime, the implementing XSLT utility will carry out the
+  description in one element, then that in another, but the
+  declarations may occur in any order in the XSLT file itself.
+  The flow is driven entirely by the content and structure of the
+  source XML document.  All this is very different from
+  imperative programming, like SAX or DOM.
+</p>
+<p>  The declarative character of XSLT is--to my mind--a very strong
+  point for it.  Being able to simply state <strong>what</strong> needs to be in
+  the output of a transformation is less error prone--and in
+  principle easier--than writing a step-by-step guide for how the
+  output is generated.  But this good point of XSLT is limited.
+  One can declare certain things with XSLT, but there are many
+  other areas where the limitations of XSLT fail to be as general
+  as a process requires.  In these circumstances, the functional
+  programming approaches that the next installment will discuss
+  are simply more powerful and general.  To use XSLT is to jump
+  into a project hoping that requirements will not evolve in such
+  a way as to make the tool useless.  Sometimes such a hope turns
+  out fine; but why take on the risk to start with if it is not
+  necessary?  By starting down an XSLT path, one risks
+  encountering unpleasant dead ends.
+</p>
+<p>  An explanation of just where XSLT falls short needs to wait for
+  the next installment on functional programming (FP) techniques
+  for XML.  But it suffices to note here that those FP tools are
+  just as declarative as XSLT.  The limitations might be worth
+  incurring and/or risking if XSLT was itself a simple
+  programming language.  But it really is not--certainly not the
+  way the configuration file examples given above are.  To work
+  with XSLT, one still needs to learn a large number of tags and
+  rules, and go through quite a bit of design and debugging
+  process.  Basically, an XSLT project is a programming project,
+  with all the complexity that entails.  Accepting limitations
+  are not rewarded with gaining simplicity.
+</p>
+<p>  One obvious area of complexity in XSLT is its syntax.  Every
+  XSLT document is a well-formed XML document (and more-or-less
+  valid, but some namespace issues exist between XSLT versions).
+  Many developers apparently feel that an advantage occurs by
+  making XSLT "programs" instances of the same XML markup style
+  that they operate upon.  The thought here is that the same
+  validation and transformation tools used for primrary XML
+  documents can in turn be used for XSLT stylesheets too.
+</p>
+<p>  In practice, I have never really encountered significant
+  programmatic manipulation of XSLT stylesheets--generally XSLT,
+  like programming language source files, are written and
+  modified by human beings not by automated processes.  As such,
+  the difficulty of an XML syntax simply gets in the way of
+  writing and reading the stylesheets.  Moreover, every
+  programming language already has at least one perfectly good
+  "program validator"--it is called a compiler or interpreter.
+  By writing an XML processing application in a "regular"
+  programming language, one automatically gets the ability to
+  validate the source code for syntactic correctness.  XSLT is
+  not special in this advantage.
+</p>
+<p>  In terms of efficiency, XSLT has no huge virtue.  Most XSLT
+  implementations seem to be built on top of a DOM parser.
+  Therefore, all the overhead of DOM parsing applies to XSLT
+  (i.e. in-memory image of the entire XML document).  Even if not
+  DOM-based, and XSLT utility or library is almost required to
+  work on an image of an entire XML file.  XSLT has no
+  disadvantage over DOM here, nor over most of the FP techniques
+  we will look at later; but XSLT lacks the potential for memory
+  efficiency that SAX offers.  At any rate, the cumbersome
+  aspects of writing XSLT are not balanced by any great speed of
+  execution.
+</p>
+<p><strong class="subhead">Resources</strong></p>
+ <p>  The XSL Transformations (XSLT) Version 1.0 W3C Recommendation
+  can be found at:
+</p>
+<blockquote>   <a href="http://www.w3.org/TR/xslt">http://www.w3.org/TR/xslt</a>
+</blockquote><p>  The XSL Transformations (XSLT) Version 2.0 W3C Working Draft
+  can be found at:
+</p>
+<blockquote>   <a href="http://www.w3.org/TR/xslt20/">http://www.w3.org/TR/xslt20/</a>
+</blockquote><p>  A good dead-tree introduction to XSLT can be found in Steven
+  Holzner's <cite>Inside XSLT</cite>, New Riders, 2001.  In the main text I
+  use Holzner as an illustration of common attitudes and beliefs
+  about XSLT.
+</p>
+<p>  The XSLT examples here, and some of the explanation of them,
+  are based on an earlier article for IBM developerWorks.  Some
+  greater details on XSLT usage specifics can be found in that
+  article:
+</p>
+<blockquote>   <a href="http://www-106.ibm.com/developerworks/library/x-matters5.html">http://www-106.ibm.com/developerworks/library/x-matters5.html</a>
+</blockquote><p>  The XSLT examples used in this article, as well as various
+  elaborations of them can be found at:
+</p>
+<blockquote>   <a href="http://gnosis.cx/download/xml_matters_5.zip">http://gnosis.cx/download/xml_matters_5.zip</a>
+</blockquote></body></html>

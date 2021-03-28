@@ -1,0 +1,348 @@
+XML MATTERS #37: The Dublin Core Metadata Initiative
+Describing XML Content with DCMI
+
+David Mertz, Ph.D.
+Metaphilosopher, Gnosis Software, Inc.
+July 2004
+
+    The Dublin Core Metadata Initiative (DCMI) provides a set of
+    metadata primitives that can be re-used (via namespaces) in broader
+    XML vocabularies, such as RSS variants. Parts of DCMI have been
+    adopted in various standards, including those from ISO and NISO. In
+    general, the DCMI vocabulary defines a hierarchy of terms used for
+    describing the purpose, context, and origin of a document (as
+    opposed to describing the document -content- itself).
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  Let us start with a caveat: The Dublin Core Metadata Initiative does
+  not -really- have anything to do with XML per se. The most widespread
+  use of DCMI is, indeed, probably within namespace-enhanced XML
+  documents; but nothing about metadata generally--or this collection of
+  elements, specifically--depends on the underlying data being encoded
+  as XML.  Instead, DCMI is a generic framework for describing a broadly
+  useful collection of information we would like to have about documents
+  of all sorts.  The individual documents characterized using DCMI might
+  be encoded in XML or in most any other electronic or physical format;
+  their subject matter can be pretty much any endeavor of human
+  creation.
+
+  What DCMI -is- is a vocabulary for talking about documents, with
+  (relatively) well-defined semantics for the meaning and usage of its
+  terms.  By consensus of the initiative, the terms included in DCMI
+  are divided into a minimal set of base elements, accompanied by an
+  optional collection of refinements to these base elements.
+
+  Much of the benefit of DCMI comes simply from standardizing the way
+  metadata terms are spelled, and the format of values these terms will
+  take. For example, you might identify a work by near synonyms
+  "author", "artist", "originator", "maker" or "creator"; DCMI
+  standardizes the name of this role on the last term, "creator" in
+  order to provide a consistent method of comparing documents that may
+  share authorship. The names of persons and organizations who might be
+  creators, naturally, can be pretty much anything; in comparing
+  creators to each other an application of DCMI might wish to further
+  standardize the format of names (e.g. "Lastname, Firstname") beyond
+  what the DCMI recommendation provides.
+
+  As well as standardizing metadata terms, DCMI provides recommendations
+  on choosing values, either by enumeration or specification of
+  patterns. For example, the term "date" is a rather obvious choice of
+  metadata term, but dates come in multiple formats. DCMI recommends
+  dates be given in the ISO 8601 subset specified in the W3C datetime
+  recommendation (see Resources). In other cases, such as
+  "coverage"--defined as "the extent or scope of the content of the
+  resource"--the DCMI recommends using names from the (large, but
+  finite) enumeration in the Thesaurus of Geographic Names (see
+  Resources).
+
+DESCRIBING DOCUMENTS
+------------------------------------------------------------------------
+
+  For an example of the concrete use of DCMI metadata, let us look at
+  the document "DCMI Metadata Terms" (see Resources), as a presumably
+  well-thought-out instantiation of its own principles. Incidentally,
+  notice that DCMI vocubulary terms are not case-sensitive, since they
+  will often be used in case-insensitive contexts such as HTML
+  (pre-XHTML, that is).
+
+  The "DCMI Metadata Terms" documents encodes its metadata in several
+  distinct ways, at least in the HTML version. This redundancy is useful
+  in that it shows off each of the three most important encoding styles
+  you are likely to come across in the use of DCMI.
+
+Plain Text
+
+  First of all is what we might call the "plain text" encoding of the
+  document metadata. The following information happens to be put inside
+  an HTML table and given a distinctive background color in the online
+  version, but would be little affected if it was printed in a book or
+  binder (or as formatted for this article). In particular, a
+  non-electronic resource that uses DCMI will necessarily use something
+  similar to:
+
+    *DCMI Metadata Terms*
+
+    -Creator-: DCMI Usage Board
+
+    -Identifier-: http://dublincore.org/documents/2004/06/14/dcmi-terms/
+
+    -Date Issued-: 2004-06-14
+
+    -Latest Version-: http://dublincore.org/documents/dcmi-terms/
+
+    -Replaces-: http://dublincore.org/documents/2003/11/19/dcmi-terms/
+
+    -Translations-: http://dublincore.org/resources/translations/
+
+    -Document Status-: This is a DCMI Recommendation.
+
+    -Description-: This document is an up-to-date specification of all
+    metadata terms maintained by the Dublin Core Metadata Initiative,
+    including elements, element refinements, encoding schemes, and
+    vocabulary terms (the DCMI Type Vocabulary).
+
+    -Date Valid-: 2004-06-14
+
+  Each of the field names that I have placed in italics is metadata
+  about the document that might be attached; even though I do not
+  reproduce the entire document here, notice that the -identifier- field
+  is a URI, where applicable, and lets you locate the connected
+  document.
+
+  Several of the metadata field given in the plain text header belong to
+  the 15 member basic element set of DCMI: -creator-, -identifier-,
+  -description-.  Other fields are element refinements: -Replaces-,
+  -Date Issued-, -Date Valid-, which generally means these elements
+  "inherit" from base elements (however, it is not literally OOP-style
+  inheritance).  The remainder of the field, however, do not seem to
+  belong to DCMI, but are rather custom additions for this application;
+  a differenct application that was not aware of these fields would
+  typically just ignore them.
+
+Meta tags in HTML
+
+  Plain text will encode DCMI metadata by typographic means somewhat
+  specific to the work in question. Many non-electronic works, in fact,
+  cannot really directly encode metadata. For example, musical works or
+  paintings do not contain front matter or title pages where we might
+  list these elements. Even written works that we are not at liberty to
+  create new editions of will not allow direct attachment of such plain
+  text. For something like these, obviously, the metadata would have to
+  exist in some attached or wrapping document.  Perhaps literally on the
+  wrapper of a work--e.g. shrink wrapping around an historical book
+  edition, or in the packaging of a shipped painting.
+
+  Electronic formats make the metadata attachment a bit easier.  HTML,
+  specifically, has a bit of a kludge tag that can live in its '<head>':
+  the '<meta>' element.  The HTML version of "DCMI Metadata Terms"
+  encodes several base DCMI elements in just this manner.  Let us look
+  at the whole '<head> element:
+
+      #--------- Head of HTML-version "DCMI Metadata Terms" -----------#
+      <head>
+      <title>DCMI Metadata Terms</title>
+      <link rel="schema.DC" href="http://purl.org/dc/elements/1.1/" />
+      <meta name="DC.title" content="Dublin Core Metadata Terms" />
+      <meta name="DC.description" content="This document is an up-to-date
+        specification of all metadata terms maintained by the Dublin Core
+        Metadata Initiative, including elements, element refinements,
+        encoding schemes, and vocabulary terms (the DCMI Type Vocabulary)." />
+      <meta name="DC.publisher" content="Dublin Core Metadata Initiative" />
+      <meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type" />
+      <link href="index.shtml.rdf" rel="meta" />
+      <link type="text/css" href="/css/default.css" rel="stylesheet" />
+      </head>
+
+  There are a few things to note here.  The regular '<title>' of an HTML
+  document is already a kind of metadata, but fairly impoverished since
+  it lacks additional accompanying terms.  The HTML header gives a
+  '<link>' to 'schema.DC' as a convention for explicitly indicating the
+  use of DCMI terms in other '<meta>' tags.  Of course, the HTML spec
+  itself, and most HTML processing applications (e.g. web browsers) lack
+  any special knowledge of what to do with any of this--but they should
+  ignore and preserve it gracefully.
+
+  The terms 'DC.title', 'DC.description', 'DC.publisher' are basic
+  elements from DCMI, pseudo-namespace qualified.  The element
+  'publisher' was not given in the plain text version (but perhaps it
+  should have been).  'Title' was not explicitly labelled as a field,
+  but all the DCMI documentation includes that field as the first thing
+  in a document, and in an '<h1>' tag; it is reasonable to treat that as
+  indicating the field 'title' despite being marked differently than
+  other fields.
+
+  Like many HTML documents, "DCMI Metadata Terms" includes a non-DCMI
+  'Content-Type' metadata tag.  Not all metadata is DCMI, and DCMI is
+  intended to play well with other external metadata tagging.
+
+Metadata in RDF
+
+  There is another element in the HTML document that we have not
+  mentioned yet. Well, two elements. The stylesheet link is an external
+  resource for the HTML that we do not need to comment on here--though
+  it might be considered a kind of metadata too, one concerning best
+  presentation of the document. The more interesting external resource
+  is the '<link>' to 'index.shtml.rdf'. Let us take a look at that:
+
+      #------- RDF resource linked to by "DCMI Metadata Terms" --------#
+      <?xml version="1.0"?>
+      <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+               xmlns:dc="http://purl.org/dc/elements/1.1/">
+      <rdf:Description
+           rdf:about="http://dublincore.org/documents/dcmi-terms/">
+      <dc:title>Dublin Core Metadata Terms</dc:title>
+      <dc:description>This document is an up-to-date specification of all
+        metadata terms maintained by the Dublin Core Metadata Initiative,
+        including elements, element refinements, encoding schemes, and
+        vocabulary terms (the DCMI Type Vocabulary).</dc:description>
+      <dc:publisher>Dublin Core Metadata Initiative</dc:publisher>
+      </rdf:Description>
+      </rdf:RDF>
+
+  Embedded in RDF is probably the the most common place you will find
+  DCMI terms.  XML namespace support makes such embedding quite elegant:
+  DCMI terms can live in the 'dc:' namespace; RDF itself in 'rdf:' (or
+  as the default namespace); and this leaves open the option of
+  embedding more vocabularies, such as 'xhtml:'.
+
+  The 'dc:' namespace is not the only one recommended by DCMI, however.
+  The basic 15 elements of DCMI will normally be given a 'dc:'
+  namespace, but supplemental terms and refinements will generally be
+  placed in the namespace 'dcterms:'. The placement of refinements in
+  the 'dcterms:' namespace is a revision of earlier recommendations that
+  qualified ancestor terms within the 'dc:' namespace. For example, the
+  RDF file for "DCMI Metadata Terms" might currently be enhanced with
+  the element:
+
+      <dcterms:issued>2004-06-14</dcterms:issued>
+
+  Of course, the <rdf:RDF> root element would need the additional
+  namespace specification 'xmlns:dcterms="http://purl.org/dc/terms/"' to
+  make this work.
+
+  You might come across an older RDF file that has a qualified-ancestor
+  element similar to:
+
+      <dc:date.issued>2004-06-14</dc:date.issued>
+
+  I am not certain why this usage was changed; at first brush, the older
+  usage appears better descriptive to me.  But I have not followed the
+  discussion that went into this decision--most likely good reasons were
+  adduced.  Incidentally there is also a 'dcmitype:' namespace that can
+  be referenced at 'http://purl.org/dc/dcmitype/'.
+
+CONCLUSION: GENERAL XML USAGE
+------------------------------------------------------------------------
+
+  This installment got around to presenting some usage of DCMI within
+  XML in relation to RDF specifically.  But DCMI is particularly well
+  suited for embedding within XML generally.  For all their tricks and
+  difficulties--some pointed out by my colleague Uche Ogbuji--namespaces
+  are genuinely elegant as a means of combining XML vocuabularies.
+
+  One significant advantage of embedding DCMI in XML, rather than in
+  HTML, as plain text, or in various wrappers of works, is that DCMI
+  metadata can annotate specific elements, not only whole documents.
+
+  For example, in some earlier installments, I took a look at
+  DocBook/XML, and used it to markup a chapter of my doctoral
+  disseration.  I might want to go back and annotate this document with
+  metadata about its production.  Many of the features apply to the
+  document as a whole--I created the whole work, for example.  But other
+  features might be specific to different sections--they were created on
+  different dates; and perhaps they replace different component articles
+  when assembled.
+
+  As a quick example of section context, let me present a highly
+  stripped down, but DCMI annotated version of my DocBook chapter:
+
+      #------- DCMI annotated DocBook/XML dissertation chapter --------#
+      <?xml version="1.0"?>
+      <chapter xmlns="http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"
+               xmlns:dc="http://purl.org/dc/elements/1.1/"
+               xmlns:dcterms="http://purl.org/dc/terms/" >
+        <dc:creator>David Mertz</dc:creator>
+        <dc:identifier>http://gnosis.cx/publish/mertz/chap5.xml</dc:identifier>
+        <dc:title>Hegemony, and Other Passing Fads</dc:title>
+        <title>Hegemony, and Other Passing Fads</title>
+        <sect1>
+          <title>Forgotten AIDS Myths</title>
+          <dc:title>Forgotten AIDS Myths</dc:title>
+          <dc:date>1998-11</dc:date>
+          <dcterms:replaces>
+              http://gnosis.cx/publish/mertz/sex_wars.html</dcterms:replaces>
+        </sect1>
+        <sect1>
+          <title>Day-Care Devil Worshipers</title>
+          <dc:title>Day-Care Devil Worshipers</dc:title>
+          <dc:date>1998-08</dc:date>
+          <sect2><title>Remembering Events</title></sect2>
+          <sect2><title>Forgetting Everything</title></sect2>
+          <sect2><title>Motives, Right and Left</title></sect2>
+          <sect2><title>Flashpoints</title></sect2>
+          <sect2><title>Obtaining Outsidelessness</title></sect2>
+          <sect2><title>Remembrance of Ideologies Past</title></sect2>
+        </sect1>
+        <sect1>
+          <title>Tsars and Jihads</title>
+          <dc:date>1997-10</dc:date>
+          <dc:title>Tsars and Jihads</dc:title>
+        </sect1>
+      </chapter>
+
+  I have only left in section headings, but you can see how DCMI terms
+  can usefully annotate each section element as specific to that
+  subdocument.  Obviously, other terms than those minimal example I
+  used could be added as well.
+
+RESOURCES
+------------------------------------------------------------------------
+
+  To get started with the Dublin Core Metadata Initiative, visit their
+  homepage.  You can read not only about documented recommendations,
+  but also about case studies, upcoming conferences, and how to
+  participate in the initiative's consensus process:
+
+    http://dublincore.org/
+
+  Looking past their homepage, the DCMI FAQ provides useful guidance for
+  understanding the anticipated scope and usage of DCMI:
+
+    http://dublincore.org/resources/faq/
+
+  The World Wide Web Consortium Datetime profile recommendation can be
+  found at:
+
+    http://www.w3.org/TR/NOTE-datetime
+
+  The Thesaurus of Geographic Names (TGN) can be found at:
+
+    http://www.getty.edu/research/tools/vocabulary/tgn/index.html
+
+  The best place to start in studying the DCMI vocubulary is the
+  document "DCMI Metadata Terms":
+
+    http://dublincore.org/documents/dcmi-terms/
+
+  Uche Ogbuji warns of the pitfalls of XML namespaces in a
+  developerWorks article, "Use XML namespaces with care":
+
+    http://www-106.ibm.com/developerworks/xml/library/x-namcar.html
+
+  I once created a DocBook/XML markup of a chapter of my doctoral
+  dissertation at:
+
+    http://gnosis.cx/publish/mertz/chap5.xml
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  To David Mertz, all the world is a stage; and his career is devoted to
+  providing marginal staging instructions. David may be reached at
+  mertz@gnosis.cx; his life pored over at http://gnosis.cx/publish/.
+  Suggestions and recommendations on this, past, or future, columns are
+  welcomed. Check out David's book _Text Processing in Python_ at
+  http//gnosis.cx/TPiP/.

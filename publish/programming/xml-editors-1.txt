@@ -1,0 +1,384 @@
+XML MATTERS #21: Roundup of XML Editors
+Revisited Editors (Part I, Java and MacOS)
+
+David Mertz, Ph.D.
+Transformer, Gnosis Software, Inc.
+August 2002
+
+    This review of XML editors (and its followup) looks at the
+    progress commercial tools have made in the year-and-a-half
+    since I last looked at this category of tools.  These tools
+    have progressed from largely cosmetic wrappers around text
+    editors to fleshed-out development enviroments that hugely
+    ease working with XML-oriented technologies.  This
+    installment examines Java and MacOS applications.
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  My plan for this roundup was to review nine commercial XML
+  editors.  This plan deliberately leaves out any discussion of
+  general text editors--including both "everything including the
+  kitchen sink" editors like (X)Emacs and more modest but
+  customizable personal favorite text editors.  But as _XML
+  Matters_ #6 remarked, the "zero case" of XML editing is using a
+  plain text editor.  A lot of text editors that are nominally
+  "plain" have many language-specific customization, for XML and
+  for other languages.  Still, as you read this review, keep a
+  question in the back of your mind:  "Can my favorite
+  programming editor do as well (or better)?"  If the answer is
+  "yes", you are set already.
+
+  Of the nine editors I had wanted to look at, I was unable to
+  obtain three.  The remaining six reviews are split over two
+  installments to allow me to look in detail at the features of
+  each product.  This first part looks at the tools targetted at
+  JVMs and MacOS--from my point-of-view, "programs I can run on
+  my iBook."  In researching products, I did not find anything
+  Linux/Unix specific that was both current and of similar
+  sophistication to those XML editors I review.  Of course, the
+  Java-based tools will run fine under Linux, as well as on other
+  platforms.
+
+  The products that I -do- cover in this roundup are Morphon
+  Technologies' Morphon 2.0.5, SyncRO's <oXygen/> 1.2.1,
+  ElfData's XML Editor 1.14, Altova's XML-Spy 4.4, Wattle
+  Software's XMLWriter, and NetBryx Technologies' EditML Pro 2.6.
+
+  The first two--Morphon and <oXygen/>--are Java-based applications
+  that I tested on an iBook laptop running OSX 10.1.5 and the
+  latest Apple HotSpot Java 1.3.1. I mention these specs to
+  condition my impressions of responsiveness--UI performance has
+  long been a weakness of Java applications. XML Editor was also
+  tested on the same iBook, but it is a "native" MacOS application
+  written in REALBasic.  These products are discussed in this
+  installment.
+
+  XML-Spy, XMLWriter and EditML Pro, all Win32 native
+  applications.  Details can be found in the next installment.
+  These were obviously tested on a Windows machine--specifically,
+  a Win98 laptop with a Pentium-II processor (366Mhz).  None of
+  the UI speed issues that I encountered during testing on the
+  iBook applied to these products.  Probably because of the
+  difference between compiled and interpreted languages--not
+  differences between OS's and CPUs--the Win32 applications were
+  zippy and responsive, and no further comment on that aspect
+  need be made.
+
+
+WHAT I WAS LOOKING FOR
+------------------------------------------------------------------------
+
+  There are many different reasons someone might want an XML
+  editor.  It is quite possible that some product I like more is
+  not suitable for your specialized need--and that something I am
+  less impressed with fits your need exactly.  Let me write a few
+  words on what I looked for.
+
+  XML documents come in two broad types:  prose-oriented and
+  data-oriented.  The first case borrows from XML's SGML roots.
+  A prose format will typically have a number of rules for when
+  sections, subsections, paragraphs, chapters, graphics, etc. can
+  nest inside one another.  But also, typically, one uses inline,
+  character-oriented markup for individual words and phrases
+  (bold, emphasis, citation, links, etc).  DocBook is a famous
+  and widely used example; IBM developerWorks internal article
+  format is another example (I used both for testing).  In
+  contrast, data-oriented documents have little text -as such-,
+  but rather contain nested table-like structures of numeric
+  values and simple names.  Data-oriented XML is often similar to
+  RDBMS tables, and sometimes is generated from such databases.
+  An ability to view XML as columns and rows is often important
+  for data-oriented XML.
+
+  On top of the broad types, many special XML dialects have grown
+  up.  Many of these are data-oriented, such as SOAP, XML-RPC,
+  WSDL, RDF, and so on.  While all the XML editors reviewed can
+  handle custom DTDs to some degree, particular needs might
+  require more specific customization.  Some of the same issue
+  might apply to prose-oriented formats, particularly complex
+  ones like DocBook, LegalXML, or TEI.  Generally, an XML editor
+  should make it significantly easier to create and modify valid
+  XML documents conforming to the DTD or W3C XML Schema that you
+  need to work with.
+
+  Personally, I tend to edit prose-oriented documents; I used IBM
+  developerWorks conformant articles as test cases, and in most
+  cases tried to play with something in the more complex DocBook
+  format.  In addition, I work on a lot of platforms, and am
+  particularly interested right now in finding a set of tools to
+  use on my new iBook (and its underlying Unix OS).  Windows-only
+  tools initially grab my attention less than cross-platform
+  ones.
+
+
+Morphon Technologies' Morphon 2.0.5
+------------------------------------------------------------------------
+
+  Morphon is a Java-based XML editor that focuses on a
+  wordprocessor-like view of prose-oriented XML documents.  In
+  fitting with my preference, Morphon runs across a variety of
+  platforms--anything with Java 1.1 or above (with Swing
+  installed for older Java versions).  I tested on the MacOSX
+  iBook mentioned earlier.
+
+  Unfortunately, on a 500Mhz G3 with generous memory, Morphon
+  still runs just slow enough that you cannot ignore Java's lack
+  of UI responsiveness.  It is usable--but you notice the issue.
+  As a really minor matter, Morphon's look-and-feel options adapt
+  somewhat less to the Mac UI than do some Java applications
+  (like <oXygen/>), but only Mac-purists will care greatly about
+  that one way or the other.
+
+  I looked at Morphon in its beta version, and it has progressed
+  nicely in both features and stability.  Unfortunately, it is
+  still possible to arrive at an unstable/semi-frozen state when
+  using Morphon.  It never gets so bad that you cannot easily
+  close and restart that application, but you will probably need
+  to do so once in a while.  As well, the CSS-Editor forces an
+  awkward Z-order for some dialog/info boxes that need to be
+  completely hidden or closed in order to use the main CSS-Editor
+  window, rather than merely pushed backward.  I suppose with a
+  large enough screen you could work around this, but not on a
+  laptop.
+
+  Morphon gives you several views on an XML document.  Looking at
+  the raw XML source code can only be done in preview mode (no
+  changes).  The main view is a wordprocessor-like screeen that
+  utilizes CSS to configure the display.  As I mentioned earlier,
+  I think CSS is a better approach to display configuration than
+  is XSLT or a custom format--that is what CSS was created for,
+  after all.  In addition to the wordprocessor-like view,
+  Morphon gives you a "nested boxes" structural view.  The idea
+  here is that each element body is marked by either a labelled
+  enclosing rectangle or by a labelled underscore.  The fonts,
+  colors, and the like are still determined by CSS, but the view
+  does an extremely good job of displaying both the meaning
+  (which typography emphasizes) and structure of a document at
+  the same time.  At the same time as the main view, you can
+  optionally view a collapsible tree view, and use this to
+  navigate the document.  The tree can optionally display the
+  first few words of each element body, which is also helpful.
+
+  {Screenshot of the Morphon XML editor:
+     http://gnosis.cx/publish/programming/Morphon.png}
+
+  By using strictly wordprocessor-like views, Morphon basically
+  disables any capability for creating invalid XML documents in
+  the first place.  This is more seamless than applications that
+  have a separate validation step and merely highlight problems.
+  Context sensitive dialogs and menus point you to the insertions
+  that are allowed at a given position. Morphon builds in an XSLT
+  processor, and comes with some default XSLT definitions for
+  converting DocBook to (X)HTML.  You can easily use other DTDs
+  and stylesheets.
+
+  Searching XML documents can be done with multiple regular
+  expression variants (posix, sed, perl, etc), or plain text.
+  You can search on text, attribute value, attribute name, or
+  element name.  However, unlike some tools, Morphon does not
+  allow XPath searches, which seems like the most XML-oriented
+  style.  However, Morphon -does- display the XPath to the
+  current cursor position.
+
+  Morphon costs $150 for a standard version, $75 for an academic
+  license, and have various site licensing rates.
+
+
+SyncRO <oXygen/> 1.2.1
+------------------------------------------------------------------------
+
+  I really took a liking to <oXygen/> during this review.  While
+  in many ways, <oXygen/> is much less comprehensive than some
+  other products, what is included is very well thought out and
+  useful.  Like Morphon, <oXygen/> is a Java-based XML editor
+  that I tested on a 500Mhz iBook.  You will need a more current
+  version of Java, however, to run <oXygen/>--1.4 is recommended,
+  1.3 is required.
+
+  For whatever reason, using <oXygen/> did not have the
+  sluggishness of Morphon--Java is still not blazingly fast, but
+  working with the program is always comfortable.  Some of the
+  reason for the speed improvement is the fact that <oXygen/> as
+  a much simpler display format--XML source rather than a
+  wordprocessor-like view.  But even on non-display issues like
+  validation and XSLT/FO transformations, <oXygen/> is faster
+  (and also in perfectly mundane stuff like pulling down menus
+  and opening dialogs).
+
+  The <oXygen/> editor is stable and well-organized, but it is
+  also best thought of as an enhanced text editor rather than a
+  fully custom interface to XML editing.  There is less to worry
+  about with this more moderate goal.  Within the simple
+  interface, the bells-and-whistles are extremely helpful,
+  however.  Both the interface and the extras are clearly geared
+  more towards programmers than towards document-creators or
+  data-entry.  You can preview (X)HTML output of transformed XML
+  documents, and can prettify XML formatting--but basically, you
+  can only edit syntax highlighted XML text.
+
+  {Screenshot of the <oXygen/> editor:
+     http://gnosis.cx/publish/programming/oXygen.png}
+
+  One thing I really like about <oXygen/> is its "code insight"
+  features.  Most of the tools I looked at have some context
+  sensitive prompting for tag/attribute entry; <oXygen/> has the
+  best of these.  When you type an opening angle bracket, a list
+  of allowable tags pops up right below the cursor, and the
+  highlight moves based on partial name completion; required
+  attributes are included when the tag is completed.  Included in
+  the choices are the open tags that are eligible to be closed at
+  the cursor position.  For the best results, "code insight" will
+  utilize a DTD or XML Schema--but if one is not available,
+  <oXygen/> can generate a guess about the document structure
+  based on the XML itself.  If you like, you can save this
+  inferred structure as a DTD.
+
+  Another nice touch is the included XSLT stylesheets for DocBook
+  and XHTML.  In addition to standard XSLT transformations,
+  <oXygen/> has a built-in FO processor.  This lets you create
+  print-ready PDF or PS documents out of XML documents.  The only
+  other reviewed tool that has this capability is XML-Spy, but
+  XML-Spy required the download of extra tools, and I could not
+  get it working during my testing.  <oXygen/> produced
+  attractive PDFs with no special effort.
+
+  The search facility of <oXygen/> is unique, and clever, also.
+  Basic text search (case in/sensitive, whole word, in tags, etc)
+  is pretty standard.  And regular expression searching is
+  notable in its absence.  What sets <oXygen/> apart is its XPath
+  search facility.  Some other tools allow composition of XPaths,
+  but <oXygen/> displays a list of all matches in a pane, and
+  uses the match list to navigate and highlight portions of the
+  document.  This is really useful, and very much in the spirit
+  of XML.
+
+  A single user copy of <oXygen/> costs a moderate $65; the
+  student version is $25; site licensing is available.
+
+
+ElfData's XML Editor 1.14
+------------------------------------------------------------------------
+
+  XML Writer is a MacOS native application (for MacOS 8/9/X) that
+  is written in REALBasic.  My understanding is that REALBasic is
+  has recently been ported to Windows, or that the port is
+  underway.  So perhaps ElfData will decide to port to that
+  platform also.
+
+  I do not know too much about the REALBasic language, but my
+  impression is that it uses some sort of interpreted or
+  byte-code environment to run application.  In any case, the
+  resulting speed feels similar to that of Java.  XML Writer is
+  comparable to <oXygen/> in this respect:  fast enough to work
+  with comfortably, but clearly slower than native compiled
+  applications.
+
+  The two views of an XML document that XML Editor provides are
+  an XML source view and an "enhanced tree view."  The first is
+  just what you would expect--syntax highlighting in a text
+  editor.  The XML source view is similar to <oXygen/>, but
+  without the option for prettifying the source with structured
+  indentation.  The default view in XML Editor, however, is the
+  enhanced tree view, which is similar to the tree pane in
+  Morphon.  The XML document, in tree view, is presented in the
+  style of MacOS Finder "list view."  Each line lists an element,
+  comment, declaration or processing instruction with an
+  icon on the left to identify the type of node.  Elements that
+  contain child nodes can be expanded and collapsed; each line
+  also contains as much info on the element attributes or body as
+  will fit.  One aesthetic feature of XML Editor improves
+  usability quite a bit:  every other line is shaded in light
+  gray (like a ruled paper), which helps orient your eye while
+  navigating.
+
+  {Screenshot of ElfData's XML Editor:
+     http://gnosis.cx/publish/programming/XMLEditor.png}
+
+  In addition to the main view window, XML Editor can optionally
+  display some context sensitive dialog windows.  I would prefer
+  a paned interface to the floating dialogs, but this style is
+  fine.  One floating dialog displays either the attributes or
+  body text of the currently selected item (depending on which is
+  selected).  You edit the attributes or text in this dialog.
+  Another optional floating dialog is a "holder," which is a list
+  of tags that can be inserted.  A holder can be generated from a
+  DTD or edited manually--but it is not context sensitive to
+  limit insertions to currently valid elements.  Insertions using
+  the holder maintain well-formedness, but not necessarily
+  validity.
+
+  XML Editor has several validation options.  You can validate
+  "on change" or "under mouse," as well as globally, by selection
+  or in batch mode for multiple documents.  But validation is
+  always "after the fact" rather than directing editing actions.
+  On the plus side, XML Editor uses a "fast" validation mode by
+  default (with a "strict" option)--the result is that validation
+  is -far- faster in XML Editor than in other products I have
+  looked at (including with command-line tools I have worked with
+  in the past).  In some borderline cases, the fast validation
+  might not handle some parametric entity declaration subtleties
+  correctly, but I did not encounter any such issues during
+  testing.
+
+  On the downside, XML Editor lacks any transformation
+  capabilities--no XSLT or CSS display other than a crude
+  "browser preview" option, and certainly no FO processing.  The
+  search capability of XML Editor is fairly rudimentary also; you
+  can search for text in elements, attributes, bodies, etc--and
+  can accumulate a list of search results.  But there is no
+  regular expression support, and no XPath support.
+
+  A single user copy of XML Editor will cost you $55.
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  Pixware's XMLmind XML Editor (XXE) appears to be a Java-based
+  editor that uses CSS to configure a wordprocessor-like display
+  (which I think is the -right- approach, although not the
+  approach used by most products).  However, I failed to get a
+  response from the company, and I must confess that I find XXE's
+  "commercial but only available in milestone versions" status
+  confusing.  I am not quite sure if this is a shipping product
+  or just a good idea for a product--the screenshots and
+  descriptions look promising though.
+
+    http://www.xmlmind.com/xmleditor/
+
+  Vervet Logic's XML Pro looks to be forgotten rather than
+  not-yet-born.  Based only on their webpages, XML Pro appears to
+  be a Java-based editor that focuses on data-oriented XML
+  documents.  The company did not respond to requests, and their
+  webpages appear not to have been updated in a few years (for
+  example, compatible Windows versions are said to include 95, 98
+  and NT4.0--no mention is made of the various ME, 2000, and XP
+  variants, either as compatible or not).
+
+    http://www.vervet.com/
+
+  Morphon Technologies' home page is:
+
+    http://www.morphon.com/
+
+  Read about SyncRO <oXygen/> at:
+
+    http://oxygen.sync.ro/index.html
+
+  Information on ElfData and XML Editor can be found at:
+
+    http://www.elfdata.com/xmleditor/
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author:  http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz must have mislaid his MacGuffin in one of his
+  other articles.  It is bound to show up again soon. David may
+  be reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/.  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+
+

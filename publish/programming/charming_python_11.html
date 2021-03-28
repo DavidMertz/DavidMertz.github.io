@@ -1,0 +1,410 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>CHARMING PYTHON #11 (20000096) -- What's New in Python 2.0? -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="charming_python_10.html" TITLE="CHARMING PYTHON #10">
+<link REL="next" HREF="charming_python_12.html" TITLE="CHARMING PYTHON #12">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<h1>Charming Python #11 (20000096)</h1>
+<h2>What's New in Python 2.0?</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Auteur, Gnosis Software, Inc.<br>
+ January, 2001<br>
+ <br>
+</p>
+<blockquote>
+    Python programmers have recently gotten a shiny new toy with
+    the release of version 2.0.  Python 2.0 builds on the
+    strengths of previous Python versions, while adding a number
+    of new conveniences and capabilities.  This article contains
+    its author's impressions of Python's newest versions, and
+    some tips on using it effectively.
+</blockquote>
+<h3>What Is Python 2?</h3>
+ <p>
+  Python is a freely available, very-high-level, interpreted
+  language developed by Guido van Rossum.  It combines a clear
+  syntax with powerful (but optional) object-oriented semantics.
+  Python is available for almost every computer platform you
+  might find yourself working on, and has strong portability
+  between platforms.
+</p>
+<p>
+  Python 2.0, which was released in October 2000, introduces a
+  number of new language features, and includes some new standard
+  modules.  One of Guido van Rossum's virtues <em></em> probably the one
+  that best earns him the affectionate title "benevolent dictator
+  for life (BDFL)" in the Python community <em></em> is his conservatism
+  in changing Python.  Very little changes between Python
+  versions, and what does change tends to be considered and
+  discussed for months or years in advance.  This makes for great
+  backward and foreward compatibility in Python, and for a
+  consistency in running Python programs across platforms and
+  versions.  Therefore, even with a fairly moderate number of
+  changes, Python 2.0 represents a pretty large jump in the
+  language definition of Python 1.5x.  Fortunately, Python 2.0
+  still maintains great backward compatibility, and the changes
+  that have been made are generally very "pythonic" in character.
+</p>
+<p>
+  By the way, it is worth noting that a short-lived Python 1.6
+  release was made in September 2000.  This release is a bit of a
+  curiousity <em></em> its existence derives from contractual
+  obligations by the Python core development team, who were
+  finding a new organizational home during the same period as the
+  1.6/2.0 development.  For the most part Python 1.6 resembles
+  Python 2.0, but if you are installing a new version, it is best
+  just to install Python 2.0.
+</p>
+<p>
+  Let's look at some specifics.  Check the references for a more
+  exhaustive summary of changes.  This article contains a more
+  subjective evaluation of what the author finds most important
+  and interesting, and some changes might not be addressed here.
+</p>
+<h3>List Comprehensions And Zip()</h3>
+ <p>
+  For me, probably the most exciting new feature of Python 2.0 is
+  the addition of <em>list comprehensions</em>.  For my oddball readers
+  with a math background, it might be interesting to note that
+  this capability is sometimes called "ZF-comprehension" in other
+  functional languages, after the Axiom of Comprehension in
+  Zermelo-Frankel set theory.  If that note does not mean
+  anything to you, do not worry about it, the feature is just as
+  powerful and intuitive without the mathematical arcana.
+</p>
+<p>
+  If you have been reading carefully, you probably noticed an odd
+  noun phrase in the previous paragraph:  "other functional
+  languages." Even if you did not realize it, as a Python
+  programmer you have been programming in a (mixed) functional
+  language since Python 1.0.  Of course, if you are not in the
+  habit of using the builtin functions <code>lambda()</code>, <code>map()</code>,
+  <code>reduce()</code> and <code>filter()</code> you have not been using these
+  functional features; but even if you do use these, Python has
+  always made it easy to avoid thinking about functional
+  paradigms (unless you want to think about them, which Python
+  also makes easy).
+</p>
+<p>
+  In any case, list comprehension is a way of doing much of what
+  Python's functional builtins do, but in a much more compact way
+  that is simultaneously easier to read and understand.  Let's
+  start out with a simple example of list comprehensions in
+  action:
+</p>
+<div class="code-sample"><h4>Python Interactive Session</h4><PRE>&gt;&gt;&gt; xs = (1,2,3,4,5)
+&gt;&gt;&gt; ys = (9,8,7,6,5)
+&gt;&gt;&gt; bigmuls = [(x,y) <FONT COLOR=#3333CC><B>for</B></FONT> x <FONT COLOR=#3333CC><B>in</B></FONT> xs <FONT COLOR=#3333CC><B>for</B></FONT> y <FONT COLOR=#3333CC><B>in</B></FONT> ys <FONT COLOR=#3333CC><B>if</B></FONT> x*y &gt; 25]
+&gt;&gt;&gt; <FONT COLOR=#3333CC><B>print</B></FONT> bigmuls
+[(3, 9), (4, 9), (4, 8), (4, 7), (5, 9), (5, 8), (5, 7), (5, 6)]</PRE></div><p>
+  What we have done in the example is create a list of tuples
+  where each tuple element is drawn from other lists, and where
+  each list element satisfies some property.  Without the <code>if</code>
+  clause, we would just create a permutation (which is often
+  useful in itself); but with the <code>if</code> clause we can create a
+  <code>filter()</code> type pruning of the list.  Multiple <code>if</code> clauses are
+  allowed in one list comprehension, by the way.
+</p>
+<p>
+  There is nothing fundamentally new in list comprehension
+  capability; certainly the same effect could be achieved in
+  Python 1.5x, but less clearly.  For example, the following
+  more verbose (and less clear) techniques can do the same thing:
+</p>
+<div class="code-sample"><h4>Python Interactive Session</h4><PRE>&gt;&gt;&gt; <FONT COLOR=#1111CC># Functional-style spagetti for list comprehension</FONT>
+&gt;&gt;&gt; filter(<FONT COLOR=#3333CC><B>lambda</B></FONT> (x,y): x*y &gt; 25,
+...        map(None, xs*len(ys),
+...                  reduce(<FONT COLOR=#3333CC><B>lambda</B></FONT> s,t: s+t,
+...                         map(<FONT COLOR=#3333CC><B>lambda</B></FONT> y: [y]*len(xs), ys))))
+[(3, 9), (4, 9), (5, 9), (4, 8), (5, 8), (4, 7), (5, 7), (5, 6)]
+
+&gt;&gt;&gt; <FONT COLOR=#1111CC># Nested loop procedural style for list comprehension</FONT>
+&gt;&gt;&gt; bigmuls = []
+&gt;&gt;&gt; <FONT COLOR=#3333CC><B>for</B></FONT> x <FONT COLOR=#3333CC><B>in</B></FONT> xs:
+...     <FONT COLOR=#3333CC><B>for</B></FONT> y <FONT COLOR=#3333CC><B>in</B></FONT> ys:
+...         <FONT COLOR=#3333CC><B>if</B></FONT> x*y &gt; 25:
+...             bigmuls.append((x,y))
+&gt;&gt;&gt; <FONT COLOR=#3333CC><B>print</B></FONT> bigmuls
+[(3, 9), (4, 9), (4, 8), (4, 7), (5, 9), (5, 8), (5, 7), (5, 6)]</PRE></div><p>
+  In the example I have given, the nested procedural loops are
+  clearer than the functional-style calls (perhaps readers will
+  notice a better functional approach).  But both are far less clear
+  than the list comprehension style.
+</p>
+<p>
+  With some programmer practice, list comprehensions can
+  substitute for both most uses of functional-style builtins and
+  also for many nested loops.
+</p>
+<p>
+  One new builtin function in Python 2.0 is particularly useful
+  in conjunction with list comprehensions.  You can think of what
+  <code>zip()</code> does by imagining the teeth of a zipper: two or more
+  sequences are combined into a list of tuples (with each tuple
+  having one element from each calling sequence.  This is often
+  useful if you do not want a list comprehension that uses a
+  complete permutation of lists, but merely one that utilized
+  corresponding elements of multiple lists.  For example:
+</p>
+<div class="code-sample"><h4>Python Interactive Session</h4><PRE>&gt;&gt;&gt; zip(xs,ys)
+[(1, 9), (2, 8), (3, 7), (4, 6), (5, 5)]
+&gt;&gt;&gt; [(x,y) <FONT COLOR=#3333CC><B>for</B></FONT> (x,y) <FONT COLOR=#3333CC><B>in</B></FONT> zip(xs, ys) <FONT COLOR=#3333CC><B>if</B></FONT> x*y &gt; 20]
+[(3, 7), (4, 6), (5, 5)]</PRE></div><h3>Unicode</h3>
+ <p>
+  Another big addition for Python 2.0 is Unicode support.  If you
+  need to use multinational character sets in your programs, this
+  capability is absolutely essential.  Of course, if like me you
+  have not had any specific requirement for characters outside
+  ASCII, the Unicode support does not really matter.
+  Fortunately, the implementation of Unicode in Python 2.0 is
+  extremely well designed, and does not get in the way of
+  anything else.
+</p>
+<p>
+  Unicode strings may be represented in several ways.  For
+  escaped characters, the sequence "\uHHHH" can be used, where
+  <em>HHHH</em> is a four digit hexadecimal number.  Longer string can
+  be entered using the new Unicode quoting syntax: u"string".
+  This is very similar in style to the r"string" quoting style
+  which is used for composing regular expressions without
+  resoving escape codes at the Python level (because regular
+  expressions use some of the same escape codes).  Of course, to
+  use the Unicode quoting syntax, you need to have a text editor
+  capable of entering Unicode characters between the quotes.
+</p>
+<p>
+  Conversions between 8-bit strings and Unicode strings <em></em> and
+  also between different Unicode encodings <em></em> is performed using
+  the new <code>codecs</code> module.
+</p>
+<h3>Functional/method Call Syntax</h3>
+ <p>
+  Another nice syntax enhancement was made to function calls.  It
+  is now possible to call functions directly with a tuple of
+  arguments and/or a dictionary of keyword arguments.  As with
+  list comprehensions, no fundamentally new capability is added,
+  but the expression of some common chores is more concise and
+  more clear.  Methods in Python, of course, are just functions
+  that are bound to class instances, so everything works the same
+  for functions and methods.
+</p>
+<p>
+  Python programmers will be familiar with the previous syntax
+  for defining extra positional and keyword arguments within a
+  function definition.  For example, we might have:
+</p>
+<div class="code-sample"><h4>Python Interactive Session</h4><PRE>&gt;&gt;&gt; <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="myfunc"><FONT COLOR=#CC0000><B> myfunc</B></FONT></A>(this, that, *extras, **keywords):
+...     <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"Required arguments:"</FONT>, this, that
+...     <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"Extra arguments:"</FONT>,
+...     <FONT COLOR=#3333CC><B>for</B></FONT> arg <FONT COLOR=#3333CC><B>in</B></FONT> extras: <FONT COLOR=#3333CC><B>print</B></FONT> arg,
+...     <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"\nDictionary arguments:"</FONT>
+...     <FONT COLOR=#3333CC><B>for</B></FONT> key,val <FONT COLOR=#3333CC><B>in</B></FONT> keywords.items(): <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"**"</FONT>, key, <FONT COLOR=#115511>"="</FONT>, val
+...
+&gt;&gt;&gt; myfunc(1)
+Traceback (innermost last):
+  File <FONT COLOR=#115511>"&lt;interactive input&gt;"</FONT>, line 1, <FONT COLOR=#3333CC><B>in</B></FONT> ?
+TypeError: <FONT COLOR=#3333CC><B>not</B></FONT> enough arguments; expected 2, got 1
+&gt;&gt;&gt; myfunc(1,2)
+Required arguments: 1 2
+Extra arguments:
+Dictionary arguments:
+&gt;&gt;&gt; myfunc(1,2,3,4,5)
+Required arguments: 1 2
+Extra arguments: 3 4 5
+Dictionary arguments:
+&gt;&gt;&gt; myfunc(1,2,3, spam=17, eggs=32)
+Required arguments: 1 2
+Extra arguments: 3
+Dictionary arguments:
+** spam = 17
+** eggs = 32</PRE></div><p>
+  Python 2.0 adds the same convention for function <em>calls</em> as is
+  used for function definitions.  For example:
+</p>
+<div class="code-sample"><h4>Python Interactive Session</h4><PRE>&gt;&gt;&gt; argdict = {<FONT COLOR=#115511>'spam'</FONT>:<FONT COLOR=#115511>'tasty'</FONT>, <FONT COLOR=#115511>'eggs'</FONT>:<FONT COLOR=#115511>'over easy'</FONT>}
+&gt;&gt;&gt; arglist = [1,2,3,4,5]
+&gt;&gt;&gt; myfunc(*arglist, **argdict)
+Required arguments: 1 2
+Extra arguments: 3 4 5
+Dictionary arguments:
+** spam = tasty
+** eggs = over easy</PRE></div><p>
+  Achieving the same effect (passing arguments via named lists,
+  perhaps ones created dynamically at runtime) was always
+  possible in Python.  But the new calling syntax is more
+  convenient than the old use of the <code>apply()</code> function was.
+</p>
+<h3>Augmented Assignment</h3>
+ <p>
+  Python now has a shortcut in assignments that will be familiar
+  to programmers of C, Perl, Awk, Java, and a variety of other
+  languages.  It is now possible to stick an operator at the
+  beginning of an equal-sign to change the assigned value of a
+  variable based on its old value.  For example:
+</p>
+<div class="code-sample"><h4>Python Interactive Session</h4><PRE>&gt;&gt;&gt; i = 1
+&gt;&gt;&gt; i += 1 ; i
+2
+&gt;&gt;&gt; i *= 3 ; i
+6
+&gt;&gt;&gt; i /= 2 ; i
+3
+&gt;&gt;&gt; str = <FONT COLOR=#115511>"Spam and eggs"</FONT>
+&gt;&gt;&gt; str += <FONT COLOR=#115511>"...and sausage and spam and bacon"</FONT> ; str
+<FONT COLOR=#115511>'Spam and eggs...and sausage and spam and bacon'</PRE></FONT></div><p>
+  Semantically, the augmented operators do exactly the same thing
+  as repeating the left-side variable on the left side of a plain
+  assignment, and following it with the corresponding operator
+  and second operand.  So in that sense, this is just syntactic
+  sugar.
+</p>
+<p>
+  It is worth noticing, however, that the augmented assignments
+  are actually an improvement in terms of performance.  I have
+  not benchmarked it myself, but discussion indicates that using
+  an augmented assignments saves a lookup and some object
+  allocation.  For numbers, this is insignificant; but if you
+  happen to be working with multi-megabyte strings, use of
+  augmented assignment can speed things up and reduce memory
+  usage.
+</p>
+<h3>Garbage Collection</h3>
+ <p>
+  The issue of Python's memory management is probably pretty
+  arcane for most day-to-day Python programmers.  Traditionally,
+  Python has used a reference counting scheme to delete objects
+  when they are no longer accessible from any name.  However, a
+  reference counting methodology is theoretically prone to
+  leaking memory if cyclic references are used in a program.  For
+  example, this code will break the reference counting:
+</p>
+<div class="code-sample"><h4>Cyclical references in Python</h4><PRE>&gt;&gt;&gt; <FONT COLOR=#3333CC><B>class</B></FONT><A NAME="MyClass"><FONT COLOR=#CC0000><B> MyClass</B></FONT></A>: <FONT COLOR=#3333CC><B>pass</B></FONT>
+...
+&gt;&gt;&gt; myobject = MyClass()
+&gt;&gt;&gt; myobject.me = myobject
+&gt;&gt;&gt; <FONT COLOR=#3333CC><B>del</B></FONT> myobject</PRE></div><p>
+  At this point, it is impossible to access <code>myobject</code>, but it
+  will not have been deleted, since the reference count was
+  incremented twice, but only decremented once.
+</p>
+<p>
+  As bad as this might sound, most programmers will never
+  experience any actual problems due to code like the above.  In
+  most cases, cyclical references will not be used in the first
+  place, and even if they are, most times the memory leakage will
+  be small (you can easily construct artificial cases of
+  dangerous behavior; for example, add a 'myobject.big='#'*10**6
+  to the above example).
+</p>
+<p>
+  In any case, Python 2.0 adds a compile-time option for
+  mark-and-sweep garbage collection (GC).  Most distributions of
+  Python 2.0 seem to be compiled using this option; but if you
+  need to, you can compile your own Python version that turns off
+  the garbage collection option.  In either case, reference
+  counting is still used, it is just a question of whether leaks
+  like the above are cleaned up.
+</p>
+<p>
+  On some platforms, like embedded systems, GC may be
+  undesirable.  Garbage collection takes some CPU cycles (not a
+  lot, but some).  Perhaps more importantly, reference counting
+  is determinate in program behavior, while garbage collection is
+  not.  That is, you never know for sure when a garbage
+  collection will eat a few CPU cycles; therefore, using the GC
+  version of Python will cause the identical program to behave
+  differently (in terms of timings) from run to run.
+</p>
+<p>
+  These issues are fascinating theoretically, but most
+  programmers should just ignore them from here out.  Whatever
+  Python distribution you pick up will almost certainly do the
+  right thing for the platform you are using; unless you know
+  enough to know exactly why you want to enable or disable GC,
+  just do not worry about it.
+</p>
+<h3>Print Direction</h3>
+ <p>
+  As good a job as van Rossum and the rest of the team have done
+  with Python 2.0, they also introduced one wart in Python.  It
+  does something moderately useful, but in my opinion (and also
+  in that of many other Python programmers), it introduces a
+  brand new (and ugly) syntactic feature where none is needed.
+  Most programmers suspect this imperfection is merely a ruse,
+  however, to make the simplicity and beauty of the rest of
+  Python shine even more brightly.
+</p>
+<p>
+  The <code>print</code> statement performs a bit of magic that the
+  <code>.write()</code> method of file objects does not (and sys.stdout is
+  just another file object that <code>print</code> writes to).  <code>print</code>
+  allows multiple arguments, each of any Python type.  The
+  trailing comma conveniently allows line continuation between
+  <code>print</code> statements, while the default writes each bunch of
+  stuff to its own line.  Overall, <code>print</code> is just a handy way to
+  get some information from a program to the console.
+</p>
+<p>
+  A lot of Python programmers have wanted that same <code>print</code> mojo
+  to be available for writing to other file objects (such as
+  sys.stderr, regular files, or "file-like" objects that various
+  modules provide).  I think the right way to do this would be to
+  add a <code>.print()</code> method to file objects and do the magic there.
+  But Python 2.0 adds this capability by adding the "redirection
+  operator" <code>&gt;&gt;</code> to the <code>print</code> statement.  For example:
+</p>
+<div class="code-sample"><h4>Python Interactive Session</h4><PRE>&gt;&gt;&gt; <FONT COLOR=#3333CC><B>import</B></FONT> sys
+&gt;&gt;&gt; <FONT COLOR=#3333CC><B>print</B></FONT> &gt;&gt; sys.stderr, <FONT COLOR=#115511>"spam"</FONT>, [1,2,3], 45.2
+spam [1, 2, 3] 45.2</PRE></div><p>
+  This works <em></em> and it adds a nice capability <em></em> but it nudges
+  Python just a hair closer to the "executable line-noise" feel
+  of certain other programming languages.
+</p>
+<h3>Resources</h3>
+ <p>
+  The Python 2.0 CHANGELOG can be found at:
+</p>
+<blockquote>
+   <a href="http://python.org/2.0/#news">http://python.org/2.0/#news</a>
+</blockquote>
+<p>
+  A.M. Kuchling and Moshe Zadka have written a good (and closer
+  to official) summary of changes in Python 2, logically called
+  "What's New in Python 2.0:
+</p>
+<blockquote>
+   <a href="http://python.org/2.0/new-python.html">http://python.org/2.0/new-python.html</a>
+</blockquote>
+<p>
+  A very nice distribution of Python 2.0 has been created recently by
+  ActiveState.  The ActiveState distribution bundles a number of
+  useful tools that will not necessarily be found by default in
+  other distributions.  Find it at:
+</p>
+<blockquote>
+   <a href="http://activestate.com/Products/ActivePython/Download.html">http://activestate.com/Products/ActivePython/Download.html</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz believes that the real is the rational; and that
+  the avant-garde remains at the cutting-edge.  But he regrets
+  that nostalgia just isn't what it used to be. David may be
+  reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+</p>
+</body></html>

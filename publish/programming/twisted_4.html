@@ -1,0 +1,428 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>LINUX ZONE FEATURE: The Twisted Framework -- Part Four, Secure Clients and Servers -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="twisted_3.html" TITLE="LINUX ZONE FEATURE: The Twisted Framework #3">
+<link REL="next" HREF="twisted_5.html" TITLE="LINUX ZONE FEATURE: The Twisted Framework #5">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Linux Zone Feature: The Twisted Framework</h1>
+<h2>Part Four, Secure Clients and Servers</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Selector, Gnosis Software, Inc.<br>
+ August, 2003<br>
+ <br>
+</p>
+<blockquote>
+    In this final installment of his series on Twisted, David looks at
+    specialized protocols and servers contained in the Twisted package,
+    with a focus on secure connections.
+</blockquote>
+<h3>Introduction</h3>
+ <p>
+  One thing the servers and clients in my prior installments had in
+  common is that they operated completely in the clear,
+  cryptographically speaking. Sometimes, however, you want to keep your
+  connection free from prying eyes (or from tampering/spoofing).
+</p>
+<p>
+  While protocols for determining permissions on server resources are
+  interesting, for this installment, I want to look at protocols
+  involving actual wire-level encryption. But for general background,
+  readers might want to investigate web-oriented mechanisms like Basic
+  Authentication, which is described in RFC-2617 and implemented in
+  Apache and other web servers. The Twisted package <em><code>twisted.cred</code></em> is a
+  general, but complex and complicated, framework for providing
+  authentication services in general-purpose Twisted servers (not
+  limited to web ones).
+</p>
+<p>
+  There are two widespread APIs for wire-level encryption over the
+  Internet: SSL and SSH. The former, SSL (Secure Sockets Layer) is
+  widely implemented in web browsers and web servers; in principle,
+  however, there is no reason SSL is specifically tied to the HTTP
+  protocol. SSL combines a public-key infrastructure, complete with a
+  "web-of-trust" based on Certificate Authorities, with creation of a
+  session key for standard symmetrical encryption during the life of a
+  particular connection.
+</p>
+<p>
+  Twisted <em>does</em> come with an SSL framework; however, as with most
+  things in Twisted, exactly how it might work is poorly documented--I
+  tried downloading two likely support packages to try to get the
+  Twisted v.1.0.6 script <code>test_ssl.py</code> to work (see Resources). I am
+  sure that with <em>some</em> version of the right 3rd party libraries (and
+  some Twisted version)--and perhaps after corrections to erroneous
+  examples--it is possible to use SSL with Twisted, but I have not done
+  so for this article.
+</p>
+<p>
+  The other widespread API for wire-level encryption is SSH (Secure
+  Shell), well known from the tool of the same name (in lowercase:
+  <code>ssh</code>). Many of the underlying cryptographic algorithms are shared
+  between SSL and SSH, but SSH is focussed on creating encrypted shell
+  connections (rather than using snooper-friendly programs/protocols
+  like <code>telnet</code> and <code>rsh</code>). Twisted lets you write your own custom SSH
+  clients and servers, which is quite nice. While you certainly <em>can</em>
+  write a basic interactive remote shell, like that provided by the
+  client and server <code>shh</code> and <code>sshd</code>, you can also create more
+  specialized tools to use these secure connections for higher-level
+  purposes.
+</p>
+<h3>An Ssh Weblog Client</h3>
+ <p>
+  In continuing with the example of this series of articles, I created a
+  tool to examine hits to my webserver log file, but to do so over an
+  encrypted SSH channel. This purposes is realistic, actually--perhaps I
+  do not want to publically reveal the hits I get to someone monitoring
+  my packet stream.
+</p>
+<p>
+  Before I could get far in my efforts, I needed to figure out what the
+  line <code>import Crypto</code> in the <em><code>twisted.conch</code></em> package was trying to
+  find. The name is obviously a hint, but I was also somewhat familiar
+  with the Python cryptography library maintained by Andrew Kuchling
+  (see Resources). A bit of googling, a download, and an install later,
+  Twisted's <code>test_conch.py</code> would run without complaint.  So on to the
+  project of creating a custom SSH client.
+</p>
+<p>
+  I based my client on the example provided in the Twisted file
+  <code>doc/examples/sshsimpleclient.py</code>. I have simplified somewhat (as well
+  as customizing); you you might want to look at what else is in the
+  distributed example.  As with most Twisted components, <em><code>twisted.conch</code></em>
+  consists of several layers, each of which can be customized.  I guess
+  the name "conch" is a play on the word "shell" in Secure Shell.
+</p>
+<p>
+  The <em>transport</em> level is a customization of <code>SSHClientTransport</code>.  We
+  may define several methods, but need to at least define
+  <code>.verifyHostKey()</code> and <code>.connectionSecure()</code>.  In our implementation,
+  we trust every host key, and simply give control back to the
+  asynchronous reactor core by returning a <code>defer.succeed</code> object.  Of
+  course, if you wanted to verify a host against a known key, you could
+  do that in <code>.verifyHostKey()</code>.
+</p>
+<p>
+  Creating the channel is where the other layers come in.  A child of
+  <code>SSHUserAuthClient</code> performs the actual login authentication; and if
+  successful, it established a connection (for which I define a child of
+  <code>SSHConnection</code>).  This connection, in turn, creates a channel--a
+  child of <code>SSHChannel</code>.  It is the channel, which I named simply
+  <code>Channel</code> that does the actual custom work.  Specifically, the channel
+  does things like send and receive data and commands.  Let us look at
+  my specific client:
+</p>
+<div class="code-sample"><h4>ssh-weblog.py</h4><PRE><FONT COLOR=#1111CC>#!/usr/bin/env python</FONT>
+<FONT COLOR=#115511>"""Monitor a remote weblog over SSH
+
+  USAGE: ssh-weblog.py user@host logfile
+"""</FONT>
+<FONT COLOR=#3333CC><B>from</B></FONT> twisted.conch.ssh <FONT COLOR=#3333CC><B>import</B></FONT> transport, userauth, connection, channel
+<FONT COLOR=#3333CC><B>from</B></FONT> twisted.conch.ssh.common <FONT COLOR=#3333CC><B>import</B></FONT> NS
+<FONT COLOR=#3333CC><B>from</B></FONT> twisted.internet <FONT COLOR=#3333CC><B>import</B></FONT> defer, protocol, reactor
+<FONT COLOR=#3333CC><B>from</B></FONT> twisted.python <FONT COLOR=#3333CC><B>import</B></FONT> log
+<FONT COLOR=#3333CC><B>from</B></FONT> getpass <FONT COLOR=#3333CC><B>import</B></FONT> getpass
+<FONT COLOR=#3333CC><B>import</B></FONT> struct, sys, os
+<FONT COLOR=#3333CC><B>import</B></FONT> webloglib as wll
+<FONT COLOR=#1111CC>#</FONT>
+USER,HOST,CMD = None,None,None
+<FONT COLOR=#1111CC>#</FONT>
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="Transport"><FONT COLOR=#CC0000><B> Transport</B></FONT></A>(transport.SSHClientTransport):
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="verifyHostKey"><FONT COLOR=#CC0000><B> verifyHostKey</B></FONT></A>(self, hostKey, fingerprint):
+        <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>'host key fingerprint: %s'</FONT> % fingerprint
+        <FONT COLOR=#3333CC><B>return</B></FONT> defer.succeed(1)
+
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="connectionSecure"><FONT COLOR=#CC0000><B> connectionSecure</B></FONT></A>(self):
+        self.requestService(UserAuth(USER, Connection()))
+<FONT COLOR=#1111CC>#</FONT>
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="UserAuth"><FONT COLOR=#CC0000><B> UserAuth</B></FONT></A>(userauth.SSHUserAuthClient):
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="getPassword"><FONT COLOR=#CC0000><B> getPassword</B></FONT></A>(self):
+        <FONT COLOR=#3333CC><B>return</B></FONT> defer.succeed(getpass(<FONT COLOR=#115511>"password: "</FONT>))
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="getPublicKey"><FONT COLOR=#CC0000><B> getPublicKey</B></FONT></A>(self):
+        <FONT COLOR=#3333CC><B>return</B></FONT>  <FONT COLOR=#1111CC># Empty implementation: always use password auth</FONT>
+<FONT COLOR=#1111CC>#</FONT>
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="Connection"><FONT COLOR=#CC0000><B> Connection</B></FONT></A>(connection.SSHConnection):
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="serviceStarted"><FONT COLOR=#CC0000><B> serviceStarted</B></FONT></A>(self):
+        self.openChannel(Channel(2**16, 2**15, self))
+<FONT COLOR=#1111CC>#</FONT>
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="Channel"><FONT COLOR=#CC0000><B> Channel</B></FONT></A>(channel.SSHChannel):
+    name = <FONT COLOR=#115511>'session'</FONT>    <FONT COLOR=#1111CC># must use this exact string</FONT>
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="openFailed"><FONT COLOR=#CC0000><B> openFailed</B></FONT></A>(self, reason):
+            <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>'"%s" failed: %s'</FONT> % (CMD,reason)
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="channelOpen"><FONT COLOR=#CC0000><B> channelOpen</B></FONT></A>(self, data):
+        self.welcome = data   <FONT COLOR=#1111CC># Might display/process welcome screen</FONT>
+        d = self.conn.sendRequest(self,<FONT COLOR=#115511>'exec'</FONT>,NS(CMD),wantReply=1)
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="dataReceived"><FONT COLOR=#CC0000><B> dataReceived</B></FONT></A>(self, data):
+        recs = data.strip().split(<FONT COLOR=#115511>'\n'</FONT>)
+        <FONT COLOR=#3333CC><B>for</B></FONT> rec <FONT COLOR=#3333CC><B>in</B></FONT> recs:
+            hit = [field.strip(<FONT COLOR=#115511>'"'</FONT>) <FONT COLOR=#3333CC><B>for</B></FONT> field <FONT COLOR=#3333CC><B>in</B></FONT> wll.log_fields(rec)]
+            resource = hit[wll.request].split()[1]
+            referrer = hit[wll.referrer]
+            <FONT COLOR=#3333CC><B>if</B></FONT> resource==<FONT COLOR=#115511>'/kill-weblog-monitor'</FONT>:
+                <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"Bye bye..."</FONT>
+                self.closed()
+                <FONT COLOR=#3333CC><B>return</B></FONT>
+            <FONT COLOR=#3333CC><B>elif</B></FONT> hit[wll.status]==<FONT COLOR=#115511>'200'</FONT> <FONT COLOR=#3333CC><B>and</B></FONT> hit[wll.referrer]!=<FONT COLOR=#115511>'-'</FONT>:
+                <FONT COLOR=#3333CC><B>print</B></FONT> referrer, <FONT COLOR=#115511>' --&gt;'</FONT>, resource
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="closed"><FONT COLOR=#CC0000><B> closed</B></FONT></A>(self):
+        self.loseConnection()
+        reactor.stop()
+<FONT COLOR=#1111CC>#</FONT>
+<FONT COLOR=#3333CC><B>if</B></FONT> __name__==<FONT COLOR=#115511>'__main__'</FONT>:
+    <FONT COLOR=#3333CC><B>if</B></FONT> len(sys.argv) &lt; 3:
+        sys.stderr.write(<FONT COLOR=#115511>'__doc__'</FONT>)
+        sys.exit()
+    USER, HOST = sys.argv[1].split(<FONT COLOR=#115511>'@'</FONT>)
+    CMD = <FONT COLOR=#115511>'tail -f -n 1 '</FONT>+sys.argv[2]
+    protocol.ClientCreator(reactor, Transport).connectTCP(HOST, 22)
+    reactor.run()</PRE></div><p>
+  The overall structure of the client is like most of the Twisted
+  applications we have seen.  It creates a protocol, and monitors events
+  in an asyncronous loop (i.e. <code>reactor.run()</code>).
+</p>
+<p>
+  The interesting part comes in the methods of <code>Channel()</code>. As soon as
+  the channel is opened, we execute a custom command--in this case, a
+  <code>tail -f</code> on the weblog file whose name is specified on the command
+  line. Naturally, the host, which is still a completely generic <code>sshd</code>
+  server rather than anything Twisted specific, starts sending some data
+  back. The method <code>dataReceived()</code> parses the data as it comes in
+  (incrementally as <code>tail</code> produces more).  For this specific client, we
+  decide when to terminate based on the actual content of the weblog
+  being parsed--which amounts to having a web-based way to kill the
+  monitoring application.  While that specific configuration is probably
+  unusual, the example demonstrates the general concept of severing the
+  connection when some condition is met (it could be any condition).  A
+  session looks like:
+</p>
+<div class="code-sample"><h4>Sample session of weblog monitor</h4><pre>
+$ ./ssh-weblog.py gnosis@gnosis.cx access-log
+host key fingerprint: 56:54:76:b6:92:68:85:bb:61:d0:f0:0e:3d:91:ce:34
+password:
+http://gnosis.cx/publish/  --&gt; /publish/whatsnew.html
+http://gnosis.cx/publish/whatsnew.html  --&gt; /home/hugo.gif
+Bye bye...
+
+</pre></div><p>
+  This is pretty much the same as all the other weblog monitors this
+  series created.  I ended the above session by pointing a browser at
+  &lt<a href="http://gnosis.cx/kill-weblog-monitor&gt;">http://gnosis.cx/kill-weblog-monitor&gt;</a> from another window (otherwise,
+  it would watch indefinitely).
+</p>
+<h3>Modifying The Ssh Client</h3>
+ <p>
+  It is a simple matter to create other SSH clients that achive other
+  purposes.  For example, I copied <code>ssh-weblog.py</code> to the name <code>scp.py</code>,
+  and made just a few changes to the code.  The <code><cite>_main_</cite></code> body parses
+  options slightly differently, and the docstring was adjusted; beyond
+  that, I simply modified the <code>.dataReceived()</code> method to read:
+</p>
+<div class="code-sample"><h4>scp.py (modified Channel method)</h4><PRE><FONT COLOR=#3333CC><B>def</B></FONT><A NAME="dataReceived"><FONT COLOR=#CC0000><B> dataReceived</B></FONT></A>(self, data):
+    open(DST,<FONT COLOR=#115511>'wb'</FONT>).write(data)
+    self.closed()</PRE></div><p>
+   (the variable CMD was set to <code>"cat "+sys.argv[2]</code>).
+</p>
+<p>
+   Viola! I have implemented the tool <code>scp</code> that accompanies many SSH
+   clients.
+</p>
+<p>
+   These examples are both "run and collect" tools. That is, they are
+   not interactive during the session. But you could easily create
+   another tool that made additional calls to <code>self.conn.sendRequest()</code>
+   within <code>Channel</code> methods. In fact, if the client was some kind of GUI
+   client, you might add those data collection forms as callbacks within
+   the reactor. That is, perhaps when certain forms are completed, new
+   remote commands could be issued, and the results again collected for
+   processing or presentation.
+</p>
+<h3>An Ssh Weblog Server</h3>
+ <p>
+  An SSH server uses much of the same structure as the client. As
+  before, I simplify and customize <code>doc/examples/sshsimpleserver.py</code> for
+  my example. One twist is that a server is best created using an
+  <code>SSHFactory</code> child that has been configured with appropriate keys and
+  classes.
+</p>
+<p>
+  In our SSH weblog server, we configure a password and username for an
+  authorized user.  In the example, they are hardcoded, but you could
+  obviously store them otherwise; perhaps configure a list of authorized
+  weblog monitors.  Let us look at the example:
+</p>
+<div class="code-sample"><h4>ssh-weblog-server.py</h4><PRE><FONT COLOR=#1111CC>#!/usr/bin/env python2.3</FONT>
+<FONT COLOR=#3333CC><B>from</B></FONT> twisted.cred <FONT COLOR=#3333CC><B>import</B></FONT> authorizer
+<FONT COLOR=#3333CC><B>from</B></FONT> twisted.conch <FONT COLOR=#3333CC><B>import</B></FONT> identity, error
+<FONT COLOR=#3333CC><B>from</B></FONT> twisted.conch.ssh <FONT COLOR=#3333CC><B>import</B></FONT> userauth, connection, channel, keys
+<FONT COLOR=#3333CC><B>from</B></FONT> twisted.conch.ssh.factory <FONT COLOR=#3333CC><B>import</B></FONT> SSHFactory
+<FONT COLOR=#3333CC><B>from</B></FONT> twisted.internet <FONT COLOR=#3333CC><B>import</B></FONT> reactor, protocol, defer
+<FONT COLOR=#3333CC><B>import</B></FONT> time
+<FONT COLOR=#1111CC>#</FONT>
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="Identity"><FONT COLOR=#CC0000><B> Identity</B></FONT></A>(identity.ConchIdentity):
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="validatePublicKey"><FONT COLOR=#CC0000><B> validatePublicKey</B></FONT></A>(self, data):
+        <FONT COLOR=#3333CC><B>return</B></FONT> defer.succeed(<FONT COLOR=#115511>''</FONT>)
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="verifyPlainPassword"><FONT COLOR=#CC0000><B> verifyPlainPassword</B></FONT></A>(self, password):
+        <FONT COLOR=#3333CC><B>if</B></FONT> password==<FONT COLOR=#115511>'password'</FONT> <FONT COLOR=#3333CC><B>and</B></FONT> self.name == <FONT COLOR=#115511>'user'</FONT>:
+            <FONT COLOR=#3333CC><B>return</B></FONT> defer.succeed(<FONT COLOR=#115511>''</FONT>)
+        <FONT COLOR=#3333CC><B>return</B></FONT> defer.fail(error.ConchError(<FONT COLOR=#115511>'bad password'</FONT>))
+<FONT COLOR=#1111CC>#</FONT>
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="Authorizer"><FONT COLOR=#CC0000><B> Authorizer</B></FONT></A>(authorizer.Authorizer):
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="getIdentityRequest"><FONT COLOR=#CC0000><B> getIdentityRequest</B></FONT></A>(self, name):
+        <FONT COLOR=#3333CC><B>return</B></FONT> defer.succeed(Identity(name, self))
+<FONT COLOR=#1111CC>#</FONT>
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="Connection"><FONT COLOR=#CC0000><B> Connection</B></FONT></A>(connection.SSHConnection):
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="gotGlobalRequest"><FONT COLOR=#CC0000><B> gotGlobalRequest</B></FONT></A>(self, *args):
+        <FONT COLOR=#3333CC><B>return</B></FONT> 0
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="getChannel"><FONT COLOR=#CC0000><B> getChannel</B></FONT></A>(self, channelType, windowSize, maxPacket, data):
+        <FONT COLOR=#3333CC><B>if</B></FONT> channelType == <FONT COLOR=#115511>'session'</FONT>:
+            <FONT COLOR=#3333CC><B>return</B></FONT> Channel(remoteWindow=windowSize,
+                      remoteMaxPacket=maxPacket, conn=self)
+        <FONT COLOR=#3333CC><B>return</B></FONT> 0
+<FONT COLOR=#1111CC>#</FONT>
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="Channel"><FONT COLOR=#CC0000><B> Channel</B></FONT></A>(channel.SSHChannel):
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="channelOpen"><FONT COLOR=#CC0000><B> channelOpen</B></FONT></A>(self, data):
+        weblog = open(<FONT COLOR=#115511>'../access.log'</FONT>)
+        weblog.readlines()
+        <FONT COLOR=#3333CC><B>while</B></FONT> 1:
+            time.sleep(5)
+            <FONT COLOR=#3333CC><B>for</B></FONT> rec <FONT COLOR=#3333CC><B>in</B></FONT> weblog.readlines():
+                self.write(rec)
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="request_pty_req"><FONT COLOR=#CC0000><B> request_pty_req</B></FONT></A>(self, data):
+        <FONT COLOR=#3333CC><B>return</B></FONT> 1    <FONT COLOR=#1111CC># ignore, but this gets send for shell requests</FONT>
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="request_shell"><FONT COLOR=#CC0000><B> request_shell</B></FONT></A>(self, data):
+        self.client = protocol.Protocol()
+        self.client.makeConnection(self)
+        self.dataReceived = self.client.dataReceived
+        <FONT COLOR=#3333CC><B>return</B></FONT> 1
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="loseConnection"><FONT COLOR=#CC0000><B> loseConnection</B></FONT></A>(self):
+        self.client.connectionLost()
+        channel.SSHChannel.loseConnection(self)
+<FONT COLOR=#1111CC>#</FONT>
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="Factory"><FONT COLOR=#CC0000><B> Factory</B></FONT></A>(SSHFactory):
+    publicKeys = {<FONT COLOR=#115511>'ssh-rsa'</FONT>:keys.getPublicKeyString(
+                            data=open(<FONT COLOR=#115511>'~/.ssh/id_rsa.pub'</FONT>).read())}
+    privateKeys ={<FONT COLOR=#115511>'ssh-rsa'</FONT>:keys.getPrivateKeyObject(
+                            data=open(<FONT COLOR=#115511>'~/.ssh/id_rsa'</FONT>).read())}
+    services = {<FONT COLOR=#115511>'ssh-userauth'</FONT>: userauth.SSHUserAuthServer,
+                <FONT COLOR=#115511>'ssh-connection'</FONT>: Connection}
+    authorizer = Authorizer()
+<FONT COLOR=#1111CC>#</FONT>
+reactor.listenTCP(8022, Factory())
+reactor.run()</PRE></div><p>
+  For brevity, the parsing and formatting of the weblog records is
+  omitted, but the idea of using a open channel to write new records as
+  they become available is almost the same as with the client approach.
+  Of course, in this case, any generic SSH client can connect to the
+  specialized server:
+</p>
+<div class="code-sample"><h4>Sample session of weblog monitor</h4><pre>
+$ ssh gnosis.python-hosting.com -p 8022 -l user
+user@gnosis.python-hosting.com's password:
+141.154.146.89 - - [26/Aug/2003:02:47:40 -0500]
+"GET /voting-project/August.2003/0010.html HTTP/1.1" 200 8986
+"http://gnosis.python-hosting.com/voting-project/August.2003/0009.html"
+"Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en-us) AppleWebKit/85
+(KHTML, like Gecko) Safari/85"
+[...]
+
+</pre></div><p>
+  Much as with the client approach, an enhanced version might become
+  more interactive; the <code>.dataReceived()</code> method of the channel could be
+  customized to do something useful with data sent from the (generic)
+  client.
+</p>
+<h3>Social Dynamics</h3>
+ <p>
+  The biggest reservation I have about recommending the Twisted
+  framework is, unfortunately, the "wild west" feel among its developer
+  group. The software itself is quite powerful. But even more than in
+  most open source projects, there is insufficient API consistency
+  between releases, the documentation remains rough, and a thick skin is
+  the main prerequisite for seeking help on its mailing list; you can
+  get helpful responses, but only after wading through the acerbic ones.
+</p>
+<p>
+  As this installment demonstrated--especially in my attempts to fill in
+  pieces missing from the examples and documentation, Twisted could
+  really stand to have a helpful community behind it.  Hopefully, with
+  time, both the documentation and mailing list will improve in quality;
+  the facilities hiding in the various corners of the Twisted framework
+  are quite impressive.
+</p>
+<h3>Resources</h3>
+ <p>
+  Twisted Matrix comes with quite a bit of documentation, and
+  many examples.  Browse around its homepage to glean a greater
+  sense of how Twisted Matrix works, and what has been
+  implemented with it (or wait for the next installments here):
+</p>
+<blockquote>
+   <a href="http://twistedmatrix.com">http://twistedmatrix.com</a>
+</blockquote>
+<p>
+  The Python Cryptography Toolkit, maintained by Andrew Kuchlink, can be
+  download at the following URL. This toolkit includes numerous
+  well-investigated public-key, private-key, and cryptographic hash
+  functions, as well as some miscellaneous other protocols:
+</p>
+<blockquote>
+   <a href="http://www.amk.ca/python/code/crypto.html">http://www.amk.ca/python/code/crypto.html</a>
+</blockquote>
+<p>
+  The sourceforge project "Python OpenSSL Wrappers" (POW) looks like an
+  useful tool for SSL programming in Python.  However, it does not
+  appear (from my trial-and-error) to be what Twisted is looking for in
+  its SSL subsystem:
+</p>
+<blockquote>
+   <a href="http://sourceforge.net/projects/pow">http://sourceforge.net/projects/pow</a>
+</blockquote>
+<p>
+  Most likely, for Twisted, the SSL wrapper you want is pyOpenSSL. At
+  least after I installed that, I got past an import exception in
+  Twisted's <code>test_ssl.py</code> (but only so far as what appears to be an
+  error in the test script):
+</p>
+<blockquote>
+   <a href="http://sourceforge.net/projects/pyopenssl/">http://sourceforge.net/projects/pyopenssl/</a>
+</blockquote>
+<p>
+  Some background on HTTP authentication techniques can be found in
+  RFC-2617:
+</p>
+<blockquote>
+   <a href="http://www.ietf.org/rfc/rfc2617.txt">http://www.ietf.org/rfc/rfc2617.txt</a>
+</blockquote>
+<p>
+  An introduction to the SSL protocol can be found at:
+</p>
+<blockquote>
+   <a href="http://developer.netscape.com/tech/security/ssl/howitworks.html">http://developer.netscape.com/tech/security/ssl/howitworks.html</a>
+</blockquote>
+<p>
+  A simple version of a weblog server was presented in the
+  developerWorks tip, <cite>Use Simple API for XML as a long-running
+  event processor</cite>:
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/xml/library/x-tipasysax.html">http://www-106.ibm.com/developerworks/xml/library/x-tipasysax.html</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz believes that it is turtles all the way down. David
+  may be reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a> And buy his book: <cite>Text Processing
+  in Python</cite> (http://tinyurl.com/jskh).
+</p>
+</body></html>

@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.8: http://docutils.sourceforge.net/" />
+<title>Evaluation of GNUmed</title>
+<meta name="author" content="David Mertz, Ph.D." />
+<meta name="copyright" content="This document has been placed in the public domain." />
+<meta name="date" content="August, 2010" />
+<style type="text/css">
+
+/*
+:Author: David Goodger (goodger@python.org)
+:Id: $Id: html4css1.css 6253 2010-03-02 00:24:53Z milde $
+:Copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+
+See http://docutils.sf.net/docs/howto/html-stylesheets.html for how to
+customize this style sheet.
+*/
+
+/* used to remove borders from tables and images */
+.borderless, table.borderless td, table.borderless th {
+  border: 0 }
+
+table.borderless td, table.borderless th {
+  /* Override padding for "table.docutils td" with "! important".
+     The right padding separates the table cells. */
+  padding: 0 0.5em 0 0 ! important }
+
+.first {
+  /* Override more specific margin styles with "! important". */
+  margin-top: 0 ! important }
+
+.last, .with-subtitle {
+  margin-bottom: 0 ! important }
+
+.hidden {
+  display: none }
+
+a.toc-backref {
+  text-decoration: none ;
+  color: black }
+
+blockquote.epigraph {
+  margin: 2em 5em ; }
+
+dl.docutils dd {
+  margin-bottom: 0.5em }
+
+/* Uncomment (and remove this text!) to get bold-faced definition list terms
+dl.docutils dt {
+  font-weight: bold }
+*/
+
+div.abstract {
+  margin: 2em 5em }
+
+div.abstract p.topic-title {
+  font-weight: bold ;
+  text-align: center }
+
+div.admonition, div.attention, div.caution, div.danger, div.error,
+div.hint, div.important, div.note, div.tip, div.warning {
+  margin: 2em ;
+  border: medium outset ;
+  padding: 1em }
+
+div.admonition p.admonition-title, div.hint p.admonition-title,
+div.important p.admonition-title, div.note p.admonition-title,
+div.tip p.admonition-title {
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title {
+  color: red ;
+  font-weight: bold ;
+  font-family: sans-serif }
+
+/* Uncomment (and remove this text!) to get reduced vertical space in
+   compound paragraphs.
+div.compound .compound-first, div.compound .compound-middle {
+  margin-bottom: 0.5em }
+
+div.compound .compound-last, div.compound .compound-middle {
+  margin-top: 0.5em }
+*/
+
+div.dedication {
+  margin: 2em 5em ;
+  text-align: center ;
+  font-style: italic }
+
+div.dedication p.topic-title {
+  font-weight: bold ;
+  font-style: normal }
+
+div.figure {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+div.footer, div.header {
+  clear: both;
+  font-size: smaller }
+
+div.line-block {
+  display: block ;
+  margin-top: 1em ;
+  margin-bottom: 1em }
+
+div.line-block div.line-block {
+  margin-top: 0 ;
+  margin-bottom: 0 ;
+  margin-left: 1.5em }
+
+div.sidebar {
+  margin: 0 0 0.5em 1em ;
+  border: medium outset ;
+  padding: 1em ;
+  background-color: #ffffee ;
+  width: 40% ;
+  float: right ;
+  clear: right }
+
+div.sidebar p.rubric {
+  font-family: sans-serif ;
+  font-size: medium }
+
+div.system-messages {
+  margin: 5em }
+
+div.system-messages h1 {
+  color: red }
+
+div.system-message {
+  border: medium outset ;
+  padding: 1em }
+
+div.system-message p.system-message-title {
+  color: red ;
+  font-weight: bold }
+
+div.topic {
+  margin: 2em }
+
+h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
+h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
+  margin-top: 0.4em }
+
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
+hr.docutils {
+  width: 75% }
+
+img.align-left, .figure.align-left, object.align-left {
+  clear: left ;
+  float: left ;
+  margin-right: 1em }
+
+img.align-right, .figure.align-right, object.align-right {
+  clear: right ;
+  float: right ;
+  margin-left: 1em }
+
+img.align-center, .figure.align-center, object.align-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.align-left {
+  text-align: left }
+
+.align-center {
+  clear: both ;
+  text-align: center }
+
+.align-right {
+  text-align: right }
+
+/* reset inner alignment in figures */
+div.align-right {
+  text-align: left }
+
+/* div.align-center * { */
+/*   text-align: left } */
+
+ol.simple, ul.simple {
+  margin-bottom: 1em }
+
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.attribution {
+  text-align: right ;
+  margin-left: 50% }
+
+p.caption {
+  font-style: italic }
+
+p.credits {
+  font-style: italic ;
+  font-size: smaller }
+
+p.label {
+  white-space: nowrap }
+
+p.rubric {
+  font-weight: bold ;
+  font-size: larger ;
+  color: maroon ;
+  text-align: center }
+
+p.sidebar-title {
+  font-family: sans-serif ;
+  font-weight: bold ;
+  font-size: larger }
+
+p.sidebar-subtitle {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+p.topic-title {
+  font-weight: bold }
+
+pre.address {
+  margin-bottom: 0 ;
+  margin-top: 0 ;
+  font: inherit }
+
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+span.classifier {
+  font-family: sans-serif ;
+  font-style: oblique }
+
+span.classifier-delimiter {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+span.interpreted {
+  font-family: sans-serif }
+
+span.option {
+  white-space: nowrap }
+
+span.pre {
+  white-space: pre }
+
+span.problematic {
+  color: red }
+
+span.section-subtitle {
+  /* font-size relative to parent (h1..h6 element) */
+  font-size: 80% }
+
+table.citation {
+  border-left: solid 1px gray;
+  margin-left: 1px }
+
+table.docinfo {
+  margin: 2em 4em }
+
+table.docutils {
+  margin-top: 0.5em ;
+  margin-bottom: 0.5em }
+
+table.footnote {
+  border-left: solid 1px black;
+  margin-left: 1px }
+
+table.docutils td, table.docutils th,
+table.docinfo td, table.docinfo th {
+  padding-left: 0.5em ;
+  padding-right: 0.5em ;
+  vertical-align: top }
+
+table.docutils th.field-name, table.docinfo th.docinfo-name {
+  font-weight: bold ;
+  text-align: left ;
+  white-space: nowrap ;
+  padding-left: 0 }
+
+h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
+h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
+  font-size: 100% }
+
+ul.auto-toc {
+  list-style-type: none }
+
+</style>
+</head>
+<body>
+<div class="document" id="evaluation-of-gnumed">
+<h1 class="title">Evaluation of GNUmed</h1>
+<table class="docinfo" frame="void" rules="none">
+<col class="docinfo-name" />
+<col class="docinfo-content" />
+<tbody valign="top">
+<tr><th class="docinfo-name">Author:</th>
+<td>David Mertz, Ph.D.</td></tr>
+<tr><th class="docinfo-name">Contact:</th>
+<td><a class="first reference external" href="mailto:mertz&#64;gnosis.cx">mertz&#64;gnosis.cx</a> / +1-413-824-9414</td></tr>
+<tr><th class="docinfo-name">Version:</th>
+<td>1</td></tr>
+<tr><th class="docinfo-name">Copyright:</th>
+<td>This document has been placed in the public domain.</td></tr>
+<tr><th class="docinfo-name">Date:</th>
+<td>August, 2010</td></tr>
+</tbody>
+</table>
+<div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#background-of-evaluation" id="id1">Background of Evaluation</a></li>
+<li><a class="reference internal" href="#personal-background" id="id2">Personal Background</a></li>
+<li><a class="reference internal" href="#overview-of-evaluation" id="id3">Overview of Evaluation</a></li>
+<li><a class="reference internal" href="#details-on-source-code-evaluation" id="id4">Details on Source Code Evaluation</a><ul>
+<li><a class="reference internal" href="#unified-printing-system" id="id5">Unified Printing System</a></li>
+<li><a class="reference internal" href="#documentation-for-developers" id="id6">Documentation for developers</a></li>
+<li><a class="reference internal" href="#code-organization" id="id7">Code Organization</a></li>
+<li><a class="reference internal" href="#sql" id="id8">SQL</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="background-of-evaluation">
+<h1><a class="toc-backref" href="#id1">Background of Evaluation</a></h1>
+<p>In September 2009, Jim Busser -- a medical doctor who has been a non-coding
+volunteer in the GNUmed project -- contacted the Python Software Foundation
+(PSF) Board of Directors seeking advice in finding independent profesional
+evaluation of the codebase of GNUmed. Dr. Busser expressed an interest in
+performing due diligence to assure that the projects design decisions have
+been made soundly, that the code is meets professional software coding
+standards, and that security issues have been adequately addressed in
+protection of confidential data handled by GNUmed software.</p>
+<p>Subsequent to this inquiry, as a then and current member of the PSF Board, I
+forwarded the request to the general Python Software Foundation membership,
+with an offer to Dr. Busser to help vet any replies that arose there for
+competent evaluators. Unfortunately, I wasn't able to locate any PSF members
+interested and competent to work on such an evaluation by these means;
+however, in light of this, I volunteered to make such an evaluation myself,
+being impressed with the goals of the project and usefulness of the software
+after an overview evaluation. I performed this evaluation in November of
+2009, and have monitored the general progress of the project since then.</p>
+<p>I accepted a (somewhat nominal) payment for my time spent in performing an
+evaluation, with the agreement that the evaluation would be independent, and
+no <em>a priori</em> focus or conclusion was directed by such payment.  The goal
+expressed by GNUmed project members I communicated with was that anything I
+might find showing need for improvements would be at least as valuable as an
+overview conclusion of design soundness.</p>
+</div>
+<div class="section" id="personal-background">
+<h1><a class="toc-backref" href="#id2">Personal Background</a></h1>
+<p>As well as my membership in the Python Software Foundation and its Board of
+Directors, I serve as Chair of the PSF Trademarks Committee, and have
+written a book and numerous well-read articles about the Python programming
+language and other computer technologies, including databases, computer
+security and networking.</p>
+<p>In a professional volunteer capacity, I served as the Chief Technology
+Officer of the non-profit Open Voting Consortium (OVC), which has advocated
+for and developed the use of open source, secure and voter-transparent
+software for use in governmental elections. Much of the software developed
+under my supervision at OVC is written in Python.</p>
+<p>In consulting positions I have worked with and evaluated a variety of
+software systems, including large codebases, written in Python and other
+programming languages. Additional resume details of this evaluator are
+available upon request.</p>
+</div>
+<div class="section" id="overview-of-evaluation">
+<h1><a class="toc-backref" href="#id3">Overview of Evaluation</a></h1>
+<p>As is typical of open source software, the entirety of the GNUmed code base
+is available for download and evaluation, without restrictions, for any
+interested user. As an initial step of the evaluation, I downloaded the
+current code base in source form, as well as several packaged binary
+distributions of the software.  Being written in an runtime-interpreted
+programming language -- Python -- a separate compilation step is not
+required to run GNUmed; however, GNUmed authors have packaged the source
+files into bundles for several operating systems (including a self-booting
+CD distribution) for easier evaluation and use.  These bundled forms are not
+required for use, but make resolution of dependencies and configurations
+simpler, especially for non-technical users.</p>
+<p>In my evaluation, I initially examined the runtime user interface of GNUmed,
+including its help system. I am not expert in the specific needs of medical
+records software, but am broadly familiar with design of user interfaces. I
+found the user interface to be simple to operate, contain a dense but well
+structured presentation of record information, and to avoid any apparent
+glitches or opaque functionality. Given the inherent complexity of the task
+of medical record management, I believe that lay users of the interface will
+require at least several hours of training to become fully familiar with the
+user interface of GNUmed. However, there are no unnecessary surprises in its
+operation or organization of information and I assume a similar training
+requirement will exist for any other open source or proprietary software in
+the same domain.</p>
+<p>My evaluation of the user interface was peformed primarily to familiarize
+myself with its overall operation to a degree sufficient to understand the
+purpose of the source code that implemented these functions.  The bulk of my
+evaluation was in examining that source code for typical design or coding
+flaws that might be found in large and/or open source projects.</p>
+<p>I was pleased to find the code base for GNUmed well structured, cleanly
+coded, and free of any broad flaws that I was able to detect.  This is a
+strong project written by highly competent and well-disciplined coders with
+a good knowledge of Python programming practices and of general database and
+security issues.  I believe the existing releases of GNUmed are stable and
+secure, and that the code organization is such as to allow relatively easy
+extension and customization as is needed for specific installations and
+implementations.</p>
+</div>
+<div class="section" id="details-on-source-code-evaluation">
+<h1><a class="toc-backref" href="#id4">Details on Source Code Evaluation</a></h1>
+<p>Following my review of the source code, I provided a set of specific
+comments.  Some additional points came out during discussion with GNUmed
+developers, which I also address here.  I am not certain which of these
+issue have been mooted by more current releases than I have examined
+carefully, but none of them are &quot;deal breaker&quot; concerns, simply tweaks to
+best coding practices.</p>
+<div class="section" id="unified-printing-system">
+<h2><a class="toc-backref" href="#id5">Unified Printing System</a></h2>
+<p>Being written to run on multiple operating systems in multiple
+configurations, producing consistent printed reports is somewhat of a
+challenge that GNUmed had not fully addressed as of November 2009. Technical
+<a class="reference external" href="http://wiki.gnumed.de/bin/view/Gnumed/PrintingMethods">options for printing systems</a> are discussed on the GNUmed Wiki.</p>
+</div>
+<div class="section" id="documentation-for-developers">
+<h2><a class="toc-backref" href="#id6">Documentation for developers</a></h2>
+<ul class="simple">
+<li>A README in the top level directory would be a good place to put a section on &quot;How to get started with editing source&quot;. Even a few paragraphs would help developers get oriented more quickly.</li>
+<li>The <tt class="docutils literal"><span class="pre">check-prerequisites.(sh|py)</span></tt> tool is a surprisingly friendly introduction to setup. That's a nice touch.</li>
+<li>The use of &quot;Programmer notes&quot; was a nice touch in the &quot;GUI elements&quot; page of the User Manual. Adding that other places would help a programmer encountering the software identify relations between functionality and code design. Of course, that could be intrusive for regular users, so some means of tucking away such notes would be good. Perhaps CSS to fold them away, or perhaps an &quot;enhanced manual&quot; that included them, with the end-user version generated by filtering out those sections.</li>
+<li>The <a class="reference external" href="http://salaam.homeunix.com/~ncq/gnumed/api/">API documentation</a> is good; however, it would be worthwhile to include these pages with the GNUmed tarball, or in a supplementary GNUmed-Docs.tgz archive. The salaam.homeunix.com site seems to be fairly poorly performing, and links to it are not as obvious as one would wish.</li>
+</ul>
+</div>
+<div class="section" id="code-organization">
+<h2><a class="toc-backref" href="#id7">Code Organization</a></h2>
+<ul class="simple">
+<li>The directory organization is extremely inviting to developers. The separation of <tt class="docutils literal">business/</tt>, <tt class="docutils literal">wxpython/</tt>, and <tt class="docutils literal">pycommon/</tt> is very well done. I do not believe it would be particularly difficult to jump into the code to add a new feature.</li>
+<li>When I first look at a set of business logic like this, tied to a database, the thought strikes me that perhaps the database operations should be factored out of the rest of the business logic. However, looking at this code, I am not inclined toward such further separation. Those methods that access the DB are primarily driven by those operations, with a minimum of other checks or calculations in the Python code, and these are quite readable as-is. Moreover, my own feeling is that something like an ORM is almost always more fragile than it is worth for obtaining more native-feeling source code. That applies here clearly, and the relational design is more robust than an ORM could capture.</li>
+<li>What is actually working? This I find less clear than I would like to (as either a user or developer). For example in 0.5.1, the file <tt class="docutils literal">gmMedication.py</tt> contains <tt class="docutils literal">cConsumedSubstance()</tt>. The naming seems to provide a good indication of the function of the class. However, the bulk of the class is commented out in the implementation (I would guess because of some bug in its details; though the commented out code makes basic functional sense). The result, I presume is that allergy information cannot be modified in this version. A <tt class="docutils literal">TODO</tt> or <tt class="docutils literal">WHATSNEW</tt> in the source code tree could clarify this, though obviously takes work to maintain itself. I may be missing something functional along these lines within some other wiki page, issue/ticket tracker, or other out-of-stream documentation.</li>
+<li>Unit tests: Many of the <tt class="docutils literal">business/</tt> modules have some unit tests built in to them. However, they do not seem to be systematic, and the results seem to need interpretation. For example, <tt class="docutils literal">gmVaccination.py</tt> has quite a few tests, but all of them print out report-style values, but never raise explicit unit test failures if values are not as expected. It is possible that some called functions <em>will</em> raise exceptions in failure cases, but then it's a matter of tracing through call stacks rather than reading clearly encapsulated error reports.</li>
+</ul>
+<blockquote>
+<ul class="simple">
+<li>Moreover, it would be nice if the unit tests came in a defined suit that could be run with a &quot;test_all&quot; command. It might not take that much to cobble together a wrapper that called the various modules and tested the outputs against expectations. Having that would be very helpful to release-cycle management (or even to running nightly regressions).</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="sql">
+<h2><a class="toc-backref" href="#id8">SQL</a></h2>
+<ul class="simple">
+<li>Having an easy way to identify the table schemas would be a huge aid to new programmers. As is, there's nothing in the client code other than example of existing <tt class="docutils literal">SELECT</tt>/<tt class="docutils literal">INSERT</tt> statements. To see the organization, one needs to also grab the server code, and browse around <tt class="docutils literal">sql/</tt> directory. It would be really helpful -- even on an ongoing basis, not only as a first look at code -- to have schema diagram of the tables and fields available. There might be FOSS tools to generate these from the SQL, I'd have to look around to see the state of that. There are two levels of development where the schema diagrams would help:</li>
+</ul>
+<blockquote>
+<ol class="arabic simple">
+<li>Answering the question, &quot;Where should I put or find this data that my  new feature wants to work with?&quot; I.e. the table and field names (and any foreign key constraints I need to maintain).</li>
+<li>Answering the question, &quot;Is there ANY existing table where my new feature can store its data? Do I need to change the schema to accommodate this new feature?&quot;</li>
+</ol>
+</blockquote>
+<ul class="simple">
+<li>Following on the salaam.homeunix.com site, and partially superseding the comment I make above about database schemas, I see there <em>are</em> schema descriptions at <a class="reference external" href="http://salaam.homeunix.com/~ncq/gnumed/schema/devel/">http://salaam.homeunix.com/~ncq/gnumed/schema/devel/</a>. Finding this was non-obvious; I only came across it by playing with the linked URL for the API docs to guess at what else was on that site.</li>
+<li>A minor code-style issue. I find it easier to scan SQL statements if they use consistent casing (even though SQL itself is case-insensitive). In particular, in my own code, I think it stands out nicely to put SQL keywords in CAPS, and table and field names in lowercase. The GNUmed source does this sometimes, but not consistently.</li>
+</ul>
+<p>E.g. instead of:</p>
+<pre class="literal-block">
+cmd = u&quot;&quot;&quot;
+      insert into dem.lnk_person_org_address(id_identity, id_address)
+      values (%(id)s, %(adr)s)&quot;&quot;&quot;
+</pre>
+<p>It would scan nicely to use:</p>
+<pre class="literal-block">
+cmd = u&quot;&quot;&quot;
+      INSERT INTO dem.lnk_person_org_address(id_identity, id_address)
+      VALUES (%(id)s, %(adr)s)&quot;&quot;&quot;
+</pre>
+<p>Or even if the convention is all-lower, it should be consistent in the code.</p>
+<ul class="simple">
+<li>Over-the-wire encryption is available with the <tt class="docutils literal">sslmode=prefer</tt> option in the <tt class="docutils literal">psycopg2</tt> interface. That seems fine, though it might be nice to optionally allow SSH tunneling instead (which is outside the <tt class="docutils literal">psycopg2</tt> interface itself, of course).</li>
+</ul>
+</div>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,147 @@
+PRODUCT REVIEW:
+XML Spy 3.0
+
+David Mertz, Ph.D.
+Gnosis Software, Inc.
+August 2000
+
+AT A GLANCE
+------------------------------------------------------------------------
+
+      Creator:       Icon Information Systems
+      Price/License: Starting at $150 for single-user. Multi-user
+                     licenses at various discounts. Closed-source.
+      Home Page:     http://www.xmlspy.com
+      Requirements:  Win32
+
+
+WHAT IS XML Spy?
+------------------------------------------------------------------------
+
+  Icon Information Systems characterizes _XML Spy_ as:
+
+    [A] true Integrated Development Environment (IDE), XML Spy
+    contains features required for many different aspects of
+    XML-related tasks.
+
+  _XML Spy_ lives up to its billing, and includes capabilities
+  for most every ad-hoc and manual XML-related task you might be
+  faced with.  You can edit, create and validate XML documents,
+  DTD's, Schemas, Stylesheets, and various other filetypes
+  (including some specialized XML types, such Mathematical Markup
+  and BizTalk Schema -- but links to some of those definitions on
+  the internet are inaccurate).
+
+  In general, _XML Spy_ presents a consistent and helpful
+  interface for working with these document types, and a number
+  of helpful tools that automate development tasks.  The
+  interface of _XML Spy_ is generally modelled after Microsoft's
+  Visual Studio development environment with a similar dockable
+  paned interface.  The layout will be familiar to many
+  developers; but I personally found the default layout to be too
+  busy, and leave too little screen real-estate for your main
+  documents (I feel the same about Visual Studio though).
+  Fortunately, you have many options in selecting what panes,
+  toolbars, etc. are visible in the workspace, and in arranging
+  them.
+
+  What _XML Spy_ is *not* is a programmatic system for
+  *processing* XML documents and related filetypes.  Basic XSL
+  transformations are supported, but do not expect to perform
+  generalized data extraction and manipulation with this tool.
+  You do not, for example, get any access to DOM methods on XML
+  documents.  This limitation is not flaw in _XML Spy_, it is
+  just what the _XML Spy_ does.  Basically, what you get is a
+  very specialized and enhanced text editor; that is, there is
+  little _XML Spy_ does that you could not do in principle with
+  Notepad (with a *whole lot* more work for the latter).
+
+
+NICE BEHAVIORS
+------------------------------------------------------------------------
+
+  When editing an XML document (or other filetype), _XML Spy_
+  provides you with two basic views: the Text View (which looks
+  basically like any text editor) and the Enhanced Grid View
+  (which is a structured schematic representation of the
+  document).  There is also a Browser View, which is just an
+  external DDE call to Internet Explorer 5.5 or above; you cannot
+  edit in the Browser View.
+
+  In both views, you are presented with onscreen prompts and
+  shortcuts for entering valid tags and attributes.  If you are
+  usuing a DTD or Schema, there is a lot more help to provide.
+  An information window describes the current context (element
+  versus attribute, model, occurance rule).  Addition "Entry
+  Helper" panes show what subtags, attributes and entities are
+  available in a context, and assist you in entering required or
+  allowed elements.  These helpers make your work a whole lot
+  easier in trying to conform to a DTD (or in developing one).
+
+  One built-in tool of _XML Spy_ that felt like actual magic was
+  its automatic DTD/Schema generation.  From a typeless XML
+  document, _XML Spy_ can do a remarkably good job of inferring
+  the underlying DTD (and creating and attaching it).  I found
+  that this generation was not perfect--for example it believed I
+  was using an enumerated type where there was really just
+  CDATA--but the "errors" it makes are no worse than those a
+  person would who had only the XML document, and not the
+  underlying design rules.  Cleaning up or customizing an
+  _XML Spy_ generated DTD is a lot quicker than writing one from
+  scratch!
+
+  Another nice interface device is an option in the Enhanced Grid
+  View.  Most of the time, subtags are displayed in a
+  hierarchical tree fashion.  However, _XML Spy_ will
+  automatically detect when it thinks some data could better be
+  displayed in a Database/Table View of repeating element
+  sequences.  You can also manually force one view or another.
+  For working with what is basically tabular data to start with,
+  using this view makes entering and understanding an XML
+  document much easier.
+
+
+BOTHERSOME BEHAVIORS
+------------------------------------------------------------------------
+
+  _XML Spy_ will check the well-formedness of an XML document,
+  and will validate it against a DTD/Schema if one exists.
+  However, the compaint messages produced when these checks fail
+  are far less helpful than they could be.  In particular, no
+  line numbers are given to identify problems.  In a large XML
+  document, finding a problem that is described, but not
+  specifically highlighted, can be a *lot* of work.
+
+  Another "misfeature" in my opinion is _XML Spy_ fairly strict
+  adherance to a tree model in the Enhanced Grid View.  The
+  makers do not seem fully to appreciate the distinction between
+  character-level markup and block level markup, and this makes
+  it hard to enter and view the former.  For example, if you want
+  to mark one word as "<ital>" in a block of text (PCDATA), the
+  italicized content is shunted to another cell of the grid from
+  its adjacent text.  Formally that is accurate, but as an way of
+  editing an XML document, it gets in your way more than it
+  assists you.  Using the Table View for the text block improves
+  things a little bit, but only a little.  Basically, to really
+  work with marked-up character data blocks, you have to switch
+  to the Text View--but in that case you could have chosen better
+  plain-text editors, which is basically what you have in that
+  view.
+
+  The last--or really the first--trouble I had with _XML Spy_ is
+  that tutorial in the online help is going to be available "real
+  soon now." Not every interface feature of _XML Spy_ was
+  immediately obvious to me, and I really *wanted* to read the
+  tutorial.  But as of the current version, you are stuck with
+  either trial-and-error or trying to find help on a specific
+  feature (which you probably don't know the name of yet, or
+  exactly what it is supposed to do).  The learning curve is not
+  bad, but a tutorial would have helped.
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  David Mertz will settle for paraphrase where cannot manage
+  periphrasis. You can find out copious biographical details by
+  rooting around at http://gnosis.cx/publish/.

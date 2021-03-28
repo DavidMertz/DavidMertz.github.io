@@ -1,0 +1,465 @@
+XML MATTERS #6
+Roundup of XML Editors
+
+David Mertz, Ph.D.
+Transformer, Gnosis Software, Inc.
+January 2001
+
+    Looks at a half-dozen leading XML editors, and discusses the
+    strengths, weaknesses and capabilities of each in a
+    comparative way.
+
+
+COLUMN BACKGROUND
+------------------------------------------------------------------------
+
+  In the previous few columns, I have addressed details of the
+  DocBook DTD and how to transform its XML documents to other
+  formats.  One matter not yet addressed is the very practical
+  question of just how one goes about creating, modifying and
+  maintaining prose-oriented XML documents.  In this colum we
+  look at a number of tools for working with prose-oriented XML
+  documents, not limited to DocBook.
+
+  Perhaps it is obvious enough that the very first requirement of
+  any approach to working with XML documents is assurance that we
+  are producing *valid* documents in the process.  When we use a
+  DTD (or an XML Schema), we do so because we want documents to
+  conform with its rules.  Whatever tools are used must assure
+  this validity as part of the creation and maintenance process.
+
+  Most of the tools and techniques discussed are also serviceable
+  means of working with more data-oriented XML documents, but the
+  emphasis in this column is working with marked-up prose.  A
+  few main difference stand out between prose-oriented XML and
+  data-oriented XML; some XML dialects, moreover, fall somewhere
+  between these categories, or outside of them altogether (MathML
+  or vector graphic formats are neither prose nor data in the
+  usual ways).  Prose-oriented XML formats are generally designed
+  to capture the features one expects on a printed page (and
+  therefore in a wordprocessor).  While most such formats aim to
+  capture semantic rather than typographic features (e.g. the
+  -concept- "foreign word" rather than the -font style-
+  "italic"), their connection to traditional written and read
+  materials is close.  On the other hand, data-oriented XML
+  formats mirror more closely the contents of (relational)
+  database formats; the contents can often be thought of as
+  records/attributes (rows/columns), and one expects patterns of
+  recurrent data fields.
+
+  In prose-oriented XML dialects, one tends to encounter a great
+  deal of -mixed- content, in data-oriented XML dialects little
+  or none.  That is, most "data" is text that has character-level
+  markup scattered through it.  In terms of a DTD, one sees
+  elements that look something like (example taken from an IBM
+  developerWorks DTD that it uses for tutorials):
+
+      <!--Contains a paragraph of text.-->
+      <!ELEMENT p  (#PCDATA | code | img | br | i | b | a)* >
+
+  Of course, block-level markup is also used to provide
+  overall organization, but character-level is important in a way
+  that it rarely is in data-oriented XML formats.  The dichotomy
+  between these markup levels poses the biggest challenge, in my
+  experience, for XML editing tools to handle gracefully.
+
+  Let us see how a few tools and approaches hold up to these
+  needs.
+
+
+USE A TEXT EDITOR AND A VALIDATOR
+------------------------------------------------------------------------
+
+  The first approach to consider is what we might think of as the
+  "zero case" (or "null hypothesis" to borrow from science, or
+  "first principles" from philosophy) of XML document
+  modification.  XML documents, after all, really are just text
+  files in the end.  So why not use the tools for working with
+  text files that have been highly refined, and with which a
+  programmer already has a lot of knowledge and deeply felt
+  opinions.  If you are like me, no matter how much you like some
+  of the other tools discussed, there will always be those
+  occassional times that you just want to see what is -really-
+  going on by using a text editor.
+
+  A good text editor for working with XML will have syntax
+  highlighting that is generic for all XML dialects, and also
+  probably the option of configuring something more specific for
+  a given dialect.  It will have flexible (maybe
+  regular-expression based) search and replace capabilities.  If
+  the text editor can support -folding- (sometimes called "code
+  hiding"), that often proves of great benefit, especially in
+  handling large documents.  Obviously, being able to perform
+  operations on blocks is useful, whether it is indent/dedent,
+  cut/copy/paste, or templating.  And probably your favorite
+  text editor (if you are a programmer) is easy to configure to
+  call external programs that take the current working file as
+  input.
+
+  With a powerful text editor in hand, a few guidelines make
+  working with prose-oriented XML easier.  Most of this is common
+  sense, and most of it is the -same- common sense that applies
+  to making your code in other programming languages look nice.
+  Use indentation and whitespacing well; parts of an XML document
+  should stand out as being what they are at a quick glance.
+  Although XML itself is whitespace retensive, most application
+  normalize whitespace before further processing.  So indenting
+  and adding vertical space are not functionally important, but
+  just make your XML documents easier to look at (if the few
+  extra bytes are that important, you probably made a bad choice
+  by choosing XML in the first place; it is quite -verborse-
+  compared to other formats).  In general character-level
+  elements are best kept inline, and block-level elements are
+  best starting new (hierarchically indented) lines.  Obviously,
+  use judgement rather than hard-and-fast rules for what looks
+  clearest; but value clarity in appearance.
+
+  Text editors will require an external tool to peform actual
+  validation.  A lot of good ones are out there for various
+  platforms.  I personally usually use the Python module
+  [xmlproc].  Whatever you use, your validator should give you
+  sufficiently specific advice to make problems easy to locate
+  and fix (usually including exact position of the errors and
+  warnings).  For example, the below is part of a validation I
+  ran:
+
+      c:\xml-files\>python xvcmd.py test.xml
+      xmlproc version 0.62
+
+      Parsing 'test.xml'
+      E:test.xml:6:110: Attribute 'zip_file_comment' not declared
+      E:test.xml:45:152: '<' not allowed in attribute values
+      E:test.xml:55:34: '=' expected
+      E:test.xml:55:49: One of '>' or '/>' expected
+      E:test.xml:60:14: End tag for 'body' seen, but 'p' expected
+      E:test.xml:783:12: Premature document end, element 'p' not closed
+      [...]
+      Parse complete, 22 error(s) and 0 warning(s)
+
+  Editing and validating works much like an edit/compile or
+  edit/unit-test cycle in a programming language.  If you
+  validate frequently, cleaning up a few errors is not difficult
+  or time-consuming.
+
+
+BASIC ENHANCED EDITORS
+------------------------------------------------------------------------
+
+  Basic XML editing tools add basically three things to a generic
+  text editor to make the more tailored for XML editing:  (1)
+  integrated validation of documents; (2) hierarchical (tree)
+  views of XML documents; (3) intergrated "preview" of
+  transformed XML documents (to HTML, using XSLT or CSS2,
+  generally).  Particular tools might offer a subset of these
+  enhancements.  I have looked at three specific tools in this
+  class (but others probably exist).
+
+  *Microsoft _XML Notepad_:* _XML Notepad_ is more-or-less what you
+  would expect from its name.  It is a free-of-cost tool--for
+  Win32 only--that provides a parsed and structured view of XML
+  documents.  In addition, _XML Notepad_ will perform validation
+  (only when the document is opened) against a declared DTD.  The
+  basic interface to XML Notepad consists of a collapsible tree
+  view of an XML document in one pane, with the other pane
+  containing lines indicating the content of elements and
+  attributes.  Editing elements or attributes is strictly one
+  line per text block, which means you have to scroll left/right
+  within an entry area for a paragraph.  Overall, _XML Notepad_ is
+  probably more suitable for editing data-oriented XML documents
+  than prose-oriented ones.  But as a quick way to look through
+  or make minimal changes in a prose-oriented document, the tool
+  is not bad.  _XML Notepad_ does not perform any sort of
+  transformations, preview, or visual formatting.
+
+  *Wattle Software _XMLWriter_:* _XMLWriter_ is a step up--or maybe
+  sideways--from _XML Notepad_.  It is also a Win32 only product,
+  but is shareware; you have to pay AU$75 to use it after a trial
+  period (about US$40).  There is much more to the _XMLWriter_
+  interface than in _XML Notepad_, although one thing that is a
+  navigable tree/hierarchy view (you can do a preview-only tree
+  view, but can neither edit in that view nor use it to jump to a
+  navigable pane; it is also based on the somewhat flakey MSXML
+  DLL for this function, so it doesn't always work).  However, in
+  most respects, _XMLWriter_ is a fairly rich working environment
+  for modifying XML documents.
+
+  The basic idea in _XMLWriter_ is close to a text editor, with
+  some XML specific extras thrown in.  The view of a document is
+  a textual view, with syntax-highlighting, optional line
+  numbering, and the general features one would expect in a
+  decent text editor (but fewer bells-and-whistles than a generic
+  programmers' editor).  However, beyond the text editor
+  features, _XMLWriter_ has options for validation and
+  well-formedness checking, for XSLT conversion, for browser
+  preview, and a concept of "projects" (collections of related
+  files: XML, XSL, CSS, Schema, etc).  _XMLWriter_ gives you a nice
+  environment for working with XML that is still solidly in the
+  "enhanced editor" category.
+
+  *TIBCO Extensibility _XML Instance_:* _XML Instance_ is a
+  Java-based XML editor, and therefore is available on the range
+  of platforms Java runs on.  Java Virtual Machine's (JVM) differ
+  widely in quality and speed, and your satisfaction with _XML
+  Instance_ will depend partially on the JVM you use (IBM's have
+  been the best in my experience, across several platforms).  Of
+  those tools I call "enhanced editors," _XML Instance_ is the most
+  sophisticated; it's price of $100 matches that increase in
+  features.
+
+  In some ways, _XML Instance_ resembles a much better done XML
+  Notepad.  The same general collapsible-tree to the left,
+  attribute/element content in line to the right, interface is
+  used.  But that is just the starting point.  Each element can
+  be viewed as either a subhierarchy or as raw markup.  By
+  looking at raw markup for block-level elments that include
+  character-level elements, you achieve the right distinction
+  visually between the types of elements.  In addition, viewing
+  an element is initially presented as a single line, but you can
+  expand the view to include multiple lines (as many as needed
+  with a scroll bar) on a per-element basis.  This lets you both
+  navigate and edit in a flexible way.
+
+  As well, _XML Instance_ does a good job (but not perfect) with
+  validation checking and XSL transformations (including editing
+  XSLT documents).  _XML Instance_ provides some rudimentary
+  assistance in inserting subtags and attributes, but does not
+  assist nearly as much--nor assure validity as well--as some of
+  the other tools discussed in this column.
+
+  These products can make a number of things easier, but these
+  tools (and even the more sophisticated tools below) demand that
+  you give up many of the powerful, but generic, capabilities, of
+  a general text editor.  Mostly, these tools are good choices
+  for users who do not yet have a programmers' text editor they
+  use daily.
+
+
+XML DEVELOPMENT ENVIRONMENTS
+------------------------------------------------------------------------
+
+  Beyond basic editors, there are several tools available that
+  one might describe as "integrated development environments
+  (IDE)" for XML.  _XML Instance_ comes close to this category,
+  but lacks several things that other tools have.  To make it to
+  this category, there are a few things a tool should have in
+  addition to what the enhanced editors do.  The main extra in
+  these tools is much more assistance in creating valid XML.  In
+  most cases, the tools simply disallow creation of invalid XML,
+  while providing intuitive assistance about what elements and
+  attributes can occur at a given place in a document.  The other
+  thing the XML IDE's to is add a wider variety of views of your
+  XML documents, each suited to different specific purpose and
+  type of document.
+
+  *Icon Information Systems _XML Spy_:* _XML Spy_ is another
+  commercial tool for Win32; this one costing about $150.  When
+  editing an XML document (or other filetype), _XML Spy_ provides
+  you with two basic views: the Text View (which looks basically
+  like any text editor) and the Enhanced Grid View (which is a
+  structured schematic representation of the document).  There is
+  also a Browser View, which is just an external DDE call to
+  Internet Explorer 5.5 or above; you cannot edit in the Browser
+  View.
+
+  In both views, you are presented with onscreen prompts and
+  shortcuts for entering valid tags and attributes.  If you are
+  usuing a DTD or Schema, there is a lot more help to provide.
+  An information window describes the current context (element
+  versus attribute, model, occurance rule).  Addition "Entry
+  Helper" panes show what subtags, attributes and entities are
+  available in a context, and assist you in entering required or
+  allowed elements.  These helpers make your work a whole lot
+  easier in trying to conform to a DTD (or in developing one).
+
+  One built-in tool of _XML Spy_ that felt like actual magic was
+  its automatic DTD/Schema generation.  From a typeless XML
+  document, _XML Spy_ can do a remarkably good job of inferring
+  the underlying DTD (and creating and attaching it).  I found
+  that this generation was not perfect--for example it believed I
+  was using an enumerated type where there was really just
+  CDATA--but the "errors" it makes are no worse than those a
+  person would who had only the XML document, and not the
+  underlying design rules.  Cleaning up or customizing an
+  _XML Spy_ generated DTD is a lot quicker than writing one from
+  scratch!
+
+  Another nice interface device is an option in the Enhanced Grid
+  View.  Most of the time, subtags are displayed in a
+  hierarchical tree fashion.  However, _XML Spy_ will
+  automatically detect when it thinks some data could better be
+  displayed in a Database/Table View of repeating element
+  sequences.  You can also manually force one view or another.
+  For working with what is basically tabular data to start with,
+  using this view makes entering and understanding an XML
+  document much easier.
+
+  *SoftQuad _XMetal_:* _XMetal_ is yet another commercial Win32
+  product, this one at a rather pricey $500.  But it does quite a
+  bit more than other tools.  Like _XML Spy_, _XMetal_ enforces
+  validity as you work with documents (if a DTD/Schema is used,
+  of course).  _XMetal_'s default editing interface is called the
+  "normal" or "wordprocessing" view, and will appear quite
+  familiar at first to Microsoft Word users especially.  Like
+  many tools of late, many of the toolbar icons, menu shortcuts,
+  menus, and so on are copied from MS-Office.
+
+  In addition to the "normal" view, _XMetal_ offers several
+  others, with most features borrowed from SoftQuad's popular
+  _HotMetal_ HTML editor.  You can edit in a "plain text" view,
+  which is just what you would expect in a text editor that knows
+  a little bit about XML: you get some syntax highlighting, line
+  numbers, Windows/CUA clipboard operations, search/replace
+  (including basic regular expressions).  Unfortunately, and
+  unnecessarily, some of XMetal's other capabilities are disabled
+  in "plain text" view (i.e. "structure view" and
+  context-sensitive element list).
+
+  The view that SoftQuad first invented (AFAIK) is the "tags on"
+  view.  This one is interesting, and quite useful.  Each tag in
+  the document--opening and closing--is represented by an arrow-
+  like icon that contains the tag name.  The words inside the
+  tags are rendered in the style of the "normal" view, i.e. with
+  different fonts, weights, colors, etc.  This combination both
+  lets you see without ambiguity what the markup structure of a
+  document is, and also lets you see a good approximation of at
+  least one likely final rendering of an XML document.
+  Obviously, if the particular XML document is being used in a
+  database style rather than in a book/article/documentation
+  style, the rendering has less literal significance (but it can
+  still visually highlight categories of information in the XML).
+  The element rendering is configurable using CSS.
+
+  Another optional view is available as a separate pane.  The
+  "structure view" is a hierarchical tree representation of the
+  document being edited in the main pane.  Navigation is
+  synchronized between the two panes.  While "plain text" or
+  "tags on" view will show you the tag information, the
+  "structure view" helps make it more explicit.  The structure
+  view itself can take on multiple appearances, some more useful
+  than others, but generally the options involve some helpful
+  nested indentation and/or icons.
+
+  The one thing really missing from _XMetal_ is built-in XSLT
+  support.  You can call external programs, and put that call in
+  the menus; but for $500 one expects every bell-and-whistle
+  included.  I would also quibble with SoftQuad's reliance on the
+  MSXML DLL that many Win32 tools seem to use (I've had many
+  problems with that beta DLL).
+
+
+WORTH MENTIONING
+------------------------------------------------------------------------
+
+  A few other tools are worth mentioning in passing.  The column
+  will not have space to provide complete reviews or
+  descriptions, but the reader can at least investigate further.
+
+  _Morphon_ is a commercial Java XML editor/IDE.  It is still in
+  free betas as of this writing, but the release version is
+  expected to cost around $150.  _Morphon_ presents a number of
+  views, and is generally similar to _XMetal_ or _XML Spy_.  Like
+  _XMetal_, _Morphon_ relies on CSS2 for visual "WYSYWIG"
+  presentation of documents.  Betas have been a little unstable,
+  but a lot of that depends of JVM issues.  Being Java-based,
+  _Morphon_ is likely to have far better cross-platform support
+  than the Win32-only products.
+
+  _Xeena_ is a Java XML editor, like _Morphon_.  But _Xeena_ has
+  the nice extra feature of being free, and part of IBM
+  alphaWorks' range of tools.  Editing with _Xeena_ is somewhat
+  more restricted than with the best IDE's.  You get good
+  validation enforcement, and the "hierarchical tree plus line
+  view" as in _XML Notepad_ and _XML Instance_.  But _Xeena_ is
+  not really as friendly for working with prose-oriented XML
+  documents as are _Morphon_ and _XMetal_.  Like most IBM Java
+  technologies, however, I have found _Xeena_ to be stable and
+  fast (which is more than is true of most Java applications).
+
+  _Conglomerate_ is a free-software project based on GTK+.  It
+  compiles fairly easily on Linux, and in principle should on
+  Windows also (since GTK is available).  There is good news and
+  bad news here.  _Conglomorate_ has the -absolutely- best
+  interface concept I have encountered for working with
+  prose-oriented XML documents.  It does not attempt to render
+  character-level elements with CSS, but instead uses labelled
+  and colored "underscores" for such elements.  Block-level
+  elements, in turn, are identified with similarly rendered
+  vertical color blocks.  Take a look at the homepage for
+  screenshots.  The bad news is that _Conglomorate_ is still
+  basically alpha-level software.  It crashes, and needs features
+  added.  But it is one of the most promising starts I have seen;
+  I hope someone (maybe a reader) advances the development of
+  _Conglomorate_ to being a free-software end-all XML editor/IDE.
+
+  A last possibility is worth considering.  _Corel WordPerfect
+  2000_ builds on the SGML support in earlier _WordPerfect_
+  version to provide nicely structured XML support and
+  validation.  It is a powerful wordprocessor in general, and by
+  using it, you can use the same tool for XML document
+  development.
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  A nice general list (with short reviews) of XML Editors:
+
+    http://webreference.com/xml/column8/index.html
+
+  The author has reviewed elsewhere a number of text editors, you
+  can find those reviews at:
+
+    http://gnosis.cx/publish/tech_index.html
+
+  Microsoft XML Notepad (MS does not always maintain URL's for
+  very long, so try a search engine if this doesn't work by the
+  time you read this):
+
+    http://msdn.microsoft.com/xml/notepad/intro.asp
+
+  Wattle Software's XMLWriter:
+
+    http://xmlwriter.net/
+
+  TIBCO Extensibility XML Instance:
+
+    http://www.extensibility.com/
+
+  Icon Information Systems' XML Spy:
+
+    http://www.xmlspy.com
+
+  SoftQuad's XMetal:
+
+    http://www.softquad.com/
+
+  Morphon Technologies' Morphon XML/CSS Editor:
+
+    http://www.morphon.com
+
+  IBM Alphaworks' Xeena XML Editor:
+
+    http://www.alphaworks.ibm.com/tech/xeena
+
+  Conglomerate:
+
+    http://www.conglomerate.org
+
+  Note that the requirements description on the webpage is
+  misleading; the Conglomerate archive available includes the
+  necessary version of Fluxlib (so you do not need to download it
+  seperately as suggested).
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author:  http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz must have mislaid his MacGuffin in one of his
+  other articles.  It is bound to show up again soon. David may
+  be reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/.  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+
+
+

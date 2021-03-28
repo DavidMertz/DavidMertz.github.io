@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<!DOCTYPE contacts SYSTEM "attrs.dtd" >
+<contacts>
+  <contact
+     name="Jane Doe"
+     age="74"
+     telephone="555-3412" />
+  <contact name="Chieu Win" telephone="555-8888" age="44" />
+</contacts>

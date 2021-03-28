@@ -1,0 +1,410 @@
+===============================================================
+NOTE: You are welcome to read this older introductory article, 
+of course; but if you found your way here, you might be 
+interested in reading the book I wrote with the same main 
+title, at http://gnosis.cx/TPiP/
+===============================================================
+
+CHARMING PYTHON #5
+Text Processing in Python: Tips for Beginners
+
+David Mertz, Ph.D.
+Assistant Snake Handler, Gnosis Software, Inc.
+June 2000
+
+    Python shares a strength in text processing with several
+    popular scripting languages.  Python excels as a tool for
+    searching, modifying, and otherwise manipulating textual
+    data.  This article reviews for a programmer fist learning
+    Python the various text processing facilities built into
+    Python.  Some general concepts of regular expressions are
+    explained, as well as some advice given on when to use, and
+    not to use, regular expressions in text processing tasks.
+
+
+WHAT IS PYTHON?
+------------------------------------------------------------------------
+
+  Python is a freely available, very-high-level, interpreted
+  language developed by Guido van Rossum.  It combines a clear
+  syntax with powerful (but optional) object-oriented semantics.
+  Python is available for almost every computer platform you
+  might find yourself working on, and has strong portability
+  between platforms.
+
+
+LANGUAGE FEATURES
+------------------------------------------------------------------------
+
+  As in most programming languages, strings are a basic type in
+  Python.  In common with most high-level languages (and
+  especially scripting languages), Python strings are of
+  indefinite length.  All issues of declarations and memory
+  allocation to hold strings (or other values) goes on "behind
+  the scenes" where a Python programmer does not need to give
+  much thought to it. Python also has several convenient
+  behaviors surrounding string variables that do not exist in
+  other high-level languages.
+
+  In Python, strings are "immutable sequences." One can refer to
+  elements or subsequences of strings in the same manner as with
+  any sequence.  However, strings (like tuples) cannot be
+  modified "in place." A great flexibility with Python sequences
+  comes with the "slice" operation.  In a natural-looking way
+  (similar to a spreadsheet format), one can refer to a slice
+  (i.e. subsequence) of a string.  The below interacive session
+  illustrates the use of strings and slicing:
+
+      #--------------- Python interactive session ------------#
+      >>> s = "mary had a little lamb"
+      >>> s[0]          # index is zero-based
+      'm'
+      >>> s[3] = 'x'    # changing element in-place fails
+      Traceback (innermost last):
+        File "<stdin>", line 1, in ?
+      TypeError: object doesn't support item assignment
+      >>> s[11:18]      # 'slice' a subsequence
+      'little '
+      >>> s[:4]         # empty slice-begin assumes zero
+      'mary'
+      >>> s[4]          # index 4 is not included in slice [:4]
+      ' '
+      >>> s[5:-5]       # can use "from end" index with negs
+      'had a little'
+      >>> s[:5]+s[5:]   # slice-begin & slice-end are complementary
+      'mary had a little lamb'
+
+  Another powerful operation on strings is the simple 'in'
+  keyword.  Two intuitive and useful constructs on strings come
+  with the keyword:
+
+      #--------------- Python interactive session ------------#
+      >>> s = "mary had a little lamb"
+      >>> for c in s[11:18]: print c,  # print each char in slice
+      ...
+      l i t t l e
+      >>> if 'x' in s: print 'got x'   # test for char occurence
+      ...
+      >>> if 'y' in s: print 'got y'   # test for char occurence
+      ...
+      got y
+
+  There are several variations on composing string literals in
+  Python. Single and double quotes may both be used, just so long
+  as opening and closing tokens match.  Python offers two
+  variations on quoting that are frequently useful.
+  Triple-quoting is often the easiest means of composing strings
+  that contain line breaks (or contain quotes as literals), for
+  example:
+
+      #--------------- Python interactive session ------------#
+      >>> s2 = """Mary had a little lamb
+      ... its fleece was white as snow
+      ... and everywhere that Mary went
+      ... the lamb was sure to go"""
+      >>> print s2
+      Mary had a little lamb
+      its fleece was white as snow
+      and everywhere that Mary went
+      the lamb was sure to go
+
+  Either single quoted or triple-quoted strings may be preceded
+  by the letter "r" to indicate that regular expression special
+  characters should not be interpreted by Python.  I.e.:
+
+      #--------------- Python interactive session ------------#
+      >>> s3 = "this \n and \n that"
+      >>> print s3
+      this
+       and
+       that
+      >>> s4 = r"this \n and \n that"
+      >>> print s4
+      this \n and \n that
+
+  In r-strings, the backslash that might otherwise compose an
+  escaped character in a Python string is treated as a regular
+  backslash.  See the below discussion of regular expressions to
+  see why this is useful.
+
+
+FILES AND STRING VARIABLES
+------------------------------------------------------------------------
+
+  Most of the time when we talk about "text processing," what we
+  want to process is the content of a file.  It is quite easy in
+  Python to pull the contents out of a text file and into string
+  variables (which is where they need to be for most
+  manipulations, at some point).  File objects have three methods
+  related to reading: '.read()', '.readline()', '.readlines()'.
+  Each of these may take an argument to limit the amount of data
+  read at one time, but the most common use is without an
+  argument.  '.read()' reads in a file's entire contents at once,
+  generally in the context of placing those contents into a
+  string variable.  For sequential line-oriented processing, or
+  if a file is likely to be larger than available memory, don't
+  use this method.  But use '.read()' to get the most direct
+  string representation of a file's contents.  '.readline()' and
+  '.readlines()' are very similar.  They are both used in
+  constructs like:
+
+      #------------- Python .readlines() example -------------#
+      fh = open('c:\\autoexec.bat')
+      for line in fh.readlines():
+          print line
+
+  The difference between '.readline()' and '.readlines()' is that
+  the latter, like '.read()', reads in an entire file at once.
+  '.readlines()' automatically parses the read contents into a
+  list of lines, thereby enabling the 'for ... in ...' construct
+  common in Python.  Using '.readline()' reads in just a single
+  line from a file at a time, and is generally much slower than
+  '.readlines()'.  Really the only reason to use the
+  '.readline()' version is if you expect to read very large
+  files that might exceed available memory.
+
+  Sometimes one wants to "reverse" the usual process of reading (or
+  writing) strings from files, and instead treat strings
+  themselves in a file-like manner.  This would usually occur in
+  a context where one has a high-level function (including a
+  number of standard modules) that wants to do something with a
+  file object.  Fortunately, creating a "virtual file" in memory
+  may be easily done using the [cStringIO] module (the [StringIO]
+  module can be used instead in cases where subclassing the
+  module is required; but a beginner is unlikely to need to do
+  this).
+
+      #--------------- Python interactive session ------------#
+      >>> import cStringIO
+      >>> fh = cStringIO.StringIO()
+      >>> fh.write("mary had a little lamb")
+      >>> fh.getvalue()
+      'mary had a little lamb'
+      >>> fh.seek(5)
+      >>> fh.write('ATE')
+      >>> fh.getvalue()
+      'mary ATE a little lamb'
+
+  Keep in mind, however, that a [cStringIO] "virtual file",
+  unlike a real file, is not persistent.  It will be gone when
+  the program completes execution if other steps are not taken to
+  save it (such as saving it to a real file, or using the
+  [shelve] module, or using a database system).
+
+
+STANDARD MODULE [string]
+------------------------------------------------------------------------
+
+  The [string] module is probably the most generally useful
+  module in Python 1.5.* standard distributions.  In fact, it
+  appears that many of the facilities of the [string] module will
+  exist as built-in methods of strings in 1.6 and above (but
+  those have not been released at the time of this writing).
+  Most certainly, any program performing text processing
+  tasks should probably begin with the line:
+
+      import string
+
+  A general rule-of-thumb is that if you *can* do a task using the
+  [string] module, that is the *right* way to do it.  In contrast
+  to [re], [string] functions are generally much faster, and in
+  most cases they are easier to understand and maintain.
+  Third-party Python modules (some fast ones written in C) are
+  available for specialized tasks.  But portability and
+  familiarity still suggest sticking with [string] wherever
+  possible (which is not always, but is probably more often than
+  programmers coming from some other languages think is
+  possible).
+
+  The [string] module contains several types of things.  One type
+  of thing in [string] is strings of common constants.  For
+  example,
+
+      #--------------- Python interactive session ------------#
+      >>> import string
+      >>> string.whitespace
+      '\011\012\013\014\015 '
+      >>> string.uppercase
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+  Although one could write these constants by hand, the [string]
+  versions more-or-less assure that the constants used will be
+  correct for the national language and platform the Python
+  script gets run on.
+
+  The next type of useful thing in [string] is functions to
+  transform strings in common ways (and uncommon ways can
+  generally be composed of several common transformations).  For
+  example:
+
+      #--------------- Python interactive session ------------#
+      >>> import string
+      >>> s = "mary had a little lamb"
+      >>> string.capwords(s)
+      'Mary Had A Little Lamb'
+      >>> string.replace(s, 'little', 'ferocious')
+      'mary had a ferocious lamb'
+
+  There are many other tranformations that are not specifically
+  illustrated, and the Python manuals contain details on them.
+
+  Yet another useful type of thing in [string] is functions to
+  report features of strings without themselves returning
+  strings.  These functions return numbers indicating various
+  features, e.g.:
+
+      #--------------- Python interactive session ------------#
+      >>> import string
+      >>> s = "mary had a little lamb"
+      >>> string.find(s, 'had')
+      5
+      >>> string.count(s, 'a')
+      4
+
+  The final type of thing in [string] is a very Pythonic oddball.
+  The pair '.split()' and '.join()' provide a quick way to
+  convert between strings and tuples.  This is useful to do
+  remarkably often.  Usage is straightforward:
+
+      #--------------- Python interactive session ------------#
+      >>> import string
+      >>> s = "mary had a little lamb"
+      >>> L = string.split(s)
+      >>> L
+      ['mary', 'had', 'a', 'little', 'lamb']
+      >>> string.join(L, "-")
+      'mary-had-a-little-lamb'
+
+  Of course, in real-life usage, we would be likely to do
+  something else with a list besides '.join()' it right back
+  together (probably something involving our familiar 'for ... in
+  ...' construct).
+
+
+STANDARD MODULE [re]
+------------------------------------------------------------------------
+
+  The [re] module obsoletes the [regex] and [regsub] modules that
+  you may see used in some older Python code.  While there are a
+  few, limited advantages to [regex] still, they are minor and
+  not worth using in new code.  The obsolete modules are likely
+  to be dropped from future Python releases, and 1.6 is also
+  likely to have an interface-compatible improved [re] module.
+  So stick with [re] for regular expressions.
+
+  Regular expressions are a complicated topic.  One could write a
+  book on such a topic; in fact, a number of people have!
+  However, this article will try to capture the "gestalt" of
+  regular expressions, and let the reader work futher from there.
+  A regular expression is a way of describing a pattern that
+  might occur in a text.  Do these characters occur? In this
+  order? Are subpatterns repeated the right number of times? Do
+  other subpatterns exclude a match? Conceptually, regular
+  expressions are actually very close to the way one would
+  intuitively describe a pattern in a natural language.  The
+  trick is encoding this description in the compact syntax of
+  regular expressions.
+
+  When approaching a regular expression, treat it as its own
+  little (or big) programming problem.  Even though only one or
+  two lines of code may be involved, those lines will effectively
+  incorporate a small program.  The first thing to start with is
+  the smallest bits.  Any regular expression, at its lowest
+  level, will involve matching particular "character classes."
+  The simplest character class is a single character, which is
+  just included in the pattern as a literal.  Frequently, we want
+  to allow matching of a class of characters.  One means of
+  indicating a class is by surrounding it in square braces;
+  within the braces both an enumeration of characters and ranges
+  indicated with a dash may be used.  There are also a number of
+  named character classes that may be abbreviated, and that will
+  be accurate for platform and national language.  Some examples:
+
+      #--------------- Python interactive session ------------#
+      >>> import re
+      >>> s = "mary had a little lamb"
+      >>> if re.search("m", s): print "Match!"      # char literal
+      ...
+      Match!
+      >>> if re.search("[@A-Z]", s): print "Match!" # char class
+      ...     # match either at-sign or capital letter
+      ...
+      >>> if re.search("\d", s): print "Match!"     # digits class
+      ...
+
+  Character classes are "atomic" in regular expressions.  Usually
+  what we want to do in useful expressions is compose "molecules"
+  out of different character classes.  We compose larger
+  expressions by a combination of *grouping* and by indicating
+  *repetition*.  Grouping is performed with parentheses: any
+  subexpression contained in parentheses is treated as if it were
+  atomic for purposes of further grouping or repetition.
+  Repetition is indicated by one of several operators.  "*" means
+  "zero or more"; "+" means "one or more"; "?" means "zero or
+  one".  For example, look at the expression:
+
+      ABC([d-w]*\d\d?)+XYZ
+
+  For a string to match this expression, it must contain
+  something that starts with "ABC" and ends with "XYZ"--but what
+  else must it have? The subexpression in the middle is
+  '([d-w]*\d\d?)', and that is followed by the "one or more"
+  operator.  So at least one thing matching the subexpression
+  must occur... or it could be a thousand things matching the
+  subexpression.  So the string, "ABCXYZ" will not match, because
+  it does not have the requisite stuff in the middle.
+
+  Just what is the requisite middle subexpression? It must
+  contain *zero or more* letters in the range 'd-w'.  It is
+  important to notice that zero letters is a valid match, which
+  may be counterintuitive if you use the English word "some" to
+  describe it.  Next we must have *exactly one* digit; then *zero
+  or one* additional digits.  The first digit character class has
+  no repitition operator, so it simply occurs once.  The second
+  digit character class has the "?" operator.  Overall, it
+  amounts to either one or two digits.  Some strings matched by
+  the regular expression are:
+
+      ABC1234567890XYZ
+      ABCd12e1f37g3XYZ
+      ABC1XYZ
+
+  A few expressions *not* matched by the regular expression are
+  below (try to think through why these do not match):
+
+      ABC123456789dXYZ
+      ABCdefghijklmnopqrstuvwXYZ
+      ABcd12e1f37g3XYZ
+      ABC12345%67890XYZ
+      ABCD12E1F37G3XYZ
+
+  It takes a bit of practice to get used to creating and
+  understanding regular expressions.  But once they are mastered,
+  a great deal of expressive power is obtained.  That said, it is
+  often easy to jump into using a regular expression to solve a
+  problem that could actually be solved using simpler (and
+  faster) tools, such as [string].
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  Friedl, Jeffrey E. F., _Mastering Regular Expressions_,
+  O'Reilly, Cambridge, MA 1997 is a fairly standard and
+  definitive reference on RegEx's.
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz has been a programmer and a writer for nearly two
+  decades; but David Mertz has only written *about* programming
+  of late (and enjoys it greatly).  David Mertz, in "real life,"
+  is a wayward humanities academic, lured by lucre to IT.  David
+  Mertz is fond of anaphora (and of alliteration).  David may be
+  reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/.  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+
+

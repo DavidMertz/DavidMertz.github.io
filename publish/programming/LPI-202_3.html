@@ -1,0 +1,526 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>TUTORIAL FOR LPI EXAM 202: part 3 -- Topic 207: Domain Name System (DNS) -- </title>
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Tutorial For Lpi Exam 202: Part 3</h1>
+<h2>Topic 207: Domain Name System (DNS)</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Professional Neophyte<br>
+ November, 2005<br>
+ <br>
+</p>
+<blockquote>
+    Welcome to "Domain Name System", the third of seven tutorials
+    covering intermediate network administration on Linux. In this
+    tutorial, we discuss how to use Linux as a DNS server, chiefly using
+    BIND 9, with minor discussion of other utilities.
+</blockquote>
+<h3>Before You Start</h3>
+ <h3>About this series
+</h3>
+ <p>
+  The Linux Professional Institute (LPI) certifies Linux system
+  administrators at junior and intermediate levels. There are two exams
+  at each certification level. This series of seven tutorials helps you
+  prepare for the second of the two LPI intermediate level system
+  administrator exams--LPI exam 202. A companion series of tutorials is
+  available for the other intermediate level exam--LPI exam 201. Both
+  exam 201 and exam 202 are required for intermediate level
+  certification. Intermediate level certification is also known as
+  certification level 2.
+</p>
+<p>
+  Each exam covers several or topics and each topic has a weight. The
+  weight indicate the relative importance of each topic. Very roughly,
+  expect more questions on the exam for topics with higher weight. The
+  topics and their weights for LPI exam 202 are:
+</p>
+<p>
+  <strong> Topic 205: Network Configuration (8)
+  </strong> Topic 206: Mail and News (9)
+  <strong> Topic 207: Domain Name System (DNS) (8)
+  </strong> Topic 208: Web Services (6)
+  <strong> Topic 210: Network Client Management (6)
+  </strong> Topic 212: System Security (10)
+  * Topic 214: Network Troubleshooting (1)
+</p>
+<h3>About this tutorial
+</h3>
+ <p>
+  Welcome to "Domain Name System", the third of seven tutorials covering
+  intermediate network administration on Linux. In this tutorial, we
+  discuss how to use Linux as a DNS server, chiefly using BIND 9, with
+  minor discussion of other utilities.
+</p>
+<h3>Prerequisites
+</h3>
+ <p>
+  To get the most from this tutorial, you should already have a basic
+  knowledge of Linux and a working Linux system on which you can
+  practice the commands covered in this tutorial.
+</p>
+<h3>About DNS
+</h3>
+ <p>
+  The Domain Name System, very usefully, allows users of TCP/IP
+  applications to refer to servers by symbolic name rather than by
+  numeric IP address. The Berkley Internet Name Domain (BIND) software
+  provides a server daemon called <code>named</code> that answers requests for
+  information about the IP address assigned to a symbolic name (or a
+  reverse lookup, or other information). On the client side of the DNS
+  system, applications a <em>resolver</em> is a set of libraries that
+  applications may utilize to communicating with DNS servers.  The BIND
+  package comes with several client utilities to assist in configuring,
+  querying, and debugging a BIND 9 server: <code>dig</code>, <code>nslookup</code>, <code>host</code>,
+  <code>rndc</code> (formerly <code>ndc</code>); in essence, these utilities call the same
+  libraries as other client applications do, but provide direct feedback
+  on answers provided by DNS servers.
+</p>
+<h3>About BIND
+</h3>
+ <p>
+  As of this writing, the current version of BIND is 9.3.1.  The first
+  stable version of the BIND9 series was released in October 2000.  You
+  may find BIND8, which is still maintained for security patches
+  (currently at 8.4.6) on some older installations.  But as a rule,
+  upgrade to BIND9 whenever possible.   Truly ancient systems might
+  have BIND4 installed on them, but you should upgrade those as soon as
+  possible since BIND4 is deprecated.
+</p>
+<p>
+  All version of BIND may be obtained from the Internet Systems
+  Consortium at: &lt<a href="http://www.isc.org/index.pl?/sw/bind/&gt;.">http://www.isc.org/index.pl?/sw/bind/&gt;.</a>  You may also
+  find documentation and other resources on BIND at that site.
+</p>
+<h3>Other resources
+</h3>
+ <p>
+  As with most Linux tools, it is always useful to examine the manpages
+  for any utilities discussed. Versions and switches might change
+  between utility or kernel version, or with different Linux
+  distributions. For more in depth information, the Linux Documentation
+  Project has a variety of useful documents, especially its HOWTOs. See
+ <a href="http://www.tldp.org/.">http://www.tldp.org/.</a>  A variety of books on Linux networking have
+  been published; I have found O'Reilly's <cite>TCP/IP Network
+  Administration</cite>, by Craig Hunt to be quite helpful (find whatever
+  edition is most current when you read this).
+</p>
+<p>
+  For DNS and BIND information specifically, O'Reilly's <cite>DNS and BIND</cite>,
+  Fourth Edition (Paperback) by Paul Albitz and Cricket Liu, is a good
+  resource.  Several other books on BIND are avaialable from various
+  publishers.  This tutorial, of course, cannot cover as much detail as
+  that 622 page book.
+</p>
+<h3>Understanding Domain Name System Queries</h3>
+ <h3>The topology of DNS
+</h3>
+ <p>
+  DNS is a hierarchical system of domain <em>zones</em>. Each zone provides a
+  limited set of answers about domain name mappings: those within its
+  own subdomain. A given server will query up to a more general server
+  when it does not know a mapping, and if necessary, follow redirect
+  suggestions until it finds the correct answer (or determines that no
+  answer can be found, producing an error). When a local <code>named</code> server
+  finds the answer to a DNS query, it caches that answer for a
+  configurable amount of time (typically on the order of hours, rather
+  than seconds or days).  By caching DNS queries, the overall network
+  demand is lowered considerably, especially on top level domain (TLD)
+  servers.  The article on DNS at Wikipedia,
+ <a href="http://en.wikipedia.org/wiki/Domain_Name_System,">http://en.wikipedia.org/wiki/Domain_Name_System,</a> is an excellent
+  starting point for understanding the overall architecture.  This
+  tutorial borrows a public domain diagram from that site.
+</p>
+<p>
+  An diagram of a hypothetical DNS query makes it easy to understand the
+  overall lookup process. Suppose your local machine wishes to contact
+  the symbolic domain name <code>www.wikipedia.org</code>. To find the
+  corresponding IP address, your machine would first consult the local
+  nameserver you have configured for a client machine. This "local"
+  nameserve may run on the same machine as the client application; or it
+  may run on a DNS server on your local LAN; or may be provided by your
+  ISP. In almost all cases, it is an instance of BIND's <code>named</code>. This
+  "local" nameserver will first check its cache, but assuming no cached
+  information is available, will perform steps like in the below
+  diagram:
+</p>
+<p>
+  <img src="http://gnosis.cx/publish/programming/Recursive_DNS.gif" alt="An example of DNS recursion">
+</p>
+<p>
+  Understand for this diagram that the "DNS Recurser" is the actual DNS
+  server (<code>named</code>), not the client application that talk to it.
+</p>
+<p>
+  DNS uses TCP and UDP on port 53 to serve requests. Almost all DNS
+  queries consist of a single UDP request from the client followed by a
+  single UDP reply from the server.
+</p>
+<h3>How an application knows where to find a DNS server
+</h3>
+ <p>
+  Configuring client application access to its DNS server(s) is quite
+  straightforward. The entire configuration is contained in the file
+  <code>/etc/resolve.conf</code>, whose job is principally to specify the IP
+  addresses for one or main "local" DNS servers. You may manually
+  configure <code>/etc/resolve.conf</code> with known DNS servers; however, if you
+  use DHCP to configure a client the DHCP handshaking process will add
+  this information to <code>/etc/resolve.conf</code> automatically (you may still
+  read it, or even modify it, after DHCP sets it up; but it will be
+  reset on reboot).  The library code modified by <code>/etc/resolv.conf</code> is
+  called the "DNS resolver".
+</p>
+<p>
+  If more than one DNS server is configured in an <code>/etc/resolv.conf</code>
+  file, secondary and tertiary DNS servers will be consulted if the
+  primary server fails to provide an answer within the specified timeout
+  period.  A maximum of three DNS servers may be configured.
+</p>
+<p>
+  The basic entry within an <code>/etc/resolv.conf</code> file are the <code>nameserver
+  &lt;IP-addr&gt;</code> entries.   Some other entries let you modify returned
+  answers.  For example, the directives <code>domain</code> and <code>search</code> let you
+  expand names without dots in them (e.g. machines on the local LAN).
+  The <code>options</code> directive' lets you change timeouts per DNS server, turn
+  on debugging, decide when to append full domain names, and change
+  other aspects of DNS resolver behavior.  For example, one of my
+  machines is configued with:
+</p>
+<div class="code-sample"><h4></h4><pre># cat /etc/resolv.conf
+search gnosis.lan
+nameserver 0.0.0.0
+nameserver 192.168.2.1
+nameserver 151.203.0.84
+options timeout:3
+
+</pre></div><p>
+  The first directive lets this machine know that machines on the local
+  LAN use the private domain <code>gnosis.lan</code>, so the simple name <code>bacchus</code>
+  may be resolved as <code>bacchus.gnosis.lan</code>. More than one space-separated
+  domain may be listed in the <code>search</code> directive. Next I list several
+  DNS servers to try. The first is the local machine itself, which can
+  be referred to either as <code>0.0.0.0</code> or by its official IP address, but
+  not with a loopback address. The next <code>nameserver</code> directive lists my
+  home-office router that connects my LAN to the internet (and provides
+  DHCP and DNS services).  The tertiary nameserver is one provided by my
+  ISP.  I also set on option to use a three second timeout on each
+  nameserver rather than the default 5 seconds.
+</p>
+<h3>DNS client utilities
+</h3>
+ <p>
+  BIND9 comes with four main client utilities.  Three of those, <code>dig</code>,
+  <code>nslookup</code>, and <code>host</code> perform similar functions, more or less in
+  descending order of detailedness.  All three utilities are simply
+  command-line utilities to exercise the DNS resolver; what they do is
+  essentially what many client applications do internally, these
+  utilities simply provide output on the results of lookups on STDOUT.
+  The most powerful of the three utilities, <code>dig</code>, also has the most
+  options to limit or configure its output.  These utilities are most
+  often used to lookup an IP address from a symbolic domain name, but
+  you may also perform reverse lookups or other record types other than
+  default "A" records.  For example, the command <code>host -t MX gnosis.cx</code>
+  will show you mail servers associated with <code>gnosis.cx</code>.  Some examples
+  help:
+</p>
+<div class="code-sample"><h4>'host' query of google.com</h4><pre>
+$ host google.com
+google.com has address 72.14.207.99
+google.com has address 64.233.187.99
+
+
+$ host -t MX gnosis.cx
+gnosis.cx mail is handled by 10 mail.gnosis.cx.
+
+</pre></div><p>
+  For <code>nslookup</code>:
+</p>
+<div class="code-sample"><h4>'nslookup' using default (machine-local) server</h4><pre>
+$ nslookup gnosis.cx
+Server:         0.0.0.0
+Address:        0.0.0.0#53
+
+Non-authoritative answer:
+Name:   gnosis.cx
+Address: 64.41.64.172
+
+</pre></div><p>
+  Or a reverse lookup using <code>dig</code> and specifying a non-default
+  nameserver:
+</p>
+<div class="code-sample"><h4></h4><pre>$ dig @192.168.2.2 -x 64.233.187.99
+
+; &lt;&lt;&gt;&gt; DiG 9.2.4 &lt;&lt;&gt;&gt; @192.168.2.2 -x 64.233.187.99
+;; global options:  printcmd
+;; Got answer:
+;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NXDOMAIN, id: 3950
+;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;99.187.233.64.in-addr.arpa.    IN  PTR
+
+;; AUTHORITY SECTION:
+187.233.64.in-addr.arpa. 2613   IN  SOA  ns1.google.com. dns-admin.google.com.
+2004041601 21600 3600 1038800 86400
+
+;; Query time: 1 msec
+;; SERVER: 192.168.2.2#53(192.168.2.2)
+;; WHEN: Thu Nov 10 02:00:27 2005
+;; MSG SIZE  rcvd: 104
+
+</pre></div><p>
+  The remaining BIND9 utility to keep in mind is <code>rndc</code>. The <code>rndc</code>
+  utility controls the operation of a name server. It supersedes the
+  <code>ndc</code> utility that was provided in old BIND releases. If rndc is
+  invoked with no command line options or arguments, it prints a short
+  summary of the supported commands.  See the <code>man</code> page for <code>rndc</code> for
+  full information on its use.
+</p>
+<h3>Running A Name Server</h3>
+ <h3>BIND configurations
+</h3>
+ <p>
+  When you run the <code>named</code> daemon to provide a DNS server, you may
+  choose from three modes of operation: master, slave, and caching-only.
+  The <code>named</code> daemon itself looks in its configuration files to
+  determine its operating mode, chiefly <code>/etc/bind/named.conf</code>.
+</p>
+<p>
+  In master mode, the <code>named</code> server acts as the authoritative source for
+  all information about its zone. Domain information provided by the
+  server is loaded from a local disk file that is manually modified or
+  updated.  Each DNS zone should have exactly one master server.
+</p>
+<p>
+  In slave mode, the <code>named</code> server transfers its zone information from
+  the master server for its zone. Technically, a multi-zone server can
+  be master of one zone and slave for another, but more commonly a LAN
+  installation will have a single hierarchy between master and slave or
+  caching-only servers. A slave mode server transfers complete zone
+  information to local files from its master server, so the answers
+  provided by a slave server are still considered authoritative.
+</p>
+<p>
+  In caching-only mode, the <code>named</code> server keeps no zone files.  Every
+  query relies on some other name server for an initial answer, but to
+  minimize bandwidth usage, previous queries are cached by the
+  caching-only server.  However, any novel query must be answered by a
+  query sent over the network.  Caching-only servers are most common on
+  local machines where client applications can often perform a lookup
+  without any network traffic.
+</p>
+<p>
+  In the <code>/etc/resolv.conf</code> configuration given as an example earlier,
+  <code>0.0.0.0</code> is a caching-only server,  <code>192.168.2.1</code> is a slave server,
+  and <code>151.203.0.84</code> is a master server.  You cannot tell this for
+  certain just based on the order or IP addresses used, but the use of
+  the local machine pseudo-IP address <code>0.0.0.0</code> is suggestive of it
+  running a caching-only server.
+</p>
+<h3>Configuring <code>named.conf</code>
+</h3>
+ <p>
+  There are some standard features that pretty much every
+  <code>/etc/bind/named.conf</code> file will have. An initial <code>options</code> directive
+  will configure some basic information. After that, several <code>zone</code>
+  directives will provide information on how to handle various zone
+  requests. Domains given in <code>zone</code> directives as IP address represent
+  intial portions of IP address ranges, but are indicated "backwards".
+  Symbolic names may define zones too, allowing further specified
+  subdomains.
+</p>
+<p>
+  A <code>named.conf</code> file (and other BIND configuration files) follow
+  somewhat C-like formatting conventions. Both C-style block comments
+  (<code>/<strong> comment </strong>/</code>) and C++-style line comments (<code>// comment</code>) are
+  allowed; as are shell-style line comments (<code># comment</code>). Directives
+  are followed by semi-colon devided statements surrounded by
+  curly-brackets. As a start, let us see some common options. My local
+  <code>/etc/bind/named.conf</code> begins with:
+</p>
+<div class="code-sample"><h4></h4><pre>include "/etc/bind/named.conf.options";
+
+</pre></div><p>
+  But you may equally use the <code>options</code> directive directly:
+</p>
+<div class="code-sample"><h4>Configuring 'named.conf' options</h4><pre>
+options {
+    directory "/var/bind";
+    forwarders { 192.168.2.1; 192.168.3.1};
+    // forward only;
+}
+
+</pre></div><p>
+  This setup lets files specified without a full path be located in a
+  relative <code>directory</code>; it also tells the local <code>named</code> to look first in
+  <code>192.168.2.1</code> and <code>192.168.3.1</code> for non-cached results; the <code>forward
+  only</code> directive (commented out here) says to only look in those
+  nameservers on the local LAN, rather than ask the root servers on the
+  internet.
+</p>
+<p>
+  A special <code>zone</code> directive is present in nearly all <code>named.conf</code>
+  files:
+</p>
+<div class="code-sample"><h4>Hint zone for root servers</h4><pre>
+zone "." {
+    type hint;
+    file "/etc/bind/db.root";
+};
+
+</pre></div><p>
+  The contents of <code>db.root</code> (sometimes called <code>named.ca</code> for "certifying
+  authority") is special.  It points to canonical root servers, the
+  domain registars themselves.  There values change rarely, but you
+  may obtain an official latest version from <code>ftp.rs.internic.net</code>.
+  This is not a file a regular administrator will modify.
+</p>
+<p>
+  Beyond the root zone hint, a <code>named.conf</code> file will contain some
+  master and/or slave zones.  For example, for the local loopback:
+</p>
+<div class="code-sample"><h4>Loopback zone configuration</h4><pre>
+zone "127.in-addr.arpa" {
+    type master;
+    file "/etc/bind/db.127";
+};
+
+</pre></div><p>
+  More interestingly, a <code>named</code> server might act as master for a domain
+  (and provide reverse lookup):
+</p>
+<div class="code-sample"><h4>External zone configuration</h4><pre>
+zone "example.com" {
+    type master;
+    file "example.com.hosts";  // file relative to /var/bind
+};
+// Reverse lookup for 64.41.* IP addresses (backward IP address)
+zone "41.64.in-addr.arpa" {
+    type master;
+    file "41.64.rev";
+};
+
+</pre></div><p>
+  For a slave configuration, you might instead use:
+</p>
+<div class="code-sample"><h4>External zone configuration (slave)</h4><pre>
+zone "example.com" {
+    type slave;
+    file "example.com.hosts";  // file relative to /var/bind
+    masters { 192.168.2.1; };
+};
+// Reverse lookup for 64.41.* IP addresses (backward IP address)
+zone "41.64.in-addr.arpa" {
+    type slave;
+    file "41.64.rev";
+    masters { 192.168.2.1; };
+};
+
+</pre></div><h3>Other configuration files
+</h3>
+ <p>
+   The <code>named.conf</code> file references a number of other configuration
+   files with the <code>file</code> directive. These names are dependent on your
+   specific setup, but in general will contain various resource records,
+   that are defined in RFC 1033 ("Domain Adminstrators Operations
+   Guide").  The standard resource records are:
+</p>
+<p>
+     SOA:   "Start of authority".  Paramaters affecting an entire zone.
+     NS:    "Nameserver". A domains name server.
+     A:     "Address". Hostname to IP address.
+     PTR:   "Pointer". IP address to hostname.
+     MX:    "Mail exchange". Where to deliver mail for a domain.
+     CNAME: "Canonical name". Hostname alias.
+     TXT:   "Text". Stores arbitrary values.
+</p>
+<p>
+  The format of a record is:
+</p>
+<blockquote>
+    &lt;name&gt; &lt;time-to-live&gt; IN &lt;type&gt; &lt;data&gt;
+</blockquote>
+<p>
+  The name and time-to-live are optional, and default to the last values
+  used.  The literal string "IN" means internet, and is always used in
+  practice.  The resource record files may also contain directives which
+  begin with a dollar sign.  The most common of these is probably <code>$TTL</code>
+  which sets a default time-to-live.  For example, a somewhat trivial
+  record file for the <code>127.*</code> localhost looks like:
+</p>
+<div class="code-sample"><h4></h4><pre># cat /etc/bind/db.127
+; BIND reverse data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     localhost. root.localhost. (
+                              1         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@       IN      NS      localhost.
+1.0.0   IN      PTR     localhost.
+
+</pre></div><p>
+  Other directives are <code>$ORIGIN</code> which set the domain name used to
+  complete any relative domain name; <code>$INCLUDE</code> reads an external file;
+  <code>$GENERATE</code> creates a series of resource records covering a range of
+  IP addresses.
+</p>
+<h3>Reverse zone files
+</h3>
+ <p>
+  Reverse zone files (often indicated with a <code>.rev</code> extension) contain
+  mappings from zone-specific IP address to symbolic names.  For
+  example, we might have a file <code>/var/bind/41.64.rev</code> that contains:
+</p>
+<div class="code-sample"><h4>Reverse zone file for 64.41.*</h4><pre>
+$TTL 86400
+; IP address to hostname
+@       IN      SOA     example.com.  mail.example.com. (
+                              2001061401   ; Serial
+                              21600        ; Refresh
+                              1800         ; Retry
+                              604800       ; Expire
+                              900 )        ; Negative cach TTL
+
+                IN      NS    ns1.example.com.
+                IN      NS    ns2.example.com.
+; Define names for 64.41.2.1, 64.41.2.2, etc.
+1.2             IN      PTR   foo.example.com.
+2.2             IN      PTR   bar.example.com.
+3.2             IN      PTR   baz.example.com.
+
+</pre></div><h3>Forward zone files
+</h3>
+ <p>
+  Forward zone files (often named as <code>domain.hosts</code>) contain the crucial
+  <code>A</code> records for mapping symbolic names to IP address.  For example, we
+  might have a file <code>/var/bind/example.com.hosts</code> that contains:
+</p>
+<div class="code-sample"><h4>Forward zone file for example.com</h4><pre>
+$TTL 86400
+; Hostname to IP address
+@       IN      SOA     example.com.  mail.example.com. (
+                              2001061401   ; Serial
+                              21600        ; Refresh
+                              1800         ; Retry
+                              604800       ; Expire
+                              900 )        ; Negative cach TTL
+
+                IN      NS    ns1.example.com.
+                IN      NS    ns2.example.com.
+localhost       IN      A     127.0.0.1
+foo             IN      A     64.41.2.1
+www             IN      CNAME foo.example.com
+bar             IN      A     64.41.2.2
+bar             IN      A     64.41.2.3
+
+</pre></div></body></html>

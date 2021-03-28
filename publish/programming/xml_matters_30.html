@@ -1,0 +1,339 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>XML MATTERS #30: The Text Encoding Initiative -- An XML Dialect for Archival and Complex Documents -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="xml_matters_29.html" TITLE="XML MATTERS #29">
+<link REL="next" HREF="xml_matters_31.html" TITLE="XML MATTERS #31">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Xml Matters #30: The Text Encoding Initiative</h1>
+<h2>An XML Dialect for Archival and Complex Documents</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Encoder, Gnosis Software, Inc.<br>
+ August 2003<br>
+ <br>
+</p>
+<blockquote>
+    Nowadays, we usually think of XML as a markup technique utilized by
+    programmers to encode computer-oriented data. Even DocBook and
+    similar document-oriented DTDs focus on preparation of technical
+    documentation. However, the real roots of XML are in the SGML
+    community, which was largely composed of publishers, archivist,
+    librarians and scholars. TEI is an XML Schema devoted to the markup
+    of literary and linguistic texts. TEI allows useful abstractions of
+    typographic features of source documents, but in a manner that
+    allows useful searching, indexing, comparison, and print publication
+    (features absent in mere photographic images of prior publications).
+</blockquote>
+<h3>Introduction</h3>
+ <p>
+  The Text Encoding Initiative (TEI) is a decade older than XML itself
+  is, and older than other common documentation encoding XML Schemas
+  like DocBook. Specifically, TEI was developed--in initial SGML
+  form--in 1987, almost an eternity in "internet time." Despite its age,
+  TEI works at a bit different level than any other markup format that I
+  am aware of, and remains the best solution to a certain class of
+  problems.
+</p>
+<p>
+  Basically, TEI aims to encode all the semantically significant aspects
+  of literary texts, both old ones that predate XML technology (or
+  indeed, computers in general), and newly created ones. Certainly the
+  words themselves are the most important semantic feature of prose or
+  poetical texts. But throughout the history of print--or of writing
+  generally--other typographic features have been added to texts to
+  encode subsidiary aspects of their meaning. Use of emphasis of various
+  sorts, indentation and margins, tables, pagination, line breaks (as in
+  verse), graphics and decorations, and other presentation elements have
+  enhanced, elaborated, or modified the meanings of the words in books,
+  essays, pamphlets, flyers, bills, poems, liturgicals, and all the
+  other forms literary works take.
+</p>
+<p>
+  Moreover, mere typographic features sometimes require an interpretive
+  effort to fully decipher; as a trivial example, many books use italics
+  to mark both foreign words and to mark the titles of other books. The
+  semantic aspect of italicization depends on the verbal context, but
+  clearly authors usually use such marks with distinct intentions. TEI
+  aims to allow the markup of texts in a way that distinguishes all such
+  meaningful aspects.
+</p>
+<p>
+  TEI is not really just an XML Schema, it is more like a whole family
+  of Schemas, related in their general goal, but varying in details of
+  the tags and attributes used. In part, these Schemas differ in being
+  supported by different DTDs (or RELAX NG Schemas). For example
+  TEI-Lite is a greatly simplified form of TEI that aims to support "90%
+  of the needs of 90% of the TEI user community." And there are other
+  specializations available also. But even apart from actual
+  specializations or subsets of the full TEI tag set, most users will
+  utilize only a few of the tags available in the TEI DTD they are
+  using. Different documents demand different markup, and different
+  projects allow different degrees of granularity.
+</p>
+<h3>An Example</h3>
+ <p>
+  Project Gutenberg (PG) is an effort to provide free-of-cost versions
+  of literary and historical works to a general audience. Thousands of
+  titles have been transcribed and verified by PG contributors. The
+  philsophy of Project Gutenberg is to project test as "plain vanilla
+  ASCII." For PG publications any kind of emphasis is represented by
+  capitalization, and paragraphs are divided with blank lines. While
+  readers can reconstruct many conventional features of PG texts, TEI
+  aims to mark these features explicitly, TEI is likely to be harder to
+  <em>read</em>, unless rendered in a prettified form through some
+  tranformation tool. But simultaneously, TEI is much easier to process
+  and analyze with automated tools.
+</p>
+<p>
+  For example, PG makes available Shakespeare's <cite>King Lear</cite>.  A short
+  portion of this delightful play is transcribed as:
+</p>
+<div class="code-sample"><h4>Project Gutenberg version of King Lear</h4><pre>
+Kent.
+Now by Apollo, king,
+Thou swear'st thy gods in vain.
+
+Lear.
+O vassal! miscreant!
+
+[Laying his hand on his sword.]
+
+Alb. and Corn.
+Dear sir, forbear!
+
+Kent.
+Do;
+Kill thy physician, and the fee bestow
+Upon the foul disease. Revoke thy gift,
+Or, whilst I can vent clamour from my throat,
+I'll tell thee thou dost evil.
+
+</pre></div><p>
+  A great deal of implicit semantic content could be added, using TEI,
+  for example:
+</p>
+<div class="code-sample"><h4>TEI version of King Lear</h4><pre>
+&lt;sp&gt;&lt;speaker&gt;Kent&lt;/speaker&gt;
+&lt;p&gt;Now by Apollo, king,&lt;lb/&gt;
+Thou swear'st thy gods in vain.&lt;lb/&gt;&lt;/p&gt;&lt;/sp&gt;
+
+&lt;sp&gt;&lt;speaker&gt;Lear&lt;/speaker&gt;
+&lt;p&gt;O vassal! miscreant!&lt;lb/&gt;&lt;/p&gt;&lt;/sp&gt;
+
+&lt;p&gt;&lt;stage&gt;Laying his hand on his sword.&lt;/stage&gt;&lt;p&gt;
+
+&lt;sp&gt;&lt;speaker&gt;Alb. and Corn.&lt;/speaker&gt;
+&lt;p&gt;Dear sir, forbear!&lt;lb/&gt;&lt;/p&gt;&lt;/sp&gt;
+
+&lt;sp&gt;&lt;speaker&gt;Kent.&lt;/speaker&gt;
+&lt;p&gt;Do;&lt;lb/&gt;
+Kill thy physician, and the fee bestow&lt;lb/&gt;
+Upon the foul disease. Revoke thy gift,&lt;lb/&gt;
+Or, whilst I can vent clamour from my throat,&lt;lb/&gt;
+I'll tell thee thou dost evil.&lt;lb/&gt;&lt;/p&gt;&lt;/sp&gt;
+
+</pre></div><p>
+  This markup is the same as suggested by David Seaman in the below
+  referenced article. However, this style is perhaps still not
+  sufficiently semantically rich. The tag <code>&lt;lb/&gt;</code> indicates a line
+  break, which is simply a typographic feature that might be rendered in
+  print.  This is similar to HTML's <code>&lt;br/&gt;</code> element, or DocBook's
+  <code>&lt;LiteralLayout&gt;</code>, or LaTeX's <code>\newline</code>.  But TEI can be more
+  specific if we wish to consider the verse structure of Shakespeare,
+  e.g.:
+</p>
+<div class="code-sample"><h4>TEI King Lear with explicit meter</h4><pre>
+&lt;sp&gt;&lt;speaker&gt;Kent.&lt;/speaker&gt;&lt;lg&gt;
+&lt;l part="Y"&gt;Do;&lt;/l&gt;
+&lt;l part="N"&gt;Kill thy physician, and the fee bestow&lt;/l&gt;
+&lt;l part="N"&gt;Upon the foul disease. Revoke thy gift,&lt;/l&gt;
+&lt;l part="N"&gt;Or, whilst I can vent clamour from my throat,&lt;/l&gt;
+&lt;l part="N"&gt;I'll tell thee thou dost evil.&lt;/l&gt;&lt;/lg&gt;&lt;/sp&gt;
+
+</pre></div><p>
+  Here we describe Kent's speech as a "line group" rather than simply
+  as a paragraph.  Moreover, we optionally qualify each line, the
+  first as "metrically incomplete," the rest as metrically complete.
+  Such qualification is optional, and other <code>part</code> attribute values
+  exist.
+</p>
+<p>
+  The degree of descriptive specificity lets scholars answer literary
+  questions by automated means. For example, "Which speakers in
+  Shakespeare plays tend to speak metrically incomplete lines (and how
+  does that influence the intended perception of those characters)?"
+  Working from a simple printed version, or from a markup format
+  either purely typographically oriented like LaTeX or XSL-FO, or one
+  at a coarse semantic level like DocBook or HTML (or "plain vanilla
+  ASCII"), does nothing specifically to aid such research. TEI brings
+  some automation to many areas of literary scholarship.
+</p>
+<p>
+  Moreover, from a document preparation perspective, we are free to
+  utilize rich semantic marks, or to ignore them, as the publication
+  requirements demand. As a somewhat simplistic example, think of
+  those editions of the New Testament that mark all the speech
+  directly attributed to Jesus in red ink. A TEI markup could simply
+  indicate speakers, then such typographic issues could be decided as
+  part of the print process. There is no need for something like an
+  explicit <code>color="red"</code> attribute in the markup. Other works could be
+  prepared using similar conventions for marking significant elements
+  of the text.
+</p>
+<h3>More Capabilities</h3>
+ <p>
+  Obviously, most writing is not meter and poetry. But at every level,
+  TEI tries to offer varying levels of typographic and semantic markup
+  options. Understand here that the emphasis in TEI's typographic markup
+  is not primarily focussed on how a text should be rendered in future
+  publication, but rather on how it <em>was</em> rendered in the past. For
+  example, philosophical scholars who study Kant's <cite>Critique of Pure
+  Reason</cite> refer frequently to the "A" and the "B" sections--that is,
+  Kant made a number of significant conceptual changes between his first
+  and second edition. This convention is important enough that most
+  editions of the Critique contain marginal notes indicating A and B
+  page ranges. The marginal notes refer to where given paragraphs
+  occurred in the original (German) revisions; generally, the modern
+  editions--especially translated ones--have quite different pagination
+  than these first editions. TEI is probably the only markup convention
+  in widespread use that suffices to properly annotate the Critique.
+</p>
+<p>
+  At an inline markup level, TEI similarly allows for both typographic
+  and semantic markup elements.  For simple typographic notations, the
+  tag <code>&lt;hi&gt;</code> can be used with the optional "rend" attribute.  For
+  example, <code>&lt;hi rend="italics"&gt;</code> indicates that a given word or phrase
+  was or should be rendered in italics.  But if it can be determined
+  <em>why</em> a phrase was italicized (it is both unambiguous, and sufficient
+  effort is available to analyze the text), you might choose to use a
+  tag such as <code>&lt;title&gt;</code>, <code>&lt;foreign&gt;</code> or <code>&lt;emph&gt;</code> which more specifically
+  describe the author and publishers reason for italicizing a phrase.
+  Moreover, so marked, you might decide to, e.g., underline rather than
+  italicize titles in a later edition.
+</p>
+<p>
+  The examples I have given only touch on the the markup capabilities in
+  TEI.  There is probably more available in TEI than any one person can
+  remember all at once.  Fortunately, as I mentioned, TEI is generally
+  designed to be usefully subsetted for specific tasks.  For a certain
+  goal or project, the best strategy is to decide in advance which few
+  TEI tags you want to use.  Developers, writers, or archivists can
+  learn such a small subset with only a reasonable effort.
+</p>
+<h3>Tools</h3>
+ <p>
+  In a general sense, any tool that can work with XML can work with TEI.
+  DTDs for several TEI variations are available, as are XSLT stylesheets
+  of various sorts.  Naturally, customizations for working with TEI in
+  emacs, Framemaker, and MS-Word can be found at the TEI website.  An
+  XMetal customization is also downloadable.
+</p>
+<p>
+  An interesting online tool provided by the initiative lets you
+  customize an XSLT stylesheet to produce just the HTML output you
+  desire. A web form lets you select a variety of options, then returns
+  a stylesheet refelecting your customizations.
+</p>
+<p>
+  A number of scripts and tools are available for conversion of TEI
+  formatted documents into ones closer to final print output.  In the
+  main, these target either LaTeX or XSL-FO as an intermediate format.
+  These are the usual command-line tool chains that text processing
+  programmers are accustomed to.
+</p>
+<p>
+  One tool I have grown quite fond of is the Java-based XML editors,
+  oXygen.  I have reviewed this product in the past, and since then it
+  has continued to get better.  In addition to being one of the first
+  XML editors to incorporate RELAX NG support, the newest version of
+  oXygen now includes a nice set of TEI templates--just select one, and
+  oXygen creates a document skeleton (and assists you in validation and
+  tag entry as you go along).  But most impressive of all, the XSL-FO
+  stylesheets that also come bundled "just work", I was able to create a
+  couple nice looking PDFs out of my TEI tests without spending hours
+  configuring tool chains and reading obscure HOWTOs.
+</p>
+<h3>Resources</h3>
+ <p>
+  The home page for the Text Encoding Initiative is:
+</p>
+<blockquote>
+   <a href="http://www.tei-c.org/">http://www.tei-c.org/</a>
+</blockquote>
+<p>
+  Within the TEI website, you'll find a number of resources.  And
+  interesting look at the bare bones subset of elements is:
+</p>
+<blockquote>
+   <a href="http://www.tei-c.org/Vault/Bare/index.html">http://www.tei-c.org/Vault/Bare/index.html</a>
+</blockquote>
+<p>
+  A step less simplified than bare bones TEI is TEI Lite.  It has a
+  tutorial at:
+</p>
+<blockquote>
+   <a href="http://www.tei-c.org/Lite/index.html">http://www.tei-c.org/Lite/index.html</a>
+</blockquote>
+<p>
+  The extremely admirable Project Gutenberg has brought literary history
+  to readers, free of charge and in electronic form, since 1971.  A
+  large collection of public domain literary works are available there,
+  encoded as simple ASCII "etexts."
+</p>
+<blockquote>
+   <a href="http://gutenberg.net/">http://gutenberg.net/</a>
+</blockquote>
+<p>
+  The copy of Shakespeare's <cite>King Lear</cite> I use as an illustration was
+  found at:
+</p>
+<blockquote>
+   <a href="http://www.ibiblio.org/gutenberg/etext98/2ws3310.txt">http://www.ibiblio.org/gutenberg/etext98/2ws3310.txt</a>
+</blockquote>
+<p>
+  For marking up <cite>King Lear</cite> in a TEI style, I found David Seaman's
+  discussion of this same example helpful:
+</p>
+<blockquote>
+   <a href="http://etext.lib.virginia.edu/tei/Lear.html">http://etext.lib.virginia.edu/tei/Lear.html</a>
+</blockquote>
+<p>
+  The Text Encoding Initiative's guide to compatible software can be
+  found at:
+</p>
+<blockquote>
+   <a href="http://www.tei-c.org/Software/index.html">http://www.tei-c.org/Software/index.html</a>
+</blockquote>
+<p>
+  The online "XSL TEI HTML stylesheet parameterization" tool is a nice
+  way to develop custom HTML outputs:
+</p>
+<blockquote>
+   <a href="http://www.tei-c.org/tei-bin/stylebear">http://www.tei-c.org/tei-bin/stylebear</a>
+</blockquote>
+<p>
+  Check out the oXygen XML editor at:
+</p>
+<blockquote>
+   <a href="http://www.oxygenxml.com/index.html">http://www.oxygenxml.com/index.html</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz once led the desperate life of scholarship. David may be
+  reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a> Suggestions and recommendations on this,
+  past, or future, columns are welcomed. Check out David's new book
+  <cite>Text Processing in Python</cite>.
+</p>
+</body></html>

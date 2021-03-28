@@ -1,0 +1,276 @@
+<HTML>
+<HEAD><TITLE>Library - CLASS Persistent (ABSTRACT) </TITLE>
+<STYLE type="text/css">
+EM { font-weight: normal; font-style: italic; color: #000066; }
+B { color: #660000; }
+H1 { font-size: large; font-weight: bold; background-color: #DDEEFF; }
+H2 { font-size: medium; font-weight: bold; }
+P.indent { margin-left: 5%; }
+P.code { margin-left: 5%; color: #006600; font-weight: bold; font-family: MONOSPACE; font-size: small; }
+P.synopsis { margin-left: 5%; }
+DL { margin-left: 5%; }
+UL { margin-left: 3%; margin-right: 8%; text-indent: -5%; }
+P.syntax { margin-left: 15%; text-indent: -10%; margin-right: 5%; }
+</STYLE></HEAD>
+
+<BODY>
+
+<H1>ABSTRACT CLASS Persistent</H1>
+
+   <P class="synopsis">
+   Framework for child class serialization, storage and versioning
+
+<!----------------------------------------------------------------><HR>
+
+<H2>Sub classes</H2>
+
+   <P class="indent">
+   <A HREF="Configuration.html">Configuration</A>
+
+<H2>Return</H2>
+
+   <P class="indent">
+   The function Persistent() returns the class object of the
+   Persistent class.
+
+<H2>Description</H2>
+
+   <P class="indent">
+   Each instance of a child of the Persistent class contains a member
+   :version that is used to indicate the currentness of the (possibly
+   persistent) instance.  The methods :uptoDate(), :verUpdate() and
+   :antiquated() utilize the :version instance data member for
+   comparison with the class :C_version data member
+
+   <P class="indent">
+   The Persistent-child instance member :savedCfg is always initialized
+   as false; by definition, at time of creation an instance has not been
+   read from persistent storage.  The only action that can change the
+   value of :savedCfg is reading back a serialized instance with the
+   :fromDisk() method.  The :toDisk() does not modify the value of
+   :savedCfg (however, an instance serialized by :toDisk() will not
+   normally become a runtime instance except when instantiated with
+   :fromDisk()).
+
+   <P class="indent">
+   The Persistent class supports the framework for introspection via the
+   standard data members :_data and :_methods.  However, since
+   Persistent cannot itself be instantiated, it cannot expose instance
+   introspection.
+
+<H2>Class Data</H2>
+
+   <DL>
+   <DT><b>:C_data</b> <em>[EXPORTED; Array (member data list)]</em>
+   <DD>Introspection data for curent child class of Persistent class in
+       the library. This data might differ from the introspection data
+       of a persistent (serialized) Persistent instance.
+
+   <DT><b>:C_methods</b> <em>[EXPORTED; Array (member methods list)]</em>
+   <DD>Introspection data for curent child class of Persistent class in
+       the library. This data might differ from the introspection data
+       of a persistent (serialized) Persistent instance.
+
+   <DT><b>:C_version</b> <em>[EXPORTED READONLY; Numeric (version number)]</em>
+   <DD>Version number of current child class of Persistent class in the
+       library This version number might differ from the introspection
+       data of a persistent (serialized) Persistent instance.
+   </DL>
+
+<H2>Class Methods</H2>
+
+   <DL>
+   <DT><b>:exposeSelf()</b> <em>[DEFERRED]</em>
+   <DD>When implemented in a child class, :exposeSelf() is responsible
+       for setting the child class' introspection and version data.
+       All of the exposable data and method members <u>of the child</u>
+       should be listed in :C_data and :C_methods, respectively.
+       However, the exposed members declared in Class Persistent
+       itself, will be added to the introspection data by :exposeParent().
+
+   <DT><b>:exposeParent()</b>
+   <DD>Add the exposable members of Persistent to child class'
+       introspection data members :C_data and :C_methods.  At present,
+       only the data members :version and :savedCfg are exposed; only
+       the DEFERRED Class Persistent methods are exposed, since all of
+       those implemented within Persistent are shallowly called by the
+       child in its own method implementations. </DL>
+
+   <P class="indent">
+   Trying to declare the method :initClass() as DEFERRED runs into some
+   problems in Xbase++ viz our introspection implementation.
+   Therefore, :initClass() is simply not declared in Persistent.
+   Nonetheless, :initClass() should effectively be considered a DEFERRED
+   method, and a child is responsible for defining an :initClass().
+   In most cases, this declaration can consist of exactly the following:
+
+   <P class="code">
+   INLINE CLASS METHOD initClass
+   <br>&nbsp; ::exposeSelf()
+   <br>&nbsp; ::exposeParent()
+   <br>RETURN self
+
+<H2>Life Cycle</H2>
+
+   <P class="indent">
+   Since Persistent is an abstact class, remarks about the specific
+   implementation life cycle of a child class are subject to override.
+   However, in a "normal" case, the life cycle of a child class will
+   be as described.
+
+   <P class="indent">
+   An instance of a child class of Persistent normally comes into
+   existence immediately upon its assignment with the ChildClass():new()
+   method.  No seperate :create() method is required to request system
+   resources.
+
+   <P class="indent">
+   A Persistent-child instance is destroyed when its variable falls out
+   of its declaration scope.  In principle, the variable containing a
+   Persistent instance can be declared LOCAL to a function, and the exit
+   condition of the controlling function will preform all necessary
+   destruction of the instance.
+
+<H2>Instance Data</H2>
+
+   <DL>
+   <DT><b>:_data</b> <em>[EXPORTED; Array (member data list)]</em>
+   <DD>Introspection data to expose member data.
+
+   <DT><b>:_methods</b> <em>[EXPORTED; Array (member methods list)]</em>
+   <DD>Introspection data to expose member methods.
+
+   <DT><b>:savedCfg</b> <em>[EXPORTED; Boolean (.F.)]</em>
+   <DD>Was this instance read from a diskfile?
+
+   <DT><b>:version</b> <em>[EXPORTED; Numeric (Persistent():C_version)]</em>
+   <DD>Version number of this instance (used for comparison with Class
+       data :C_version in determining whether a serialized instance
+       contains out-of-date Persistent fields.  Version number encodes
+       the date of last change to the Class definition, i.e. 19990923.
+   </DL>
+
+<H2>Instance Methods</H2>
+
+   <P class="indent">
+   Instance methods of Persistent behave in a somewhat unusual manner
+   because Persistent is an abstract class, and because of our standard
+   for implementation of introspection.
+
+   <P class="indent">
+   The action performed by each Persistent instance method is performed
+   not upon "self", as is done in instance methods of most classes, but
+   upon a passed in special parameter "child".  The "child" parameter
+   is always the "self" object of the child class instance.  Persistent
+   methods come in pairs, one with an initial underscore, its match
+   beginning with a letter, and declared as DEFERRED.  In the simplest
+   case, a child class will implement one of these DEFERRED methods in
+   the following manner:
+
+   <P class="code">
+   INLINE METHOD foo([...]) ; RETURN ::Persistent:_foo(self, [...])
+
+   <P class="indent">
+   The implementation of the method named with an initial underscore
+   will resemble:
+
+   <P class="code">
+   METHOD Persistent:_foo(child, [...])
+   <br>&nbsp; [...]
+   <br>&nbsp; BarFunc(child)
+   <br>&nbsp; [...]
+   <br>RETURN child
+
+   <P class="indent">
+   Notice that if an instance object is returned, this object will
+   normally be the object "child" rather than the object "self".
+
+   <DL>
+   <DT><b>:init()</b> <em>[DEFERRED]</em><br>
+       <b>:_init(&lt;child&gt;)</b>
+   <DD>Set introspection data members and default values for exposed
+       data members (see child Class method :new() for a discussion of
+       the special initializiation procedure of this class)
+
+      <P>
+      The :_init() method of the Persistent class, and thereby
+      (normally) indirectly the :new() method of child classes,
+      initializes introspection data in a somewhat unusual manner,
+      compared to other classes.  Since Persistent-child instances are
+      designed to be serialized and persistently stored, it is necessary
+      to store introspection data in Class data members, as well as in
+      the instance itself.  Doing this allows comparison of a serialized
+      instance with current Class data.  Therefore, ::_data and
+      ::_methods are initialized as Persistent():C_data and
+      Persistent():C_methods, respectively.  Also ::version is
+      initialized with its corresponding Class data,
+      Persistent():C_version.
+
+
+   <DT><b>:toDisk()</b> <em>[DEFERRED]</em><br>
+       <b>:_toDisk(&lt;child&gt;, &lt;cFile&gt;)</b>
+   <DD>Writes a serialized copy of the instance to a diskfile.
+       Parameter &lt;cFile&gt; is required by :_toDisk(), but the
+       child class may choose to implement a default value.
+
+   <DT><b>:fromDisk()</b> <em>[DEFERRED]</em><br>
+       <b>:_fromDisk(&lt;child&gt;, &lt;cFile&gt;)</b>
+   <DD>Reads a serialized copy of a Persistent instance from diskfile.
+       (if possible).  If no file is specified, or if the file specified
+       does not exist, ::savedCfg is simply set to .F., and a reference
+       to the original instance is returned.  Otherwise, the serialized
+       data is read in, ::savedCfg is set to .T., and the read instance
+       is returned.
+
+       <P>
+       Since XBase++ does not allow redefinition of self, the methods
+       :fromDisk() and :verUpdate() return the modified Persistent-child
+       instance, but do not update the existing instance in-place.
+
+   <DT><b>:antiquated()</b> <em>[DEFERRED]</em><br>
+       <b>:_antiquated(&lt;child&gt;)</b>
+   <DD>Return a character string report of the differences (if any)
+       between the calling instance's and the Class' introspection data
+       and version number.
+
+   <DT><b>:verUpdate()</b> <em>[DEFERRED]</em><br>
+       <b>:_verUpdate(&lt;child&gt;)</b>
+   <DD>Returns an updated copy of an instance.  Any data members of the
+       current Class' instrospection data that are also present in the
+       instance are copied into a new instance of the Persistent-child
+       class. All other data members, and all methods, are defined
+       according to the definition and initialization values of the most
+       current version.
+
+       <P>
+       Since XBase++ does not allow redefinition of self, the methods
+       :fromDisk() and :verUpdate() return the modified Persistent-child
+       instance, but do not update the existing instance in-place.
+
+   <DT><b>:uptoDate()</b> <em>[DEFERRED]</em><br>
+       <b>:_uptoDate(&lt;child&gt;)</b>
+   <DD>Returns a boolean value indicating whether the calling instance
+       is current with the Class definition in the Library.
+
+   </DL>
+
+<H2>Examples</H2>
+
+
+<H2>Files</H2>
+
+   <P class="indent">
+   Source file is <tt>Persistent.prg</tt>
+
+<!----------------------------------------------------------------><HR>
+
+<H2>See Also:</H2>
+
+
+<!----------------------------------------------------------------><HR>
+
+
+</BODY>
+</HTML>
+
+

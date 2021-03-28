@@ -1,0 +1,10 @@
+#!/bin/bash
+for f in `ls programming/`; do
+    files=$(grep -l $f *.html) 
+    if [[ "$files" == "" ]]; then
+        files=$(grep -lr $f programming/*.html)
+        if [[ "$files" == "" ]]; then
+            echo "Orphaned: $f"
+        fi
+    fi
+done

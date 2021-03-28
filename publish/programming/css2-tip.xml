@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="dW.css" type="text/css"?>
+<!DOCTYPE article SYSTEM "article.dtd">
+<article ratings="auto" toc="auto">
+
+  <seriestitle>XML Tip</seriestitle>
+  <papertitle>Using CSS2 to display XML documents</papertitle>
+  <subtitle>A less "expensive" alternative to XSLT</subtitle>
+
+  <author company="Gnosis Software, Inc."
+          jobtitle="Examiner"
+          name="David Mertz, Ph.D."
+          email="mertz@gnosis.cx">
+    <img src="http://gnosis.cx/cgi-bin/img_dqm.cgi"/>
+    David Mertz uses a wholly unstructured brain to write about
+    structured document formats.  David may be reached at
+    mertz@gnosis.cx; his life pored over at <a
+    href="http://gnosis.cx/publish/">http://gnosis.cx/publish/</a>.
+  </author>
+
+  <date month="November" year="2001"/>
+  <zone name="xml"/>
+  <meta name="KEYWORDS" content="Mertz CSS CSS2 XML Mozilla Netscape IE"/>
+
+  <abstract miniabstract="Use CSS2 to view XML documents">
+    Outside of custom editors and viewers, reading XML data is
+    comparatively difficult.  The documents are all text, but the visual
+    arrangement of parts does not necessarily correspond well to the
+    conceptual connections between the parts.  And finding the content
+    amidst the tags makes skimming difficult.  One approach to making
+    XML readable is transforming it to other formats (like HTML) using
+    XSLT, or other techniques.  A more lightweight approach is to attach
+    a cascading stylesheet (CSS2) to XML documents, and use a recent web
+    browser to view them (Mozilla is excellent, IE often adequate).
+  </abstract>
+
+  <heading refname="h1" type="major" toc="yes">Introduction</heading>
+
+  <p>
+    XML is rarely intended primarily as a format for humans to look
+    at--at least not directly.  Most typically, an XML source is
+    transformed into something else before it becomes ready for human
+    consumption.  For prose-oriented documents, the target is usually
+    either an HTML page, or a PDF file (via Formatting Object [FO]
+    tags), or perhaps an actual printed page.  XSLT is often used to
+    peform these transformations.  For data-oriented XML documents, the
+    target is usually the data format of a DBMS or an in-memory
+    representation by an application that reads XML files.
+  </p>
+  <p>
+    Readers of developerWorks, however, are generally developers.  Our
+    lot is to look at a lot of things that end-users can and should be
+    spared.  When something doesn't work in the behind-the-scenes trail
+    of format transformations, it is our job to eyeball the intermediate
+    formats--XML included.  During the development process, it is often
+    also our responsibility to develop sample or test XML documents to
+    simulate what might come out of or go into some stage in a
+    distributed application (before the real generator or consumer
+    exists).
+  </p>
+  <p>
+    Compared to some formats, XML is somewhat manageable in its raw
+    form.  Unlike binary formats, it is not out-of-the-question to open
+    an XML document in a text editor or text viewer.  But tags can be
+    hard to parse visually, especially if the XML producer does not
+    arrange vertical and horizontal whitespace in ways that aid humans.
+    If a big part of your job is reading raw XML documents, one of the
+    XML editors I reviewed previously (see Resources) is likely to prove
+    useful.  But for someone who only occassionally views XML source
+    files--or where these files need to be viewed by a number of
+    people--XML editors are often too expensive; not just in licensing
+    dollars, but in learning curves also.
+  </p>
+
+  <heading refname="h1" type="major" toc="yes">Use your webbrowser</heading>
+
+  <p>
+    Almost all developers have a wonderful XML viewer already
+    installed.  Well, at least a pretty good one.  Both Internet
+    Explorer and Mozilla/Netscape make an effort to render XML documents
+    along with HTML ones, at least in recent versions.  Other browsers
+    like Opera and Konquorer also implement CSS2--Opera 5+ does a
+    flawless job, Konquorer 2.2 a moderately good one.  In general
+    Mozilla or Netscape 6 do an excellent and accurate job of displaying
+    an XML document in the styles indicated in a CSS2 stylesheet.
+    Internet Explorer--at least as of version 6--does a fair job, but
+    seems to ignore the <code type="inline"><b class="blue">display:
+    inline</b></code> attribute.  This makes IE6 less suitable for
+    displaying prose-oriented XML documents (but it is still good for
+    data-oriented ones).  However, IE6 -does- have the advantage of
+    displaying XML documents that lack a CSS2 stylesheet in a
+    hierarchical tree, and allows folding subtrees.
+  </p>
+  <p>
+    I decided to write this Tip using only a text editor (plus Mozilla
+    0.9.5) as an exercise.  Normally I either use XMetal (with some
+    XMetal "rules" provided by my dW colleague Benoit Marchal) or write
+    the source in "smart ASCII" and transform it to XML using the
+    <code type="inline">txt2dw.py</code> tool I wrote about in another
+    Tip. The exercise helped me understand the ins-and-outs of the
+    webbrowser+CSS2 approach.
+  </p>
+
+  <heading refname="h1" type="major" toc="yes">Building a stylesheet</heading>
+
+  <p>
+    Here is how I approached things.  I wrote some words in the
+    appropriate XML dialect (using an earlier Tip as a template).  Then
+    I created an empty <code type="inline">dW.css</code> CSS2 file to
+    work with, and added the following line to my XML document:
+  </p>
+  <heading refname="code1" type="code" toc="no">
+    The stylesheet declaration
+  </heading>
+  <code type="section">
+&lt;?xml-stylesheet href="<b class="blue">dW.css</b>" type="text/css"?&gt;</code>
+
+  <p>
+    So far, Mozilla will not do anything to help see the structure of
+    the document.  What is needed next is to build up a CSS2 stylesheet
+    for prettifying the XML document.  An easy approach is to start
+    at the top of the XML document, and work our way down.  For example,
+    the first thing in a developerWorks <code
+    type="inline">article.dtd</code> document is a <code
+    type="inline">&lt;seriestitle&gt;</code>.  Let us make that look big
+    and bold, and center it, for emphasis.  Actually, even before that,
+    there are a few defaults that we know the whole document should have
+    (we can override them for individual contexts, as needed).  This is
+    the first few lines of my CSS2 file:
+  </p>
+
+  <heading refname="code1" type="code" toc="no">
+    Initial stylesheet contents
+  </heading>
+  <code type="section">
+<b class="green">$DOCUMENT</b> {
+  <b class="blue">font-family</b>: "Times New Roman";
+  <b class="blue">font-size</b>: 12pt;
+  <b class="blue">margin-top</b>: 5px;
+  <b class="blue">margin-left</b>: 10px;
+}
+<b class="green">*</b> {
+  <b class="blue">display</b>: block;
+  <b class="blue">background-color</b>: white;
+  <b class="blue">padding</b>: 2px;
+}
+<b class="green">seriestitle</b> {
+  <b class="blue">font-weight</b>: bold;
+  <b class="blue">font-size</b>: 18pt;
+  <b class="blue">text-align</b>: center;
+}</code>
+
+  <p>
+    From this point, it is straightforward to move on to the next
+    elements encountered (<code type="inline">&lt;papertitle&gt;</code>
+    in this case), and so on.  After a few additions of block-level
+    elements, I figured it would be worthwhile to make sure all the
+    inline elements appear that way.  For this, a glance through the DTD
+    helped remind me of the relevant elements.  So I included the
+    following few lines:
+  </p>
+
+  <heading refname="code1" type="code" toc="no">
+    Handling inline elements
+  </heading>
+  <code type="section">
+<b class="red">/* Inline Typographic Elements */</b>
+<b class="green">a, i, b, sub, sup, p&gt;code</b> {
+  <b class="blue">display</b>: inline;
+  <b class="blue">background-color</b>: inherit;
+}
+<b class="green">a</b>               { <b class="blue">color</b>: blue;
+                   <b class="blue">text-decoration</b>: underline; }
+<b class="green">i</b>               { <b class="blue">font-style</b>: italic; }
+<b class="green">b</b>               { <b class="blue">font-weight</b>: bold; }
+<b class="green">b[class="red"]</b>  { <b class="blue">color</b>: red; }
+<b class="green">b[class="blue"]</b> { <b class="blue">color</b>: blue; }
+<b class="green">b[class="green"]</b>{ <b class="blue">color</b>: green; }
+<b class="green">sub</b>             { <b class="blue">vertical-align</b>: sub }
+<b class="green">sup</b>             { <b class="blue">vertical-align</b>: super }
+<b class="green">sub,sup</b>         { <b class="blue">font-size</b>: small }
+</code>
+
+  <p>
+    Add a few more block-level elements, and one winds up with a very
+    nice presentation of an XML document.  Even better, the bit of work
+    I needed to do will be useful every time in the future I need to
+    look at a document in the same XML dialect.  And assuming readers
+    use an up-to-date webbrowser, they can view the self-same useful
+    appearance without needing to first transform the XML source to an
+    HTML or PDF format (as developerWorks does as part of its own
+    process).
+  </p>
+
+  <heading refname="" type="major" toc="yes">Conclusion</heading>
+
+  <p>
+    The procedure for developing a CSS2 stylesheet to match an XML
+    document dialect is straightforward.  You will find different
+    specific tags to worry about, of course.  And for more data-oriented
+    documents, you will almost surely want to use some <code
+    type="inline"><b class="blue">display: table</b></code> attributes
+    somewhere in the definition.  Doing a little work to set up a CSS2
+    stylesheet makes examining XML documents considerably easier.
+  </p>
+  <p>
+    Let me leave the reader with a picture of this document as I have
+    worked with it.  The relevant sources can be found in the Resource
+    links, but readers might have different browser versions and
+    platforms which produce somewhat different renderings (or if your
+    browser doesn't do something reasonable, upgrade):
+  </p>
+
+  <img alt="Mozilla in action with XML/CSS2"
+       src="http://gnosis.cx/publish/programming/css2-tip.png" />
+
+  <resourcelist>
+    <ul>
+      <li>
+        In <a
+        href="http://www-106.ibm.com/developerworks/library/x-matters6.html">
+        <i>XML Matters</i> #6</a> I reviewed a number of custom XML
+        editors (many supporting CSS2).
+      </li>
+      <li>
+        The resources that went into the production of the Tip in front
+        of you include <a
+        href="http://gnosis.cx/publish/programming/css2-tip.xml"> the
+        XML file</a> that underlies this Tip. Also noteworth is the <a
+        href="http://gnosis.cx/publish/programming/dW.css">CSS2
+        stylesheet</a> that I used (and modified) during the writing of
+        the Tip. Moreover, to conform with the necessarily XML dialect,
+        I kept the <a
+        href="http://gnosis.cx/publish/programming/article.dtd">
+        developerWorks DTD</a> open in a window while writing this Tip.
+      </li>
+      <li>
+        A wonderful online resource for looking up CSS properties is the
+        <a href="http://www.zvon.org/xxl/CSS2Tutorial/General/htmlIntro.html">
+        CSS2 Tutorial</a> by Miloslav Nic. Particularly valuable is the
+        Index of CSS properties.
+      </li>
+
+    </ul>
+  </resourcelist>
+
+</article>
+

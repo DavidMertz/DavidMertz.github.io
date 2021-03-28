@@ -1,0 +1,421 @@
+LINUX ZONE FEATURE: Hashcash and Email Filtering
+Arbitrary CPU Costs as a Mechanism of Access Control
+
+David Mertz, Ph.D.
+Price Fixer, Gnosis Software, Inc.
+September, 2004
+
+    Hashcash is a clever system to require a parameterizable amount of
+    work on the part of a requester, while staying "cheap" for an
+    evaluator to check. Hashcash builds on the widely available SHA-1
+    algorithm, and the standard can therefore be implemented with a
+    small number of lines of a scripting language like Python, or Bash.
+    The primary contemplated use for Hashcash is in spam prevention,
+    where spammers cannot "afford" the CPU cycles to generate millions
+    of Hashcash tokens, but ordinary email users are not appreciably
+    affected by sub-second token generation.
+
+THE BASICS
+------------------------------------------------------------------------
+
+  The main focus of the hashcash protocol, as indicated on its website,
+  is as a spam filtering protocol. However, to my mind, the technique
+  has wider applicability than just in email; in this article, I will
+  propose some other uses along with discussing hashcash's relevance to
+  email filtering. Along the way, I will also briefly discuss my own
+  Python implementation of hashcash--which appears to be the first
+  -correct- published Python version (and that is now included on the
+  hashcash.org site).
+
+  Before getting to any of these other topics, I need to explain what
+  hashcash -is-. The inspiration for hashcash is the idea that some
+  mathematical facts are difficult to discover, but simple to verify. A
+  well know example is factoring large numbers (especially ones with few
+  factors). It is cheap to multiply some numbers together to find their
+  product, but much more expensive to find those factors in the first
+  place.  RSA public-key cryptography is based on this property of
+  factorization.  Answering a factorization challenge is proof that the
+  respondent has done a quantifiable degree of work (or obtained the
+  factors surreptitiously from the person who generated the composite).
+
+  Factorization works well enough for interactive challenges. Say I have
+  an online resource that I want you to symbolically "pay" for.  I can
+  send you a message that says "I will let you have this resource once
+  you factor this number."  Dilettantes cannot have my resource, only
+  those who prove they have enough interest to use some CPU cycles in
+  answering a challenge.
+
+Non-interactive challenges
+
+  Some resources, however, cannot be interactively negotiated very
+  easily. In particular, one resource I rather value is my email inbox.
+  Uninvited messages take a bit of my disk space and bandwidth, but
+  worst of all, they demand my mental attention. I do not mind strangers
+  writing me, but I would like them to be a little bit serious in their
+  desire. That is, at minimum, I would like them not to be spammers who
+  mail an identical message to me and ten million other people in the
+  hope that a couple of us will buy some product or fall for some scam.
+  To achieve non-interactive "payment," hashcash lets me issue a
+  -standing challenge- to anyone who wants to email me: include a valid
+  hashcash stamp in the headers of your message (specifically, one that
+  includes my recipient address within the stamp).
+
+  The way hashcash poses a challenge is by asking "minters" to produce
+  strings (stamps) that, when hashed with SHA-1, have a number of
+  leading zeros in their hash.  The number of leading zeros discovered
+  is the "bit value" of a particular stamp.  Given the uniformity and
+  cryptographic strength of SHA-1, the only known way to discover a
+  hashcash stamp of a given bit value -b- is by running SHA-1, on
+  average, 2^b times.  Verifying a stamp, however, requires just one
+  SHA-1 computation.  For use in email, a 20-bit value is currently the
+  recommended price: senders need to perform about a million trials to
+  find a valid stamp, which takes less than a second on recent CPUs and
+  compiled applications (and still only a few seconds on relatively old
+  machines).
+
+Sidebar: How strong is SHA?
+
+  In what may prove a significant event in the cryptographic world, a
+  collision for SHA-0 was discovered. The attack used, required on the
+  order of 2^51 steps, which is substantially shy of the 2^80 or so
+  steps (and storage space) we would expect for a brute-force
+  construction of a collision (under the "birthday paradox").
+
+    http://www.mail-archive.com/cryptography@metzdowd.com/msg02554.html
+
+  Two things to keep in mind before worrying too much about this attack
+  in relation to hashcash is that the approach attacks SHA-0, not (yet)
+  SHA-1. The second relative assurance is that 2^51 steps is still over
+  9 CPU years on today's fastest CPUs. Even if a similar approach would
+  apply to SHA-1, it is unlikely construction of false collisions would
+  be cheaper than constructing even a very large number of 20-bit
+  stamps, or even of 40-bit hashcash stamps.
+
+The hashcash (version 1) format
+
+  Just requiring a special SHA-1 hash value is not enough.  We also want
+  the stamp to be specific to the resource requested: e.g. a stamp for
+  'mertz@gnosis.cx' should have a different application than one for
+  'someuser@yahoo.com'.  If not, a spammer could mint just one high bit
+  value stamp, and use it everywhere.  But moreover, I also do not want
+  a stamp, once minted, to be shared among every spammer who wants to
+  send me mail.  Therefore, hashcash takes two extra steps--or at least
+  recommends them as part of the protocol  First, stamps carry a date; a
+  user may decide to consider stamps older than a certain age invalid.
+  Second, a hashcash client may--and probably should--implement a
+  -double spend- database.  That is, each stamp may be used exactly
+  once, and if it is received a second time, it is considered invalid
+  (much as with a postage stamp after it is marked as processed).  In
+  full detail, a hashcash (version 1) stampl looks like:
+
+      #--------------- Format of hashcash v.1 stamp -------------------#
+      1:bits:date:resource:ext:salt:suffix
+
+  That is, the stamp consists of seven fields.
+
+    1. The version number (version zero is simpler, but has some
+       limitations).
+
+    2. The claimed bit value. If the stamp does not really hash with the
+       purported leading zero bits, it is not valid.
+
+    3. The date (and time) a stamp was minted.  Both stamps in the
+       future and those too far in the past may be judged invalid.
+
+    4. The resource a stamp is minted for.  Perhaps an email address;
+       but also possibly a URI or other named resource.
+
+    5. Extensions that a specialized application may want.  Any
+       additional data could be placed in here; but in usage so far,
+       this field is generally left empty.
+
+    6. A random salt that distinguished this stamp from any other one
+       minted for the same resource and date.  For example, two
+       different people may perfectly reasonably want to send email to
+       my same address on the same day.  They should be disqualified by
+       my use of a double spend database.  But if each of them uses a
+       random salt, their complete stamps will differ.
+
+    7. The suffix is the real work of the algorithm.  Given the first
+       six fields, a minter must try many sequential suffix values to
+       produce a stamp that hashes with the desired number of leading
+       zeros.
+
+HOW HASHCASH WORKS IN EMAIL (OR INTENDS TO)
+------------------------------------------------------------------------
+
+  In an ideal world, senders would all include hashcash tokens in their
+  messages, and recipients would all check their validity upon receipt.
+  But in real life, hashcash is not nearly so widely used.  Nonetheless,
+  starting to use hashcash (as either sender or recipient) will not
+  -break- anything in existing email tools.  In other words, you have
+  nothing to lose by using hashcash in email.
+
+  To stamp an outgoing message, you simply add headers to your email:
+  one 'X-Hashcash' header for each 'To:' or 'Cc:' reipient of the email.
+  For example, someone wishing to send me a message, might include a
+  header like:
+
+      #------------ Sample rfc2922 header for hashcash stamp ----------#
+      X-Hashcash: 1:20:040927:mertz@gnosis.cx::odVZhQMP:7ca28
+
+  Obviously, MUAs (mail user agents), filters, or MTAs (mail transport
+  agents) should do this work rather than requiring users to do it
+  manually.  The latter, however, is not all that difficult to do
+  experimentally.  Checking a stamp starts with just looking at its
+  hash, e.g.:
+
+      #------------ Checking a hashcash email header ------------------#
+      $ echo -n 1:20:040927:mertz@gnosis.cx::odVZhQMP:7ca28 | sha
+      00000b50b85a61e7ba8ac4d5fed317c737706ae5
+
+  See the leading zeros (each hex digit is four bits). Of course, it is
+  also worth checking that the resource is one you recognize (i.e. one
+  of your recipient addresses), that the stamp was not spent before, and
+  that the date is current. Also, a valid stamp should have as many
+  leading zeros as it purports to have (but you may decide to impose
+  your own minimal price to let mail through: 20 bits is semi-standard,
+  though it could eventually change with Moore's Law).
+
+Why this works
+
+  It only takes a couple seconds to mint a 20-bit stamp. Not a big price
+  when you send a few dozen emails in a day. But a couple extra CPU
+  seconds per message is prohibitive to spammers who want to send
+  millions of messages. There are only 86,400 seconds in a day.  Even if
+  spammers utilize zombie machines they have infected with trojans,
+  requiring individualized hashcash stamps at least slows down the
+  traffic out of those zombies.  Checking a stamp, of course, takes a
+  tiny fraction of a second.
+
+  On the other hand, adding hashcash minting and checking to your own
+  MUA--unlike some other anti-spam measures--has no negative effect on
+  anyone else. For recipients who do not use the protocol, it is just an
+  extra header they can easily ignore.  For senders who do not add
+  hashcash stamps, recipients who check for 'X-Hashcash:' just do not
+  have anything to check.  If senders do not add stamps, you are no
+  worse off for checking, you just are not better off either.
+
+  A good MUA or spam filtering system might whitelist emails with valid
+  hashcash stamps. Or even more subtly, SpamAssassin gives more '+ve'
+  points for more valid hashcash bits. To my mind, a hashcash based
+  approach to whitelisting is an improvement on the interactive
+  challenge systems like TMDA: challenge messages do not get lost on
+  return, and senders do not forget to respond to challenges. The
+  challenge response is right in the original message (as a hashcash
+  stamp).
+
+OTHER USES FOR HASHCASH
+------------------------------------------------------------------------
+
+  Hashcash is most useful for non-interactive challenges. But there is
+  no reason why it cannot be used in an interactive context as well. As
+  more tools add support for hashcash--especially multi-purpose
+  applications like the Mozilla suite--it become simpler to use hashcash
+  neutrally across both interactive and non-interactive situations. For
+  example, if Thunderbird mailer gains API calls for hashcash
+  computations, it should be straightforward to let its sibling Firefox
+  web browser respond to interactive challenges using the same API to
+  produce hashcash stamps.
+
+  One non-email context where hashcash suggest itself as a good solution
+  is for the rather spam-like defacement that Wikis sometimes suffer.
+  Since Wikis are generally open for anyone to edit, a pox on the Wiki
+  community is Wiki-crawling vandalization programs that add irrelevant
+  commercial links to Wiki sites. A Wiki I helped maintain recently
+  suffered repeated vandalism--which forced us to the somewhat
+  undesirable response of requiring user accounts for all posters. These
+  accounts are given out on a non-descriminatory basis, based an an
+  automatic emailed challenge (i.e. send back a message to prove you
+  received a random key). But requiring accounts at all goes against the
+  spirit of Wikis.
+
+  Adding a hashcash challenge does not prevent automated defacement of
+  Wiki sites. But at least it can make a vandalbot crawl much more
+  slowly. If vandalizing one site takes a number of seconds rather than
+  a small fraction of a second, it becomes less appealing to crawl Wikis
+  adding junk. In fact, for a use like this, my feeling is requiring
+  more than 20 bits is a good idea. Maybe 24 or 28 bits is a reasonable
+  burden (which might still be bypassed for logged-in Wiki users).
+
+  You might think that a simple time delay in accepting a Wiki edit
+  would have a similar effect, but there is a flaw there. A vandalbot
+  can parallelize its defacements--if each site adds a five second
+  delay, for example, the vandalbot can simply spend that five seconds
+  initiating changes to other Wikis on its hit list. By requiring active
+  CPU utilization--as with hashcash--vandalization can no longer run in
+  parallel.
+
+  A Wiki challenge can either be interactive or non-interactive.  It is
+  possible for a site to direct a user to a challenge screen before
+  directing them to the actual edit screen.  A random resource could be
+  issued as the challenge on this guardian screen.  But a better
+  approach is to lose the requirement for interactivity.  For example,
+  in an existing Wiki system, you might edit a resource using a URL
+  like:
+
+      #------------------- Wiki Editing URL ---------------------------#
+      http://somewhere.net/wiki?action=edit&id=SomeTopic
+
+  Under a hypothetical hashcash protected Wiki, you might need to use a
+  different URL, such as:
+
+      #------------------- Stamped Wiki URL ---------------------------#
+      http://somewhere.net/wiki?stamp=1:24:040928:SomeTopic:edit:KG4E9PaK2VLjKM2Z:0000Zbrc
+
+  The Wiki server can check the stamp before it allows edits. But
+  editing does not require creating an account or disclosing any
+  personal information. Double spending and (probably short duration)
+  expiration checks further assure sincere interest in the edit. It was
+  not difficult for me to generate the above URL using the command:
+
+      #------------------- Generating Stamped URL ---------------------#
+      hashcash -mCb 24 -x edit SomeTopic
+
+  Ideally, however, a web browser might choose to generate likely stamps
+  in the background to assure fewer delays.  For example, the above URL
+  might be created in a cache while I am reading the resource:
+
+      #------------------- A Typical Wiki Page URL --------------------#
+      http://somewhere.net/wiki?SomeTopic
+
+  Perhaps some other edits stamps could also be cached for paged linked
+  to by the current Wiki page.
+
+Proving CPU Resources
+
+  An interactive use for hashcash might be in distributed processing
+  tasks.  Projects like the Great Internet Mersenne Prime Search (GIMPS),
+  SETI@home, or protein folding, cryptographic puzzles, and other tasks,
+  are sometimes farmed out to a large number of volunteered machines.
+  Each volunteer just downloads some code, and runs their part of a
+  large task-sending back intermediate computations to a central server.
+  These jobs are a nice use for spare CPU cylces.
+
+  All the distributed tasks I know of pretty much let anyone join.  But
+  it is not hard to imagine a task whose coordination requirement was
+  such that a node failing to perform its task in an anticipated time
+  frame causes more harm to the overall computation than the work the
+  slacking node contributes.  In such a case, you might want to require
+  that each participating node have a minimal CPU speed.  While checking
+  the speed using the exact type of computation at issue is more
+  precise, hashcash still provides a relatively general CPU benchmark.
+  SHA-1 is a fairly "typical" mathematical computation.  And if
+  candidate nodes already -have- hashcash installed (but not some custom
+  software tool), answering a hashcash challenge can act as a sort of
+  "you must be this tall to enter this ride" style check.
+
+  The trick in checking CPU capability is to demand a high bit value
+  with a short expiration. Only a -fast enough- CPU can answer the
+  challenge. To make this work, a resource name has to be provided
+  semi-interactively--otherwise a candidate could just post-date their
+  datestamp to give a false impression of rapid creation. For example, a
+  fast Pentium-III or slow G4 can mint a 20-bit stamp in less than a
+  second, but a Pentium-II or G3 cannot.  We can issue 32-bit challenges
+  that must be answered within an hour to candidate machines as a
+  screening test.  I requester might send an email reading, "Send me a
+  challenge"; the coordinating server responds with, "The time is
+  040927124732; your challenge resource is a37tQk".  If the server gets
+  a good hash by 1:47 p.m. of that day, the requester is qualified.
+
+  Clearly, the protocol I suggest does not assure the work actually gets
+  done on each node.  Even fast machines can be unplugged.  And users
+  can change their mind about running the distributed software at all.
+  But at least a plausible qualification can be demonstrated.
+
+GENERALIZED HASHCASH AND THE AUTHORS SMALL CONTRIBUTION
+------------------------------------------------------------------------
+
+  Given the concept of overall hashcash, the use its specific fields and
+  delimiters is somewhat arbitrary. In fact, hashcash version 0 used
+  different fields than does version 1.  The choices made are good, but
+  in my mind "actual hashcash" is just one member of the family we might
+  call "generalized hashcash."  That is, given any challenge string, it
+  is sensible to ask "show me a suffix that will produce b bits of
+  collision once challenge+suffix is hashed."  Real hashcash is just an
+  example of this generalized challenge.
+
+  Now there -is- a problem with being too general. Creating lots of
+  incompatible almost-hashcash protocols really do does not do anybody
+  good. For example, one Python implementation of "hashcash" used a
+  challenge protocol that was a little bit like hashcash--and might well
+  be equivalent in cryptographic merit--but it was just not possible to
+  mint hashcash stamps using it. So I decided to write a Python
+  implementation of hashcash that was genuinely conformant, and even
+  accepts roughly the same command-line switch as the C-coded 'hashcash'
+  utility (but is probably most useful as an imported module in other
+  applications). Even with platforms that benefit (only slightly) from
+  Psyco-ization, the Python version winds up running almost ten times
+  more slowly than the optimized C version. But it still wins in
+  flexibility C.
+
+  As well as being correct, my 'hashcash.py' module provides an internal
+  function '_mint()' along with the public functin 'mint()'. The latter
+  makes real hashcash version 1 stamps. That is what you -should- use.
+  But the former, '_mint()', does the underlying work of finding
+  -generalized hashcash- suffixes. You probably should not use it; but
+  if you want it--and you promise to play carefully--it is there for
+  your use. In novel contexts, variations on hashcash might be useful.
+  For what it is worth, I wish the C utility has a similar switch to
+  find generalized hashcash suffixes, even if accompanied by dire
+  warnings in the 'man' pages about why you should not do that. Us
+  hackers like to poke at the guts of things.
+
+SUMMING UP
+------------------------------------------------------------------------
+
+  This article has hopefully given readers a sense of the likely
+  applications of hashcash. I think the protocol is a wonderfully clever
+  idea. The challenge now is to get more tools to process hashcash
+  stamps more seamlessly. Already, a number of MUAs, MTA, and spam
+  filtering tools do a good job of working with hashcash--but
+  significant gaps still exist; hardly any non-email applications yet
+  utilize hashcash. Still, I believe the concept is catching on; if so,
+  it offers a means of regulating access to electronic resources that is
+  consistent with the gestalt of Free Software and open standards (and
+  does not slip us into the evils of DRM, commercialization of
+  information, and a general loss of privacy).
+
+RESOURCES
+------------------------------------------------------------------------
+
+  My ever favorite resource, Wikipedia, has an entry for Hashcash:
+
+    http://en.wikipedia.org/wiki/Hashcash
+
+  David introduced developerWorks readers to beginning and intermediate
+  cryptography concepts (with a few advanced ones thrown in) in three
+  tutorials:
+
+    http://www-106.ibm.com/developerworks/edu/s-dw-scrypto-i.html
+
+    http://www-106.ibm.com/developerworks/edu/s-dw-sucrypt2-i.html
+
+    http://www-106.ibm.com/developerworks/edu/s-dw-scrypt3-i.html
+
+  Tagged Message Delivery Agent (TMDA) is a spam filtering tool that is
+  based on whitelists rather than blacklists. A TMDA user likes a
+  certain list of sender addresses, but no one else.  However, any
+  sender can add themselves to a recipient's whitelist by responding to
+  a challenge mailed back (almost all spammer forge return addresses, so
+  never receive the challenge).  Hashcash can be integrated with TMDA
+  also (see instructions on the Hashcash website).
+
+    http://tmda.net/
+
+  David's 'hashcash.py' module and script can be found at:
+
+    http://www.gnosis.cx/download/gnosis/util/hashcash.py
+
+  It is also linked to on the main hashcash website.
+
+  David's dW _Charming Python_ installment on Psyco.
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz is Turing complete, but probably would not pass the Turing
+  Test. David may be reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/. And buy his book: _Text Processing in
+  Python_ (http://gnosis.cx/TPiP/).

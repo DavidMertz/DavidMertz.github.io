@@ -1,0 +1,364 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>XML MATTERS #17: PYX -- A Line-Oriented XML -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="xml_matters_16.html" TITLE="XML MATTERS #16">
+<link REL="next" HREF="xml_matters_18.html" TITLE="XML MATTERS #18">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<h1>Xml Matters #17: Pyx</h1>
+<h2>A Line-Oriented XML</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Simplifier, Gnosis Software, Inc.<br>
+ January 2002<br>
+ <br>
+</p>
+<blockquote>
+    XML is a fairly simple format.  Rather than binary encoding,
+    it uses plain Unicode text.  All the structures are declared
+    with predicatable-looking tags.  Nonetheless, there are still
+    enough rules in the XML grammar that a carefully debugged
+    parser is needed to process XML documents; and a particular
+    parser imposes a particular programming style.  An
+    alternative is to make XML even simpler.  The open-source PYX
+    format is a purely line-oriented format for representing XML
+    documents that allows for much easier processing of XML
+    document contents with common text tools like <code>grep</code>, <code>sed</code>,
+    <code>awk</code>, <code>wc</code> and the usual Unix collection.  Libraries in a
+    number of programming languages, as well as command-line
+    tools, exist for converting between XML and PYX formats, and
+    for working with PYX format.  This article introduces the PYX
+    format, and provides multi-language code samples.
+</blockquote>
+<h3>Preface</h3>
+ <p>
+  Regular readers of this column have almost certainly detected
+  my dissatisfaction with the most popular techniques for
+  manipulating XML documents.  The articles that have discussed
+  my Python <em><code>xml_objectify</code></em> modify has largely been in response
+  to the complexity of DOM.  My introduction to the Haskell
+  <em><code>HaXml</code></em> library was primarily a reaction to a perceived
+  obtuseness of XSLT.  Continuing this pattern, I find SAX also
+  to be far "heavier" than is necessary for many of the problems
+  SAX solves.
+</p>
+<p>
+  The SAX API is, by far, more lightweight than either DOM or
+  XSLT--not only in terms of computer resources, but more
+  importantly in terms of programmer effort and learning curve.
+  Even so, even SAX demands that an XML programmer utilize a
+  parser library, and conform to a callback API.  The data inside
+  XML documents simply is not complex enough to warrant these
+  demands.  In my opinion, there ought to be an easier way to
+  handle XML documents; and in particular, one ought to be more
+  free to use a variety of familiar tools and techniques when
+  manipulating XML.
+</p>
+<p>
+  Note:  Portions of this article are based on my series for
+  Intel Developer Services entitled "XML Programming Paradigms"
+</p>
+<h3>Introduction</h3>
+ <p>
+  The PYX format is a line-oriented representation of XML
+  documents that is derived from the SGML ESIS format.  PYX is
+  not itself XML, but it is able to represent all the information
+  within an XML document in a manner that is easier to handle
+  using familiar text processing tools.  Moreover, PYX documents
+  can themselves be transformed back into XML as needed.  It is
+  worth noting that PYX documents are approximately the same size
+  as the corresponding XML versions (sometimes a little larger,
+  sometimes a little smaller); so storage and transmission
+  considerations do not significantly enter into the
+  transformation between XML and PYX.
+</p>
+<p>
+  The PYX format is extremely simple to describe and understand.
+  The first character on each line identifies the content-type of
+  the line.  Content does not directly span lines, although
+  successive lines might contain the same content-type.  In the
+  case of tag attributes, the attribute name and value are simply
+  separated by a space, without use of extra quotes.  The prefix
+  characters are:
+</p>
+<div class="code-sample"><h4></h4><pre>(  start-tag
+)  end-tag
+A  attribute
+-  character data (content)
+?  processing instruction
+
+</pre></div><p>
+  A few characters are escaped in the PYX format.  Newline
+  characters that occur inside character data are always
+  indicated on a separate content line, using the <code>\n</code> escape
+  code.  Tabs are escaped using the <code>\t</code> sequence, and can occur
+  on regular (non-newline) content lines, wherever the
+  corresponding tabs occur in the original XML.  Backslashes,
+  which are used for escaping are themselves escaped as <code>\\</code>.
+  Note that spaces are not escaped, and usually some content
+  lines will consist entirely of spaces (which might not be
+  visually obvious in a text viewer).  Lines are terminated by
+  your platform-specific newline delimter.
+</p>
+<p>
+  The motivation for PYX is the wide usage, convenience, and
+  familiarity of line-oriented text processing tools and
+  techniques.  The GNU textutils, for example, include tools like
+  <code>wc</code>, <code>tail</code>, <code>head</code>, <code>uniq</code>; other familiar text processing
+  tools are <code>grep</code>, <code>sed</code>, <code>awk</code>, and in a more sophisticated way
+  <code>perl</code> and other scripting languages.  These types of tools
+  both generally expect newline-delimited records and rely on
+  regular expression patterns to identify parts of texts.
+  Neither of the expectations is a good match for XML, as it
+  happens.
+</p>
+<h3>Using Pyx</h3>
+ <p>
+  Let us take a look at PYX in action.  PYX libraries exist for
+  several programming languages, but much of the time it is most
+  useful simply to use the command line tools <code>xmln</code> and <code>xmlv</code>.
+  The first is a non-validating transformation tool, the second
+  adds validation against a DTD.  "Under the hood" the <code>expat</code>
+  and <code>rxp</code> parsers are compiled into these tools; but a user
+  does not need to worry about the APIs for those parsers.
+</p>
+<div class="code-sample"><h4>XML and PYX versions of a document</h4><pre>
+[PYX]# cat test.xml
+&lt;?xml version="1.0"?&gt;
+&lt;!DOCTYPE Spam SYSTEM "spam.dtd" &gt;
+&lt;!-- Document Comment --&gt;
+&lt;?xml-stylesheet href="test.css" type="text/css"?&gt;
+&lt;Spam flavor="pork" size="8oz"&gt;
+  &lt;Eggs&gt;Some text about eggs.&lt;/Eggs&gt;
+  &lt;MoreSpam&gt;Ode to Spam (spam="smoked-pork")&lt;/MoreSpam&gt;
+&lt;/Spam&gt;
+
+[PYX]# ./xmln test.xml
+?xml-stylesheet href="test.css" type="text/css"
+(Spam
+Aflavor pork
+Asize 8oz
+-\n
+-
+(Eggs
+-Some text about eggs.
+)Eggs
+-\n
+-
+(MoreSpam
+-Ode to Spam (spam="smoked-pork")
+)MoreSpam
+-\n
+)Spam
+
+</pre></div><p>
+  One should notice that the transformation loses the DOCTYPE
+  declaration and the comment in the original XML document.  For
+  many purposes, this is not important (parsers often discard
+  this information also).  The PYX format, in contrast to the XML
+  format, allows one to easily pose a variety of ad hoc questions
+  about a document.  For example:  what are all the attribute
+  values in the sample document?  Using PYX, we can simply ask:
+</p>
+<div class="code-sample"><h4>An ad hoc query using PYX format (attributes)</h4><pre>
+[PYX]# ./xmln test.xml | grep "^A" | awk '{print $2}'
+pork
+8oz
+
+</pre></div><p>
+  Getting this answer out of the original XML is a huge
+  challenge.  Either one needs to create a whole program that
+  calls a parser, and looks for tag attribute dictionaries, or
+  one needs to come up with a quite complex regular expression
+  that will find the information of interest (left as an exercise
+  for readers).  Complicating things is the contents of the
+  <code>&lt;MoreSpam&gt;</code> element, which contains something that looks a lot
+  like a tag attribute, but is not.
+</p>
+<p>
+  Here is another task that PYX makes simple:  let us try to dump
+  the non-empty content lines of an XML document.  One could do
+  this with SAX, but doing so would require writing a little
+  application with a <code>characters()</code> handler, and empty skeletons
+  of several other handlers.  What we might like is something
+  similar to <code>lynx -dump</code> applied to HTML files.  A one-liner, in
+  other words.  On possibility is:
+</p>
+<div class="code-sample"><h4>An ad hoc query using PYX format (contents)</h4><pre>
+[PYX]# ./xmln test.xml | grep '^-[^\n ]' | sed s/^-//
+Some text about eggs.
+Ode to Spam (spam="smoked-pork")
+
+</pre></div><p>
+  Sean McGrath's article (see Resources) has additional similar
+  examples.
+</p>
+<h3>Going Back To Xml</h3>
+ <p>
+  The PYX format is sufficiently simple that just about any
+  competent programmer can write a <code>PYX2XML</code> tool in under an
+  hour.  Every line tells you exactly what needs to be output,
+  whether a tag, PI, or content.
+</p>
+<p>
+  There is only a very slight statefulness to the PYX2XML
+  conversion--specifically, when an open tag is encountered, the
+  next indefinitely many lines may contain attributes for the
+  tag.  After the attributes (if any) our output, a closing angle
+  bracket is required.  When the open tag is encountered, the
+  conversion utility does not yet know whether attributes exist,
+  or how many if so.  Therefore, a "looking-for-attributes" state
+  needs to be set to true or false.
+</p>
+<p>
+  Unfortunately, despite the notable simplicity of the PYX2XML
+  converstion, the tool <code>pyx2xml.py</code> available at the Pyxie
+  website is broken in alarmingly many ways.  It does some
+  spacing in the XML that looks odd, but which is well-formed.
+  But far worse, there are actual programming errors that will
+  crash the short script.  Let me just provide a working
+  implementation here for readers:
+</p>
+<div class="code-sample"><h4>Python script for PYX-to-XML conversion</h4><PRE><FONT COLOR=#3333CC><B>import</B></FONT> sys, os, xreadlines
+unescape = <FONT COLOR=#3333CC><B>lambda</B></FONT> s: s.replace(r<FONT COLOR=#115511>'\t'</FONT>,<FONT COLOR=#115511>'\t'</FONT>).replace(r<FONT COLOR=#115511>'\\'</FONT>,<FONT COLOR=#115511>'\\'</FONT>)
+write = sys.stdout.write
+get_attrs = 0
+
+<FONT COLOR=#3333CC><B>for</B></FONT> line <FONT COLOR=#3333CC><B>in</B></FONT> xreadlines.xreadlines(sys.stdin):
+   <FONT COLOR=#3333CC><B>if</B></FONT> get_attrs <FONT COLOR=#3333CC><B>and</B></FONT> line[0] &lt;&gt; <FONT COLOR=#115511>'A'</FONT>:
+      get_attrs = 0           <FONT COLOR=#1111CC># End of tag attribues</FONT>
+      write(<FONT COLOR=#115511>'&gt;'</FONT>)
+   <FONT COLOR=#3333CC><B>if</B></FONT> line[0] == <FONT COLOR=#115511>'?'</FONT>: write(<FONT COLOR=#115511>'&lt;?%s?&gt;\n'</FONT> % line[1:-1]) <FONT COLOR=#1111CC># Proc Instr</FONT>
+   <FONT COLOR=#3333CC><B>elif</B></FONT> line[0] == <FONT COLOR=#115511>'('</FONT>:                              <FONT COLOR=#1111CC># Open tag</FONT>
+      write(<FONT COLOR=#115511>'&lt;%s'</FONT> % line[1:-1])
+      get_attrs = 1
+   <FONT COLOR=#3333CC><B>elif</B></FONT> line[0] == <FONT COLOR=#115511>'A'</FONT>:                              <FONT COLOR=#1111CC># Tag attrib</FONT>
+      name,val = line[1:].split(None, 1)
+      write(<FONT COLOR=#115511>' %s="%s"'</FONT> % (name, unescape(val)[:-1]))
+   <FONT COLOR=#3333CC><B>elif</B></FONT> line[:3] == r<FONT COLOR=#115511>'-\n'</FONT>: write(os.linesep)        <FONT COLOR=#1111CC># Newline</FONT>
+   <FONT COLOR=#3333CC><B>elif</B></FONT> line[0] == <FONT COLOR=#115511>'-'</FONT>: write(unescape(line[1:-1]))  <FONT COLOR=#1111CC># Misc content</FONT>
+   <FONT COLOR=#3333CC><B>elif</B></FONT> line[0] == <FONT COLOR=#115511>')'</FONT>: write(<FONT COLOR=#115511>'&lt;/%s&gt;'</FONT> % line[1:-1])  <FONT COLOR=#1111CC># Close tag</PRE></FONT></div><h3>Other Considerations</h3>
+ <p>
+  The Pyxie project page contains a Python module called <em><code>pyxie</code></em>.
+  This module contains a number of classes to work with PYX
+  encoded documents in tree-based or event-based styles.  If you
+  adopt the PYX format for many uses (and if you use Python), it
+  might be worth using some of these classes.  But in a way, I
+  feel like these classes somewhat miss the point.  The virtue of
+  PYX format is its simplicity, and accessibility with
+  line-oriented tools.
+</p>
+<p>
+  If one wants an in-memory tree representation of an XML
+  document, DOM is already available to do just this.  If
+  somewhat less convoluted APIs are desired than those of DOM,
+  one can also obtain tree structures using modules such as
+  Python's <em><code>xml_objectify</code></em>, Perl's <em><code>XML::Parser</code></em>, Ruby's <em><code>REXML</code></em>,
+  and Java's <em><code>JDOM</code></em>.  <em><code>pyxie</code></em> is similar in purpose, but has no
+  real advantage.  Similarly, if fully general event-oriented
+  processing of XML documents is desired, one might as well use
+  SAX or <em><code>expat</code></em>, <em><code>pyxie</code></em> offers no special advantage here.
+</p>
+<p>
+  There are times when one might want to process PYX documents in
+  a way that is somewhat sensitive to the hierarchical structure
+  of the data.  At a certain point, one falls back into the same
+  complexity one has with SAX or DOM, and the point of PYX is
+  lost.  But at an initial level of complexity, the only data
+  structure one really needs to treat PYX in a hierarchical
+  fashion is a tag stack.  This is a fairly simple data structure
+  requirement.
+</p>
+<p>
+  For example, in sequentially processing the above test
+  document, one would perform the following stack operations:
+</p>
+<div class="code-sample"><h4></h4><pre>1. Push "Spam"
+2. Push "Eggs"
+3. Pop ("Eggs")
+4. Push "MoreSpam"
+5. Pop ("MoreSpam")
+6. Pop ("Spam")
+
+</pre></div><p>
+  In this simple case, the stack never gets more than two items
+  deep, but in general it can get arbitrarily deep.  Knowing when
+  to push and when to pop is remarkably simple:  Push when a
+  start-tag line is encountered, pop when an end-tag line is
+  encountered.  Pop operations do not even need to know the
+  end-tag string, since it is always the "last thing" that is
+  popped by a stack.  Actually, the PYX format would not lost any
+  information by leaving off end-tag strings (but one might lose
+  the convenience of self-identifying end-tags that do not
+  <em>require</em> stack counts; for example, PYX2XML would be harder to
+  write).
+</p>
+<p>
+  At each point in the line-by-line processing of a PYX file, the
+  single stack tells one everything there is to know about the
+  hierarchical context of the current line.  One can even
+  construct an XPATH-style qualifier solely by peaking into the
+  stack; potentially certain operations on content or attributes
+  might depend upon this context.  This sort of processing goes
+  slightly beyond what one can usually do with basic text
+  utilities, but it nonetheless remains more ad hoc, flexible,
+  and simpler than the full blown APIs of an XML
+  parser/interface.
+</p>
+<h3>Resources
+
+</h3>
+ <p>
+  The home page for Pyxie (the Python PYX library, and also C
+  versions of the <code>xmlv</code> and <code>xmln</code> tools) is hosted by
+  Sourceforge:
+</p>
+<blockquote>
+   <a href="http://pyxie.sourceforge.net/">http://pyxie.sourceforge.net/</a>
+</blockquote>
+<p>
+  An introduction to the PYX format written by Sean McGrath can
+  be found at:
+</p>
+<blockquote>
+   <a href="http://www.xml.com/pub/a/2000/03/15/feature/index.html">http://www.xml.com/pub/a/2000/03/15/feature/index.html</a>
+</blockquote>
+<p>
+  McGrath has also written a book that is largely about the usage
+  of PYX, in combination with Python, called <cite>XML Processing with
+  Python</cite>, Prentice Hall, 2000.  This book was one of the titles
+  I have reviewed in my <cite>Charming Python</cite> column:
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/library/l-cp12.html">http://www-106.ibm.com/developerworks/library/l-cp12.html</a>
+</blockquote>
+<p>
+  A perl library for working with (and converting to/from) PYX
+  can be found at:
+</p>
+<blockquote>
+   <a href="http://search.cpan.org/search?dist=XML-PYX">http://search.cpan.org/search?dist=XML-PYX</a>
+</blockquote>
+<h3>About the Author
+
+</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz believes that most XML writers have only explained
+  APIs, his point is to change them (or at least circumvent
+  them).  David may be reached at mertz@gnosis.cx; his life pored
+  over at<a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and
+  recommendations on this, past, or future, columns are welcomed.
+</p>
+</body></html>

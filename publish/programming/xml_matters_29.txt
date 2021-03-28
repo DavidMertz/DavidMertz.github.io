@@ -1,0 +1,370 @@
+XML MATTERS #29: The RXP Parser
+An extremely fast validating parser with a Python binding
+
+David Mertz, Ph.D.
+Comparator, Gnosis Software, Inc.
+June 2003
+
+    [RXP] is a validating parser written in C that creates a
+    non-DOM tree representation of XML documents.  While [RXP]
+    itself is underdocumented, and not for the faint of heart,
+    at lest two excellent higher level APIs have been built on
+    top of RXP: [pyRXP], a Python binding; and LT XML, a
+    collection of utilities and libraries.
+
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  Readers of this column will have picked up the fact that while I
+  write here about XML generally, I have a particular fondness for
+  Python tools. I had planned to break with this pattern for this
+  installment, and focus on using [RXP] with C applications.
+  However, once I took a closer look at the [RXP] library, I found
+  that the easiest way to utilize it is via the Python module
+  [pyRXP].
+
+  While the underlying [RXP] GPL'd libary is almost certainly the
+  fastest validating XML parser you can find, the actual parser
+  code is quite under-documented, and comes with just one simple
+  example of a command-line tool 'rxp'. The tool 'rxp' is similar
+  to the utility 'xmlcat.py' that I presented in my "Command-Line
+  XML" tip, and also like a variety of similar utilities--it reads
+  XML documents, validates them, and outputs a cannonical form. You
+  can look through the source code for the file 'rxp.c' to see the
+  way that [RXP] parsing generates a compact document tree as a
+  data structure.
+
+  On top of [RXP] itself, the Language Technology Group has built
+  LT XML which contains a variety of higher-level tools and APIs.
+  A number of further tools are built using LT XML, including XED
+  (and XML editor).  I will take a bit of a look at the tools in
+  LT XML within this article, but my main focus will be examining
+  the RXP tree API as exposed via the [pyRXP] binding.  As far as
+  I can determine, other high level languages that might sensibly
+  have [RXP] bindings, such as Perl, TCL and Ruby have not yet
+  grown them.
+
+LETS TALK ABOUT SPEED
+------------------------------------------------------------------------
+
+  [RXP] is -fast-. A C application that uses the (optionally)
+  validating [RXP] parser is probably not much different in speed
+  than one that use the non-validating [expat] parser (which is
+  itself known for speed). The way [RXP] works is by building a
+  compact in-memory tree structure of the XML document being
+  parsed. Failures in parsing are failures in tree building; and a
+  successful parse gives you a data structure that is much more
+  efficient than a DOM representation of XML.
+
+  Where you need to build an complete data structure out of an XML
+  document, [RXP] probably edges out [expat] slightly; and if you
+  need validation, [expat] is simply not an option. However, for
+  purely sequential processing, or for extracting a small subset of
+  the information in an XML document, [expat] can edge ahead, since
+  it need not save any representation of already processed (or
+  already skipped) tags. In fact, for sufficiently large documents,
+  [expat] gains an overpowering advantage--you rarely want to
+  create an in-memory representation of a gigabyte XML document;
+  with [RXP] you have no choice about this.  An application built
+  around [expat] is happy to pull off a few tags of interest as
+  it reads through a gigabyte of XML, likely utilizing orders of
+  magnitude less memory than the document size.
+
+  The speed of [RXP] really stands out in the context of the
+  [pyRXP] binding. The last installment of this column did some
+  fairly detailed speed and memory-usage comparisons of several XML
+  document models in Python: [ElementTree], [gnosis.xml.objectify],
+  [xml.minidom], and [cDommlette]. The tests performed simply
+  created a minimal in-memory representation using each API, and
+  measured the time and memory usage for this construction.  It
+  is easy to do the same thing with [pyRXP]:
+
+      #---------------------- time_rxp.py ----------------------#
+      from pyRXP import Parser
+      import sys, time
+      start = time.clock()
+      tups = Parser().parse(sys.stdin.read())
+      print "Time: %.3f" % (time.clock()-start)
+
+  Parsing our 3 megabyte 'weblog.xml' file takes only 4 seconds
+  using [pyRXP], where the best performance in prior testing was
+  [cDommlette] which took an estimated 25 seconds on my test
+  machine.  In memory usage, 'time_rxp.py' peaks around 28
+  megabytes, just about the same as the most parsimonious prior
+  contender, [gnosis.xml.objectify].  In other words [pyRXP] ties
+  the best memory usage, and is -over six times- as fast as the
+  prior best!
+
+  There is a quite specific reason why [pyRXP] is so much faster
+  than other Python XML document model APIs. [RXP] builds a
+  complete data structure in C, and all [pyRXP] needs to do is turn
+  this completed structure into a very similar Python data
+  structure. In contrast, modules like [gnosis.xml.objectify] and
+  [ElementTree], while utilizing the underlying [expat] parser for
+  the actual parsing, still need to make callbacks into Python
+  functions for each tag or content encountered. Function call
+  overhead in Python is significant, especially compared to the
+  cheapness of C calls. In principle, someone could write an
+  [expat] based C-coded Python extension that built an entire data
+  structure before handing it back to the Python interpreter (the
+  speed would be similar to [pyRXP]). But creating such an
+  extension would require more programming effort than is needed
+  for the [pyRXP] wrapper, because even in C, [expat] works by
+  programming callbacks for each tag and content. [RXP], in
+  contrast, builds the data structure right in the parser.
+
+
+[pyRXP]'s TUPLE TREE DATA STRUCTURE
+------------------------------------------------------------------------
+
+  [pyRXP] (and [RXP] itself) uses an efficient, light-weight tree
+  representation of XML documents.  Each node in a [pyRXP] tree
+  is simply a tuple of the form:
+
+      (tagname, attr_dict, child_list, reserved)
+
+  No specialized Python classes are used in the representation,
+  just tuples, dicts, lists, and strings (and 'None' in the
+  reserved position). Perhaps surprisingly, this form is adequate
+  to represent all the information in an XML document. The tagname
+  is a straightforward string; and the attribute dictionary is a
+  dictionary mapping attributes to values, as you would expect. The
+  child list is more subtle: strings can be interleaved with tuples
+  in the list, indicating a mixed content element.  Moreover, an
+  element that has no content is represented by an empty child
+  list, but a self-closed tag is represented by 'None'.  It is
+  easiest to see the structure in action:
+
+      #--------- The [pyRXP] tuple tree data structure ---------#
+      >>> import pprint
+      >>> xml = '''<foo this="that" spam="eggs">
+      ... <bar>1</bar><bar>2</bar>
+      ... <baz></baz><baz/></foo>'''
+      >>> tree = Parser().parse(xml)
+      >>> pprint.pprint(tree)
+      ('foo',
+       {'this': 'that', 'spam': 'eggs'},
+       ['\n',
+        ('bar', None, ['1'], None),
+        ('bar', None, ['2'], None),
+        '\n',
+        ('baz', None, [], None),
+        ('baz', None, None, None)],
+       None)
+
+  All the XML information is in there, but navigating through it
+  can be inconvenient.
+
+CONTRASTING DATA ACCESS STYLES
+------------------------------------------------------------------------
+
+  Recall that in the last installment we contrasted several
+  implementations of a simple application for filtering our test
+  'weblog.xml' document, and displaying some information from it.
+  A single '<entry>' element in this file might look something
+  like:
+
+      #------------- A weblog.xml entry record -----------------#
+      <entry>
+        <host>64.172.22.154</host>
+        <referer>-</referer>
+        <userAgent>-</userAgent>
+        <dateTime>19/Aug/2001:01:46:01</dateTime>
+        <reqID>-0500</reqID>
+        <reqType>GET</reqType>
+        <resource>/</resource>
+        <protocol>HTTP/1.1</protocol>
+        <statusCode>200</statusCode>
+        <byteCount>2131</byteCount>
+      </entry>
+
+  The file 'weblog.xml' contains thousands of such entries. A
+  filter that utilized [gnosis.xml.objectify] looked like:
+
+      #----------------- select_hits_xo.py ---------------------#
+      from gnosis.xml.objectify import XML_Objectify, EXPAT
+      weblog = XML_Objectify('weblog.xml',EXPAT).make_instance()
+      interesting = [entry for entry in weblog.entry
+                     if entry.host.PCDATA=='209.202.148.31'
+                     and entry.statusCode.PCDATA=='200']
+      for e in interesting:
+          print "%s (%s)" % (e.resource.PCDATA, e.byteCount.PCDATA)
+
+  How might we write the same application for a [pyRXP] tuple tree?
+  Unfortunately, since we have to look through nested lists and
+  numeric tuple positions, access is much less straightforward:
+
+      #--------------- select_hits_rxp1.py ---------------------#
+      from pyRXP import Parser
+      TAGNAME,ATTRS,CHILDREN = range(3)
+      weblog = Parser().parse(open('weblog.xml').read())
+      interesting = []
+      for child in weblog[CHILDREN]:
+          if child[TAGNAME]!='entry': continue
+          gotHost, gotStatus = 0, 0
+          for fld in child[CHILDREN]:
+              tag = fld[TAGNAME]
+              if tag=='host' and fld[CHILDREN]==['209.202.148.31']:
+                  gotHost = 1
+              elif tag=='statusCode' and fld[CHILDREN]==['200']:
+                  gotStatus = 1
+          if gotHost and gotStatus:
+              interesting.append(child[CHILDREN])
+      for e in interesting:
+          resource, byteCount = '', ''
+          for fld in e:
+              if fld[TAGNAME]=='resource':
+                  resource = fld[CHILDREN][0]
+              elif fld[TAGNAME]=='byteCount':
+                  byteCount = fld[CHILDREN][0]
+          print "%s (%s)" % (resource, byteCount)
+
+  Even with some named constants to stand for tuple positions, this
+  version is certainly harder to read (but I think it is about the
+  best you can do directly with tuple trees). The output is
+  identical; albeit the [pyRXP] version gets this output in 5
+  seconds instead of taking 25 seconds.
+
+  The [pyRXP] module is distributed with a few miscellaneous files,
+  one of which is an interesting module called [xmlutils]. In a
+  clever strategy, the class 'xmlutils.TagWrapper' acts as a proxy
+  wrapper for [pyRXP] tuple trees. The overall effect is that you
+  can access tuple trees in a "native Python" style that is very
+  similar to that provided by [gnosis.xml.objectify] or
+  [ElementTree]:
+
+      #--------------- select_hits_rxp2.py ---------------------#
+      from pyRXP import Parser
+      import xmlutils
+      tree = Parser().parse(open('weblog.xml').read())
+      weblog = xmlutils.TagWrapper(tree)
+      interesting = [child for child in weblog
+                     if child.tagName=='entry'
+                     if str(child.host)=='209.202.148.31'
+                     if str(child.statusCode)=='200']
+      for e in interesting:
+          print "%s (%s)" % (e.resource, e.byteCount)
+
+  So far, so good. The code is quite elegant. Still proxying adds
+  some overhead. This version of the filer runs in 7.5 seconds
+  instead of 5, which still seems quite a lot better than the 25
+  seconds for [gnosis.xml.objectify]. Those two and a half seconds
+  that the filter spends in proxy overhead, however, correspond to
+  less than a tenth of a second that 'select_hits_xo.py' spends in
+  its filtering. The parsing step swamps this difference, but if
+  you imagine an application that parses an XML document once, then
+  performs hundreds of different filtering actions (e.g. at user
+  specification), the proxy wrapper starts to look a lot less
+  appealing. The [pyRXP] developers warn that [xmlutils] is
+  experimental though, so perhaps much more efficient wrappers
+  could be developed.
+
+USING LT XML
+------------------------------------------------------------------------
+
+  The LT XML collection is built on top of [RXP] and contains a
+  variety of command-line tools for working with XML, as well as
+  some higher-level APIs than those in [RXP] itself.  One of the
+  powerful tools in LT XML is called 'sggrep', which is a sort of
+  'grep' for XML files.  The syntax is a little confusing to get
+  a hold on, but basically it is a way of formulating expressions
+  that are a combination of regular expressions and XPATHs.
+
+  Some other tools in LT XML include 'textonly' which strips out
+  the tags, and outputs PCDATA contents; 'sgsort' to sort XML
+  elements; 'sgcount' to count elements; and 'xmlnorm' to
+  cannonicalize XML documents.  Each of these tools utilizes
+  input and output pipes, and can therefore be combined on
+  command-lines and in shell scripts.  Moreover, the connection
+  with non-XML version of analogous tools can be seen by removing
+  the "sg" prefix from many of the names.
+
+  One interesting technique is to pipe several 'sggrep' queries
+  together. Each 'sggrep' command can specify both the main query
+  and a subquery. E.g. "I want '<foo>' elements that contain
+  '<bar>' elements with the content 'baz'." The main query asks for
+  '<foo>', the subquery specifies properties of child '<bar>'. The
+  tool 'sggrep' allows for either a more verbose form that
+  explicitly names queries, subqueries, and patterns with '-q',
+  '-s' and '-t', or a compact form that omits the switches (you use
+  the '--' switch to activate compact form). Let us create a
+  complex command-line that does almost the same thing as the
+  filtering utilities discussed above:
+
+      #------- A webhost.xml filtering compound query ----------#
+      % cat weblog.xml |
+        sggrep '.*/entry' '.*/entry/host' '209.202.148.31' -- |
+        sggrep -q '.*/entry' -s '.*/entry/statusCode' -t '200' |
+        sggrep '.*/resource|byteCount' -- |
+        textonly -s '\n'
+
+  This command is not quite right, its is broken on to lines like:
+
+      /publish/programming/regular_expressions.html
+      45674
+
+  Rather than formatted per line as the Python filters do, e.g.:
+
+      /publish/programming/regular_expressions.html (45674)
+
+  Probably some standard Unix shell tools like 'awk', 'sed', or
+  'tr' could be used cleverly to get the precise output desired.
+
+  On the plus side, 'sggrep' and the other LT XML tools are quite
+  fast, as much so as [pyRXP] is without using the 'TagWrapper'
+  overhead.  Furthermore, all of the capabilities exposed by the
+  bundled utilities is also exposed to C programmers who want to
+  use similar APIs.  And perhaps best of all, LT XML itself now
+  has a Python binding (but for no other "script" language,
+  interestingly).
+
+RESOURCES
+------------------------------------------------------------------------
+
+  The home page for the [RXP] parser is at:
+
+    http://www.cogsci.ed.ac.uk/~richard/rxp.html
+
+  The binding [pyRXP] is produced by ReportLab who also bring you
+  tools for working with PDF files in Python.  It's home page is:
+
+    http://www.reportlab.com/xml/pyrxp.html
+
+  The LT XML tools are based on [RXP], and provide a variety of
+  command-line processing capabilities for XML documents, as well
+  as higher level APIs.
+
+    http://www.ltg.ed.ac.uk/software/xml/index.html
+
+  The XML Zone tip I wrote on command-line XML processign can be
+  found at:
+
+    http://www-106.ibm.com/developerworks/xml/library/x-tipclp.html
+
+  _XML Matters_ #2 introduced [gnosis.xml.objectify], then called
+  simply [xml_objectify].
+
+  _XML Matters_ #11 updates readers to some early improvements to
+  [gnosis.xml.objectify].  Some newer features have not been
+  covered in this column, but are in the module's HISTORY and
+  other documentation files.
+
+  _XML Matters_ #14 discussed the [HaXml] module for the Haskell
+  lazy pure-functional programming language.
+
+  _XML Matters_ #18 discussed Ruby's [REXML] library.
+
+  _XML Matters_ #28 discussed the Fredrik Lundh's [ElementTree]
+  XML API.
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  For David Mertz an atomic object is a combination of facts.
+  David may be reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/. Suggestions and recommendations on
+  this, past, or future, columns are welcomed. Check out David's
+  new book _Text Processing in Python_.
+

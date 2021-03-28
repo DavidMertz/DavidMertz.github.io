@@ -1,0 +1,523 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>LINUX ZONE FEATURE: The R Programming Language, Part 3 -- Reusable and Object Oriented Programming -- </title>
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Linux Zone Feature: The R Programming Language, Part 3</h1>
+<h2>Reusable and Object Oriented Programming</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Generic Programmer, Gnosis Software<br>
+ March, 2005<br>
+ <br>
+</p>
+<blockquote>
+    R is rich statistical <em>environment</em>, released as Free Software. It
+    includes a programming language, and interactive shell, and
+    extensive graphing capability. This article follows up David's two
+    prior installments (those written with Brad Huntting) and looks at
+    the object-orientation in R, along with some additional general
+    programming concepts in R.
+</blockquote>
+<h3>Introduction</h3>
+ <p>
+  The first two installments of this series looked at R in fairly "real
+  world" usage; we explored various statistical analyses and graphing
+  capabilities around a large series of temperature data that the
+  coauthor of those installments had collected. As mentioned in those
+  prior articles, what we actually explored barely scratched the surface
+  of the deep and rich statistical libraries in R.
+</p>
+<p>
+  For this installment, I want to leave aside consideration of further
+  statistical analysis <em>per se</em>. In large part, I do not personally have
+  the requisite knowledge of statistics to decide the most
+  relevant techniques; both my earlier coauthor, Brad Huntting, and many
+  readers know far more in these areas.  But even more significant is
+  that I would like to provide readers with some pointers to the
+  underlying language facilities of R.  The prior installments made some
+  gestures towards the functional programming orientation of R; my hunch
+  is that many readers will be more familiar with imperative and object
+  oriented languages.  As well, we have previously only looked at using
+  R in a rather <em>ad hoc</em> fashion.  For this installment, I want to
+  discuss creating reusable and modular components for R development.
+</p>
+<h3>Back To Basics</h3>
+ <p>
+  Before getting to R's notion of object orientation let me review and
+  clarify a bit about R's data and functions. The main thing to keep in
+  mind about R data is that, to a first brush, "everything is a vector."
+  Even objects that look superficially distinct from vectors--matrices,
+  arrays, data.frames, etc.--are really just vectors with extra
+  (mutable) attributes that tell R to treat them in special ways.
+</p>
+<p>
+  The most important attribute that (some) R vectors have is its
+  dimension, spelled <code>dim</code>.  The functions, <code>matrix()</code>, <code>array()</code> and
+  <code>dim()</code> are simply convenience functions for setting the dimensions of
+  a vector.  R's OOP system similarly boils down to what (if anything)
+  is in an objects <code>class</code> attribute.
+</p>
+<p>
+  Let us review dimensioning:
+</p>
+<div class="code-sample"><h4>Creating vectors and assigning dimensions</h4><pre>
+&gt; v = 1:1000
+&gt; typeof(v)
+[1] "integer"
+&gt; attributes(v)
+NULL
+&gt; dim(v) = c(10,10,10)  # (Re)dimension
+&gt; attributes(v)
+$dim
+[1] 10 10 10
+&gt; v2 = matrix(1:1000, nrow=100, ncol=10)
+&gt; typeof(v2)
+[1] "integer"
+&gt; attributes(v2)
+$dim
+[1] 100  10
+&gt; attr(v2,'dim') = c(10,10,10)  # Redimension
+&gt; attributes(v2)
+$dim
+[1] 10 10 10
+
+</pre></div><p>
+  In short, their are several syntax conveniences for attaching a <code>dim</code>
+  attribute to a vector, but at heart that is all the syntax sugar does.
+</p>
+<p>
+  One thing that can be confusing about R's "everything is a vector"
+  approach is that row-wise and column-wise operations may not follow
+  your first intuition.  For example, it's simple enough to create a 2-D
+  array (a matrix), and even to operate on a single column or row:
+</p>
+<div class="code-sample"><h4>Operating on matrix vector, and row-wise</h4><pre>
+&gt; m = matrix(1:12, nrow=3, ncol=4)
+&gt; m
+     [,1] [,2] [,3] [,4]
+[1,]    1    4    7   10
+[2,]    2    5    8   11
+[3,]    3    6    9   12
+&gt; sum(m)  # sum of all elements of m
+[1] 78
+&gt; sum(m[1,])  # sum of first row
+[1] 22
+
+</pre></div><p>
+  But if you wanted to create a vector to sum each row, you might be
+  inclined to try:
+</p>
+<div class="code-sample"><h4>Wrong way to perform multiple row-wise operations</h4><pre>
+&gt; sum(m[c(1,2,3),])  # NOT sum of each row
+[1] 78
+
+</pre></div><p>
+  You <em>could</em> construct a loop here, but that feels at odds with R's
+  functional and vector oriented operations.  Instead, the trick is to
+  use the function <code>apply()</code>:
+</p>
+<div class="code-sample"><h4>apply() function for row-wise operations</h4><pre>
+&gt; apply(m, 1, sum) # by row
+[1] 22 26 30
+&gt; apply(m, 2, sum) # by column
+[1]  6 15 24 33
+&gt; apply(m, c(1,2), sum) # by column AND row (sum of each single cell)
+     [,1] [,2] [,3] [,4]
+[1,]    1    4    7   10
+[2,]    2    5    8   11
+[3,]    3    6    9   12
+# Kinda worthless to sum each single cell, but what about this:
+&gt; a = array(1:24,c(3,4,2))
+&gt; apply(a, c(1,2), sum)  # sum by depth in 3-D array
+     [,1] [,2] [,3] [,4]
+[1,]   14   20   26   32
+[2,]   16   22   28   34
+[3,]   18   24   30   36
+&gt; apply(a, c(3), sum)    # sum of each depth slice
+[1]  78 222
+
+</pre></div><h3>An Infinite Sequence
+</h3>
+ <p>
+  A construct that is sometimes useful to have, for perfectly practical
+  reasons, is an infinite sequence of numbers. For example, the coauthor
+  of the prior installments was doing some analysis of Monte Carlo
+  integration techniques, and for his purposes, it was useful to have an
+  infinitely long sequence of random numbers. Understand here that the
+  infinite sequence that is needed is <em>not</em> simply the ability to
+  generate a new number as needed; it is also necessary to be able to
+  refer back to a specific previously referenced element, and have it
+  refer to the same value it had before.
+</p>
+<p>
+  Obviously, no computer language and no computer, can store an infinite
+  sequence--what they can do is store a <em>lazy</em> and <em>unbounded</em> sequence.
+  More elements can be added to a realized list, when and only when,
+  access is required. In Python, for example, you might accomplish this
+  by creating a list-like object with a custom <code>.__getitem__()</code> method
+  that extends the internal list as needed. In Haskell, laziness is
+  built deeply into the language--in effect, everything is lazy. In my
+  Haskell tutorial (see Resources) I used the example of creating a list
+  of <em>all</em> the prime numbers:
+</p>
+<div class="code-sample"><h4>Haskell list of ALL primes w/ Sieve of Eratosthenes</h4><pre>
+primes :: [Int]
+primes = sieve [2 .. ]
+sieve (x:xs) = x : sieve [y | y &lt;- xs, (y `rem` x)/=0]
+
+</pre></div><p>
+  In respect to the infinite, R is closer to Python than it is to
+  Haskell.  You need to explicitly construct more list elements
+  as needed.  We need to wait for the OOP section to let vector
+  indexing itself launch the behind-the-scenes mechanism; but
+  there is still not much scaffolding involved.
+</p>
+<div class="code-sample"><h4>Define a vector and a means to dynamically expand it</h4><pre>
+inf_vector = rnorm(10, 0, 1)   # arbritrarily start w/ init 10 items
+assure &lt;- function(index) {
+  extend_by = max(index-length(inf_vector), 0)
+  extras = rnorm(extend_by, 0, 1)
+  v &lt;- c(inf_vector, extras)
+  assign("inf_vector", v, env=.GlobalEnv)
+  return(index)
+}
+getRand &lt;- function(index) {
+  assure(index)
+  return(inf_vector[index])
+}
+
+</pre></div><p>
+  Probably the preferred usage is to access values through the
+  <code>getRand()</code> wrapper function. Notice that you are perfectly free to
+  use slices or computed values, as well as single indices:
+</p>
+<div class="code-sample"><h4>Using wrapper func as proxy to infinite virtual vector</h4><pre>
+&gt; getRand(3)                # Single index
+[1] 0.5557101
+&gt; getRand(1:5)              # Range
+[1] -0.05472011 -0.30419695  0.55571013  0.91667175 -0.40644081
+&gt; getRand(sqrt(c(4,16)))    # Computed index collection
+[1] -0.3041970  0.9166717
+&gt; getRand(100)              # Force background vector extension
+[1] 0.6577079
+
+</pre></div><p>
+  If you prefer, you can simply <code>assure()</code> the vector is large enough
+  before using elements:
+</p>
+<div class="code-sample"><h4>Extending vector (if needed) before access</h4><pre>
+&gt; assure(2000)
+[1] 2000
+&gt; inf_vector[1500]
+[1] 1.267652
+
+</pre></div><h3>Object Oriented R</h3>
+ <p>
+  R is capable of fully general object-oriented programming.  But to
+  understand this, you need to step back a bit in your thinking about
+  <em>what</em> OOP is.  Users of languages like Java and C++, or even of
+  Python, Ruby, or Smalltalk, might have a relatively circumscribed
+  picture of object-orientation.  Not wrong, but limited to one model.
+</p>
+<p>
+  R's approach to OOP is based around <em>generic functions</em> rather than
+  around class hierarchies. This concept will be familiar to readers who
+  have used Lisp's CLOS, or who have read my discussion of multiple
+  dispatch using Python (see Resources).  Unfortunately, R's approach is
+  still single dispatch, in that respect equivalent to the "traditional"
+  languages mentioned above (C++, Java, etc).
+</p>
+<p>
+  I should note--though I will not discuss it in any specificity in this
+  article--that recent version of R come with a package called <code>methods</code>
+  that define and manipulate so-called "formal methods."  In many ways,
+  using these formal methods imposes much of the discipline (and
+  limitations) you find in "traditional" OOP languages.  In any case,
+  formal OOP in R is built on top of the "informal OOP" that I discuss.
+  The <code>methods</code> package is still somewhat tentative, from what I can
+  tell; but some moderately tweaked version of it seems certain to
+  continue in later R versions.  See Resources for more background.
+</p>
+<p>
+  The thing to keep in mind in understanding OOP <em>sui generis</em> is that
+  OOP is not really a matter of inheritance specifically, but of
+  <em>dispatch decisions</em> more generally. That is, a call to <code>obj.method()</code>
+  in a "traditional" OOP language will look through the <em>method
+  resolution order</em> (MRO) of an object to find the <em>first</em> ancestor
+  class of <code>obj</code> that has a method <code>.method()</code>. What "first" means is a
+  more subtle question than is obvious at first (see Resources for a
+  good discussion of the evolving MRO design in Python). R makes the
+  same decision, but it turns the idea of inheritance "inside out."
+  Rather than have a bunch of <em>classes</em> which may define and override
+  various methods in their bodies, R creates a family of generic
+  <em>functions</em> that carry a tag describing what type of object they want
+  to operate on.
+</p>
+<h3>Generic Functions
+</h3>
+ <p>
+  As a simple example, let us create a generic function called
+  <code>whoami()</code>, and some tagged methods to dispatch to:
+</p>
+<div class="code-sample"><h4></h4><pre>#------------- Create a generic method
+&gt; whoami &lt;- function(x, ...) UseMethod("whoami")
+&gt; whoami.foo &lt;- function(x) print("I am a foo")
+&gt; whoami.bar &lt;- function(x) print("I am a bar")
+&gt; whoami.default &lt;- function(x) print("I don't know who I am")
+
+</pre></div><p>
+  The key here is that <em>every</em> object in R may belong to zero, one, or
+  more classes.  Specifically, the MRO of any given object (relative to
+  a particular method) is simply the vector of named classes, if any, in
+  its <code>class</code> attribute.  E.g.:
+</p>
+<div class="code-sample"><h4>Tagging objects with class memberships</h4><pre>
+&gt; a = 1:10
+&gt; b = 2:20
+&gt; whoami(a)                 # No class assigned
+[1] "I don't know who I am"
+&gt; attr(a,'class') &lt;- 'foo'
+&gt; attr(b,'class') &lt;- c('baz','bam','bar')
+&gt; whoami(a)
+[1] "I am a foo"
+&gt; whoami(b)                 # Search MRO for defined method
+[1] "I am a bar"
+&gt; attr(a,'class') &lt;- 'bar'  # Change the class of 'a'
+&gt; whoami(a)
+[1] "I am a bar"
+
+</pre></div><p>
+  As with traditional inheritance languages, an object need not utilize
+  the same class for every method it calls. Traditionally, if <code>Child</code>
+  inherits from <code>Mom</code> and <code>Dad</code> an object of type <code>Child</code> might utilize
+  <code>.meth1()</code> from <code>Mom</code> and <code>.meth2()</code> from <code>Dad</code>.  You can do this in
+  R, naturally, but <code>Mom</code> and <code>Dad</code> are nothing substantial, just names:
+</p>
+<div class="code-sample"><h4>Dispatch Resolution Per Method</h4><pre>
+&gt; meth1 &lt;- function(x) UseMethod("meth1")
+&gt; meth1.Mom &lt;- function(x) print("Mom's meth1")
+&gt; meth1.Dad &lt;- function(x) print("Dad's meth1")
+&gt; meth2 &lt;- function(x) UseMethod("meth2")
+&gt; meth2.Dad &lt;- function(x) print("Dad's meth2")
+&gt; attr(a,'class') &lt;- c('Mom','Dad')
+&gt; meth1(a)   # Even though meth1.Dad exists, Mom comes first for a
+[1] "Mom's meth1"
+&gt; meth2(a)
+[1] "Dad's meth2"
+
+</pre></div><h3>Including Ancestors
+</h3>
+ <p>
+  It might seem limiting to need to explicitly specify the MRO of an
+  object rather than rely on its implicit resolution through inheritance
+  syntax.  In point of fact, you can perfectly easily implement
+  inheritance-based MROs with a minimal wrapper functions.  The MRO I
+  use below is probably not the best one possible (see Simionato's essay
+  in Resources), but it shows the idea:
+</p>
+<div class="code-sample"><h4></h4><pre>char0 = character(0)
+makeMRO &lt;- function(classes=char0, parents=char0) {
+    # Create a method resolution order from an optional
+    # explicit list and an optional list of parents
+    mro &lt;- c(classes)
+    for (name in parents) {
+        mro &lt;- c(mro, name)
+        ancestors &lt;- attr(get(name),'class')
+        mro &lt;- c(mro, ancestors[ancestors != name])
+    }
+    return(mro)
+}
+NewInstance &lt;- function(value=0, classes=char0, parents=char0) {
+    # Create a new object based on initial value,
+    # explicit classes and parents (all optional)
+    obj &lt;- value
+    attr(obj,'class') &lt;- makeMRO(classes, parents)
+    return(obj)
+}
+MaternalGrandma &lt;- NewInstance()
+PaternalGrandma &lt;- NewInstance()
+Mom &lt;- NewInstance(classes='Mom', parents='MaternalGrandma')
+Dad &lt;- NewInstance(0, classes=c('Dad','Uncle'), 'PaternalGrandma')
+Me &lt;- NewInstance(value='Hello World', 'Me', c('Mom','Dad'))
+
+</pre></div><p>
+  In action:
+</p>
+<div class="code-sample"><h4>An object with an inheritance-generated MRO</h4><pre>
+&gt; print(Me)
+[1] "Hello World"
+attr(,"class")
+[1] "Me"              "Mom"             "MaternalGrandma" "Dad"
+[5] "Uncle"           "PaternalGrandma"
+
+</pre></div><p>
+  If you wish to follow a traditional approach to class/instance
+  relationship, you want to include the name of the class you create
+  (e.g. <code>Mom</code> in its <code>classes</code> argument). Actually, given that each
+  "class" is itself a perfectly good object, the above system is closer
+  to prototype-based OOP systems than class-based ones. Then again, the
+  whole system is flexible enough to include all variations. You are
+  perfectly free to segregate class objects from instance objects if you
+  wish--you might distinguish classes with a naming convention (e.g.
+  <code>Mom</code> versus <code>mom</code>), by attaching another attribute (e.g. <code>type</code> could
+  be <code>class</code> or <code>instance</code>; and utility functions would check that), or
+  by other means.
+</p>
+<h3>Revisiting an Infinite Vector
+</h3>
+ <p>
+  Now that we have some OOP scaffolding to work with, we can actually do
+  a better job with the infinite vector that was presented above.  The
+  first solution is perfectly workable, but it might be nice to have an
+  even more seamless and invisible infinite vector.
+</p>
+<p>
+  Operators in R are just shorthand ways to make function calls, and you
+  are just as free to specialize operator behavior on a class basis as
+  you are any other function call.  While we are at it, we can fix a few
+  other weaknesses in the first system: (1) We would like to be able to
+  generate as many distinct infinite vectors as need; (2) We would like
+  to be able to configure the random distribution used; (3) We would
+  like to have the option of initializing an infinite random vector with
+  the values in another vector.  So let us do all that:
+</p>
+<div class="code-sample"><h4>Define an indexable infinite random vector</h4><pre>
+"[.infinite_random" &lt;- function(v, index) {
+    name &lt;- attr(v, 'name')
+    rfunc &lt;- attr(v, 'rfunc')
+    extend_by = max(index-length(v), 0)
+    extras = rfunc(extend_by)
+    new &lt;- c(v, extras)
+    makeInfiniteRandomVector(name, v=new, rfunc)
+    return(new[index])
+}
+unitnorm &lt;- function(n) return(rnorm(n,0,1))
+empty &lt;- vector('numeric', 0)
+makeInfiniteRandomVector &lt;- function(name, v=empty, rfunc=unitnorm) {
+    # Create an infinite vector
+    # optionally extend existing vector, configurable rand func
+    attr(v,'class') &lt;- 'infinite_random'
+    attr(v,'name') &lt;- name
+    attr(v,'rfunc') &lt;- rfunc
+    assign(name, v, env=.GlobalEnv)
+}
+makeInfiniteRandomVector('v')
+# makeInfiniteRandomVector('inf_poisson', rfunc=my_poisson)
+# Usage is just, e.g.: v[1]; v[10]; v[9:12]; etc.
+
+</pre></div><p>
+  Indexing is <em>already</em> defined by R as a generic function, so there is
+  no need to call <code>UseMethod()</code> to set it up; you just define as many
+  new specializations as you wish.  Likewise, the built-in <code>print()</code>
+  function is also generic.  We could specialize that with, e.g.:
+</p>
+<div class="code-sample"><h4>Printing an infinite vector</h4><pre>
+print.infinite_random &lt;- function(v) {
+    a_few = 5
+    len = length(v)
+    end_range = (len-a_few)+1
+    cat('* Infinite Random Vector *\n')
+    cat('[1] ', v[1:a_few], '...\n')
+    cat('[')
+    cat(end_range)
+    cat('] ', v[end_range:len], '...\n')
+}
+
+</pre></div><p>
+  In action:
+</p>
+<div class="code-sample"><h4>Example of printing infinite vector</h4><pre>
+&gt; v[1000]
+[1] -1.341881
+&gt; print(v)
+* Infinite Random Vector *
+[1]  -0.6247392 1.308057 1.654919 1.691754 -2.251065 ...
+[996]  1.027440 0.8376 -0.7066545 -0.7778386 -1.341881 ...
+
+</pre></div><h3>Conclusion</h3>
+ <p>
+  Programming general purpose functions, objects and classes in R
+  requires taking a step back from the ways of thinking that traditional
+  procedural and object-oriented programmers are used to. The prior two
+  installments showed you some examples of <em>ad hoc</em> statistical
+  exploration, and did not really need such a rethinking (which is
+  fine).  But once you wish to reuse your code, it is worth
+  understanding the concepts of generic functions and the "inside
+  out" OOP you can write with them (but this inside out form is
+  actually more general).  The trick here, in my mind, is to
+  think of OOP entirely as a question of "what code gets called,
+  and how is the decision made".  Do not get hung up on the
+  specific syntax familiar languages, whether C++, Objective C,
+  Java, Ruby or Python, use to express that; focus on the concept
+  of dispatch itself.
+</p>
+<h3>Resources</h3>
+ <p>
+  The two earlier installments of this R series can be found at:
+</p>
+<blockquote>
+    Part 1. Dabbling with a wealth of statistical facilities:
+   <a href="http://gnosis.cx/publish/programming/R.html">http://www-106.ibm.com/developerworks/linux/library/l-r1/</a>
+</blockquote>
+<blockquote>
+    Part 2. Functional programming and data exploration:
+   <a href="http://gnosis.cx/publish/programming/R2.html">http://www-128.ibm.com/developerworks/linux/library/l-r2/</a>
+</blockquote>
+<p>
+  A good description of Monte Carlo integration can be found in a
+  Wikipedia entry:
+</p>
+<blockquote>
+   <a href="http://en.wikipedia.org/wiki/Monte_Carlo_method">http://en.wikipedia.org/wiki/Monte_Carlo_method</a>
+</blockquote>
+<p>
+  My discussion of multiple dispatch in a <cite>Charming Python</cite> column
+  provide good background for the generalization of OOP to generic
+  functions. The framework presented there <em>is</em> generic, but is also, in
+  fact, a superset of R's capabilities:
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/library/l-pydisp.html">http://www-106.ibm.com/developerworks/library/l-pydisp.html</a>
+</blockquote>
+<p>
+  Michele Simionato has a good discussion of the concepts of method
+  resolution order (MRO), and the merits of different MRO algorithms:
+</p>
+<blockquote>
+   <a href="http://www.python.org/2.3/mro.html">http://www.python.org/2.3/mro.html</a>
+</blockquote>
+<p>
+  R formal methods package:
+</p>
+<blockquote>
+   <a href="http://developer.r-project.org/methodsPackage.html">http://developer.r-project.org/methodsPackage.html</a>
+</blockquote>
+<p>
+  Chapter 4 of the full reference manual discusses formal methods and
+  the <code>methods</code> package:
+</p>
+<blockquote>
+   <a href="http://cran.r-project.org/doc/manuals/fullrefman.pdf">http://cran.r-project.org/doc/manuals/fullrefman.pdf</a>
+</blockquote>
+<p>
+  My introductory tutorial on Haskell can be found at:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/publish/programming/Haskell.pdf">http://gnosis.cx/publish/programming/Haskell.pdf</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  To David Mertz, all the world is a stage; and his career is devoted to
+  providing marginal staging instructions. David may be reached at
+  mertz@gnosis.cx; his life pored over at<a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>
+  Suggestions and recommendations on this, past, or future, columns are
+  welcomed. Check out David's book <cite>Text Processing in Python</cite> at
+  http//gnosis.cx/TPiP/.
+</p>
+</body></html>

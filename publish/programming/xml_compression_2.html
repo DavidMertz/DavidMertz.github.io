@@ -1,0 +1,566 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+  <title>Optimizing xml2struct Processing</title>
+
+
+  <style>
+.code-sample {background-color: #CCCCCC}
+.subhead     {font-size: 12pt}
+</style>
+</head>
+  <body>
+
+
+
+<h1>Optimizing <code>xml2struct</code> Processing for Embedded Applications</h1>
+
+<h2>White Paper on XML Compression (part II)</h2>
+
+<p><a href="mailto://mertz@gnosis.cx">David Mertz, Ph.D.</a><br>
+  <a href="http://gnosis.cx/publish/">Gnosis Software, Inc.</a><br>
+                   November 2001</p>
+
+<blockquote>
+  This paper continues its author's research into compression of XML
+  documents.&nbsp; The special structures in XML tend to allow certain
+  improvements over the most naive compression techniques--some lossless
+  document restructuring techniques can serve to improve compression
+  ratios.&nbsp; For a certain class of applications block-level
+  algorithms are preferable to document-level algorithms.&nbsp; This
+  paper explores memory and time optimization of the block-level version
+  of the <code> xml2struct</code> algorithm, and discusses its utility
+  within dedicated transmission channels.&nbsp; Code exploring these
+  techniques is provided in the paper, along with representative
+  quantitative results.<br>
+</blockquote>
+
+  <h3>Preface</h3>
+
+  <p>  XML documents, as is well known, tend to be quite large   compared
+         to other forms of data representation.  Of course, in   balance
+to   this,      the simplicity and generality of XML makes it   worthwhile,
+despite   its    verboseness.    Much of the time, in   fact, the size of
+XML really   makes    no difference--DASD   is   cheap, and the time on the
+wire might   be only   a small part of   the  total time in the process.
+ But at other   times, bandwidth      and storage space  can be important.
+  </p>
+
+  <p>  To quantify matters, it is not at all unusual for XML documents
+that represent table-oriented data to be three times as large   as a CSV
+or database representation, or even than a flat file.   A similar increase
+is typical in representing EDI data (such as   for ebXML projects).  In many
+of these context, one starts out   with multi-megabyte data sources, and
+making them multiple   times larger can be inconvenient, especially for transmission
+           purposes.  For example, for purposes of my research, I created
+  an   XML   representation of an approximately 1 megabyte Apache   access
+ logfile.     This  created an XML document 3.18 times the   size of the underlying
+   line-oriented     log.  The only   <em>information</em> added in the process
+   was some descriptive     names   for fields that could have also been
+specified    in a single   header     line of less than a hundred bytes.
+ Moreover, my     specific XML representation     did not include any namespaces
+in   the   tags, which would have increased    the size further. </p>
+
+  <h3>Background</h3>
+
+  <p>This paper follows two earlier papers I wrote concerning XML compression,
+       and specifically, the utility <code>xml2struct </code>that has been
+ refined      as my research progresses. &nbsp;An installment of a&nbsp; column
+ I write      for IBM developerWorks, "<a href="http://www-106.ibm.com/developerworks/xml/library/x-matters13.html">
+  XML Matters #13: XML and Compression</a>," introduced a strategy for
+losslessly      "restructuring" XML documents to make subsequent compression
+  with standard      compression tools more facile. &nbsp;In brief characterization,
+  the  conclusion     of that first paper, "XML and Compression," was that
+application   of the     <code>xml2struct</code> transformation prior&nbsp;
+to application   of   <code>    gzip</code>    significantly decreased the
+size of the resultant   compressed   file;&nbsp;  application of <code>xml2struct</code>
+   only sometimes,  and to  a smaller extent,  improved the compression of
+  <code> bzip2</code>     . &nbsp;</p>
+
+  <p>The utility <code>xml2struct</code> was developed independently of an
+       earlier similar application called XMill. &nbsp;While using different
+   specific    formats, the general strategy of grouping similar element contents
+   together    in the transformation output is common between the formats.
+ &nbsp;One  limitation    of XMill was shared by the first version of <code>
+   xml2struct</code>    ; &nbsp;that    is, both of them operate on entire
+ XML files. &nbsp;In several  plausible   scenarios, this file-level operation
+ is undesirable. &nbsp;One  situation  is that where the XML documents being
+ transformed are many megabytes  (or even gigabytes) in size. &nbsp;In such
+ cases, application of transformation/compression    will use memory and
+diskspace  proportionate with the size of the XML source;    moreover, insofar
+as transforming  a large XML document takes time, the transformation    can
+introduce large  latencies while a dependent process awaits the result.
+  &nbsp;A second situation is where the XML documents are not themselves necessarily
+  huge, but they still arrive over a comparatively slow channel. &nbsp;A
+router   that wants to forward compressed versions of XML packets is an example
+of   this situation. &nbsp;Rather than requiring a consuming process to wait
+for  the arrival of a complete document stream, it can be desirable to read
+only  a <em>block</em>    worth of the XML document, then apply the transformation/compression
+  to that single block.</p>
+
+  <p>In the Intel Developer Services white paper, "<a href="http://cedar.intel.com/cgi-bin/ids.dll/content/content.jsp?cntKey=Generic+Editorial%3a%3axml_comp&amp;cntType=IDS_EDITORIAL&amp;catCode=CAR">
+  Compression and Streaming of XML Documents</a>," I examined a modification
+      of the <code>xml2struct</code> algorithm that operates at block-level
+  instead    of file-level. &nbsp; The procedure there is to flush to an
+output   stream    transformed XML document fragments whenever a block size
+is reached   in an   input stream. &nbsp;Whatever general purpose compression
+is wanted   can be   applied to each individual transformed block. &nbsp;The
+modified   utility   can treat each <em>block</em> sized document fragement,
+essentially,   as a  small XML document in itself. &nbsp;Memory usage is
+kept in check with   this  modification; and block N can be processed immediately,
+even if block   N+1  is not yet available (perhaps because of channel latencies;
+but also   possibly  because the XML document is itself generated by some
+slow process).</p>
+
+  <p>In "Compression and Streaming of XML Documents," the focus of analysis
+      was the interaction between block size and compressed sizes of document
+    streams.   &nbsp;Several competing compression strategies were considered.
+    &nbsp;One  baseline strategy is to divide an input stream into blocks
+(out    of the considerations  mentioned above), but apply standard compression
+  algorithms  to each block  . &nbsp;This baseline tests whether restructuring
+  remains effective when using a block-level strategy. &nbsp;A second baseline
+  is the compression that is obtainable with file-level compression--the
+effectiveness    of block-level compression strategies must still be judged
+against the most   effective compression techniques (even if those most effective
+file-level techniques   are impractical for specific applications). &nbsp;The
+paper found, in brief,   that restructuring with <code> xml2struct</code>
+ improves compression significantly   across block sizes. &nbsp;I also found,
+however, that compression is much   less for 1k blocks than for larger sizes;
+it becomes significant for 10k  blocks; and only becomes closely comparable
+to file-level strategies for 100k blocks.  &nbsp;Moreover, I found that <code>
+bzip2</code> , which compresses  remarkably well in file-level or large block-size
+compression, handles small  block sizes extremely poorly.<br>
+    </p>
+
+  <p>My earlier research used programming code written in Python--which is
+      a high-level bytecode-compiled language, with considerable runtime
+dynamism.       &nbsp;Moreover, no focus was placed on the running time of
+the restructuring       process, even within the inherent speed constraints
+of the Python language.       &nbsp;In other words, the previous papers looked
+only at "how small?";    they   ignored the question "how fast?" &nbsp;This
+paper provides a new  highly-optimized     ANSI C implementation of <code>
+xml2struct</code> for  the purpose of examining     the feasability of using
+the utility in a context  where bandwidth saturation     of an output channel
+is important. &nbsp;In  a router, for example, one  cannot   consider a compression
+technique--no  matter how otherwise effective--that     requires throttling
+output speed  to the limit imposed by a slow compression     process.</p>
+
+  <h4>Competing Technologies</h4>
+
+  <p>When I wrote my earlier papers, I was not aware of the fascinating research
+      efforts of James Cheney of Cornell University, which he discusses in
+ &nbsp;"<a href="http://www.cs.cornell.edu/People/jcheney/xmlppm/paper/paper.html">
+Compressing XML with Multiplexed Hierarachical PPM Models</a>." &nbsp;Cheney
+      uses several variations on Prediction by Partial Match (PPM) compression.
+      &nbsp;The "multiplexing" in Cheney's title refers to "injecting" multiple
+      contexts into PPM models (the specific algorithms variants are called
+    <code>      MM</code>, <code>MHM</code> and <code>MHM*</code>) . &nbsp;This
+   is complicated,    and readers should refer to Cheney's paper for detail.
+   &nbsp;The bottom  line  for Cheney's technique is that it is able to achieve
+   substantially better  compression of XML documents than is <code>xml2struct</code>
+      , XMill, or   <code>  bzip2</code>, even where those techniques operate
+  at file-level.</p>
+
+  <p>Moreover, Cheney also observes that, "ESAX, unlike XMILL [<i>note: but
+      like <code>xml2struct</code></i>] , can be encoded and decoded online,
+      so that the XML data can be processed incrementally." &nbsp;ESAX is
+the    restructuring transformation that underlies the MHM algorithms. However,
+   as far as I can determine, once PPM techniques are applied, MHM can not
+ operated   at a block-level. &nbsp;And it should also be noted that ESAX
+streaming lacks  some of the validity properties of <code>xml2struct</code>
+   (see below).</p>
+
+  <p>The real drawback of MHM variants, however, is speed. &nbsp;While the
+      compression capabilities are nothing short of amazing, the running
+times      are anywhere from 6 to 40 times slower than <code>bzip2</code>
+. &nbsp;And      much of our discussion below points to the fact that <code>
+bzip2</code>       is  itself far too slow for consideration in the embedded
+contexts discussed.     &nbsp;So MHM, overall, is <i>at least</i> two orders
+of magnitude worse   than    <code> xml2struct</code> in speed terms.<br>
+    </p>
+
+  <h3>Analyzing Performance</h3>
+
+  <p>The source code, and a statically-linked Linux executable, for <code>
+           xml2struct</code> can be downloaded (see Resources). &nbsp;The
+pattern     of  the source code follows the Python version fairly closely;
+  <code>expat</code>           was used as a parsing library because of its
+reputation for speed   (SAX   is used in the Python version--although it wraps
+  <code>expat</code>     anyway--but    the callback structure and function
+names are kept the  same).  &nbsp;Plain    ANSI C is used to avoid any memory
+and speed overhead  associated  with C++.    &nbsp;The goal in this implementation
+is to be as  fast as possible,  while    simultaneously remaining light on
+memory usage.  &nbsp;</p>
+
+  <p>All the details cited below were measured on a Linux (2.2 kernel) system
+    running on a PIII-733 with 256Mb of PC-133 RAM. &nbsp;Some testing was
+ also  done on a range of IA systems, from a Pentium-233 to a P4-1.5Ghz. &nbsp;Performance
+   seems to vary pretty much as would be expected by the relative ratings
+on   standard benchmarks.  &nbsp;Porting to "exotic" architectures like embedded
+   chip designs might show some differences, but the general patterns are
+sufficiently   clear that such details are not crucial.</p>
+
+  <h4>Memory Usage</h4>
+
+  <p>       As a start, <code>xml2struct</code> requires the <code>expat</code>
+          library, either as a system library or statically linked in. &nbsp;With
+    symbols stripped , the <code>xml2struct</code> executable is about 11
+kilobytes     in size. &nbsp;But <code>libexpat.so</code> is just under 300kb.
+&nbsp;It    might be possible to reduce the functionality of <code>expat</code>
+   to only   include the functions actually used by <code>xml2struct</code>
+   (in a statically   linked version, presumably), but I have not examined
+that in detail. &nbsp;   A bit over 300 kilobytes is not much by the standards
+ of desktop, but could   be significant in embedded contexts.</p>
+
+  <p>Some &nbsp;arrays of data structures allocated in advance to length MAXTAGS
+(253 by default; see the previous papers for an explanation of this limitation)
+use another 4kb, or so. &nbsp;In addition, a default 8kb READBUFF is used
+when reading an input XML streams. &nbsp;A handful of global variables are
+used, but these are each of types that occupy just a few bytes. &nbsp;</p>
+
+  <p>Except for the memory usage described above, memory usage is strictly
+    dependent on the block size. &nbsp;A typedef'd structure called 'Stringfifo'
+    is used to hold&nbsp; element body contents during processing. &nbsp;An
+  array  of pointers to unallocated char pointers (i.e. strings) is used to
+  hold the  contents of each tag type. &nbsp;As well, each string is preallocated
+   to   <code>blocksize/numtags</code> to avoid extra <code>malloc()</code>
+     's  and  especially <code>realloc()</code>'s. &nbsp;The worst-case for
+ this  strategy   is where every tagname is short (since the tags themselves
+ do not go into   the Stringfifo), and every element type has one character
+ of content, except   the one element type that contains the remainder of
+the content. &nbsp;In   the worst-case, the Stringfifo structures use approximately
+ twice   <code>  blocksize</code>   of memory. &nbsp;Block output is buffered
+ to a character  string before it is written to STDOUT; and this string is
+ also currently set to an excessively  cautious twice <code>blocksize</code>
+     (in actual fact,  the needed allocation  is usually less than <code>
+blocksize</code>     , but occassionally  it is slightly  greater than <code>
+blocksize</code>    --the exact needed allocation  will probably  be added
+to a later version   of the utility). &nbsp;In principle,  the output  buffer
+is not needed at   all--but its existence potentially allows  multiple  buffered
+blocks to be  held pending the availability of an output  channel (it also
+allows a developer  to change where the output goes in one    <code> write_string()</code>
+   function).  &nbsp;So currently, dynamic memory  usage is (at worst) 4
+times    <code> blocksize</code>  ; however it could be  cut in half by eliminating
+ the buffer. &nbsp;For 1kb blocks, this size is  hardly interesting; for
+megabyte  blocks it could be important.<br>
+    </p>
+
+  <h4> Compression and block sizes</h4>
+
+  <p>For purposes of this testing, block compression was not performed within
+      the <code>xml2struct</code> utility itself. &nbsp;This allows us to
+look   at isolated timings for the restructuring itself, and for a separate
+compression   pass. &nbsp;Admittedly, a single compression pass on a block-restructured
+    stream will generally be somewhat faster than separate compressions of
+ each   block. &nbsp;But given the general lay of running times below, this
+ difference   is rather evidently unimportant.</p>
+
+  <p>Several comments can be made about a separate compression pass. &nbsp;There
+    is no deep relation between the restructuring pass and the compression
+ pass.   &nbsp;In situations where specific block sizes are important, compression
+    may be applied to each block within the same <code>xml2struct</code>
+process     (with a reduction in compression effectiveness). &nbsp;But in
+some cases,     it may make better sense to keep the compression step separate.
+&nbsp;In    an embedded/hardware usage, dedicated compression chips might
+be available    to operate on the intermediate stream. But even assuming
+a single physical    processor, a streamable compression algorithm can keep
+a symbol table in   memory between compression of successive blocks. &nbsp;Of
+course, the downside   of such streaming is that loss of a block during transmission
+causes loss   of the symbol table by the decompressor. &nbsp;With block-level
+compression   (whether or not it is part of the actual <code>xml2struct</code>
+ process)   , each block can be decompressed and restored independently.
+&nbsp;As a note,    <code> gzip</code> /<code>zlib</code> is streamable;
+  <code>bzip2</code>     is not.<br>
+    </p>
+
+  <p>Let us look at the results of several strategies, then make some comments.
+     Block   sizes     of 1k, 10k, 100k, and 1M were used, as in the earlier
+   papers. &nbsp;The source XML document was the <code>weblog.xml</code> file
+   discussed in the prior white paper: </p>
+
+  <div align="Center">
+  <p><img src="xc2_comp_chart.gif" alt="Block Size versus Compression Chart" width="536" height="253">
+    <br>
+    </p>
+    </div>
+
+  <p>This chart is fairly uninteresting looking; the small differences that
+   exist might be better examined with the actual numbers: </p>
+
+  <div align="Center">
+  <p><img src="xc2_comp_table.gif" alt="Block Size versus Compression Table" width="605" height="148">
+    </p>
+    </div>
+
+  <p>Clearly, block-level compression (i.e. no symbol table maintained between
+   blocks) suffers for very small block sizes--i.e. 1000 bytes. &nbsp;We saw
+   in the prior white paper that <code>bzip2</code> fares even worse under
+ this  contraint than does <code>gzip</code>. &nbsp;It is noteworthy as well
+ that  compression improves as block size increases, even where the compression
+  operates on the entire block-restructured file/stream. &nbsp;On all but
+the  smallest block sizes, a block-restructured XML file is morecompressible
+than  the original XML; this effect is stronger with <code>gzip</code> than
+with    <code>bzip2</code> . &nbsp;Of minor interest is the fact that block-level
+  restructuring plus file-level <code>bzip2</code> can best simple <code>
+ bzip2</code>      applied to the original XML, even though the prior paper
+showed that  block-level    <code>bzip2</code> was not as effective even for
+1M blocks.  &nbsp;But the   size differences in question are small, in any
+case.<br>
+    </p>
+
+  <h4> CPU Usage and Transformation Rate</h4>
+
+  <p>The compression size results were covered in greater detail in the prior
+   white papers. &nbsp;Of primary interest in this paper is the speed at which
+   restructuring and compression can be performed. &nbsp;If one imagines a
+ use  of these procedures as a channel intermediary, the ability of the process
+   to saturate its output channel is of crucial importance. The times presented
+   here were gathered using the Linux <code>time</code> utility. &nbsp;What
+  is reported is actual elapsed time of runs, but each run showed close to
+ 100% CPU usage, and was predominantly user time. &nbsp;In a few cases where
+ the times mildly surprised me (for example, <code>bzip2</code>  time getting
+ worse at larger block sizes), repeated runs were performed for verification.
+ &nbsp;All the timings seem consistent between runs, within a range of random-seeming
+   variations. &nbsp;In any case, one overall moral is clearly that block
+size   makes very little difference to the running times of any of the examined
+  transformations. The timing was performed on a machinewith enough memory
+ that all the files in question were in the disk cache when the tests were
+ run (so memory bandwidth might make some difference, but disk speed did
+not).<br>
+    </p>
+
+  <div align="Center"><img src="xc2_time_chart.gif" alt="Time Requirements of Transformations Chart" width="552" height="386">
+    <br>
+    </div>
+
+  <div align="Center">
+  <h3><big><b>Performance time table</b></big><br>
+    </h3>
+    </div>
+
+  <div align="Center">
+  <p><img src="xc2_time_table.gif" alt="Time Requirements of Transformations Chart">
+    </p>
+    </div>
+
+  <p>The general timing pattern is pretty clear. &nbsp;Restructuring (in the
+C implementation) is quite fast; <code>gzip</code> is even faster (although
+   if it were performed at a block-level it would slow down somewhat; <code>
+       bzip2</code> is slow. &nbsp;I also included the running time of the
+ original   Python implementation as a baseline. &nbsp;As indicated earlier,
+ the Python   version is completely non-optimized--actually, I am surprised
+ that it is  not even slower in comparison to the C implementation. &nbsp;With
+ some refactoring,   the running time of a Python implementation could probably
+ be cut in half.   &nbsp;However, the quick summary of both the Python implementation
+ and a    <code>bzip2</code> pass would still be that they are <em>too slow</em>
+    for embedded purposes (and the Python version uses much more memory also,
+ for several reasons--as does <code>bzip2</code>, for different reasons).</p>
+
+  <p>What do these running times mean for output channel saturation? A three
+   megabyte file can be restructured in slightly under a second on a PIII-733,
+   with block size making only a small difference to the speed of restructuring.
+   &nbsp;Compressing the restructured file with <code>gzip</code>/<code>zlib</code>
+        adds another quarter second to the process time. &nbsp;This works
+out   to  approximately 20 megabits/sec; in other words, a PIII-733 performing
+   <code>  xml2struct</code>+<code>gzip</code> can saturate two 10 megabit
+ ethernet  channels, or about 13 T1 lines. &nbsp;A Pentium-233 that I tested
+ on performs  about 6 times more slowly, which is still twice the requirement
+ for saturating  a T1 line. &nbsp;A slow Pentium, or perhaps even a fast 80486--or
+ similarly  performing chip within a different architecture family--if dedicated
+ to the    <code>xml2struct</code> process, should suffice to fill a T1 line
+ (which  is dedicated to transmitting XML documents efficiently). &nbsp;Going
+ in the  other direction, a Intel P4 or AMD Athlon running at clock speeds
+ over a Gigahertz, should be able to satisfy the requirements of a 45 megabit
+ T3 line. &nbsp;Brief and informal testing on a P4-1.5Ghz system put performance
+  in the right range to saturate a T3. &nbsp;Multiprocessor systems should
+ be able to handle even higher bandwidth requirements, such as 100 megabit
+ ethernet.</p>
+
+  <p>The timings presented are still at a fairly general and approximate level.
+&nbsp;Anyone wishing to implement <code>xml2struct</code> in an actual embedded
+middleware system will need to perform more precise engineering specifications,
+and perform more extensive testing across a range of XML documents. &nbsp;But
+at a general scale, current generation--or even several generations old--chips
+have adequate processing power to saturate communications channel architectures
+currently in use.<br>
+    </p>
+
+  <h3>Block Statelessness and "Cladistic Validity"</h3>
+
+  <p>Blocks in the <code>xml2struct</code> format--whether post-compressed
+   or not--retains a property &nbsp;that I would call <em>cladistic validity</em>
+      . &nbsp;In contrast, streamed protocols like ESAX (used in MHM), or
+simple    sized-threshhold chunking (such as with block compression) do not
+retain   this desirable property. &nbsp; In biology, cladistics is the study
+of phylogenetic    relationships--in other words, of evolutionary family trees.
+&nbsp;XML documents,   by topological analogy, also form hierarchical trees.
+&nbsp;The validity  of XML documents is determined by their conformance with
+the rules in a DTD  or other Schema; such a Schema specifies a number of
+structural requirements   for valid documents, both what elements must exist
+within a document, and   what container relationships are allowed to hold
+among elements. A block  in the <code>xml2struct</code> format maintains all
+the "family relationships"  in the XML that underlies the block, both ancestral
+and descendent. &nbsp;A  block cannot necessarily contain all the parts necessary
+to satisfy validity  according to its DTD, but&nbsp; it does both contain
+a list of every ascending  parent element, and preserve the structure of
+contained elements.</p>
+
+  <p>An example would help here. &nbsp; Suppose that a particular DTD governs
+   the markup of books. &nbsp;The top element is <code>&lt;book&gt;</code>
+  ,  and this contains a <code>&lt;TOC&gt;</code>, a <code>&lt;preface&gt;</code>
+     , and <code>&lt;introduction&gt;</code>, several <code>&lt;chapter&gt;</code>
+      's, and <code>&lt;endmatter&gt;</code>. &nbsp;<code>&lt;chapter&gt;</code>
+      's, in turn contain <code>&lt;section&gt;</code>'s; <code>&lt;section&gt;</code>
+      's contain <code>&lt;subsection&gt;</code>'s; and <code>&lt;subsection&gt;</code>
+      's contain <code>&lt;topic&gt;</code>'s. &nbsp;A real DTD would have
+ additional   markup elements. &nbsp;An <code>xml2struct</code> block from
+ the middle of  a restructured document might contain the following (tag
+abbreviations  here  expanded from their one byte representation for readability):<br>
+    </p>
+
+  <div align="Center">
+  <table cellpadding="2" cellspacing="2" border="1" width="75%" align="Center">
+      <caption><b>Structural information in sample restructured block</b></caption><tbody>
+        <tr>
+          <td valign="Top" bgcolor="#ccffff">
+        <div align="Right"><b>prior_state: </b><br>
+          </div>
+          </td>
+          <td valign="Top" bgcolor="#ccffff"><b>book</b> :: <b>chapter</b>
+  :: <b>section</b> :: <b>subsection</b></td>
+        </tr>
+        <tr>
+          <td valign="Top" bgcolor="#99ff99">
+        <div align="Right"><b>docstruct: </b><br>
+          </div>
+          </td>
+          <td valign="Top" bgcolor="#99ff99"><b>topic</b> :: <i>content</i>
+   :: <b>/</b> :: <b>/</b></td>
+        </tr>
+
+    </tbody>
+  </table>
+    </div>
+
+  <p>Based on this block alone, we have no idea what the <i>preface</i> element
+ might contain. &nbsp;But we <i>do</i> know that the <i>topic</i> contained
+ in this block is&nbsp; itself be contained in a <i>subsection</i>. &nbsp;Since
+ two "close tag" abbreviations occur in the <code>docstruct</code>, we also
+ know that this block completes the enclosing <i>subsection</i>. &nbsp;Moreover,
+ we are provided information that the <i>subsection</i> is contained inside
+ a <i>section</i>, the <i>section</i> in a <i>chapter</i>, and the <i>chapter</i>
+   in a <i>book</i>. &nbsp;All of this is required by the validity constraints
+ of our example, but not every DTD&nbsp; specifies a&nbsp; unique possible
+ context (for example, <i>topic'</i>s might also occur in <i>preface</i>'s).
+  &nbsp;Moreover, by explicitly encoding the hierarchical context, an additional
+ check against corruption is provided.</p>
+
+  <p>For a variety of "data oriented" XML formats--or more specifically,
+for interprocess communications--being able to recover cladistically valid
+document fragments is useful, even if surrounding blocks are unavailable
+(due to corruption during transmission, or for other reasons). &nbsp;By imposing
+the constraint of cladistic validity isolated restructured (and compressed)
+blocks can--for many purposes--contain meaningful and useful collections
+of data.<br>
+    </p>
+
+  <h3>         Channel Multiplexing</h3>
+
+  <p>Multiple channels of XML input streams can be multiplexed with nearly
+ zero additional processor and memory requirements. &nbsp; <code>xml2struct</code>
+   restructuring is <i>almost</i> stateless: all that is needed to maintain
+ the state of a stream's restructuring is its <code>prior_state</code> stack.
+ &nbsp;This stack is of size <code>MAXDEPTH</code>, which is currently defined
+ as 64 (bytes), plus room for two <code>int</code>'s within the stack structure.
+ &nbsp;Of course, some sort of flag will usually be attached to each transmitted
+ block to indicate which stream it belongs to--a small number of bytes might
+ need to be devoted to a "stream name" table. &nbsp;Multiplexing is not implemented
+ currently, but the framework is straightforwardly available.</p>
+
+  <p>The scenario where channel multiplexing is useful is a situation where
+ multiple XML streams arrive at an encoding computer (or router, etc). &nbsp;Each
+ stream arrives at a limited rate, either because of channel bandwidth or
+because of limits in the encoding process (e.g. the data is generated by
+real-world events such as an equipment monitor). &nbsp;The encoding computer
+can buffer each input stream until <code>blocksize</code> has accumulted
+in a given buffer, then restructure, compress and transmit the transformed
+version of that XML stream. &nbsp;During the transformation process, another
+buffer may have reached its buffer threshhold, and the encoding computer
+can turn its attention to that stream. &nbsp;All that needs to be saved and
+reloaded for a "stream state" is the 72 bytes or so of <code>prior_state</code>
+  stack. &nbsp;The CPU in the encoding machine only needs to focus on one
+block restructuring at any given time, so encoding speed remains constant.</p>
+
+  <p>A related note cannot be fully explored here, but is worth observing.
+ &nbsp;A developer might be inclined to restructure multiple XML streams
+by  using a threading or <code>fork()</code> strategy. &nbsp;Doing this would
+ be a mistake. &nbsp;An asynchronous socket handler within a single process
+ saves thread overhead, and avoids the need for context switches (other than
+ loading 72 bytes, or moving a pointer to the right 72 bytes). &nbsp;<code>
+  select()</code> can juggle communications channels, or a higher level wrapper
+ like Python's <code>asyncore.py</code> can be used to ease the programming.<br>
+    </p>
+
+  <h3>Conclusion</h3>
+
+  <p>  The structure of documents significantly affects their   compressibility
+         with standard compression algorithms.  Since   XML encodes much
+detail       of   its semantic structure in its   syntactic form, a "restructuring"
+   of   such   documents can improve   their compressibility. &nbsp;A previous
+   paper showed that   such restructuring techniques are amenable to serialization
+        using parsed blocks from large XML documents.  &nbsp;This paper demonstrated
+ that the <code>xml2struct</code> algorithm can be implemented in optimized
+ C with peformance characteristics that allow it to saturate relevant output
+ channels, using current generation CPUs and currently common channel bandwidths.
+      </p>
+
+  <h3>Resources</h3>
+
+  <p>The source code archive for <code>xml2struct</code> can be found at:</p>
+
+  <blockquote><a href="http://gnosis.cx/download/xml2struct.zip">http://gnosis.cx/download/xml2struct.zip</a><br>
+     </blockquote>
+
+    <p>My previous Intel Developer Services' white paper on adapting <code>
+  xml2struct</code> to block-level structuring can be found at:</p>
+
+    <blockquote><a href="http://cedar.intel.com/cgi-bin/ids.dll/content/content.jsp?cntKey=Generic+Editorial%3a%3axml_comp&amp;cntType=IDS_EDITORIAL&amp;catCode=CAR">
+  Compression and Streaming of XML Documents</a><br>
+      </blockquote>
+
+      <p>  The writeup of my first round of research addresses document
+restructuring         in a general way, without yet considering   serialization
+issues.  A  number     of quantitative comparisons are   contained therein
+that provide    useful   background.   The earlier   article appears on IBM
+developerWorks    (use its   search   facility).   An archival copy can be
+found at: </p>
+
+      <blockquote><a href="http://www-106.ibm.com/developerworks/xml/library/x-matters13.html">
+               http://www-106.ibm.com/developerworks/xml/library/x-matters13.html</a></blockquote>
+
+        <p>  The XMill XML compressor addresses XML document restructuring
+   in a manner similar to that I have.  Information and a   downloadable
+version          can be found at the below link.  The   license requires
+a click-through,         and the download page   unfortunately seems to have
+a buggy script  that     does  not allow   downloads from all sites. </p>
+
+        <blockquote><a href="http://www.research.att.com/sw/tools/xmill/">
+   http://www.research.att.com/sw/tools/xmill/</a></blockquote>
+
+          <p>Very good (and very slow) compression of XML documents is provided
+     by the utility <code>xmlppm</code>. &nbsp;A discussion by its creator
+ is   contained at:</p>
+
+          <blockquote><a href="http://www.cs.cornell.edu/People/jcheney/xmlppm/paper/paper.html">
+            Compressing XML with Multiplexed Hierarachical PPM Models</a>
+."</blockquote>
+
+            <p>  I wrote what I believe is a good general introduction to
+     data   compression.  It can be found at: </p>
+
+            <blockquote><a href="http://www.gnosis.cx/publish/programming/compression_primer.html">
+                  http://www.gnosis.cx/publish/programming/compression_primer.html<br>
+               </a></blockquote>
+
+              </body>
+              </html>

@@ -1,0 +1,395 @@
+LINUX ZONE FEATURE: The Twisted Framework
+Part Four, Secure Clients and Servers
+
+David Mertz, Ph.D.
+Selector, Gnosis Software, Inc.
+August, 2003
+
+    In this final installment of his series on Twisted, David looks at
+    specialized protocols and servers contained in the Twisted package,
+    with a focus on secure connections.
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  One thing the servers and clients in my prior installments had in
+  common is that they operated completely in the clear,
+  cryptographically speaking. Sometimes, however, you want to keep your
+  connection free from prying eyes (or from tampering/spoofing).
+
+  While protocols for determining permissions on server resources are
+  interesting, for this installment, I want to look at protocols
+  involving actual wire-level encryption. But for general background,
+  readers might want to investigate web-oriented mechanisms like Basic
+  Authentication, which is described in RFC-2617 and implemented in
+  Apache and other web servers. The Twisted package [twisted.cred] is a
+  general, but complex and complicated, framework for providing
+  authentication services in general-purpose Twisted servers (not
+  limited to web ones).
+
+  There are two widespread APIs for wire-level encryption over the
+  Internet: SSL and SSH. The former, SSL (Secure Sockets Layer) is
+  widely implemented in web browsers and web servers; in principle,
+  however, there is no reason SSL is specifically tied to the HTTP
+  protocol. SSL combines a public-key infrastructure, complete with a
+  "web-of-trust" based on Certificate Authorities, with creation of a
+  session key for standard symmetrical encryption during the life of a
+  particular connection.
+
+  Twisted -does- come with an SSL framework; however, as with most
+  things in Twisted, exactly how it might work is poorly documented--I
+  tried downloading two likely support packages to try to get the
+  Twisted v.1.0.6 script 'test_ssl.py' to work (see Resources). I am
+  sure that with -some- version of the right 3rd party libraries (and
+  some Twisted version)--and perhaps after corrections to erroneous
+  examples--it is possible to use SSL with Twisted, but I have not done
+  so for this article.
+
+  The other widespread API for wire-level encryption is SSH (Secure
+  Shell), well known from the tool of the same name (in lowercase:
+  'ssh'). Many of the underlying cryptographic algorithms are shared
+  between SSL and SSH, but SSH is focussed on creating encrypted shell
+  connections (rather than using snooper-friendly programs/protocols
+  like 'telnet' and 'rsh'). Twisted lets you write your own custom SSH
+  clients and servers, which is quite nice. While you certainly -can-
+  write a basic interactive remote shell, like that provided by the
+  client and server 'shh' and 'sshd', you can also create more
+  specialized tools to use these secure connections for higher-level
+  purposes.
+
+AN SSH WEBLOG CLIENT
+------------------------------------------------------------------------
+
+  In continuing with the example of this series of articles, I created a
+  tool to examine hits to my webserver log file, but to do so over an
+  encrypted SSH channel. This purposes is realistic, actually--perhaps I
+  do not want to publically reveal the hits I get to someone monitoring
+  my packet stream.
+
+  Before I could get far in my efforts, I needed to figure out what the
+  line 'import Crypto' in the [twisted.conch] package was trying to
+  find. The name is obviously a hint, but I was also somewhat familiar
+  with the Python cryptography library maintained by Andrew Kuchling
+  (see Resources). A bit of googling, a download, and an install later,
+  Twisted's 'test_conch.py' would run without complaint.  So on to the
+  project of creating a custom SSH client.
+
+  I based my client on the example provided in the Twisted file
+  'doc/examples/sshsimpleclient.py'. I have simplified somewhat (as well
+  as customizing); you you might want to look at what else is in the
+  distributed example.  As with most Twisted components, [twisted.conch]
+  consists of several layers, each of which can be customized.  I guess
+  the name "conch" is a play on the word "shell" in Secure Shell.
+
+  The -transport- level is a customization of 'SSHClientTransport'.  We
+  may define several methods, but need to at least define
+  '.verifyHostKey()' and '.connectionSecure()'.  In our implementation,
+  we trust every host key, and simply give control back to the
+  asynchronous reactor core by returning a 'defer.succeed' object.  Of
+  course, if you wanted to verify a host against a known key, you could
+  do that in '.verifyHostKey()'.
+
+  Creating the channel is where the other layers come in.  A child of
+  'SSHUserAuthClient' performs the actual login authentication; and if
+  successful, it established a connection (for which I define a child of
+  'SSHConnection').  This connection, in turn, creates a channel--a
+  child of 'SSHChannel'.  It is the channel, which I named simply
+  'Channel' that does the actual custom work.  Specifically, the channel
+  does things like send and receive data and commands.  Let us look at
+  my specific client:
+
+      #---------------------- ssh-weblog.py ---------------------------#
+      #!/usr/bin/env python
+      """Monitor a remote weblog over SSH
+
+        USAGE: ssh-weblog.py user@host logfile
+      """
+      from twisted.conch.ssh import transport, userauth, connection, channel
+      from twisted.conch.ssh.common import NS
+      from twisted.internet import defer, protocol, reactor
+      from twisted.python import log
+      from getpass import getpass
+      import struct, sys, os
+      import webloglib as wll
+      #
+      USER,HOST,CMD = None,None,None
+      #
+      class Transport(transport.SSHClientTransport):
+          def verifyHostKey(self, hostKey, fingerprint):
+              print 'host key fingerprint: %s' % fingerprint
+              return defer.succeed(1)
+
+          def connectionSecure(self):
+              self.requestService(UserAuth(USER, Connection()))
+      #
+      class UserAuth(userauth.SSHUserAuthClient):
+          def getPassword(self):
+              return defer.succeed(getpass("password: "))
+          def getPublicKey(self):
+              return  # Empty implementation: always use password auth
+      #
+      class Connection(connection.SSHConnection):
+          def serviceStarted(self):
+              self.openChannel(Channel(2**16, 2**15, self))
+      #
+      class Channel(channel.SSHChannel):
+          name = 'session'    # must use this exact string
+          def openFailed(self, reason):
+                  print '"%s" failed: %s' % (CMD,reason)
+          def channelOpen(self, data):
+              self.welcome = data   # Might display/process welcome screen
+              d = self.conn.sendRequest(self,'exec',NS(CMD),wantReply=1)
+          def dataReceived(self, data):
+              recs = data.strip().split('\n')
+              for rec in recs:
+                  hit = [field.strip('"') for field in wll.log_fields(rec)]
+                  resource = hit[wll.request].split()[1]
+                  referrer = hit[wll.referrer]
+                  if resource=='/kill-weblog-monitor':
+                      print "Bye bye..."
+                      self.closed()
+                      return
+                  elif hit[wll.status]=='200' and hit[wll.referrer]!='-':
+                      print referrer, ' -->', resource
+          def closed(self):
+              self.loseConnection()
+              reactor.stop()
+      #
+      if __name__=='__main__':
+          if len(sys.argv) < 3:
+              sys.stderr.write('__doc__')
+              sys.exit()
+          USER, HOST = sys.argv[1].split('@')
+          CMD = 'tail -f -n 1 '+sys.argv[2]
+          protocol.ClientCreator(reactor, Transport).connectTCP(HOST, 22)
+          reactor.run()
+
+  The overall structure of the client is like most of the Twisted
+  applications we have seen.  It creates a protocol, and monitors events
+  in an asyncronous loop (i.e. 'reactor.run()').
+
+  The interesting part comes in the methods of 'Channel()'. As soon as
+  the channel is opened, we execute a custom command--in this case, a
+  'tail -f' on the weblog file whose name is specified on the command
+  line. Naturally, the host, which is still a completely generic 'sshd'
+  server rather than anything Twisted specific, starts sending some data
+  back. The method 'dataReceived()' parses the data as it comes in
+  (incrementally as 'tail' produces more).  For this specific client, we
+  decide when to terminate based on the actual content of the weblog
+  being parsed--which amounts to having a web-based way to kill the
+  monitoring application.  While that specific configuration is probably
+  unusual, the example demonstrates the general concept of severing the
+  connection when some condition is met (it could be any condition).  A
+  session looks like:
+
+      #-------------- Sample session of weblog monitor ----------------#
+      $ ./ssh-weblog.py gnosis@gnosis.cx access-log
+      host key fingerprint: 56:54:76:b6:92:68:85:bb:61:d0:f0:0e:3d:91:ce:34
+      password:
+      http://gnosis.cx/publish/  --> /publish/whatsnew.html
+      http://gnosis.cx/publish/whatsnew.html  --> /home/hugo.gif
+      Bye bye...
+
+  This is pretty much the same as all the other weblog monitors this
+  series created.  I ended the above session by pointing a browser at
+  <http://gnosis.cx/kill-weblog-monitor> from another window (otherwise,
+  it would watch indefinitely).
+
+MODIFYING THE SSH CLIENT
+------------------------------------------------------------------------
+
+  It is a simple matter to create other SSH clients that achive other
+  purposes.  For example, I copied 'ssh-weblog.py' to the name 'scp.py',
+  and made just a few changes to the code.  The '__main__' body parses
+  options slightly differently, and the docstring was adjusted; beyond
+  that, I simply modified the '.dataReceived()' method to read:
+
+      #------------ scp.py (modified Channel method) ------------------#
+      def dataReceived(self, data):
+          open(DST,'wb').write(data)
+          self.closed()
+
+   (the variable CMD was set to '"cat "+sys.argv[2]').
+
+   Viola! I have implemented the tool 'scp' that accompanies many SSH
+   clients.
+
+   These examples are both "run and collect" tools. That is, they are
+   not interactive during the session. But you could easily create
+   another tool that made additional calls to 'self.conn.sendRequest()'
+   within 'Channel' methods. In fact, if the client was some kind of GUI
+   client, you might add those data collection forms as callbacks within
+   the reactor. That is, perhaps when certain forms are completed, new
+   remote commands could be issued, and the results again collected for
+   processing or presentation.
+
+AN SSH WEBLOG SERVER
+------------------------------------------------------------------------
+
+  An SSH server uses much of the same structure as the client. As
+  before, I simplify and customize 'doc/examples/sshsimpleserver.py' for
+  my example. One twist is that a server is best created using an
+  'SSHFactory' child that has been configured with appropriate keys and
+  classes.
+
+  In our SSH weblog server, we configure a password and username for an
+  authorized user.  In the example, they are hardcoded, but you could
+  obviously store them otherwise; perhaps configure a list of authorized
+  weblog monitors.  Let us look at the example:
+
+      #-------------------- ssh-weblog-server.py ----------------------#
+      #!/usr/bin/env python2.3
+      from twisted.cred import authorizer
+      from twisted.conch import identity, error
+      from twisted.conch.ssh import userauth, connection, channel, keys
+      from twisted.conch.ssh.factory import SSHFactory
+      from twisted.internet import reactor, protocol, defer
+      import time
+      #
+      class Identity(identity.ConchIdentity):
+          def validatePublicKey(self, data):
+              return defer.succeed('')
+          def verifyPlainPassword(self, password):
+              if password=='password' and self.name == 'user':
+                  return defer.succeed('')
+              return defer.fail(error.ConchError('bad password'))
+      #
+      class Authorizer(authorizer.Authorizer):
+          def getIdentityRequest(self, name):
+              return defer.succeed(Identity(name, self))
+      #
+      class Connection(connection.SSHConnection):
+          def gotGlobalRequest(self, *args):
+              return 0
+          def getChannel(self, channelType, windowSize, maxPacket, data):
+              if channelType == 'session':
+                  return Channel(remoteWindow=windowSize,
+                            remoteMaxPacket=maxPacket, conn=self)
+              return 0
+      #
+      class Channel(channel.SSHChannel):
+          def channelOpen(self, data):
+              weblog = open('../access.log')
+              weblog.readlines()
+              while 1:
+                  time.sleep(5)
+                  for rec in weblog.readlines():
+                      self.write(rec)
+          def request_pty_req(self, data):
+              return 1    # ignore, but this gets send for shell requests
+          def request_shell(self, data):
+              self.client = protocol.Protocol()
+              self.client.makeConnection(self)
+              self.dataReceived = self.client.dataReceived
+              return 1
+          def loseConnection(self):
+              self.client.connectionLost()
+              channel.SSHChannel.loseConnection(self)
+      #
+      class Factory(SSHFactory):
+          publicKeys = {'ssh-rsa':keys.getPublicKeyString(
+                                  data=open('~/.ssh/id_rsa.pub').read())}
+          privateKeys ={'ssh-rsa':keys.getPrivateKeyObject(
+                                  data=open('~/.ssh/id_rsa').read())}
+          services = {'ssh-userauth': userauth.SSHUserAuthServer,
+                      'ssh-connection': Connection}
+          authorizer = Authorizer()
+      #
+      reactor.listenTCP(8022, Factory())
+      reactor.run()
+
+  For brevity, the parsing and formatting of the weblog records is
+  omitted, but the idea of using a open channel to write new records as
+  they become available is almost the same as with the client approach.
+  Of course, in this case, any generic SSH client can connect to the
+  specialized server:
+
+      #-------------- Sample session of weblog monitor ----------------#
+      $ ssh gnosis.python-hosting.com -p 8022 -l user
+      user@gnosis.python-hosting.com's password:
+      141.154.146.89 - - [26/Aug/2003:02:47:40 -0500]
+      "GET /voting-project/August.2003/0010.html HTTP/1.1" 200 8986
+      "http://gnosis.python-hosting.com/voting-project/August.2003/0009.html"
+      "Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en-us) AppleWebKit/85
+      (KHTML, like Gecko) Safari/85"
+      [...]
+
+  Much as with the client approach, an enhanced version might become
+  more interactive; the '.dataReceived()' method of the channel could be
+  customized to do something useful with data sent from the (generic)
+  client.
+
+SOCIAL DYNAMICS
+------------------------------------------------------------------------
+
+  The biggest reservation I have about recommending the Twisted
+  framework is, unfortunately, the "wild west" feel among its developer
+  group. The software itself is quite powerful. But even more than in
+  most open source projects, there is insufficient API consistency
+  between releases, the documentation remains rough, and a thick skin is
+  the main prerequisite for seeking help on its mailing list; you can
+  get helpful responses, but only after wading through the acerbic ones.
+
+  As this installment demonstrated--especially in my attempts to fill in
+  pieces missing from the examples and documentation, Twisted could
+  really stand to have a helpful community behind it.  Hopefully, with
+  time, both the documentation and mailing list will improve in quality;
+  the facilities hiding in the various corners of the Twisted framework
+  are quite impressive.
+
+RESOURCES
+------------------------------------------------------------------------
+
+  Twisted Matrix comes with quite a bit of documentation, and
+  many examples.  Browse around its homepage to glean a greater
+  sense of how Twisted Matrix works, and what has been
+  implemented with it (or wait for the next installments here):
+
+    http://twistedmatrix.com
+
+  The Python Cryptography Toolkit, maintained by Andrew Kuchlink, can be
+  download at the following URL. This toolkit includes numerous
+  well-investigated public-key, private-key, and cryptographic hash
+  functions, as well as some miscellaneous other protocols:
+
+    http://www.amk.ca/python/code/crypto.html
+
+  The sourceforge project "Python OpenSSL Wrappers" (POW) looks like an
+  useful tool for SSL programming in Python.  However, it does not
+  appear (from my trial-and-error) to be what Twisted is looking for in
+  its SSL subsystem:
+
+    http://sourceforge.net/projects/pow
+
+  Most likely, for Twisted, the SSL wrapper you want is pyOpenSSL. At
+  least after I installed that, I got past an import exception in
+  Twisted's 'test_ssl.py' (but only so far as what appears to be an
+  error in the test script):
+
+    http://sourceforge.net/projects/pyopenssl/
+
+  Some background on HTTP authentication techniques can be found in
+  RFC-2617:
+
+    http://www.ietf.org/rfc/rfc2617.txt
+
+  An introduction to the SSL protocol can be found at:
+
+    http://developer.netscape.com/tech/security/ssl/howitworks.html
+
+  A simple version of a weblog server was presented in the
+  developerWorks tip, _Use Simple API for XML as a long-running
+  event processor_:
+
+    http://www-106.ibm.com/developerworks/xml/library/x-tipasysax.html
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz believes that it is turtles all the way down. David
+  may be reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/. And buy his book: _Text Processing
+  in Python_ (http://tinyurl.com/jskh).
+
+

@@ -1,0 +1,421 @@
+XML MATTERS #39: Scalable Vector Graphics
+Flexible and portable XML language for graphics
+
+David Mertz, Ph.D.
+Drawn This Way, Gnosis Software, Inc.
+March 2005
+
+    SVG (Scalable Vector Graphics) is an XML format that describes
+    scale-independent graphics, with good support in Free Software and
+    commercial tools.  SVG is versatile and powerful, supporting both
+    scripting and animation, as well as the full collection of shapes,
+    fills and curves that you would expect from a vector format.
+    Perhaps best of all, SVG is XML, so lends itself to transformation
+    and/or generation with any of the tools and libraries you might use
+    for XML generally.
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  The fact is that there were already quite a few powerful vector
+  graphics formats before SVG was first imagined around 2001. Postscript
+  and its cousin PDF are widely used in many applications. More
+  application specific formats include AI (Adobe Illustrator; Postscript
+  based), CDR (CorelDRAW!), CGM (Computer Graphics Metafile), WMF
+  (Windows Metafile), DXF (Autocad), HPGL (Hewlett-Packard Graphics
+  Language), WPG (WordPerfect), and many others. For vector drawings
+  that can even incorporate animation, sound and interactivity,
+  Macromedia's SWF/Flash is common for content distributed on the World
+  Wide Web.
+
+  The main thing that distinguishes Scalable Vector Graphics from all
+  these other formats is that it is an application of XML. While that
+  same fact means that an equivalent graphic will probably be described
+  considerably more verbosely in SVG than in most other vector formats,
+  it also means SVG is more versatile to programmatic manipulation. In
+  particular, SVG may be manipulated within web browsers (or other
+  applications) using ECMAScript and the Document Object Model (DOM).
+  And equally, SVG may be transformed and/or produced using familiar XML
+  techniques like XSLT, or with XML support libraries. SVG can be mixed
+  with other XML formats using namespaces. Moreover, SVG can even be
+  stylized using CSS. Overall, SVG is a friendly player in XML and web
+  space.
+
+  Beyond being an XML format, SVG is also a fully open standard
+  published by the W3C (see Resources).  Unlike most of the vector
+  formats mentioned above, SVG is free of any patent or copyright
+  restrictions, and its specification is -fully- documented.  Like other
+  W3C standards, the specification document itself -is- copyrighted; but
+  under W3C's non-restrictive terms that allow widespread and no-cost
+  reproduction and utilization (e.g. no NDAs attach to reading the
+  specification).
+
+GETTING STARTED
+------------------------------------------------------------------------
+
+  A nice thing about Scalable Vector Graphics is that viewing SVG is
+  already widely supported by most modern web browsers, either natively
+  or via plug-ins. The exact state of support is somewhat in flux, but
+  with the right mojo, you should be able to view SVG using
+  Firefox/Mozilla, KHTML (i.e. Konqueror and Safari), Opera, or Amaya.
+  Using plug-ins from Adobe or Corel you can even coax Internet Explorer
+  into displaying SVG (or so I understand). A number of standalone
+  viewers for SVG also exist, especially utilizing the Free Software
+  Batik SVG Toolkit (part of the Apache XML project).
+
+  In many cases, you will view SVG files as standalone documents. If so,
+  these files will should be served as MIME type 'image/svg+xml', and
+  will generally have the file extension '.svg'. Gzip compressed SVG
+  files should have the extension '.svgz', and are directly supported by
+  most SVG enabled tools. And SVG file is just an XML file with an
+  appropriate document type declaration. We will see this declaration in
+  several examples below
+
+  However, perhaps even more commonly, an SVG document can be embedded
+  within a larger document, particularly within an XHTML page. Other
+  compound XML formats, such as OASIS OpenDocument also do or will
+  support, embedding SVG within them. There are, three main ways you
+  might include an SVG graphic within an (X)HTML page: the '<object>'
+  tag, the '<embed>' tag, and as an embedded namespace.  Unfortunately,
+  exactly which of these actually works depends on your browser and
+  version.  For example, I created the following XHTML document (with a
+  doctype intended to support namespace nesting):
+
+      #---------------------- svg-nested.html -------------------------#
+      <?xml version="1.0" standalone="no"?>
+      <!DOCTYPE html PUBLIC
+          "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN"
+          "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd">
+      <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+      <head>
+        <title>SVG as embedded object and nested namespace</title>
+      </head>
+      <body>
+      <h2>Object tag</h2>
+      <object type="image/svg+xml" data="standalone.svg">
+        Your browser is currently unable to display SVG images.
+      </object>
+      <h2>Nested namespace</h2>
+      <svg:svg version="1.1" width="5cm" height="4cm"
+            xmlns:svg="http://www.w3.org/2000/svg">
+        <svg:title>Four rectangles</svg:title>
+        <svg:rect x="0.5cm" y="0.5cm" width="2cm" height="1cm"/>
+        <svg:rect x="0.5cm" y="2cm" width="1cm" height="1.5cm"/>
+        <svg:rect x="3cm" y="0.5cm" width="1.5cm" height="2cm"/>
+        <svg:rect x="3.5cm" y="3cm" width="1cm" height="0.5cm"/>
+        <!-- Show outline of canvas using 'rect' element -->
+        <svg:rect x=".01cm" y=".01cm" width="4.98cm" height="3.98cm"
+             fill="none" stroke="blue" stroke-width=".02cm" />
+      </svg:svg>
+      <h2>Embed tag</h2>
+      <embed id="svg3" src="standalone.svg" />
+      </body>
+      </html>
+
+  Safari/KHTML does the best of the browsers I tried. Even here, the
+  results are better if the file is -named- with an '.html' extension
+  than with an '.xml' extension. Overall '<embed>' seems like the most
+  successful approach. You might see this document rendered something
+  like:
+
+  {Web browser displaying svg-nested.html:
+   http://gnosis.cx/publish/programming/svg-in-html.gif}
+
+  Incidentally, the examples I present in this article are rather simple
+  combinations of basic shapes, text, colors, etc. But SVG is fully
+  capable of representing complex and attractive drawings. Just to
+  comfort readers, here is the famous Postscript tiger picture included
+  with Ghostscript and other tools, rendered using SVG (I only touched
+  up its overall sizing):
+
+  {Web browser displaying the famous tiger as SVG:
+   http://gnosis.cx/publish/programming/tiger-safari.gif}
+
+FEATURES OF SVG DOCUMENTS
+------------------------------------------------------------------------
+
+  The prior XHTML example showed you a very basic SVG drawing. The
+  external file 'standalone.svg' that is referenced contains the same
+  elements as are embedded in the XHTML, minus the extra namespace
+  qualifier in the tags.  SVG gives you a number of graphic primitives,
+  and each primitive has various XML attributes that further specify the
+  graphic: color, size, position, fill, outline, etc.  However, explicit
+  graphic primitives for ellipses, rectangles, polygons, etc.--or for more
+  sophisticated '<path>' elements that might include cubic or quadratic
+  Bezier curves--are often included within '<g>' elements to group
+  several primitives together.  The nice thing about a '<g>' group is
+  that it can be scaled, moved, styled, and otherwise modified as a
+  whole.  Modifications to the group generally apply to the collection
+  of shapes within them (including nested '<g>' groups).  This is
+  especially useful when SVG documents are scripted.
+
+All The Way Down
+
+  One thing to notice about SVG documents is that they are not really
+  XML "all the way down." Syntactically, SVG -is- indeed XML, but a
+  significant portion of the information content of an SVG drawing is
+  contained within comma- and space-delimited data inside SVG
+  attributes. When I mention -information content-, I am not speaking of
+  XML Infoset, but only of the more informal idea of "what does it
+  contain." Doing it this way is a reasonable compromise, by all means,
+  since using child elements for every point or handle that defines a
+  curve would make SVG even more verbose. But XML-level processing
+  techniques like XSLT can thereby not really do much with path data.
+  For example, this is a quadratic Bezier path element:
+
+      #------------------ Quadratic Bezier Path -----------------------#
+      <path d="M200,300 Q400,50 600,300 T1000,300"
+            fill="none" stroke="red" stroke-width="5"  />
+
+  Or this is a polygon:
+
+      #------------ Polygon describing a pentagram --------------------#
+      <polygon fill="red" stroke="blue" stroke-width="10"
+                points="350,75  379,161 469,161 397,215
+                        423,301 350,250 277,301 303,215
+                        231,161 321,161" />
+
+Adding Style
+
+  I mentioned earlier that you can use CSS selectors and syntax to
+  modify the appearance of SVG drawings.  As with HTML and other
+  CSS-supporting formats, you may either specify CSS information inline
+  or as a reference to an external stylesheet.  A very simple example of
+  inline CSS is:
+
+      #--------------------- inline-styled.svg ------------------------#
+      <?xml version="1.0" standalone="no"?>
+      <!-- By ref:
+        <?xml-stylesheet href="mystyle.css" type="text/css"?>
+      -->
+      <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+          "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+      <svg width="10cm" height="5cm" viewBox="0 0 1000 500"
+          xmlns="http://www.w3.org/2000/svg" version="1.1">
+        <defs>
+          <style type="text/css"><![CDATA[
+            rect {
+              fill: red;
+              stroke: blue;
+              stroke-width: 3
+            } ]]>
+          </style>
+        </defs>
+        <rect x="200" y="100" width="600" height="300"/>
+      </svg>
+
+  While you can certainly style an entire tag using CSS, a better use
+  for CSS with SVG is probably using class selectors.  For example, you
+  might define a variety of types of rectangles within a stylesheet,
+  then attach a 'class' XML attribute to each one in your drawing rather
+  than repeat the full list of colors, fills, strokes, etc. that you
+  define for the class.  Just by changing the stylesheet, you can change
+  the overall look of your diagram to make it more suitable for a
+  different context.
+
+Reusing Elements
+
+  Beyond the use of CSS, the 'inline-styled.svg' example showed another
+  nice feature of SVG.  You can include predefined content within an SVG
+  document--either content defined within or outside the document being
+  rendered.
+
+  One way of using predefined content as part of an SVG drawing is with
+  the '<image>' element. In concept, '<image>' in SVG is very similar to
+  '<img>' in HTML. The element simply instructs the rendering client to
+  draw the content of an external image--which may itself be either SVG
+  or a raster image in JPEG or PNG format--inside the current SVG
+  context.  Much as if the external image were a regular graphic
+  element, you can size and position it.  E.g.:
+
+      #---- Including external SVG drawing within the current one -----#
+      <image x="200" y="200" width="100px" height="100px"
+             xlink:href="http://example.org/external.svg">
+
+  Perhaps more interesting than the '<image>' tag are the complimentary
+  elements '<def>' and '<use>'.  The first, which we saw with the CSS
+  example, lets you create SVG elements that are not directly rendered
+  when defined--normally the SVG rendering model draws each object in
+  exactly the order it occurs within an SVG document, each overlaying
+  the last.  But '<style>' is a bit atypical in that you can not really
+  later render it, -per se-.
+
+  You can include whatever graphic elements you like in a '<def>'
+  section, including '<g>' groups and '<symbol>' elements (symbols are
+  similar to groups; this article does not have room to address that
+  distinction). Outside the definition, you can '<use>' graphic elements
+  defined in a '<def>' section--even the '<def>' section of an external
+  SVG document.  For example:
+
+      #------------- Using predefined graphic elements ----------------#
+      <?xml version="1.0" standalone="no"?>
+      <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+           "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+      <svg width="7cm" height="3cm" viewBox="0 0 70 30" version="1.1"
+           xmlns="http://www.w3.org/2000/svg"
+           xmlns:xlink="http://www.w3.org/1999/xlink">
+        <desc>'use' with a 'transform' attribute</desc>
+        <defs>
+          <rect id="MyRect" x="0" y="0" width="40" height="5"/>
+        </defs>
+        <use xlink:href="#MyRect"
+             transform="translate(10,23) rotate(-30)" />
+        <use xlink:href="#MyRect"
+             transform="translate(20,3) rotate(30)" />
+        <use xlink:href="http://example.org/foo.svg#OtherRect"/>
+      </svg>
+
+  In this example, the same defined rectangle is rendered with two
+  different transformations, then an externally defined element is also
+  rendered (the 'id' name suggests it is also a rectangle, but we do not
+  know for sure from this fragment--in fact, the external content could
+  change between renderings).
+
+ANIMATION AND SCRIPTING
+------------------------------------------------------------------------
+
+  As mentioned, SVG is scriptable using ECMAScript. In principle, this
+  lets SVG documents interact with user actions. Aiding the
+  web-application space, SVG also contains an HTML-like '<a>' element
+  for hyperlinks. A simple interaction in SVG is modifying a document
+  based on mouse clicks on particular graphic elements. The following is
+  trivial, but you could easily let an SVG graphic respond, for example,
+  to clicks on regions of a map or objects in a flow chart:
+
+      #----------- Letting an SVG shape respond to clicks -------------#
+      <svg>
+        <title>ECMAScript function for an onclick event</title>
+        <desc>Simplified from
+            http://www.w3.org/TR/SVG11/images/script/script01.svg</desc>
+        <script type="text/ecmascript"> <![CDATA[
+          function circle_click(evt) {
+            var circle = evt.target;
+            var currentRadius = circle.getAttribute("r");
+            if (currentRadius == 100)
+              circle.setAttribute("r", currentRadius*2);
+            else
+              circle.setAttribute("r", currentRadius*0.5);
+          } ]]>
+        </script>
+        <!-- Act on each click event -->
+        <circle onclick="circle_click(evt)" cx="300" cy="225" r="100"
+                fill="red"/>
+        </text>
+      </svg>
+
+  You can also use ECMAScript and the DOM to animate SVG graphics.  For
+  example the following produces a nice looking effect of text that
+  grows and changes opacity:
+
+      #------------------ Animating SVG with Javascript ---------------#
+      <svg viewBox="0 0 400 200"
+           onload="StartAnimation(evt)" version="1.1"
+           xmlns="http://www.w3.org/2000/svg">
+        <script type="text/ecmascript"><![CDATA[
+          var txt, step=0;
+          function StartAnimation(evt) {
+            txt = evt.target.ownerDocument.getElementById("Text");
+            ShowAndGrowElement();
+          }
+          function ShowAndGrowElement() {
+            step = step+1;
+            if (step > 200) return;
+            // Scale text string gradually until it is 20 times larger
+            txt.setAttribute("transform", "scale("+ step/10 +")" );
+            // Make the string more opaque
+            txt.setAttribute("opacity", step/200);
+            // Call ShowAndGrowElement again 50 milliseconds later.
+            setTimeout("ShowAndGrowElement()", 50)
+          }
+          window.ShowAndGrowElement = ShowAndGrowElement
+        ]]></script>
+        <g transform="translate(50,150)" fill="red" font-size="7">
+          <text id="Text">SVG</text>
+        </g>
+      </svg>
+
+Pure SVG Scripting
+
+  Using ECMAScript gives you full programming flexibility. But if all
+  you want is the animations aspect, SVG has '<animate>' and related
+  tags ('<animateMotion>', '<animateColor>', etc.). These are quite
+  flexible, and let you animate each element of an SVG document
+  independently, and in various manners.  For example, the following
+  produces the same grow-and-become-opaque effect that the previous
+  ECMAScript technique does:
+
+      #------------------ Animating with SVG alone --------------------#
+      <svg viewBox="0 0 400 200"
+           xmlns="http://www.w3.org/2000/svg">
+        <g transform="translate(50,150)" fill="red" font-size="7">
+          <text id="Text">SVG
+            <animateTransform attributeName="transform" attributeType="XML"
+                    type="scale" from="0" to="20" begin="0s" dur="10s"
+                    fill="freeze" />
+            <animate attributeName="opacity" attributeType="CSS"
+                     from="0" to="1" begin="0s" dur="10s" repeatCount="1" />
+          </text>
+        </g>
+      </svg>
+
+CONCLUSION
+------------------------------------------------------------------------
+
+  This article has touched on just some basics of the Scalable Vector
+  Format.  Writing it has been enough to make me quite excited about SVG
+  as a format.  The web really needs a vector format for efficiently
+  conveying complex graphics in a scale-independent way.  Throwing in
+  scripting, animation, linking, and all the rest, just makes SVG that
+  much more useful.  And luckily, most web browsers now have pretty good
+  SVG support, so no real obstacle exists to deploying graphics and
+  simple web applications based on SVG.
+
+RESOURCES
+------------------------------------------------------------------------
+
+  SVG.org is a community website aiming at bringing all the SVG users,
+  developers and enthusiasts to a single place on the Web.
+
+  Wikipedia, as usual, has a good entry on SVG.  Most specifically, that
+  is a good place to find updated links to many of the tools that
+  support or utilize SVG, including most of those mentioned in this
+  article:
+
+    http://en.wikipedia.org/wiki/SVG
+
+  The OASIS page for the OpenDocument format is at:
+
+    http://www.oasis-open.org/committees/tc_home.php?wg_abbrev=office
+
+  This open format is supported by OpenOffice.org currently, and will
+  become the standard format for KOffice as well.  And ealier _XML
+  Matters_ discussed the use of XML in office/wordprocessor documents:
+
+    http://www-106.ibm.com/developerworks/xml/library/x-matters33/
+
+  Graphviz, is a Free Software tool for creating circle-and-arrow
+  diagrams (hierarchical, directed, entity-relationship, etc) from an
+  elegant abstract language for describing diagrams.  Graphviz includes
+  an SVG export capability.
+
+    http://www.graphviz.org/
+
+  Skencil is a Free Software interactive vector drawing appliction
+  written in Python that supports import and export of SVG (as well as
+  many other formats):
+
+    http://www.skencil.org/
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi} David Mertz
+  David Mertz is a great believer in open standards, and is only
+  modestly intimidated by verbosity. David may be reached at
+  mertz@gnosis.cx; his life pored over at http://gnosis.cx/publish/.
+  Suggestions and recommendations on this, past, or future, columns are
+  welcomed. Check out David's book _Text Processing in Python_ at
+  http//gnosis.cx/TPiP/.
+
+

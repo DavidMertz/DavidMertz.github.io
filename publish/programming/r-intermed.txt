@@ -1,0 +1,111 @@
+How does this look?
+
+
+brad
+--------
+
+INTERMEDIATE STATISTICAL ANALYSIS
+------------------------------------------------------------------------
+
+One of R's strengths is it's ability to calculate linear, as well
+as nonlinear regression models.  To see a simple example, let's
+create two vectors.  'x' will be the sample times in days measured
+from the beginning of the data set, and 'y' will be the corresponding
+outside temperatures.
+
+	> y <- glarp$outside
+	> x <- 1:length(y)/(24*60/3)
+
+We can fit a line to this data with 
+
+	> l1 = lm(y ~ x)
+	> summary(l1)
+
+	Call:
+	lm(formula = y ~ x)
+
+	Residuals:
+	     Min       1Q   Median       3Q      Max
+	-29.4402  -7.4330   0.2871   7.4971  23.1355
+
+	Coefficients:
+		      Estimate Std. Error t value Pr(>|t|)
+	(Intercept) 10.2511014  0.0447748  228.95   <2e-16 ***
+	x           -0.0037324  0.0002172  -17.19   <2e-16 ***
+	---
+	Signif. codes:  0 `***' 0.001 `**' 0.01 `*' 0.05 `.' 0.1 ` ' 1
+
+	Residual standard error: 9.236 on 169489 degrees of freedom
+	Multiple R-Squared: 0.00174,    Adjusted R-squared: 0.001734
+	F-statistic: 295.4 on 1 and 169489 DF,  p-value: < 2.2e-16
+
+The '~' syntax denotes a formula object.  This in effect asks R to
+find the coefficients A and B which minimize
+
+	sum((y[i] - (A * x[i] + B))^2)
+
+(the Intercept term B is implicitly included).  The best fit is
+when A = -0.0037324 and B = 10.2511014.  Note, the residual standard
+error is 9.236, which is about the same size as the standard deviation
+in y to begin with.  This tells us that a simple linear function
+of time is an extremely bad model for outside temperature.
+
+A better model might be to use sine and cosine functions with a
+periods of 1 day and 1 year.  This we can do by changing the formula
+to
+
+	> l2 = lm(y ~ +I(sin(2*pi*x/365)) +I(cos(2*pi*x/365)) +I(sin(2*pi*x)) +I(cos(2*pi*x)) )
+
+This formula syntax is a little tricky:  Inside the I()'s the
+arithmetic symbols have their usual meanings, so the first I(), for
+example, is means '2 times pi times x divided by 365'.  The '+'
+signs in front of the I()'s indicate not addition, but that the
+factor following the '+' should be included in the model.  The
+result can, as usual, be displayed with the summary() command
+
+	> summary(l2)
+
+	Call:
+	lm(formula = y ~ +I(sin(2 * pi * x/365)) + I(cos(2 * pi * x/365)) +
+	    I(sin(2 * pi * x)) + I(cos(2 * pi * x)))
+
+	Residuals:
+	     Min       1Q   Median       3Q      Max
+	-21.7522  -3.4440   0.1651   3.7004  17.0517
+
+	Coefficients:
+			       Estimate Std. Error t value Pr(>|t|)
+	(Intercept)             9.76817    0.01306  747.66   <2e-16 ***
+	I(sin(2 * pi * x/365)) -1.17171    0.01827  -64.13   <2e-16 ***
+	I(cos(2 * pi * x/365)) 10.04347    0.01869  537.46   <2e-16 ***
+	I(sin(2 * pi * x))     -0.58321    0.01846  -31.59   <2e-16 ***
+	I(cos(2 * pi * x))      3.64653    0.01848  197.30   <2e-16 ***
+	---
+	Signif. codes:  0 `***' 0.001 `**' 0.01 `*' 0.05 `.' 0.1 ` ' 1
+
+	Residual standard error: 5.377 on 169486 degrees of freedom
+	Multiple R-Squared: 0.6617,     Adjusted R-squared: 0.6617
+	F-statistic: 8.286e+04 on 4 and 169486 DF,  p-value: < 2.2e-16
+
+The residual error is still large (5.377), but we console ourselves
+in the fact that Colorado weather is so notoriously unpredictable.
+
+R provides still more tools for time series analysis.  For example,
+we can plot the autocorrelation function for the living room
+temperature
+
+	> acf(ts(glarp$livingroom, frequency=(24*60/3)), na.action=na.pass, lag.max=9*(24*60/3))
+
+<include livingroom-acf.pdf>
+
+The embeded ts() function creates a time series object out of the
+vector glarp$livingroom.  The sampling frequency is specified in
+samples per day.  Not surprisingly the temperature is strongly
+correlated when the shift is an integer number of days.  Note also
+the slightly larger peak at 7 days.  This is caused by the fact
+that Brad's thermostat sets the temperature differently on weekends,
+resulting in slightly larger correlation with a 7 day window.
+
+--------
+Here's the livingroom-acf.pdf file:
+

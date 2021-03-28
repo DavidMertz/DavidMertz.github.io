@@ -1,0 +1,432 @@
+CHARMING PYTHON #B16: Testing Frameworks in Python.
+Making sure your software does what you think it does
+
+David Mertz, Ph.D.
+Random Traveller, Gnosis Software, Inc.
+March, 2004
+
+    Python comes with two standard modules for unit testings: [unittest]
+    and [doctest]. These modules expand on the capability of the
+    built-in 'assert' statement, which is used for validation of
+    pre-conditions and post-conditions within functions. This
+    installment discusses the best ways to incorporate testing into
+    Python development, weighing the advantages of different styles for
+    different types of projects.
+
+ABOUT UNIT TESTING
+------------------------------------------------------------------------
+
+  I have a confession. Even as the author of a fairly widely used public
+  domain Python library, I have been far less than systematic in
+  including unit tests for my modules. In fact, the bulk of those tests
+  that -are- included in Gnosis Utilities fall under gnosis.xml.pickle,
+  and were written by a contributor to that subpackage. I have found
+  that the large majority of third-party Python packages I donwnload
+  also lack a thorough unit test collection.
+
+  Moreover, the tests that exist in Gnosis Utilities suffer from another
+  flaw: you often need to understand the expected output in a fair
+  amount of detail to even know whether a test succeeds or fails. What
+  passes as tests are actually--in many cases--more like small utilities
+  that utilize parts of the library. These tests/utilities allow input
+  from arbitrary data sources (of the right type) and/or output in
+  descriptive data formats. These test utilities are actually rather
+  useful when you need to debug some subtle error. But as
+  self-explanatory sanity checks of changes between library versions,
+  these kinds of tests do not succeed.
+
+  In this installment, I try to improve the tests in my utility
+  collection using the Python standard library modules [doctest] and
+  [unittest], and walk readers through my experience (with a few
+  pointers on best approaches).
+
+  The script 'gnosis/xml/objectify/test/test_basic.py' provides a
+  typical example of both currrent testing weaknesses and their
+  solution. Let us look at a recent version of the script:
+
+      #--------- gnosis/xml/objectify/test/test_basic.py --------------#
+      "Read and print and objectified XML file"
+      import sys
+      from gnosis.xml.objectify import XML_Objectify, pyobj_printer
+      if len(sys.argv) > 1:
+          for filename in sys.argv[1:]:
+              for parser in ('DOM','EXPAT'):
+                  try:
+                      xml_obj = XML_Objectify(filename, parser=parser)
+                      py_obj = xml_obj.make_instance()
+                      print pyobj_printer(py_obj).encode('UTF-8')
+                      sys.stderr.write("++ SUCCESS (using "+parser+")\n")
+                      print "="*50
+                  except:
+                      sys.stderr.write("++ FAILED (using "+parser+")\n")
+                      print "="*50
+      else:
+          print "Please specify one or more XML files to Objectify."
+
+  The utility function 'pyobj_printer()' produces a non-XML
+  representation of arbitrary Python object--specifically one that does
+  not use any other facilities of [gnosis.xml.objectify] (nor -anything-
+  else from Gnosis Utilities). I will probably move the function
+  elsewhere within the Gnosis package for later releases. In any case,
+  'pyobj_printer()' uses various Python-like indentation and symbols to
+  describe objects and their attributes (similar to [pprint], but
+  expanding instances rather than built-in datatypes).
+
+  The script 'test_basic.py' provides a good debugging tool if some
+  particular XML does not seem to get "objectified" right--you can
+  inspect visually exactly what attributes and values the resultant
+  object has.  Moreover, if you redirect STDOUT, you can look at the
+  simple messages on STDERR, e.g.
+
+      #--------------- Examining STDERR result messages ---------------#
+      $ python test_basic.py testns.xml > /dev/null
+      ++ SUCCESS (using DOM)
+      ++ FAILED (using EXPAT)
+
+  However, success or failure in the above example run are defined very
+  weakly: success just means no exception was raised, not that the
+  (redirected) output was -correct-.
+
+USING DOCTEST
+------------------------------------------------------------------------
+
+  The module [doctest] lets you embed comments within docstrings that
+  show the desired behavior of various statements, especially function
+  and method results. To do this is mostly just a matter of making the
+  docstring look like an interactive shell session; and easy way to do
+  that is to copy-and-paste from a Python interactive shell (or from
+  Idle, PythonWin, MacPython, or other IDEs with interactive sessions).
+  Let us look at an improved 'test_basic.py' script to illustrate:
+
+      #--------- test_basic.py script with self-diagnostics -----------#
+      import sys
+      from gnosis.xml.objectify import XML_Objectify, pyobj_printer, EXPAT, DOM
+      LF = "\n"
+
+      def show(xml_src, parser):
+          """Self test using simple or user-specified XML data
+
+          >>> xml = '''<?xml version="1.0"?>
+          ...  <!DOCTYPE Spam SYSTEM "spam.dtd" >
+          ...  <Spam>
+          ...    <Eggs>Some text about eggs.</Eggs>
+          ...    <MoreSpam>Ode to Spam</MoreSpam>
+          ...  </Spam>'''
+          >>> squeeze = lambda s: s.replace(LF*2,LF).strip()
+          >>> print squeeze(show(xml,DOM)[0])
+          -----* _XO_Spam *-----
+          {Eggs}
+             PCDATA=Some text about eggs.
+          {MoreSpam}
+             PCDATA=Ode to Spam
+          >>> print squeeze(show(xml,EXPAT)[0])
+          -----* _XO_Spam *-----
+          {Eggs}
+             PCDATA=Some text about eggs.
+          {MoreSpam}
+             PCDATA=Ode to Spam
+          PCDATA=
+          """
+          try:
+              xml_obj = XML_Objectify(xml_src, parser=parser)
+              py_obj = xml_obj.make_instance()
+              return (pyobj_printer(py_obj).encode('UTF-8'),
+                      "++ SUCCESS (using "+parser+")\n")
+          except:
+              return ("","++ FAILED (using "+parser+")\n")
+
+      if __name__ == "__main__":
+          if len(sys.argv)==1 or sys.argv[1]=="-v":
+              import doctest, test_basic
+              doctest.testmod(test_basic)
+          elif sys.argv[1] in ('-h','-help','--help'):
+              print "You may specify XML files to objectify instead of self-test"
+              print "(Use '-v' for verbose output, otherwise no message means success)"
+          else:
+              for filename in sys.argv[1:]:
+                  for parser in (DOM, EXPAT):
+                      output, message = show(filename, parser)
+                      print output
+                      sys.stderr.write(message)
+                      print "="*50
+
+  There are several things worth noting about the improved (and
+  expanded) test script.  I arranged the '__main__' block so that if you
+  specify XML files on the command line, the script continues to
+  implement the prior behavior.  This lets you continue to check XML
+  other than the test case, and eyeball the result--either to find
+  errors in what gnosis.xml.objectify does, or just to understand its
+  purpose.  In standard fashion, '-h' or '--help' get you an explanation
+  of usage.
+
+  The interesting new functionality comes when 'test_basic.py' is run
+  with no arguments (or with the '-v' argument that simply gets obeyed
+  by [doctest] in its turn).  In this case we run [doctest] on the
+  module/script itself--you can see from the fact that we import
+  'test_basic' into the scripts own namespace that we could just as
+  easily import some other module that we wanted to test.  The function
+  'doctest.testmod()' looks through all the docstrings in the module
+  itself, its functions, and its classes, to find anything that
+  resembles an interactive shell session; in this case, such a session
+  is found in the 'show()' function.
+
+  The docstring to 'show()' illustrates a couple minor gotchas in
+  designing good [doctest] sessions. Unfortunately, the way [doctest]
+  parses apparent sessions treats blank lines as ending sessions--so
+  output like the return value of 'pyobj_printer()' needs to be munged
+  slightly to be tested. The easiest approach is a function like
+  'squeeze()', defined in the docstring itself (it just removes adjacent
+  newlines). Also, since a docstring is--after all--a string escape
+  sequences like '\n' are expanded, which makes it slightly confusing to
+  escape a newline -within- the code sample.  You could use '\\n', but I
+  found defining 'LF' to clarify things.
+
+  The self-test defined in the docstring to 'show()' does a bit more
+  than merely make sure no exception is raised (as with the initial
+  test script).  At least one simple XML document is checked for correct
+  "objectification."  Of course, it is still possible that some other
+  XML document would not be processed correctly--for example, the
+  namespace XML document 'testns.xml' that we tried above fails with the
+  EXPAT parser.  The docstrings in processed by [doctest] -can- contain
+  tracebacks within them, but a better approach to special cases is to
+  utilize [unittest].
+
+USING UNITTEST
+------------------------------------------------------------------------
+
+  Another test included with [gnosis.xml.objectify] is 'test_expat.py'.
+  The main reason for this test is simply that users of the subpackage
+  who use the EXPAT parser currently need to call a special setup
+  function to enable processing XML documents with namespaces (this fact
+  is evolutionary rather than designed, and might change later). The old
+  test tried printing the object without the setup, caught the exception
+  if it occurs, then prints with the setup if needed (and gives a
+  message about what happened).
+
+  As with 'test_basic.py' the tool 'test_expat.py' lets you examine how
+  a novel XML document is represented by [gnosis.xml.objectify]. But as
+  before, there are a number of concrete behaviors that we would like to
+  verify. An enhanced and expanded version of 'test_expat.py' uses
+  [unittest] to check what happens when various actions are performed,
+  including assertions that certain conditions or (approximate)
+  equalities hold, or that certain exceptions are raised when expected.
+  Let us take a look:
+
+      #--------- test_expat.py script with self-diagnostics -----------#
+      "Objectify using Expat parser, namespace setup where needed"
+
+      import unittest, sys, cStringIO
+      from os.path import isfile
+      from gnosis.xml.objectify import make_instance, config_nspace_sep,\
+                                       XML_Objectify
+      BASIC, NS = 'test.xml','testns.xml'
+
+      class Prerequisite(unittest.TestCase):
+          def testHaveLibrary(self):
+              "Import the gnosis.xml.objectify library"
+              import gnosis.xml.objectify
+          def testHaveFiles(self):
+              "Check for sample XML files, NS and BASIC"
+              self.failUnless(isfile(BASIC))
+              self.failUnless(isfile(NS))
+
+      class ExpatTest(unittest.TestCase):
+          def setUp(self):
+              self.orig_nspace = XML_Objectify.expat_kwargs.get('nspace_sep','')
+          def testNoNamespace(self):
+              "Objectify namespace-free XML document"
+              o = make_instance(BASIC)
+          def testNamespaceFailure(self):
+              "Raise SyntaxError on non-setup namespace XML"
+              self.assertRaises(SyntaxError, make_instance, NS)
+          def testNamespaceSuccess(self):
+              "Sucessfully objectify NS after setup"
+              config_nspace_sep(None)
+              o = make_instance(NS)
+          def testNspaceBasic(self):
+              "Successfully objectify BASIC despite extra setup"
+              config_nspace_sep(None)
+              o = make_instance(BASIC)
+          def tearDown(self):
+              XML_Objectify.expat_kwargs['nspace_sep'] = self.orig_nspace
+
+      if __name__ == '__main__':
+          if len(sys.argv) == 1:
+              unittest.main()
+          elif sys.argv[1] in ('-q','--quiet'):
+              suite = unittest.TestSuite()
+              suite.addTest(unittest.makeSuite(Prerequisite))
+              suite.addTest(unittest.makeSuite(ExpatTest))
+              out = cStringIO.StringIO()
+              results = unittest.TextTestRunner(stream=out).run(suite)
+              if not results.wasSuccessful():
+                  for failure in results.failures:
+                      print "FAIL:", failure[0]
+                  for error in results.errors:
+                      print "ERROR:", error[0]
+          elif sys.argv[1].startswith('-'):   # pass args to unittest
+              unittest.main()
+          else:
+              from gnosis.xml.objectify import pyobj_printer as show
+              config_nspace_sep(None)
+              for fname in sys.argv[1:]:
+                  print show(make_instance(fname)).encode('UTF-8')
+
+  Using [unittest] adds quite a few capabilities to the simpler
+  [doctest] style. We can divide our tests into several classes, each
+  inheriting from 'unittest.TestCase'. Within each test class, every
+  method whose name begins with ".test" is considered another test. The
+  two extra classes defined for 'ExpatTest' are interesting: '.setUp()'
+  is run prior to each test performed with the class, and '.tearDown()'
+  is run at the end of the test (whether the test succeeds, fails, or
+  raises an error). In our case above we perform a bit of bookkeeping
+  around the special 'expat_kwargs' dictionary to make sure each test
+  runs independently.
+
+  The distinction between failures and errors is important, by the way.
+  A test can fail because some specific assertion does not
+  hold (assertion methods either start with ".fail" or ".assert").  In a
+  sense, failures are expected--at least in the sense we have
+  specifically checked for them.  Errors, on the other hand, are
+  unexpected problems--since we do not know in advance what can go
+  wrong, we will need to examine the traceback in the actual test run to
+  diagnose such problems.  However, we can plan failures to give hints
+  on diagnosing errors.  For example, if 'Prerequisite.haveFiles()'
+  fails, that will show up as errors in some of the 'TestExpat' tests;
+  if the former succeeds, that tells you to look elsewhere for the
+  source of the error(s).
+
+  A particular test method within a 'unittest.TestCase' derived class
+  may contain some '.assert...()' or '.fail...()' methods, but it may
+  also simply carry out a series of actions that we believe should run
+  successfully.  If the test method does not run as anticipated, we will
+  get an error (and a traceback describing the error).
+
+  The '__main__' block in 'test_expat.py' is worth looking over also.
+  In the simplest case, we can run the test cases using just
+  'unittest.main()' which figures out what needs to be run.  Done this
+  way, the [unittest] module will accept a '-v' option for more verbose
+  output.  With filename(s) specified we print out representations of
+  the named XML file(s) after performing namespace setup, thereby
+  maintaining rough backward compatibility with older versions of the
+  tool.
+
+  The most interesting branch of '__main__' is the one that looks for
+  the '-q' or '--quiet' flags.  As you would expect, this branch is
+  quiet unless failures or errors occur.  Moreover, being quiet, only a
+  one-line report of where the failure/error is shown for each problem,
+  not a whole diagnostic traceback.  Aside from the direct utility of
+  the quiet output style, the branch illustrates custom testing against
+  test suites and control of result reporting.  The somewhat wordy
+  default output of 'unittest.TextTestRunner()' is directed to the
+  StringIO 'out'--if you want to see it, you are welcome to poke at
+  'out.getvalue()'.  But the 'result' object lets us test for overall
+  success, and process the failures and errors if success was not total.
+  Obviously, being values in variables, you could easily log the
+  contents of the 'result' object, send the as email, display them in a
+  GUI, or whatever, rather than simply print to STDOUT.
+
+COMBINING TESTS
+------------------------------------------------------------------------
+
+  Perhaps the nicest feature of the [unittest] framework is that it lets
+  you easily combine tests contained in different modules. With Python
+  2.3+, in fact, you can even convert [doctest] tests into [unittest]
+  suites. Let us combine the tests we have created so far into a script
+  'test_all.py' (admittedly an exageration for what we test so far):
+
+      #-------------- test_all.py combined unit tests -----------------#
+      "Combine tests for gnosis.xml.objectify package (req 2.3+)"
+      import unittest, doctest, test_basic, test_expat
+      suite = doctest.DocTestSuite(test_basic)
+      suite.addTest(unittest.makeSuite(test_expat.Prerequisite))
+      suite.addTest(unittest.makeSuite(test_expat.ExpatTest))
+      unittest.TextTestRunner(verbosity=2).run(suite)
+
+  Since 'test_expat.py' simply contains test classes, they can easily be
+  added to the local test suite.  The function 'doctest.DocTestSuite()'
+  performs the conversion of a docstring test.  Let's see what
+  'test_all.py' does when run:
+
+      #------------ Successful output from test_all.py ----------------#
+      $ python2.3 test_all.py
+      doctest of test_basic.show ... ok
+      Check for sample XML files, NS and BASIC ... ok
+      Import the gnosis.xml.objectify library ... ok
+      Raise SyntaxError on non-setup namespace XML ... ok
+      Sucessfully objectify NS after setup ... ok
+      Objectify namespace-free XML document ... ok
+      Successfully objectify BASIC despite extra setup ... ok
+
+      ----------------------------------------------------------------------
+      Ran 7 tests in 0.052s
+
+      OK
+
+  Notice the descriptions of the tests performed: in the case of the
+  [unittest] test methods their description is taken from the
+  corresponding function docstring.  If you do not specify a docstring,
+  the module, class and method names are used as best-available
+  descriptions.  It is also intersting to see what we get if some tests
+  fail (trimming the traceback details for this article):
+
+      $ mv testns.xml testns.xml# && python2.3 test_all.py 2>&1 | head -7
+      doctest of test_basic.show ... ok
+      Check for sample XML files, NS and BASIC ... FAIL
+      Import the gnosis.xml.objectify library ... ok
+      Raise SyntaxError on non-setup namespace XML ... ERROR
+      Sucessfully objectify NS after setup ... ERROR
+      Objectify namespace-free XML document ... ok
+      Successfully objectify BASIC despite extra setup ... ok
+
+  Incidentally, the final line written to STDERR on this failure is
+  "FAILED (failures=1, errors=2)" which makes a good summary if you want
+  such (compare with the final "OK" for success).
+
+WORKING FROM HERE
+------------------------------------------------------------------------
+
+  For this article I have merely looked at some typical usage of
+  [unittest] and [doctest] by way of improving some tests in my own
+  software.  Take a look at the Python documentation for more details on
+  the full range of methods available to test suites, test cases, and
+  test results.  All of them follow the pattern of the example
+  presented, however.
+
+  Committing yourself to the methodology provided by Python's standard
+  testing modules is good software practice. Test-driven development is
+  a mantra in many software circles; I do not wish to weigh in strongly
+  on such methodological disputes right here, but clearly Python is a
+  language well suited to the test-driven model. Moreover, a package or
+  library that is accompanied by a well considered set of tests is
+  simply more useful to users than is one lacking them, if for no other
+  reason than that the package is more likely to work as intended.
+
+RESOURCES
+------------------------------------------------------------------------
+
+  The documentation accompanying Python's standard library is really the
+  best place to look for up-to-date details on [unittest]:
+
+    http://www.python.org/doc/current/lib/module-unittest.html
+
+  And on [doctest]:
+
+    http://www.python.org/doc/current/lib/module-doctest.html
+
+  The PyUnit website is worth looking at for supplemtary modules.  The
+  [unittest] module is derived from the formerly independent [PyUnit].
+  The older project site still has links to tools not including in
+  [unittest] such as GUI front-ends for testing:
+
+    http://pyunit.sourceforge.net/
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz is feeling a bit testy. David may be reached at
+  mertz@gnosis.cx; his life pored over at http://gnosis.cx/publish/.
+  Check out David's book _Text Processing in Python_
+  (http://gnosis.cx/TPiP/).
+

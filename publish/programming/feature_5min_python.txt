@@ -1,0 +1,319 @@
+FEATURE
+Five minutes to a Python CGI
+
+David Mertz, Ph.D.
+Gnosis Software, Inc.
+June 2000
+
+WHY PYTHON?
+------------------------------------------------------------------------
+
+  For anyone out there who doesn't know, Python is a freely
+  available, very-high-level, interpreted language developed by
+  Guido van Rossum.  It combines a clear syntax with powerful
+  (but optional) object-oriented semantics.  Python has a lot of
+  the same strengths as other script languages used for
+  web-programming:  good text processing tools; dictionaries
+  (hash-tables) and other versitile types; a broad range of
+  modules (libraries) relating to web-programming.  Compared to
+  Perl, most people find Python code easier to read and maintain.
+  Compared to VBScript or ColdFusion, Python packs much more
+  powerful basic constructs.  Compared to PHP, TCL, REXX (or C
+  for that matter), it is a lot easier to make nicely modular and
+  object-oriented code in Python.  Compared to JSP, Python is
+  concise, dynamic, and loosely-typed (in short, a lot quicker to
+  develop).  Compared to Bash...
+
+  OK, you figured me out.  I am a Pythonista, a convert to all
+  things Pythonic.  I have had the opportunity to do a bit of
+  programming in a lot of languages, and have found Python my
+  favorite among them for most purposes.  Of course, there are
+  many more languages I've never yet managed "Hello World!" in,
+  so who knows.  But let me avoid proselytizing, and pass on a
+  few hints for getting started with CGI programming in Python.
+
+  Before I start, let me mention that CGI has sometimes gotten a
+  bad reputation.  This reputation is mostly ill-deserved.
+  Plain CGI indeed has some overhead to it (in the need to 'fork'
+  processes mostly).  But you can't beat old-fashion CGI for
+  rapid development and server portability.  If speed turns into
+  a real issue (good enough should be good enough, however), a
+  number of solutions are available to speed things up:
+  Python/ASP, fastcgi, mod_python, JPython servlets, Medusa,
+  Zope.  Or write your own by using the module [CGIHTTPServer].
+  Links to these solutions, and other helpful third-party tools,
+  are given at bottom of this article.  Most of the advice here
+  about plain CGI will apply if one of the speedup solutions are
+  used, but you'll need to see the respective documentation for
+  details.
+
+
+USING THE [cgi] MODULE
+------------------------------------------------------------------------
+
+  Python's [cgi] module--in the standard distribution--is usually
+  the place to start in writing CGI programs in Python.  The main
+  use of the [cgi] module is to extract the values passed to a
+  CGI program from an HTML form.  Most typically, one interacts
+  with CGI applications by means of an HTML form.  One fills out
+  some values in the form that specify details of the action to
+  be performed, then call on the CGI to perform its action using
+  your specifications.
+
+  You may include many input fields within an HTML form, and the
+  fields can be of a number of different types (text, checkboxes,
+  picklists, radio buttons, etc.).  Chuck Musciano wrote a nice
+  series of articles for Webreview.com explaining all the form
+  elements, beginning with:
+
+    http://webreview.com/pub/98/10/09/tag/index.html.
+
+  Your Python script should begin with 'import cgi' to make
+  sorting out its calling form easy.  One thing this module does
+  is hide any details of the difference between "get" and "post"
+  methods from the CGI script.  By the time the call is made,
+  this is not a detail the CGI creator needs to worry about.  The
+  main thing done by the CGI module is to treat all the fields in
+  the calling HTML form in a dictionary-like fashion.  What you
+  get is not *quite* a Python dictionary, but it is close enough
+  to be easy to work with.  Let's play around with it:
+
+      #----- Example of working with Python [cgi] module -----#
+      import cgi
+      form = cgi.FieldStorage()   # FieldStorage object to
+                                  # hold the form data
+
+      # check whether a field called "username" was used...
+      # it might be used multiple times (so sep w/ commas)
+      if form.has_key('username'):
+          username = form["username"]
+          usernames = ""
+          if type(username) is type([]):
+              # Multiple username fields specified
+              for item in username:
+                  if usernames:
+                      # Next item -- insert comma
+                      usernames = usernames + "," + item.value
+                  else:
+                      # First item -- don't insert comma
+                      usernames = item.value
+          else:
+              # Single username field specified
+              usernames = username.value
+
+      # just for the fun of it let's create an HTML list
+      # of all the fields on the calling form
+      field_list = '<ul>\n'
+      for field in form.keys():
+          field_list = field_list + '<li>%s</li>\n' % field
+      field_list = field_list + '</ul>\n'
+
+  We'll have to do something more to present a useful page to the
+  user, but we've made a good start by working with the
+  submitting form.
+
+
+GETTING THE OUTPUT RIGHT
+------------------------------------------------------------------------
+
+  Past parsing the query form that called your Python CGI, the
+  next thing you need to do is send something back to the client
+  browser.  Judging from questions on the comp.lang.python
+  newsgroup, the most common mistake made by beginners is
+  forgetting to include a blank line between the HTTP header(s)
+  and the HTML document (or forgetting the header altogether).
+  Be sure to put something like the following in your Python CGI:
+
+      #----------- Writing HTTP header in Python -------------#
+      print 'Content-type: text/html\n\n'
+
+  Of course, if you want to send back something other than an
+  HTML page, the header should indicate that.  But be sure to
+  have a header in any case.  For example, a dynamically
+  generated image (using Python's [pil] module, for example)
+  might start with:
+
+      #----------- Writing HTTP header in Python -------------#
+      print 'Content-type: image/jpeg\n\n'
+
+  Once the header is there (and it might include other header
+  lines, such as setting cookies), we need to compose an HTML
+  page.  It is perfectly acceptable to use a bunch of 'print'
+  statements in a row to output the whole page, like:
+
+      #------- Step-by-step HTML creation in Python ----------#
+      print '<html><head>'
+      print '<title>My Page</title>'
+      print '</head><body>'
+      print '<h1>Powers of two</h1>\n<ol>'
+      for n in range(1,11):
+        print '<li>'+str(2**n)+'</li>'
+      print '</ol></body></html>'
+
+  A technique that is often more readable and easier to work with
+  is to use Python's 'sprintf()' style string formatting on a
+  page template of the whole HTML page (usally as the last thing
+  in the script, after the variables have been computed).  You
+  can do this with tuples like (and using Python's nifty
+  triple-quoting for multiple line expressions):
+
+      #------- Formatting sprintf()-style in Python ----------#
+      print """<html><head>
+      <title>%s</title>
+      </head><body>
+      <h1>Famous irrational numbers</h1>
+      <dl><dt>Pi</dt>
+          <dd>%2.3f</dd>
+          <dt>Square-root of 2</dt>
+          <dd>%2.3f</dd></dl>
+      </body></html>""" % ("Another Page", 3.1415, 1.4142)
+
+  Python has an even better trick up its sleeve, however.  In
+  addition to using positional '%' expressions in a string, you
+  can use named expression that are pulled from a dictionary:
+
+      #------- Dictionary sprintf()-style in Python ----------#
+      mydict = {"title":"Formatted from Dict",
+                "pi": 3.1415, "e": 2.7182,
+                "sqrt3": 1.73205, "sqrt2": 1.4142}
+      template = """<html><head>
+      <title>%(title)s</title>
+      </head><body>
+      <h1>Famous irrational numbers</h1>
+      <dl><dt>Pi</dt>
+          <dd>%(pi)2.3f</dd>
+          <dt>Square-root of 2</dt>
+          <dd>%(sqrt2)2.3f</dd></dl>
+      </body></html>"""
+      print template % mydict
+
+
+TRICKS FOR DEBUGGING
+------------------------------------------------------------------------
+
+  As easy as Python makes writing a CGI script, there is always
+  the possibility some mistakes will creep into the code.
+  Fortunately, it is not hard to design a Python CGI program in
+  such a way as to catch a helpful traceback.  Depending on what
+  your needs are, you might either want to log errors to server
+  storage, or display them in the client browser.
+
+  The simplest case is coaxing a CGI to display errors in the
+  client browser (if displaying the desired page fails).  The
+  first thing to know for this is that Python errors and
+  tracebacks are sent to STDERR, while web-servers normally pick
+  up the output of STDOUT.  It might seem like we have a
+  problem... until we notice the redefining STDERR is simple in
+  Python.  Here's what a script might look like:
+
+      #---------- Debugging CGI script in Python -------------#
+      import sys
+      sys.stderr = sys.stdout
+
+      def main():
+          import cgi
+          # ...do the actual work of the CGI...
+          # perhaps ending with:
+          print template % script_dictionary
+
+      print "Content-type: text/html\n\n"
+      main()
+
+  This approach is not bad for quick debugging.  Unfortunately,
+  though, the traceback (if one occurs) gets displayed as HTML,
+  which means that you need to go to "View Source" in a browser
+  to see the original linebreaks in the traceback.  With a few
+  more lines, we can add a little extra sophistication.
+
+      #------- Debugging/logging CGI script in Python --------#
+      import sys, traceback
+      print "Content-type: text/html\n\n"
+      try:               # use explicit exception handling
+          import my_cgi  # main CGI functionality in 'my_cgi.py'
+          my_cgi.main()
+      except:
+          import time
+          errtime = '--- '+ time.ctime(time.time()) +' ---\n'
+          errlog = open('cgi_errlog', 'a')
+          errlog.write(errtime)
+          traceback.print_exc(None, errlog)
+          print "<html><head><title>CGI Error Encountered!</title></head>"
+          print "<body><p>Sorry, a problem was encountered running MyCGI</p>"
+          print "<p>Please check the error log on the server for details</p>"
+          print "</body></html>"
+
+  The second approach is quite generic as a wrapper for any real
+  CGI functionality we might write.  Just 'import' a different
+  CGI module as needed; and maybe make the error messages more
+  detailed or friendlier.
+
+
+OTHER HANDY (THIRD-PARTY) MODULES
+------------------------------------------------------------------------
+
+  Once a web programmer has gotten started with writing Python
+  CGI's, she's likely to find the need to use some more Python
+  capabilities.  Third party modules and tools for most anything
+  are available, usually for free.  The best place to start in
+  looking for Python tools is the Vaults of Parnassus:
+
+    http://www.vex.net/parnassus/
+
+  For general tutorials and references, or to download Python
+  itself, take a look at the Python home:
+
+    http://www.python.org
+
+  In the first section, I mentioned some options for speeding up
+  CGI's using various server-enhancement techniques.  Most of
+  those can be found on the Vaults.  But a few deserve special
+  links.
+
+  JPython is an implementation of the Python language in 100%
+  Pure Java.  JPython compiles Python source code into Java
+  bytecodes, and most handily, allows you to call any Java class
+  from right in your JPython source code (using friendly Python
+  syntax and semantics).  The rub here is that you can write Java
+  servlets in Python!:
+
+    http://www.jpython.org
+
+  Zope may be Python's "Killer App."  Zope is a free
+  web-application development system written in Python (with
+  little bits of C for time-critical parts).  It handles
+  persistence, versioning, security, and just about everything
+  else.  And best of all, you can script it in its native Python:
+
+    http://www.zope.org
+
+  You can also find a number of excellent articles on Zope here
+  at Webreview.com.  Take a look at:
+
+    http://webreview.com/wr/pub?x-tb=a&x-searchall=zope
+
+
+
+WRAPPING UP
+------------------------------------------------------------------------
+
+  Our five minutes should help get you started on Python CGI.
+  Play with what we have gone over, put up a few CGI's on a
+  web-site you have access to, get a feel for what is going on.
+  Make some mistakes even, there is no better way to learn.
+  After you are comfortable with the basics, I am sure you'll
+  want to move on to some of the really fancy things you can do
+  with Python and CGI's.  Maybe you'll want to generate information
+  from an SQL database (check out the database modules).  Maybe
+  you'll want to dynamically generate images (check out [pil]).
+  Whatever direction you want to go, there is plenty of room to
+  grow, and the learning curve is an easy one to master.
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  David Mertz dabbles in a lot of things.  Lately, he has mostly
+  done web-application development and writing articles like
+  this.  You can find out copious biographical details by rooting
+  around at http://gnosis.cx/publish/.
+

@@ -1,0 +1,110 @@
+BOOK PROPOSAL:
+
+Title:    _Metaprogramming in Python_
+
+Author:   David Mertz (Ph.D.)
+Address:  99 2nd Street
+          Turners Falls MA 01376 USA
+Phone:    413-863-4552
+Email:    mertz@gnosis.cx
+URL:      http://gnosis.cx/publish/
+
+Biography:
+
+  I am the author of the Addison-Wesley title _Text Processing in
+  Python_, of the IBM developerWorks columms _Charming Python_ and
+  _XML Matters_, of the Intel Developer Services columns
+  _Distributing Computing_ and _XML Programming Paradigms, and of
+  numerous other articles aimed at professional programmers. Before
+  writing these types of essays, I have been a senior developer/
+  programmer; and before that a professor of Philosophy.
+
+  In my programming writing, I have frequently addressed
+  theoretical topics, such as that in this book, but always with a
+  deliberate sense of their application to practical problems in
+  application development. Perhaps because of my mixed background
+  as an academic and developer, I strike an unusual balance
+  between the abstract and the practical--or better still, unify
+  the two levels within discussion of concrete techniques,
+  libraries, etc.
+
+Precis:
+
+  Metaprogramming is programming that controls the behavior of
+  programs. Rather than only make an application -do- something,
+  special code can affect the meaning and behavior of other code.
+  Metaprogramming techniques fall into a number of categories, all
+  of which Python excels at: automated introspection; class and
+  function factories; higher-order functions; operator overloading;
+  metaclasses; programmatic code generation; and others.
+
+  This book aims both to introduce readers to the general concepts
+  of metaprogramming--in a way that applies to many programming
+  languages--and to illustrate the use of these features in Python.
+  In particular, some features added to Python 2.2 enable
+  metaprogramming techniques, and are not yet well understood in
+  the Python community.
+
+  This book is intended as a short introduction to its topics;
+  the length should be less than 200 pages.
+
+  Some longer notes on intended book contents are at
+  <http://www.gnosis.cx/secret/meta-programming.notes>.
+
+Audience:
+
+  The primary audience of this book is experienced Python
+  programmers. A general familiarity with the Python language is
+  assumed, but some recent or special-purpose constructs will be
+  documented explicitly. Working programmers will find in this
+  books ways usefully to bring higher level abstractions to
+  concrete programming tasks.
+
+  However, this book is intended also to be usable in an
+  upper-level college course on object oriented design, or that
+  otherwise covers concepts in programming abstractions. A computer
+  science student, or autodidact, with a basic understanding to
+  several programming languages, and a Python reference will be able to
+  benefit from this book.
+
+Competition:
+
+  Although the number of published titles on Python has grown
+  considerably in the last few years, none generally address the
+  level of abstraction or special topics this book will. The
+  closest competing Python title is O'Reilly's _Python Cookbook_,
+  which has a significant subset of "recipes" that overlap with the
+  topic of this book.
+
+  In many ways, the more relevant comparisons are with books that
+  address programming abstractions, using a variety of
+  programming languages for illustrations.  The closest match is
+  Addison-Wesley's (out-of-print) _Putting Metaclasses to Work_;
+  but my intent is somewhat less formalistic and mathematically
+  oriented, and more concerned with practical applications.
+
+  In broader scope, MIT Press' _Structure and Interpretation of
+  Computer Programs_, and Addison-Wesley's _Design Patterns_, are
+  two famous texts that have spurred a large number of pale
+  imitators.  The currently proposed book certainly falls within
+  the general realm claimed by these titles; but the title is
+  intended to be narrower, shorter, and use a more convenient
+  programming language for demonstration.
+
+Table-of-contents:
+
+  I.    Introduction to Metaprogramming.
+  II.   Behavior protocols for Python objects
+  III.  Overloading operators and enhancing basic datatypes.
+  IV.   Higher order functions.
+  V.    Function and class factories.
+  VI.   Metaclasses.
+  VII.  Code generators and code parsers.
+
+Timetable:
+
+  I am able to begin work on this book topic at any time I arrive
+  at a suitable writing contract.  Given my other writing
+  commitments, a six month timeframe for writing is what I would
+  like to aim for.
+

@@ -1,0 +1,629 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Compression and Streaming of XML Documents
+       -- White Paper on the Entropy of Documents -- </title>
+<style>
+.code-sample {background-color: #CCCCCC}
+.subhead     {font-size: 12pt}
+</style>
+</head>
+
+<h1>Compression and Streaming of XML Documents</h1>
+<h2>White Paper on the Entropy of Documents</h2>
+<p>
+<a href="mailto://mertz@gnosis.cx">David Mertz, Ph.D.</a><br>
+<a href="http://gnosis.cx/publish/">Gnosis Software, Inc.</a><br>
+September 2001<br>
+<br>
+</p>
+<blockquote>This paper extends its author's earlier research into
+    compression of XML documents.  The special structures in XML
+    tend to allow certain improvements over the most naive
+    compression techniques--some lossless document restructuring
+    techniques can serve to improve compression ratios.  For a
+    certain class of applications, however, document-level
+    restructuring/compression is not practical.  This paper
+    explores adaptation of restructuring techniques to streaming
+    channels, using block-level algorithms.  Code exploring these
+    techniques is provided in the paper, along with
+    representative quantitative results.
+</blockquote><p><strong class="subhead">Introduction</strong></p>
+ <p>  XML documents, as is well known, tend to be quite large
+  compared to other forms of data representation.  Of course, in
+  balance to this, the simplicity and generality of XML makes it
+  worthwhile, despite its verboseness.  Much of the time, in
+  fact, the size of XML really makes no difference--DASD is
+  cheap, and the time on the wire might be only a small part of
+  the total time in the process.  But at other times, bandwidth
+  and storage space can be important.
+</p>
+<p>  To quantify matters, it is not at all unusual for XML documents
+  that represent table-oriented data to be three times as large
+  as a CSV or database representation, or even than a flat file.
+  A similar increase is typical in representing EDI data (such as
+  for ebXML projects).  In many of these context, one starts out
+  with multi-megabyte data sources, and making them multiple
+  times larger can be inconvenient, especially for transmission
+  purposes.  For example, for purposes of my research, I created
+  an XML representation of an approximately 1 megabyte Apache
+  access logfile.  This created an XML document 3.18 times the
+  size of the underlying line-oriented log.  The only
+  <em>information</em> added in the process was some descriptive names
+  for fields that could have also been specified in a single
+  header line of less than a hundred bytes.  Moreover, my
+  specific XML representation did not include any namespaces in
+  the tags, which would have increased the size further.
+</p>
+<p><strong class="subhead">Prior Results</strong></p>
+ <p>  Some of the inspiration for my efforts comes from the work of
+  the XMill XML compressor (see Resources).  However, the
+  similarity of the work presented here to that in XMill is only
+  at a general conceptual level.  No effort was made to obtain
+  file compatibility, nor did I closely examine the source code
+  or algorithms in XMill.  Moreover, all the code presented in
+  this paper--and in any earlier or later research I do into
+  the topic--is released to the public domain.  Furthermore, as
+  far as I know, these concepts are unencumbered by any patents.
+</p>
+<p>  The high-level idea that I work with is the fact that XML
+  documents tend to be composed of intermixed data elements,
+  where elements of the same tag-type typically have semantically
+  related contents.  Or more specifically, element bodies
+  enclosed by the same tag tend to have recurrent substrings.
+  For example, the XML weblog used as a sample document in the
+  below results contains a <code>&lt;host&gt;</code> element that contains IP
+  addresses.  But each <code>&lt;host&gt;</code> element is separated from others
+  by various elements that do not contain IP addresses.
+  Lempel-Ziv style compression algorithms, in particular, take
+  the strongest advantage of documents where recurrent strings
+  occur relatively close together (the dictionary remains intact
+  between occurrences).  If one could restructure an XML document
+  so that elements of the same type occur adjacent to each other,
+  these restructured documents are likely to be more
+  <em>compressible</em> (using pre-existing tools).
+</p>
+<p>  The Burrows-Wheeler compression algorithm is used by the
+  utility <code>bzip2</code>, and by the library versions of the same code.
+  Burrows-Wheeler performs something quite a bit similar to the
+  restructuring presented in this paper, but at a level of
+  generality that allows it to operate on all document types, not
+  only XML.  The strategy of <code>bzip2</code> is to automate the
+  identification of "similar" strings within a file, and compress
+  based on identified similarities.  <code>bzip2</code> almost always
+  obtains significantly better compression ratios than do
+  Lempel-Ziv based utilities like <code>gzip</code>, but at the cost of
+  considerably slower performance.
+</p>
+<p>  I found in my earlier research (see Resources) that a custom
+  XML-specific (lossless) document restructuring can improve
+  subsequent compression.  If the subsequent compression if based
+  on <code>gzip</code> the improvement in compression ratio is consistent,
+  and is often better than 30%.  If the subsequent compression is
+  based on the far superior <code>bzip2</code> utility, restructuring prior
+  to compression can range anywhere from a very slight <em>decrease</em>
+  in compression ratio to a bit better than a 10% improvement.
+  The quick moral is that Burrows-Wheeler is an awfully good
+  algorithm to start with.  But if speed is crucial (i.e. you
+  want <code>gzip</code>) or squeezing out that last byte is important for
+  channel/storage costs, a restructuring approach can be used
+  with <code>bzip2</code>.
+</p>
+<p>  My initial research, however, only looked at file-level
+  operations--for both restructuring and compression.  If one
+  must deal with multi-megabyte XML documents, spending the
+  memory, disk space, and CPU overhead to manipulate huge
+  documents is often impractical.  What would be nice would be if
+  one could take not the entire multi-megabyte source, but only
+  parsed blocks read serially, and apply similar techniques.
+  Moreover, the effectiveness of the Burrows-Wheeler algorithm
+  depends in large part on being able to make global
+  manipulations on large inputs sources--we find in the below
+  quantitative analysis that Burrows-Wheeler loses all its
+  advantages when addressing (relatively) small serial blocks
+  from XML documents.  The restructuring-pass techniques retain
+  their effectiveness to a much larger degree under this
+  constraint.
+</p>
+<p><strong class="subhead">Practical Application</strong></p>
+ <p>  There are a variety of practical purposes the restructuring/
+  compression techniques addressed in the paper can be put to.
+  The very simplest case is one where XML files are relatively
+  large (e.g. hundreds or thousands of megabytes), memory and
+  disk-space moderately constrained (e.g. there are not gigabytes
+  of extra memory/storage available for the process), and channel
+  costs comparatively expensive (e.g. transmitting a
+  half-gigabyte is a worthwhile savings over transmitting a
+  gigabyte).  The scenario for the simplest case would utilize a
+  protocol like the below:
+</p>
+<p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>0. Machine A has both a channel to Machine B and a large XML
+   source (either a file or some dynamic generation of XML
+   content).
+1. A SAX parser on A, "flushes" its data each time a block
+   worth of source XML has been encountered.
+   a. The flushed block is restructured.
+   b. The flushed block is compressed by conventional
+      means (i.e. 'gzip' or 'bzip2').
+   c. The restructured/compressed block is transmitted.
+2. Machine B receives blocks over the channel.  The
+   underlying XML is reconstructed in a serial fashion.
+   Each block of XML could be appended to a file; or it
+   could itself be fed to a SAX parser that acted on the
+   elements and contents (and discarded once processed).</pre>
+</td></tr></table>
+</p>
+<p>  At a slightly more "exotic" level one could imagine the
+  restructuring/compression techniques implemented on routers, or
+  on other embedded systems.  The end points might never see
+  anything other than plain XML, but internally to the packet
+  routing, a more compact representation can be used.  As more
+  backbone traffic becomes devoted to XML content, this usage
+  becomes more appealing.  Of course, generic compression
+  techniques implemented on routers could simply compress <em>all</em>
+  traffic, albeit somewhat less efficiently in the case of XML
+  documents.
+</p>
+<p>  One additional point can be noted, but is not quantitatively
+  analyzed in this paper.  By choosing block sizes for
+  restructuring to match CPU architecture, one might achieve
+  cache-hit efficiencies on block transformations.  The block
+  sizes used in the below analysis are within the range of
+  primary, secondary, and tertiary caches of modern chip
+  architectures.  Further research will hopefully address
+  cache/block size tradeoffs in a quantitative manner on various
+  Intel chipsets (embedded and desktop).
+</p>
+<p><strong class="subhead">An Overview Of The Technique</strong></p>
+ <p>  Very little in the restructuring technique needed to be changed
+  from earlier work to accommodate arbitrary block sizes.  In the
+  original algorithm, a list of tags was included as the first
+  delimited section of a restructured XML documents.  This list
+  of tags--generated on an ad hoc basis during the actual
+  document parsing--was used as an index for single-byte tag
+  placeholders used in a structure schematic.  The strategy of
+  using byte index value in the place of tags itself reduces the
+  size of restructured documents somewhat, but also limits the
+  algorithm to handling DTDs with fewer than 254 distinct tags.
+</p>
+<p>  Under the block-level revision below, we instead assume that a
+  taglist is available independently.  A utility function to
+  create a taglist from a DTD is provided.  Assuming both sides
+  of the channel have the requisite DTD, everything works--shy of
+  a DTD, and other format that specifies the order of tags works
+  too.
+</p>
+<p>  The only significant revision needed was the addition of a new
+  (first) delimited document section to indicate current element
+  nesting.  In the original, every start tag was paired to an end
+  tag.  But since XML documents are broken at arbitrary
+  positions, it is necessary to record a stack of "open" elements
+  at the point a block begins.  The first block parsed has an
+  empty field for this first section; subsequent ones are likely
+  to have one or more bytes listing tag indexes that have not yet
+  been closed.
+</p>
+<p>The format of a restructured block is rather simple:
+</p>
+<p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>BLOCK FORMAT:
+1. List of open tags.  Each start tag is a single byte (w/
+   byte value &gt;= 0x03); this list is pushed on to the
+   taglist stack to match corresponding close tag bytes.
+2. A section delimiter: 0x00 (the null byte)
+3. A compact representation of the block document
+   structure, where each start tag is represented by a
+   single byte, and the occurence of content is marked by
+   a 0x02 byte.  A close tag is represented by a 0x01 byte,
+   and must be back-matched to corresponding start tag.
+4. Another section delimiter: 0x00 (the null byte)
+5. The contents of all the elements indicated in the
+   document structure schematic, grouped by element type.
+   Each individual content item is delimited by a 0x02
+   byte, while the start of elements of a new type is
+   delimited by a 0x01 byte (the last not strictly needed,
+   but it makes reversing the transformation easier).</pre>
+</td></tr></table>
+</p>
+<p>  In the code presented blocks are compressed using <code>zlib</code>, which
+  is the algorithm and library underneath the <code>gzip</code> utility.
+  Compressed blocks are prepended with a 4-byte (32-bit) number
+  indicating the size of the block to follow, then sent to
+  STDOUT.  For testing purposes, STDOUT was directed to a file
+  whose size could later be examined.  Since compressed blocks
+  will vary in size, a block size flag is necessary to determine
+  their extents, and are reasonably considered part of the
+  resultant size (this makes little difference to the results, in
+  any case).
+</p>
+<p>  Two limitations of the presented code should be noted.  The
+  first is purely a product of research implementation
+  convenience.  Element attributes are not handled by the current
+  parser.  This is primarily to make the presented code easier to
+  follow, and adding like-attribute blocks would be a
+  straightforward extension of the current technique, and are
+  unlikely to appreciably affect compression or performance.
+</p>
+<p>  A second limitation is more consequential.  Blocks are only
+  flushed when end tags are encountered.  If the PCDATA content
+  of single elements are not consistently smaller than the block
+  size used, no enforcement of the block size is performed.  For
+  example, a huge XHTML document that contained one big <code>&lt;pre&gt;</code>
+  element would not enforce any reasonable block size.  It might
+  be possible to change this limitation--although doing so would
+  by inelegant within a SAX framework.  However, there is little
+  point in lifting this, since reorganization will be
+  inconsequential for documents with element contents larger than
+  the block size (and should not be performed in general).  The
+  one situation where a problem could arise is when an
+  implementing system has a hard limit on available memory, and
+  encounters a block too large to process.
+</p>
+<p>  In the normal case, input XML blocks will be slightly larger
+  than the indicated block size, but once single-byte tag
+  placeholders are substituted for tags, the resultant size will
+  typically be slightly smaller than the block size.  Moreover,
+  once compression is applied to the block, the compressed block
+  size will be considerably smaller than the input block size.
+</p>
+<p><strong class="subhead">The Source Code</strong></p>
+ <p>  Presented below is fully functional Python source code for
+  restructuring and compressing XML documents.  Input is taken
+  from STDIN (e.g. a redirected file), and output is sent to
+  STDOUT.  Each block on STDOUT is prepended with a block size
+  flag to allow the receiver to split the blocks back apart.  The
+  utility <code>xml2stuctblocks.py</code> may be run from the command line
+  as described, or its main class <code>StuctBlockExtractor</code> may be
+  used as a SAX content handler in a larger application (possibly
+  modified so something different is done with compressed blocks
+  than writing them to STDOUT).
+</p>
+<p>  Following the restructure/compression code is its reverse
+  operation.  <code>structblocks2xml.py</code> may be run in a similar
+  manner from the command-line, or adapted as a component of a
+  larger application.
+</p>
+<p><strong>xml2structblocks.py</strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<PRE><FONT COLOR=#3333CC><B>
+import</B></FONT> sys
+<FONT COLOR=#3333CC><B>import</B></FONT> xml.sax
+<FONT COLOR=#3333CC><B>from</B></FONT> xml.sax.handler <FONT COLOR=#3333CC><B>import</B></FONT> *
+<FONT COLOR=#3333CC><B>import</B></FONT> zlib
+
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="encode_size"><FONT COLOR=#CC0000><B> encode_size</B></FONT></A>(n):
+    <FONT COLOR=#115511>"Given an number &lt; 2**32, return a 4-byte string representation"</FONT>
+    b1, r = divmod(n,16777216)
+    b2, r = divmod(r,65536)
+    b3, b4 = divmod(r,256)
+    <FONT COLOR=#3333CC><B>return</B></FONT> <FONT COLOR=#115511>''</FONT>.join(map(chr,[b1,b2,b3,b4]))
+
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="StructBlockExtractor"><FONT COLOR=#CC0000><B> StructBlockExtractor</B></FONT></A>(ContentHandler):
+    <FONT COLOR=#115511>"""Create a special structure/content form of an XML document"""</FONT>
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="__init__"><FONT COLOR=#CC0000><B> __init__</B></FONT></A>(self, taglist, blocksize=1000, compress=1):
+        <FONT COLOR=#3333CC><B>if</B></FONT> len(taglist) &gt; 253:
+            <FONT COLOR=#3333CC><B>raise</B></FONT> ValueError, <FONT COLOR=#115511>"More than 253 tags encountered"</FONT>
+        self.taglist = taglist      <FONT COLOR=#1111CC># the tags occurring in DTD/document</FONT>
+        self.empty_contentdct()     <FONT COLOR=#1111CC># dictionary of content lists</FONT>
+        self.blocksize = blocksize  <FONT COLOR=#1111CC># minimum (&amp; approx total) input block</FONT>
+        self.compress = compress    <FONT COLOR=#1111CC># should we compress blocks</FONT>
+        self.readsize = 0           <FONT COLOR=#1111CC># how much of block read so far?</FONT>
+        self.prior_state = []       <FONT COLOR=#1111CC># the state when this block started</FONT>
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="empty_contentdct"><FONT COLOR=#CC0000><B> empty_contentdct</B></FONT></A>(self):
+        self.contentdct = {}        <FONT COLOR=#1111CC># dictionary of content lists</FONT>
+        <FONT COLOR=#3333CC><B>for</B></FONT> tag <FONT COLOR=#3333CC><B>in</B></FONT> self.taglist:
+            self.contentdct[tag] = []
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="flushblock"><FONT COLOR=#CC0000><B> flushblock</B></FONT></A>(self):
+        outlst = []                 <FONT COLOR=#1111CC># a list to hold output strings</FONT>
+        <FONT COLOR=#3333CC><B>for</B></FONT> name <FONT COLOR=#3333CC><B>in</B></FONT> self.prior_state:
+            <FONT COLOR=#1111CC># write the stack state at beginning of block</FONT>
+            outlst.append(chr(self.taglist.index(name)+3))
+        self.prior_state = self.state[:] <FONT COLOR=#1111CC># set prior_state for next flush</FONT>
+        outlst.append(chr(0))       <FONT COLOR=#1111CC># section delimiter 0x00</FONT>
+        outlst.append(<FONT COLOR=#115511>''</FONT>.join(self.struct))
+                                    <FONT COLOR=#1111CC># add the current structure list</FONT>
+        self.struct = []            <FONT COLOR=#1111CC># empty document structure for next block</FONT>
+        outlst.append(chr(0))       <FONT COLOR=#1111CC># section delimiter 0x00</FONT>
+        <FONT COLOR=#3333CC><B>for</B></FONT> tag <FONT COLOR=#3333CC><B>in</B></FONT> self.taglist:    <FONT COLOR=#1111CC># Write all content lists</FONT>
+            outlst.append(chr(2).join(self.contentdct[tag]))
+            outlst.append(chr(1))   <FONT COLOR=#1111CC># delimiter between content types</FONT>
+        self.empty_contentdct()     <FONT COLOR=#1111CC># empty contentdct for next block</FONT>
+        outstr = <FONT COLOR=#115511>''</FONT>.join(outlst)    <FONT COLOR=#1111CC># stringify the block output</FONT>
+        <FONT COLOR=#3333CC><B>if</B></FONT> self.compress:           <FONT COLOR=#1111CC># compress the block (?)</FONT>
+            outstr = zlib.compress(outstr)
+        outlen = len(outstr)        <FONT COLOR=#1111CC># what size is the output block?</FONT>
+        sys.stdout.write(encode_size(outlen))
+                                    <FONT COLOR=#1111CC># write 32-bit block size flag</FONT>
+        sys.stdout.write(outstr)    <FONT COLOR=#1111CC># write the final processed block</FONT>
+        self.readsize = 0
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="startDocument"><FONT COLOR=#CC0000><B> startDocument</B></FONT></A>(self):
+        self.state = []             <FONT COLOR=#1111CC># stack for tag state</FONT>
+        self.newstate = 0           <FONT COLOR=#1111CC># flag for continuing chars in same elem</FONT>
+        self.struct = []            <FONT COLOR=#1111CC># compact document structure</FONT>
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="endDocument"><FONT COLOR=#CC0000><B> endDocument</B></FONT></A>(self):
+        self.flushblock()
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="startElement"><FONT COLOR=#CC0000><B> startElement</B></FONT></A>(self, name, attrs):
+        self.state.append(name)     <FONT COLOR=#1111CC># push current tag</FONT>
+        self.newstate = 1           <FONT COLOR=#1111CC># chars go to new item</FONT>
+                                    <FONT COLOR=#1111CC># single char to indicate tag</FONT>
+        self.struct.append(chr(self.taglist.index(name)+3))
+        self.readsize += len(name)  <FONT COLOR=#1111CC># approximate size of tag itself</FONT>
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="endElement"><FONT COLOR=#CC0000><B> endElement</B></FONT></A>(self, name):
+        self.state.pop()            <FONT COLOR=#1111CC># pop current tag off stack</FONT>
+        self.newstate = 1           <FONT COLOR=#1111CC># chars go to new item</FONT>
+        self.struct.append(chr(1))  <FONT COLOR=#1111CC># 0x01 is endtag in struct</FONT>
+        self.readsize += len(name)  <FONT COLOR=#1111CC># approximate size of tag itself</FONT>
+        <FONT COLOR=#3333CC><B>if</B></FONT> self.readsize &gt; self.blocksize:
+            self.flushblock()       <FONT COLOR=#1111CC># might have filled input block</FONT>
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="characters"><FONT COLOR=#CC0000><B> characters</B></FONT></A>(self, ch):
+        currstate = self.state[-1]
+        <FONT COLOR=#3333CC><B>if</B></FONT> self.newstate:           <FONT COLOR=#1111CC># either add new chars to state item</FONT>
+            self.contentdct[currstate].append(ch)
+            self.newstate = 0
+            self.struct.append(chr(2))
+                                    <FONT COLOR=#1111CC># 0x02 content placeholder in struct</FONT>
+        <FONT COLOR=#3333CC><B>else</B></FONT>:                       <FONT COLOR=#1111CC># or append the chars to current item</FONT>
+            self.contentdct[currstate][-1] += ch
+        self.readsize += len(ch)    <FONT COLOR=#1111CC># size of element contents</FONT>
+
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="getTagsFromDTD"><FONT COLOR=#CC0000><B> getTagsFromDTD</B></FONT></A>(dtd):
+    taglist = []                    <FONT COLOR=#1111CC># the tags in the DTD</FONT>
+    <FONT COLOR=#3333CC><B>if</B></FONT> hasattr(dtd,<FONT COLOR=#115511>'read'</FONT>):         <FONT COLOR=#1111CC># file-like argument for DTD</FONT>
+        dtd_str = dtd.read()
+    <FONT COLOR=#3333CC><B>else</B></FONT>:                           <FONT COLOR=#1111CC># DTD text passed in (hopefully)</FONT>
+        dtd_str = open(dtd).read()
+    elems = dtd_str.split(<FONT COLOR=#115511>'&lt;!ELEMENT'</FONT>)
+                                    <FONT COLOR=#1111CC># each element (&amp; attributes, containers)</FONT>
+    <FONT COLOR=#3333CC><B>for</B></FONT> elem <FONT COLOR=#3333CC><B>in</B></FONT> elems[1:]:          <FONT COLOR=#1111CC># exclude stuff before first element</FONT>
+        taglist.append(elem.split()[0])
+    <FONT COLOR=#3333CC><B>return</B></FONT> taglist
+
+<FONT COLOR=#3333CC><B>if</B></FONT> __name__ == <FONT COLOR=#115511>'__main__'</FONT>:
+    parser = xml.sax.make_parser()
+    taglist = getTagsFromDTD(sys.argv[1])
+    blocksize = int(sys.argv[2])
+    handler = StructBlockExtractor(taglist,blocksize)
+    parser.setContentHandler(handler)
+    parser.parse(sys.stdin)</PRE>
+</td></tr></table>
+</p>
+<p>
+</p>
+<p><strong>structblocks2xml.py</strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<PRE><FONT COLOR=#3333CC><B>
+def</B></FONT> structblocks2xml(s, taglist):
+    prior, struct, content = s.split(chr(0))
+    state = [taglist[ord(i)-3] <FONT COLOR=#3333CC><B>for</B></FONT> i <FONT COLOR=#3333CC><B>in</B></FONT> prior]
+                                    <FONT COLOR=#1111CC># stack for prior tag state</FONT>
+    contentlist = []                <FONT COLOR=#1111CC># list-of-lists of content items</FONT>
+    <FONT COLOR=#3333CC><B>for</B></FONT> block <FONT COLOR=#3333CC><B>in</B></FONT> content.split(chr(1)):
+        contents = block.split(chr(2))
+        contents.reverse()          <FONT COLOR=#1111CC># pop off content items from end</FONT>
+        contentlist.append(contents)
+    skeleton = []                   <FONT COLOR=#1111CC># templatized version of XML</FONT>
+    <FONT COLOR=#3333CC><B>for</B></FONT> c <FONT COLOR=#3333CC><B>in</B></FONT> struct:
+        i = ord(c)
+        <FONT COLOR=#3333CC><B>if</B></FONT> i &gt;= 3:                  <FONT COLOR=#1111CC># start of element</FONT>
+            i -= 3                  <FONT COLOR=#1111CC># adjust for struct tag index offset</FONT>
+            tag = taglist[i]        <FONT COLOR=#1111CC># spell out the tag from taglist</FONT>
+            state.append(tag)       <FONT COLOR=#1111CC># push current tag</FONT>
+            skeleton.append(<FONT COLOR=#115511>'&lt;%s&gt;'</FONT> % tag)
+                                    <FONT COLOR=#1111CC># insert the element start tag</FONT>
+        <FONT COLOR=#3333CC><B>elif</B></FONT> i == 1:                <FONT COLOR=#1111CC># end of element</FONT>
+            tag = state.pop()       <FONT COLOR=#1111CC># pop current tag off stack</FONT>
+            skeleton.append(<FONT COLOR=#115511>'&lt;/%s&gt;'</FONT> % tag)
+                                    <FONT COLOR=#1111CC># insert the element end tag</FONT>
+        <FONT COLOR=#3333CC><B>elif</B></FONT> i == 2:                <FONT COLOR=#1111CC># insert element content</FONT>
+            tag = state[-1]
+            item = contentlist[taglist.index(tag)].pop()
+            item = item.replace(<FONT COLOR=#115511>'&amp;'</FONT>,<FONT COLOR=#115511>'&amp;amp;'</FONT>)
+            skeleton.append(item)   <FONT COLOR=#1111CC># add bare tag to indicate content</FONT>
+        <FONT COLOR=#3333CC><B>else</B></FONT>:
+            <FONT COLOR=#3333CC><B>raise</B></FONT> ValueError, <FONT COLOR=#115511>"Unexpected structure tag: ord(%d)"</FONT> % i
+    <FONT COLOR=#3333CC><B>return</B></FONT> <FONT COLOR=#115511>''</FONT>.join(skeleton)
+
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="decode_size"><FONT COLOR=#CC0000><B> decode_size</B></FONT></A>(s):
+    <FONT COLOR=#115511>"Given a 4-byte string representation, return a number &lt; 2**32"</FONT>
+    <FONT COLOR=#3333CC><B>return</B></FONT> ord(s[0])*16777216+ord(s[1])*65536+ord(s[2])*256+ord(s[3])
+
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="flagsize_blocks"><FONT COLOR=#CC0000><B> flagsize_blocks</B></FONT></A>(s):
+    offset = 0
+    blocks = []
+    <FONT COLOR=#3333CC><B>while</B></FONT> offset &lt; len(s):
+        blocklen = decode_size(s[offset:offset+4])
+        offset += 4
+        blocks.append(s[offset:offset+blocklen])
+        offset += blocklen
+    <FONT COLOR=#3333CC><B>return</B></FONT> blocks
+
+<FONT COLOR=#3333CC><B>if</B></FONT> __name__ == <FONT COLOR=#115511>'__main__'</FONT>:
+    <FONT COLOR=#3333CC><B>import</B></FONT> sys, zlib
+    <FONT COLOR=#3333CC><B>from</B></FONT> xml2structblocks <FONT COLOR=#3333CC><B>import</B></FONT> getTagsFromDTD
+    taglist = getTagsFromDTD(sys.argv[1])
+    structblocks = sys.stdin.read()
+    <FONT COLOR=#3333CC><B>for</B></FONT> block <FONT COLOR=#3333CC><B>in</B></FONT> flagsize_blocks(structblocks):
+        block = zlib.decompress(block)
+        xml_block = structblocks2xml(block,taglist)
+        sys.stdout.write(xml_block)</PRE>
+</td></tr></table>
+</p>
+<p><strong class="subhead">Quantifying Compression</strong></p>
+ <p>  For purposes of quantification, I work with the same two
+  representative XML documents addressed in my earlier research.
+  One document was a prose-oriented document, and XML version of
+  Shakespeare's <cite>Hamlet</cite>.  The markup includes tags such as
+  <code>&lt;PERSONA&gt;</code>, <code>&lt;SPEAKER&gt;</code> and <code>&lt;LINE&gt;</code> which map fairly
+  naturally to the typographic forms one might encounter in a
+  printed copy.  The second XML source document was created from
+  a one megabyte Apache log file, with XML tags used to surround
+  each field of the log file (and each entry).  The tags used
+  were not particularly verbose, but the file still expanded to
+  about 3 megabytes.
+</p>
+<p>  On the below graphs, the two gray bars in the front represent
+  the compression achievable with simple file-level compression,
+  using <code>gzip</code> and <code>bzip2</code>.  As discussed above file-level
+  compression of large files might be impractical; but as
+  expected, file-level compression achieves better results since
+  it has the whole file to look for repeated strings in.  In
+  general, one has to get up to blocks of 100 kilobytes or
+  larger before the block-level compression pulls nearly even
+  with the file-level compression.  Still, if one has to worry
+  about gigabyte source documents, even a megabyte block looks
+  pretty manageable in comparison.
+</p>
+<p>  The green and blue bars at the back of the graph represent the
+  compression achievable by compressing blocks without a
+  restructuring pass.  The gzip results use a prepended 4-byte
+  size flag, just as does the <code>xml2structblocks.py</code>.  The bzip2
+  results simply concatenate the output of multiple calls to the
+  command-line <code>bzip2</code> utility.  This is done because no
+  post-alpha Python binding was available for the bzip2 library.
+  The result is to add a 10-byte header for each block output
+  (and makes it more difficult to reverse the transformation,
+  which is not important for the test).  This does not have any
+  meaningful significance to the comparison.
+</p>
+<p>  Finally, the red bar in the middle represents the compression
+  performance of <code>xml2structblocks.py</code>.  This utility uses <code>zlib</code>
+  library compression.  Better compression results would be
+  obtained by using the bzip2 library.  This was not tested,
+  however, both because of the lack of a Python binding, and
+  because most anticipated future uses are likely to make the
+  speed disadvantage of bzip2 prohibitive.  However, if bandwidth
+  is more important than CPU time, adding a bzip2 compression
+  layer might enhance the benefits.
+</p>
+<p>  Let us look at the results, then make some comments.  Block
+  sizes of 1k, 10k, 100k, and 1M were tried.  First Hamlet:
+</p>
+<p>  <img src="http://gnosis.cx/publish/programming/hamlet_compression_small.gif" alt="Compression of hamlet.xml by different techniques">
+</p>
+<blockquote>Large hamlet.xml compression graph:
+   <a href="http://gnosis.cx/publish/programming/hamlet_compression_large.gif">http://gnosis.cx/publish/programming/hamlet_compression_large.gif</a>
+</blockquote><p>  Then a weblog:
+</p>
+<p>  <img src="http://gnosis.cx/publish/programming/weblog_compression_small.gif" alt="Compression of weblog.xml by different techniques">
+</p>
+<blockquote>Large weblog.xml compression graph:
+   <a href="http://gnosis.cx/publish/programming/weblog_compression_large.gif">http://gnosis.cx/publish/programming/weblog_compression_large.gif</a>
+</blockquote><p>  The same general pattern occurs in both the <code>hamlet.xml</code> and
+  <code>weblog.xml</code>--but the pattern is <strong>much</strong> stronger in
+  <code>weblog.xml</code> (the highly repetitive structure of a log file
+  gives restructuring its strongest advantage).  At small block
+  sizes, compression is much worse than file-level compression.
+  Around 10k block size, block-level compression starts to look
+  moderately good; and at 100k block size it becomes very close
+  to the file-level compression techniques.
+</p>
+<p>  The aspect of the charts that is most interesting for this
+  paper is the compression characteristics of the restructuring
+  block strategy.  Restructuring consistently improves on the
+  behavior of simple block-level <code>zlib</code> (around 30% for the web
+  log, less for Hamlet).  At around 100k blocks, restructuring
+  does better than file-level <code>gzip</code>, which is a very positive
+  result.
+</p>
+<p>  A surprising result is the behavior of block-level <code>bzip2</code>
+  compression.  As one would expect, once block size gets large,
+  it makes no difference that block-level compression is used.
+  But one has to get to the 1m size to wipe out the whole
+  difference.  However, at small block sizes (1k especially, but
+  even at 10k), block-level <code>bzip2</code> does shockingly badly.  Prior
+  restructuring is unlikely to improve this signicantly.  In
+  fact, for the 1k block size <code>bzip2</code> is consistently much worse
+  than <code>zlib</code>.
+</p>
+<p>  For reference, the exact file sizes graphed are below:
+</p>
+<p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>
+ 288754  hamlet.xml
+  57522  hamlet.xml.bz2
+  78581  hamlet.xml.gz
+ 120794  hamlet.blocks-re-1000
+  87775  hamlet.blocks-re-10000
+  75284  hamlet.blocks-re-100000
+  71970  hamlet.blocks-re-1000000
+ 129706  hamlet.blocks-z-1000
+  94423  hamlet.blocks-z-10000
+  81664  hamlet.blocks-z-100000
+  79707  hamlet.blocks-z-1000000
+ 139628  hamlet.blocks-bz-1000
+  83994  hamlet.blocks-bz-10000
+  63475  hamlet.blocks-bz-100000
+  57503  hamlet.blocks-bz-1000000
+
+3021921  weblog.xml
+  66994  weblog.xml.bz2
+ 115524  weblog.xml.gz
+ 563133  weblog.blocks-re-1000
+ 188562  weblog.blocks-re-10000
+ 107362  weblog.blocks-re-100000
+  83152  weblog.blocks-re-1000000
+ 817730  weblog.blocks-z-1000
+ 236383  weblog.blocks-z-10000
+ 141154  weblog.blocks-z-100000
+ 128120  weblog.blocks-z-1000000
+1035478  weblog.blocks-bz-1000
+ 278658  weblog.blocks-bz-10000
+ 111476  weblog.blocks-bz-100000
+  68367  weblog.blocks-bz-1000000
+</pre>
+</td></tr></table>
+</p>
+<p><strong class="subhead">Conclusion</strong></p>
+ <p>  The structure of documents significantly affects their
+  compressibility with standard compression algorithms.  Since
+  XML encodes much detail of its semantic structure in its
+  syntactic form, a "restructuring" of such documents can improve
+  their compressibility.  Moreover, this paper has shown that
+  such restructuring techniques are amenable to serialization
+  using parsed blocks from large XML documents.  Potentially, if
+  other performance features can be shown to be satisfactory, the
+  transmission of large XML data flows can be fit into narrower
+  bandwidths than a naive approach allows.
+</p>
+<p><strong class="subhead">Resources</strong></p>
+ <p>  The writeup of my first round of research addresses document
+  restructuring in a general way, without yet considering
+  serialization issues.  A number of quantitative comparisons are
+  contained therein that provide useful background.  The earlier
+  article appears on IBM developerWorks (use its search
+  facility).  An archival copy can be found at:
+</p>
+<blockquote>   <a href="http://gnosis.cx/publish/programming/xml_matters_13.html">http://gnosis.cx/publish/programming/xml_matters_13.html</a>
+</blockquote><p>  The XMill XML compressor addresses XML document restructuring
+  in a manner similar to that I have.  Information and a
+  downloadable version can be found at the below link.  The
+  license requires a click-through, and the download page
+  unfortunately seems to have a buggy script that does not allow
+  downloads from all sites.
+</p>
+<blockquote>   <a href="http://www.research.att.com/sw/tools/xmill/">http://www.research.att.com/sw/tools/xmill/</a>
+</blockquote><p>  The complete plays of Shakespeare can be found in XML form at
+  the below resource.  The document <code>hamlet.xml</code> used for testing
+  purposes was obtained there:
+</p>
+<blockquote>   <a href="http://www.ibiblio.org/xml/examples/shakespeare/">http://www.ibiblio.org/xml/examples/shakespeare/</a>
+</blockquote><p>  The 1994 paper <cite>A Block-sorting Lossless Data Compression
+  Algorithm</cite>, by M. Burrows and D.J. Wheeler, introduced the
+  algorithm known now as Burrows-Wheeler.  This technique is
+  implemented in the fairly popular <code>bzip2</code> utility:
+</p>
+<blockquote>   <a href="http://gatekeeper.dec.com/pub/DEC/SRC/research-reports/abstracts/src-rr-124.html">http://gatekeeper.dec.com/pub/DEC/SRC/research-reports/abstracts/src-rr-124.html</a>
+</blockquote><p>  Many Unix-like systems include <code>bzip2</code> as part of their
+  standard distribution.  For other platforms--or for newer
+  versions--'bzip2' can be found at:
+</p>
+<blockquote>   <a href="http://sources.redhat.com/bzip2/">http://sources.redhat.com/bzip2/</a>
+</blockquote><p>  I wrote what I believe is a good general introduction to data
+  compression.  It can be found at:
+</p>
+<blockquote>   <a href="http://www.gnosis.cx/publish/programming/compression_primer.html">http://www.gnosis.cx/publish/programming/compression_primer.html</a>
+</blockquote></body></html>

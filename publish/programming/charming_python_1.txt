@@ -1,0 +1,433 @@
+CHARMING PYTHON #1
+An Introduction to XML Tools for Python
+
+David Mertz, Ph.D.
+President, Gnosis Software, Inc.
+May 2000
+
+    A major element of getting started on working with XML in
+    Python is sorting out the comparative capabilities of all the
+    available modules.  This article provides brief descriptions of
+    the most popular and useful XML-related Python modules, and
+    points the reader to resources where she can download and read
+    more about individual modules.  A focus of this article is to
+    help the reader determine which modules are most appropriate
+    for a specific task at hand.
+
+
+WHAT IS PYTHON? WHAT IS XML?
+------------------------------------------------------------------------
+
+  Python is a freely available, very-high-level, interpreted
+  language developed by Guido van Rossum.  It combines a clear
+  syntax with powerful (but optional) object-oriented semantics.
+  Python is available for almost every computer platform you
+  might find yourself working on, and has strong portability
+  between platforms.
+
+  XML is a simplified dialect of the Standard Generalized Markup
+  Language (SGML).  Many readers will be most familiar with SGML
+  via one particular document type, HTML.  XML documents are
+  similar to HTML in being composed of text interspersed with and
+  structured by markup tags in angle-brackets.  But XML
+  encompasses many systems of tags that allow XML documents to be
+  used for many purposes:  magazine articles and user
+  documentation, files of structured data (like CSV or EDI
+  files), messages for interprocess communication between
+  programs, architectural diagrams (like CAD formats), and many
+  other purposes.  A set of tags can be created to capture any
+  sort of structured information one might want to represent,
+  which is why XML is growing in popularity as a common standard
+  for representing diverse information.
+
+
+THIS AND THAT
+------------------------------------------------------------------------
+
+  Python is, in many ways, an ideal language for working with XML
+  documents.  Like Perl, REBOL, REXX, and TCL it is a flexible
+  scripting language with powerful text manipulation
+  capabilities.  Moreover, more than most types of text files (or
+  streams), XML documents typically encode rich and complex data
+  structures.  The familiar "read some lines and compare them to
+  some regular expressions" style of text processing is generally
+  not well-suited to adequately parsing and processing XML.
+  Python, fortunately (and more so than most other languages),
+  has both straightforward ways of dealing with complex data
+  structures (usually with classes and attributes), and a range
+  of XML-related modules to aid in parsing, processing, and
+  generating XML.
+
+  One general concept to keep in mind about XML is that XML
+  documents can be processed in either a validating or
+  non-validating fashion.  In the former type of processing, it
+  is necessary to read a "Document Type Definition" (DTD) prior
+  to reading an XML document it applies to.  The processing in
+  this case will evaluate not just the simple syntactic rules for
+  XML documents in general, but also the specific grammatical
+  constraints of the DTD.  In many cases, non-validating
+  processing is adequate (and generally both faster to run, and
+  easier to program)--we trust the document creator to follow the
+  rules of the document domain.  Most modules discussed below are
+  non-validating; descriptions will indicate where validation
+  options exist.
+
+  The Vaults of Parnassus (http://www.vex.net/parnassus/)
+  has become the standard means of finding Python resources of
+  late.  All of the modules discussed below can be found at that
+  site (via links to the respective module owner's sites).  In
+  particular, the PyXML distribution can be found as both a
+  tarball and as a Win32 installer in the Vaults.
+
+
+PYTHON'S XML SPECIAL INTEREST GROUP (XML-SIG)
+------------------------------------------------------------------------
+
+  Much--or most--of the effort of maintaining a range of XML
+  tools for Python is performed by members of the XML-SIG.  As
+  with other Python Special Interest Groups, the XML-SIG
+  maintains a mailing list, list archive, helpful references,
+  documentation, a standard packaging, and other resources.
+  Probably the best place to start after reading the summaries in
+  this article is with the XML-SIG web pages.
+
+  Of specific interest for this article, the XML-SIG maintains
+  the PyXML distribution.  This package contains many of the
+  modules discussed in this article, some "getting started"
+  documentation, some demonstration code, and whatever else the
+  XML-SIG might decide to throw into the distribution.  A given
+  package may not always contain the "bleeding edge" version of
+  each individual module or tool, but downloading the PyXML
+  distribution is a good place to start.  You can always add any
+  modules that are not included, or any new versions of included
+  modules, later (and many of the modules that are not included
+  themselves rely on services provided by the PyXML
+  distribution).
+
+
+MODULE:  XMLLIB MODULE (STANDARD)
+------------------------------------------------------------------------
+
+  "Out of the box," Python 1.5.x comes with the module [xmllib].
+  Python 1.6 is likely to incorporate more of the XML-SIG's
+  efforts, but that version is still in alpha.  [xmllib] is a
+  non-validating and low-level parser.  The way [xmllib] works is
+  by the application programmer overriding the class XMLParser,
+  and providing methods to handle document elements, such as
+  specific or generic tags, or character entities.
+
+  As an example of [xmllib] in action, the PyXML distribution
+  includes a DTD called 'quotations.dtd' and a document called
+  'sample.xml' of this DTD (see Resources for an archive of files
+  mentioned in this article).  The below code will display the
+  first few lines of each quotation in 'sample.xml', and produce
+  very simple ASCII indicators of unknown tags and entities.  The
+  parsed text is handled as a sequential stream, and any
+  accumulators used are the programmer's responsibility (such as
+  the string of characters (#PCDATA) within a tag, or a
+  list/dictionary of tags encountered).
+
+      #--------------- File: try_xmllib.py -------------------#
+      import xmllib, string
+
+      class QuotationParser(xmllib.XMLParser):
+          """Crude xmllib extractor for quotations.dtd document"""
+
+          def __init__(self):
+              xmllib.XMLParser.__init__(self)
+              self.thisquote = ''             # quotation accumulator
+
+          def handle_data(self, data):
+              self.thisquote = self.thisquote + data
+
+          def syntax_error(self, message): pass
+
+          def start_quotations(self, attrs):  # top level tag
+              print '--- Begin Document ---'
+
+          def start_quotation(self, attrs):
+              print 'QUOTATION:'
+
+          def end_quotation(self):
+              print string.join(string.split(self.thisquote[:230]))+'...',
+              print '('+str(len(self.thisquote))+' bytes)\n'
+              self.thisquote = ''
+
+          def unknown_starttag(self, tag, attrs):
+              self.thisquote = self.thisquote + '{'
+
+          def unknown_endtag(self, tag):
+              self.thisquote = self.thisquote + '}'
+
+          def unknown_charref(self, ref):
+              self.thisquote = self.thisquote + '?'
+
+          def unknown_entityref(self, ref):
+              self.thisquote = self.thisquote + '#'
+
+      if __name__ == '__main__':
+          parser = QuotationParser()
+          for c in open("sample.xml").read():
+              parser.feed(c)
+          parser.close()
+
+
+OTHER PARSING MODULES
+------------------------------------------------------------------------
+
+  Several additional parsing modules with varying capabilities
+  are included in the PyXML distribution.  These all aim to
+  provide some improvement over the base [xmllib] module.
+
+  [pyexpat] is a wrapper for the GPL'd XML Parser Toolkit
+  'expat'.  'expat' in turn is a library written in C that is
+  meant to be available from any language that wants to utilize
+  it.  'expat' is non-validating, and should be much faster than
+  a native Python parser.  [sgmlop] is similar in purpose to
+  [pyexpat].  It is also non-validating, and also written in C.
+  [pyexpat] is available as a MacOS binary, and [sgmlop] is
+  available as a Win32 binary; but if you need a different
+  platform than these, you will need to use a C compiler to
+  build the modules for your own platform.
+
+  [xmlproc] is a python native parser, which performs nearly
+  complete validation.  If you need a validating parser,
+  [xmlproc] is currently your only choice in Python.  As well,
+  [xmlproc] provides a variety of high-level and experimental
+  interfaces that other parsers do not.
+
+  If you decide to use the Simple API for XML (SAX)--which you
+  should for anything sophisticated, since most other tools are
+  built on top of it--much of the work of sorting through parsers
+  can be done for you.  In the PyXML distribution,
+  [xml.sax.drivers] contains thin wrappers for a number of
+  parsers, including all those discussed, with names of the form
+  'drv_*.py'.  However, generally you will access the drivers by
+  a higher level SAX facility that will automatically choose the
+  "best" parser available on the system where run:
+
+      #------- Python lines for selecting best parser --------#
+      from xml.sax.saxext import *
+      parser = XMLParserFactory.make_parser()
+
+  These lines will select a parser for you (including [xmllib],
+  as a fallback).  You may also select a specific parser by
+  passing an argument in; but for portability--and also for
+  upward compatibility with an even better parser yet to come--it
+  is probably best to let 'make_parser()' do the work for you.
+
+
+PACKAGE: SAX
+------------------------------------------------------------------------
+
+  We have mentioned above that SAX can automatically choose a
+  parser to use; but just what is SAX? A good answer is:
+
+    SAX (Simple API for XML) is a common parser interface for XML
+    parsers.  It allows application writers to write applications
+    that use XML parsers, but are independent of which parser is
+    actually used.  (Think of it as JDBC for XML.)" (Lars Marius
+    Garshol, SAX for Python, see Resources)
+
+  SAX--like the parser modules it provides an API for--is
+  essentially a sequential processor of an XML document.  You use
+  it in a manner largely similar to the [xmllib] example, but
+  with a somewhat higher-level of abstraction.  Instead of
+  defining a parser class, an application programmer defines a
+  'handler' class that is registered with whatever parser is
+  used.  Four SAX interfaces must be defined (each with several
+  methods):  DocumentHandler, DTDHandler, EntityResolver and
+  ErrorHandler.  Base classes of all of these are provided, but
+  in most cases it is easiest to inherit from 'HandlerBase',
+  which itself inherits from all four interfaces.  You can
+  override whatever you wish to.  Some code will help illustrate
+  this; the sample performs the same task as the [xmllib]
+  example.
+
+      #----------------- File: try_sax.py --------------------#
+      import string
+      from xml.sax import saxlib, saxexts
+
+      class QuotationHandler(saxlib.HandlerBase):
+          """Crude sax extractor for quotations.dtd document"""
+
+          def __init__(self):
+              self.in_quote = 0
+              self.thisquote = ''
+
+          def startDocument(self):
+              print '--- Begin Document ---'
+
+          def startElement(self, name, attrs):
+              if name == 'quotation':
+                  print 'QUOTATION:'
+                  self.in_quote = 1
+              else:
+                  self.thisquote = self.thisquote + '{'
+
+          def endElement(self, name):
+              if name == 'quotation':
+                  print string.join(string.split(self.thisquote[:230]))+'...',
+                  print '('+str(len(self.thisquote))+' bytes)\n'
+                  self.thisquote = ''
+                  self.in_quote = 0
+              else:
+                  self.thisquote = self.thisquote + '}'
+
+          def characters(self, ch, start, length):
+              if self.in_quote:
+                  self.thisquote = self.thisquote + ch[start:start+length]
+
+      if __name__ == '__main__':
+          parser  = saxexts.XMLParserFactory.make_parser()
+          handler = QuotationHandler()
+          parser.setDocumentHandler(handler)
+          parser.parseFile(open("sample.xml"))
+          parser.close()
+
+  Two small things to notice about the example in contrast to
+  [xmllib] are:  the 'parseFile()' / 'parse()' methods handle a whole
+  stream/string so there is no need to create a loop to feed the
+  parser; relatedly, 'characters()' is fed chunks of data whose
+  size and position with the passed string are indicated by
+  arguments.  Don't make any assumptions about what the 'ch'
+  variable will as passed to 'characters()'.
+
+
+PACKAGE: DOM
+------------------------------------------------------------------------
+
+  DOM is a very-high-level tree-based representation of an XML
+  document.  The model is not specific to Python, but is a common
+  XML model (see Resources for further information).  Python's
+  DOM package is built upon SAX, and is included in the PyXML
+  distribution.  Length contraints prevent code samples in this
+  article, but an excellent general description is given in the
+  XML-SIG's "Python/XML HOWTO":
+
+    The Document Object Model specifies a tree-based
+    representation for an XML document.  A top-level Document
+    instance is the root of the tree, and has a single child
+    which is the top-level Element instance; this Element has
+    children nodes representing the content and any sub-elements,
+    which may have further children, and so forth.  Functions are
+    defined which let you traverse the resulting tree any way you
+    like, access element and attribute values, insert and delete
+    nodes, and convert the tree back into XML.
+
+    The DOM is useful for modifying XML documents, because you
+    can create a DOM tree, modify it by adding new nodes and
+    moving subtrees around, and then produce a new XML document
+    as output.  You can also construct a DOM tree yourself, and
+    convert it to XML; this is often a more flexible way of
+    producing XML output than simply writing <tag1>...</tag1> to
+    a file.
+
+
+MODULE: PYXIE
+------------------------------------------------------------------------
+
+  The [pyxie] module is built on top of the PyXML distribution
+  from the XML-SIG, and provides additional high-level interfaces
+  to an XML document.  [pyxie] does two basic things:  it
+  transforms XML documents to a more easily parsed line-oriented
+  format; and it provides methods to treat an XML document as a
+  walkable tree.  The line-oriented PYX format used by [pyxie] is
+  language-independent, and tools are available for several
+  languages.  In general, a PYX representation of a document is
+  much easier to process using familiar line-oriented
+  text-processing tools like grep, sed, awk, bash, perl--or
+  standard python modules like, [string] and [re]--than is its
+  XML representation.  Depending on what is downstream, a
+  transformation from XML to PYX might save a lot of work.
+
+  [pyxie]'s concept of treating an XML document like a tree is
+  similar to the ideas in DOM.  Since the DOM standard is gaining
+  widespread support across a number of programming languages, it
+  will probably make sense for most programmers to focus on that
+  standard rather than on [pyxie] if tree-representation of XML
+  documents is a requirement.
+
+
+MODULE: XML PARSER
+------------------------------------------------------------------------
+
+  The too generically--and perhaps a bit wrongly--named 'XML
+  Parser' is a somewhat older tool to check the syntacticality
+  and well-formedness of an XML document (but not to validate
+  against a DTD).  One extra utility class implements a bit of
+  fuzziness in the checking to get HTML documents to pass (even
+  without having all the closing tags XML requires).  The range
+  of applicability of this module is not as broad as those in the
+  PyXML distribution.  But it is easy to get up-and-running with
+  XML Parser if your requirement is just to verify some XML
+  documents.  The module will check an XML document on STDIN if
+  run from the command line without even bothering to import it
+  into your program.  You can't get much easier than that.
+
+
+MODULE: XML_OBJECTS 0.1
+------------------------------------------------------------------------
+
+  Like other high-level tools, [xml_objects] is built on top of
+  SAX.  The purpose of [xml_objects] is to transform an XML
+  document into a two dimensional grid representation that can
+  more easily be stored in a relational database.
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  "Python 101" -- A general first introduction to Python:
+
+    http://www-4.ibm.com/software/developer/library/python101.html
+
+  Other introductions, from the Python web site:
+
+    http://www.python.org/doc/Intros.html
+
+  The Python Special Interest Group on XML:
+
+    http://www.python.org/sigs/xml-sig/
+
+  SAX for Python Home Page:
+
+    http://www.stud.ifi.uio.no/~lmariusg/download/python/xml/saxlib.html
+
+  Other Python Special Interest Groups:
+
+    http://www.python.org/sigs/
+
+  The Vaults of Parnassus (Python code/tool repository) XML page:
+
+    http://www.vex.net/parnassus/apyllo.py?i=2678626
+
+  Pyxie Home Page:
+
+    http://www.pyxie.org
+
+  Files used and mentioned in this article:
+
+    http://gnosis.cx/download/charming_python_1.zip
+
+  "Processing XML with Perl" -- A good article giving brief
+  descriptions of XML modules available for Perl (similar
+  overview to that in this article, for another popular P---
+  language):
+
+    http://www.xml.com/pub/2000/04/05/feature/index.html
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  There must be some enthymetic necessity to David Mertz writing
+  a column on Python.  Like the Monty crew, whose phonorecordings
+  he imbibed as a teenager, he wound up with graduate degrees in
+  philosophy.  Now that he writes computer programs for a
+  living--and writes about writing computer programs--a certain
+  symmetry is served by writing such in and about Python.  David
+  may be reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/.
+

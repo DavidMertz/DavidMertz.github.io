@@ -1,0 +1,145 @@
+PRODUCT REVIEW:
+XML Instance 1.1
+
+David Mertz, Ph.D.
+Gnosis Software, Inc.
+November 2000
+
+AT A GLANCE
+------------------------------------------------------------------------
+
+      Creator:       TIBCO Extensibility
+      Price/License: $99.95. Closed-source.
+      Home Page:     http://www.extensibility.com/
+
+  This review is one in new series by David that cover
+  specialized XML content editors.  Review of XML Spy and XMetal
+  appeared earlier on Webreview.com.  Additional reviews will
+  follow.  If readers would like to see other XML editors
+  reviewed, they are encouraged to contact the author or WR's
+  editors.
+
+
+WHAT IS XML Instance?
+------------------------------------------------------------------------
+
+  Let us let TIBCO Extensibility describe their product in their
+  own words as a starting point:
+  
+    XML Instance™ is a breakthrough product for schema-driven
+    data editing that allows for the creation, editing, and
+    management of data-oriented XML documents, messages, and
+    configuration files.
+
+  As is common in marketing, the makers exaggerate a bit in
+  characterizing their product.  But while XML Instance is not
+  exactly a breakthrough, it *is* a friendly tool for working
+  with XML documents that provides a distinctive interface
+  design.  In overall purpose, XML Instance is quite close to the
+  other XML editors I have reviewed.
+  
+  XML Instance does not entirely stand on its own.  Besides
+  editing XML documents with XML Instance, TIBCO Extensibility
+  would like you to develop schemas with XML Authority and to
+  perform batch processing of documents with XML Console.  They
+  market this set of projects jointly as Turbo XML (for $269,
+  more than XML Instance by itself, but less than the collection
+  of products purchased individually).
+  
+  One noteworthy features of XML Instance is that it is a Java
+  application.  There are pros and cons to using Java.  I have
+  found the speed of XML Instance to be adequate on a 366Mhz,
+  Win95 machine, but nonetheless notably slower than a native
+  compiled application (especially during startup).  My own
+  experience has also been that some JVM's are notably faster and
+  more stable than others (IBM's have stood out as extremely
+  good, on several platforms).  Although I do not blame TIBCO
+  Extensibility, I experienced screen redraw problems until I
+  installed a different JVM.  On the obvious plus side, by
+  writing XML Instance in Java, TIBCO Extensibility supports
+  Win32, Mac, and UNIX at the same time.  This is far better
+  cross-platform support than other XML products I have reviewed
+  to date.
+
+EDITING WITH XML INSTANCE
+------------------------------------------------------------------------
+
+  The interface for XML Instance uses an interesting concept, a
+  bit different from similar products.  A shaded and hierarchical
+  summary of the elements appears to the left of the display. 
+  Elements (and any subelements they contain) may be folded away
+  and revealed, and may also be marked in highlight colors to
+  make certain elements stand out.  Furthermore, each element may
+  be treated as either a hierarchical branch, or merely as
+  marked-up text.  The effect of this is to allow you to easily
+  gloss over the details of character-level markup by excluding
+  it from the left-hand hierarchical summary.  It really makes
+  viewing text-oriented documents easier.  
+  
+  A picture is worth a thousand words here.
+  
+  {Screenshot of XML Instance:
+   http://gnosis.cx/publish/programming/xml_i.gif}
+  
+  In those cases where elements are viewed as hierarchical
+  containers, the DTD/Schema specification of their allowed
+  contents are shown to the right.  Where maked-up text mode is
+  chosen for a given element, to the right is the actual text
+  (including markup) contained in the element.
+  
+  What is nice about mark-up view on elements is that initially
+  only the first line of element contents is displayed.  At the
+  right edge of the element display is an elipsis; when you click
+  on the elipsis button, you unfold display of the entire
+  contents.  What this gets you is a way to look at long
+  documents and have a good sense of their overall contents, but
+  still zoom into the details where needed; it works in much the
+  manner of *folding* in a text editor, which is something I find
+  greatly useful.
+
+  Unfortunately, there is not much more to XML Instance than I   
+  have described, at least in terms of creating and editing a
+  document.  Other tools provide much more by way of contextual
+  prompts for available elements, various views of the document
+  content, and editing assistants.  XML Instance has a good
+  interface, but it is quite spartan and minimal, in the end. 
+  There may not be quite enough "there" there.
+  
+TOOLS IN XML INSTANCE  
+------------------------------------------------------------------------
+
+  There are two primary tools I would want in an XML editor.  I
+  want to validate the document I am working on and I
+  want to transform my document to other formats (ideally by
+  using XSLT, but CSS2, DSSSL, or other means are options).  XML
+  Instance provides both of my desired tools, although with mixed
+  results.
+  
+  In terms of document transformations, XML Instance shines; at
+  least as far as my DocBook document and custom XSLT stylesheet
+  for HTML rendering go.  Both XMetal and XML Spy choke in odd
+  ways on this transformation (producing gibberish output, while
+  Sabletron operates correctly on the same files).  XML Instance
+  behaves exactly correctly.  I can preview my document in a web
+  browser right from a menu option, and I can save the
+  transformation directly with another menu option.  XML Instance
+  is even happy to let me edit my XSLT stylesheet in another
+  window.
+  
+  As to validation, however, XML Instance seems not to do quite
+  as well.  My test DocBook document (based on a quite complex
+  DTD that seems to have some subtle problems of its own)
+  validates as 100% OK in XMetal, XML Spy, and in several
+  command-line tools.  XML Instance, on the other hand, complains
+  of several missing mandatory subelements to several elements. 
+  XML Instance is correct that they are not there, but everything
+  it complains about is optional rather than mandatory.
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  While still probably less than many of his readers, David Mertz
+  is starting to feel like he knows altogether too much about
+  matters XML.  You can find out copious biographical details by
+  sailing to http://gnosis.cx/publish/.

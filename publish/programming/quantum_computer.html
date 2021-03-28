@@ -1,0 +1,623 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en"> 
+<html> 
+<head> 
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"> 
+   <meta name="GENERATOR" content="Mozilla/4.61 [en] (Win95; U) [Netscape]"> 
+   <title>An Introduction to Quantum Computing -- A Guide to Solving Intractable Problems Simply -- </title> 
+<style> 
+             {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left} 
+em           {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt} 
+ul, ol, li   {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left} 
+tt           {font-family: mono, courier} 
+pre          {font-family: mono; font-size: 9pt} 
+th           {font-family: mono, courier; font-size: 8pt} 
+ 
+.code-sample {background-color: #CCCCCC} 
+.sidebar     {background-color: #FFFFCC} 
+.title       {font-size: medium; color: #3333CC} 
+.subtitle    {font-size: 9pt; color: #3333CC} 
+.subhead     {font-size: 12pt} 
+.input       {background: #FFFFFF; color: #000000; font-weight: normal} 
+</style> 
+</head> 
+<body text="#000000" bgcolor="#FFFFFF">
+
+ 
+<p><strong class="title">An Introduction To Quantum Computing</strong><br> 
+<strong class="subtitle">A Guide to Solving Intractable Problems Simply</strong></p> 
+<p>Brad Huntting, University of Colorado 
+<br>David Mertz, Ph.D., Gnosis Software, Inc. 
+<br>June 2001 
+<br>&nbsp; 
+<blockquote>In the next few decades, quantum computers are likely to move 
+out of science fiction and elite research labs (largely at IBM), and into 
+practical applications. There is a class of problems surrounding complex 
+combinatorics that are intractable, or at least impractical, on traditional 
+deterministic computers that can be solved efficiently on QCs. By way of 
+practical illustration, this article presents examples from the GPL tool 
+<tt>qcl</tt>. 
+Using <tt>qcl</tt> allows developers to simulate and examine a "virtual" 
+quantum computer. Basic elements of using <tt>qcl</tt> are explained in 
+the course of an introductory explanation of the concepts of quantum computing. 
+An assumption is made that readers have a basic knowledge of the mathematics 
+of vectors.</blockquote> 
+<b>Introduction To Computability And Tractability</b> 
+<p>Alan Turing invented the programable computer in 1936 (see Resources) 
+as a thought experiment to show that certain mathematical problems were 
+not computable. Implicit in his argument was the idea that a computer, 
+armed with sufficiant resources, is capable of realizing any reasonable 
+algorithm. 
+<p>Since that time, the computer industry has managed, not only to build 
+programable computing machines, but they've managed to outdo themselves 
+by doubling the capabilities every 18 months or so. However despite these 
+frenetic advances in computer technology, modern computers are still unable 
+to make significant dents in hard problems. Problems who's solution requires 
+exponential resources (compared to the size of the problem itself), remain 
+as <i>intractable</i> today as they were in 1936. 
+<p>In 1982 Richard Feynman sugested that the venerable Turing machine may 
+not be as powerful as people thought. You see, Feynman was trying to simulate 
+the interaction of N particles with quantum mechanics. But try as he might, 
+he was unable to find a general solution without using exponential resources. 
+The problem seemed intractable on modern computing hardware. 
+<p>Yet somehow, nature is able to "simulate" this mathematical problem 
+using only N particles. The conclusion was inescapable: Nature was capable 
+of building a fundementally superior computing device, and that meant that 
+the Turing machine was not the all purpose computer people had thought. 
+<p><b>Visualizing A Quantum Computing Problem</b> 
+<p>Thinking about QC algorithms involves thinking in terms of probabilistic 
+factors, which is a conceptual change for current programmers. In some 
+ways, this is like the conceptual shift involved in using OOP, or functional 
+programming, or multi-threading, for the first time; but in another sense 
+the shift is more fundamental since it opens up a whole new class of (probably) 
+non-equivalent problems. 
+<p>Let's imagine a problem: we need to find a path through a complicated 
+maze. Every time we follow one path, we soon come across new branches. 
+Even knowing there is <b>some</b> path out, it is easy to get lost. A well-known 
+"algorithm" for walking a maze is the "right hand rule"--follow the right 
+hand wall until you are out (including around dead-ends). This may not 
+be a very short path, but at least you will not repeat the same corridors. 
+In computer terms, this rule is also known as "recursive tree descent." 
+<p>Now let's imagine another solution. Stand at the entrance to the maze, 
+and release a sufficient quantity of colored gas to fill every corridor 
+of the maze simultaneously. Have a collaborator stand at the exit. When 
+she sees a whiff of colored gas come out, she simply "asks" those gas particles 
+what path they travelled. The first particle she queries will most likely 
+have travelled the shortest possible path through the maze. 
+<p>Naturally, gas particles are not entirely wont to tell us about their 
+travels. But QC's act in much the manner of our scenario: fill the whole 
+problem space, then only bother asking for the correct solution (leaving 
+all the dead-ends out of the answer space). 
+<p><b>The Qcl Quantum Computer Simulator</b> 
+<p>Simulating a quantum computer on a traditional clasical computer is 
+a hard problem. The resources required increase exponentially with the 
+amount of quantum memory under simulation to the point that simulating 
+a QC with even a few dozen quantum bits (qubits) is well beyond the capability 
+of any computer made today. 
+<p><tt>qcl</tt> only simulates very small quantum computers, but fortunately, 
+it's just powerful enough to demonstrate the concept behind some useful 
+QC algorithms. 
+<p>Like the supercomputers of yesteryear, the first QC's of tomorrow will 
+probably consist of some exotic hardware at their core which stores and 
+manipulates the quantum state machine; surrounding this will be the life 
+support hardware that sustains it and presents the user with a reasonable 
+programing environment. <tt>qcl</tt> simulates such an environment, by 
+providing a clasical program structure with quantum data types and special 
+functions to perform operations on them. 
+<p>Let's start with some familiar operations from classical computing using 
+qcl. Since qcl is an interactive interpreter with a syntax vaguly similar 
+to C, we can just fire it up and start entering commands into it. To make 
+our examples more readable we'll restrict the number of quantum bits under 
+simulation to 5. 
+<p><b>Initializing QCL and dumping a qubit</b> 
+<table BORDER=0 CELLPADDING=0 WIDTH="100%" class="code-sample" > 
+<tr> 
+<td> 
+<pre>$ qcl --bits=5 
+<font color="#007700">[0/8] 1 |00000> 
+</font>qcl&gt; <b><font color="#000099">qureg a[1]; 
+</font></b>qcl&gt; <b><font color="#000099">dump a 
+</font></b><font color="#007700">: SPECTRUM a: |....0> 
+1 |0></font></pre> 
+</td> 
+</tr> 
+</table> 
+ 
+<p>Here we have allocated a 1 qubit (boolean) variable from the <tt>qcl</tt> 
+quantum heap. The quantum state of the machine, <tt>|00000></tt>, is initialized 
+to all zeros. The <tt>|></tt> characters signify that this is a quantum 
+state (sometimes called a "ket"), while the string of 5 0's (one for each 
+bit in the quantum heap) form the label for the state. This is known as 
+the Dirac notation (a.k.a. "bra-ket") for quantum mechanics. Its main advantage 
+over traditional mathmatical notation for linear algebra is that it's much 
+easier to type. 
+<p>"qureg a[1]" allocates a one bit variable <tt>a</tt> from the quantum 
+heap. The <tt>dump a</tt> command gives us some information about <tt>a</tt>. 
+The <tt>SPECTRUM</tt> line shows us where the qubits for <tt>a</tt> have 
+been allocated in the quantum heap; in this case the 0-bit of <tt>a</tt> 
+is the rightmost qubit in the heap. The next line tells us that, were we 
+to measure <tt>a</tt>, we would see "0" with probability "1". 
+<p>Of course the ability to peek at quantum memory is only posible because 
+<tt>qcl</tt> 
+is a simulator. Real quantum bits cant be observed without irrevocably 
+altering their values. More on this latter. 
+<p>Many of the primative quantum operators provide by <tt>qcl</tt> are 
+familiar from clasical computing for example the <tt>Not()</tt> function 
+flips the value of a bit. 
+<p><b>A Boolean function on a qubit</b> 
+<table BORDER=0 CELLPADDING=0 WIDTH="100%" class="code-sample" > 
+<tr> 
+<td> 
+<pre>qcl&gt; <b><font color="#000099">Not(a); 
+</font></b><font color="#007700">[2/8] 1 |00001></font></pre> 
+</td> 
+</tr> 
+</table> 
+ 
+<p><tt>Not()</tt> applied again to the same qubit will undo the effect 
+of the first which is exactly what we would expect from classical computing. 
+<p>The <tt>CNot(x,y)</tt> operator tests the value of y and if it is 1, 
+it flips the value of x. This is equivalent to the statement <tt>x^=y</tt> 
+in C. 
+<p><b>Some more qubit operators (CNot)</b> 
+<table BORDER=0 CELLPADDING=0 WIDTH="100%" class="code-sample" > 
+<tr> 
+<td> 
+<pre>qcl&gt; <b><font color="#000099">qureg b[2]; 
+</font></b>qcl&gt; <b><font color="#000099">Not(b[1]); 
+</font></b><font color="#007700">[3/8] 1 |00100> 
+</font>qcl&gt; <b><font color="#000099">CNot(b[0], b[1]); 
+</font></b><font color="#007700">[3/8] 1 |00110> 
+</font>qcl&gt; <b><font color="#000099">dump b[0]; 
+</font></b><font color="#007700">: SPECTRUM b[0]: |...0.> 
+1 |1> 
+</font>qcl&gt; <b><font color="#000099">dump b[1]; 
+</font></b><font color="#007700">: SPECTRUM b[1]: |..0..> 
+1 |1></font></pre> 
+</td> 
+</tr> 
+</table> 
+ 
+<p>The <tt>CNot()</tt> operator, like the <tt>Not()</tt> operator is its 
+own inverse; apply it a second time and it reverses the effect of the first 
+leaving you in the same state as when you started. 
+<p>This idea of reversability is critical for quantum computing. Theoretical 
+physics tells us that every operation on quantum bits (except for measurement) 
+must be undoable. We must always keep enough information to work any operation 
+backwards. This means that operations like assignment (<tt>x=y</tt>), AND 
+(<tt>x&amp;=y</tt>), and OR (<tt>x|=y</tt>)--which we take for granted 
+in clasical computing--have to be modified for use in QC. Fortunately, 
+there's a straightforward formula for converting irreversable classical 
+operations into quantum operations. 
+<p>First we never overwrite a quantum bit; instead of assignment (<tt>x=y</tt>) 
+we can do this: 
+<p><b>Reversible simulation of Boolean AND</b> 
+<table BORDER=0 CELLPADDING=0 WIDTH="100%" class="code-sample" > 
+<tr> 
+<td> 
+<pre>nomadic$ qcl --bits=5 
+<font color="#007700">[0/8] 1 |00000> 
+</font>qcl&gt; <b><font color="#000099">qureg c[3]; 
+</font></b>qcl&gt; <b><font color="#000099">Not(c[1]); 
+</font></b><font color="#007700">[3/8] 1 |00010> 
+</font>qcl&gt; <b><font color="#000099">Not(c[2]); 
+</font></b><font color="#007700">[3/8] 1 |00110> 
+</font>qcl&gt; <b><font color="#000099">dump c 
+</font></b><font color="#007700">: SPECTRUM c: |..210> 
+1 |110> 
+</font>qcl&gt; <b><font color="#000099">CNot(c[0], c[1] &amp; c[2]); 
+</font></b><font color="#007700">[3/8] 1 |00111> 
+</font>qcl&gt; <b><font color="#000099">dump c 
+</font></b><font color="#007700">: SPECTRUM c: |..210> 
+1 |111></font></pre> 
+</td> 
+</tr> 
+</table> 
+ 
+<p>The <tt>CNot(x, y &amp; z)</tt> will flip the value of x if y and z 
+are 1. So if <tt>x</tt> is initialized to 0 before we start, this is effectively 
+the same thing as calculating <tt>y&amp;z</tt> and storing the value in 
+<tt>x</tt>. 
+It's a subtle distinction, but one that is critical for quantum computing. 
+<p>Now let's look at some operations that have no classical analogues. 
+The most striking, and at the same time one of the most useful, is the 
+Hadamard function which is appropriately labled <tt>Mix()</tt> by <tt>qcl</tt>. 
+<tt>Mix()</tt> 
+takes a computational basis state like <tt>|0></tt> or <tt>|1></tt> state 
+and turns it into a quantum superposition. Here's a one qubit example: 
+<p><b>Superposing states with Mix()</b> 
+<table BORDER=0 CELLPADDING=0 WIDTH="100%" class="code-sample" > 
+<tr> 
+<td> 
+<pre><font color="#007700">[0/8] 1 |00000> 
+</font>qcl&gt; <b><font color="#000099">qureg a[1]; 
+</font></b>qcl&gt; <b><font color="#000099">dump a; 
+</font></b><font color="#007700">: SPECTRUM a: |....0> 
+1 |0> 
+</font>qcl&gt; <b><font color="#000099">Mix(a); 
+</font></b><font color="#007700">[1/8] 0.707107 |00000> + 0.707107 |00001> 
+</font>qcl&gt; <b><font color="#000099">dump a; 
+</font></b><font color="#007700">: SPECTRUM a: |....0> 
+0.5 |0> + 0.5 |1></font></pre> 
+</td> 
+</tr> 
+</table> 
+ 
+<p>Here we have exploited the quantum mechanics principle of superposition. 
+According the <tt>dump a</tt>, if if we were to measure <tt>a</tt>, we 
+would see 0 or 1 with equal probability 0.5 (0.707107^2). 
+<p>If you've never been exposed to this concept of superposition before 
+it can be a little confusing. Quantum mechanics tells us that a small particles, 
+such as electrons, can be in two places at once. Similarly a quantum bit 
+can have two different values at the same time. The key to understanding 
+this all is vector arithmetic. 
+<p>You see, unlike a clasical computer where the state of the machine is 
+merely a single string of ones and zeros; The state of a QC is a vector 
+with components for every posible string of ones and zeros. To put it another 
+way, the strings of ones and zeros form the basis for a vector space where 
+our machine state lives. We can write down the state of a QC by writing 
+out a sum like so: 
+<p><b>The vector state of a quantum computer</b> 
+<table BORDER=0 CELLPADDING=0 WIDTH="100%" class="code-sample" > 
+<tr> 
+<td> 
+<pre>a|X> + b|Y> + ...</pre> 
+</td> 
+</tr> 
+</table> 
+ 
+<p>Where <tt>X</tt>, <tt>Y</tt>, etc are strings of ones and zeros, and 
+<tt>a</tt>, 
+<tt>b</tt>, 
+etc are the amplitudes for the respective components X, Y, etc. The <tt>|X></tt> 
+notation is just the way physicists denote a "vector (or state) called 
+X". 
+<p>The <tt>Mix()</tt> operator (Hadamard operator) when applied to a bit 
+in the <tt>|0></tt> state will transform the state into <tt>sqrt(0.5)(|0>+|1>)</tt> 
+as in the example above. But if we apply <tt>Mix()</tt> to a bit that's 
+in the <tt>|1></tt> state we get <tt>sqrt(0.5)(|0>-|1>)</tt>. So if we 
+apply <tt>Mix()</tt> twice to any qubit (in any state) we get back to where 
+we started. In other words, <tt>Mix()</tt> is it's own inverse. 
+<p>If we have two qubits <tt>a</tt> and <tt>b</tt> (initialized to zero) 
+and we perform a sequence of quantum operations on <tt>a</tt> and then 
+do the same to <tt>b</tt>, we would expect to wind up with a and b having 
+the same value, and we do. 
+<p><b>Independent superposed qubits</b> 
+<table BORDER=0 CELLPADDING=0 WIDTH="100%" class="code-sample" > 
+<tr> 
+<td> 
+<pre>qcl&gt; <b><font color="#000099">qureg a[1]; 
+</font></b>qcl&gt; <b><font color="#000099">Not(a); 
+</font></b><font color="#007700">[1/8] 1 |00001> 
+</font>qcl&gt; <b><font color="#000099">Mix(a); 
+</font></b><font color="#007700">[1/8] 0.707107 |00000> + -0.707107 |00001> 
+</font>qcl&gt; <b><font color="#000099">qureg b[1]; 
+</font></b>qcl&gt; <b><font color="#000099">Not(b); 
+</font></b><font color="#007700">[2/8] 0.707107 |00010> + -0.707107 |00011> 
+</font>qcl&gt; <b><font color="#000099">Mix(b); 
+</font></b><font color="#007700">[2/8] 0.5 |00000> + -0.5 |00010> + -0.5 |00001> + 0.5 |00011> 
+</font>qcl&gt; <b><font color="#000099">dump a 
+</font></b><font color="#007700">: SPECTRUM a: |....0> 
+0.5 |0> + 0.5 |1> 
+</font>qcl&gt; <b><font color="#000099">dump b 
+</font></b><font color="#007700">: SPECTRUM b: |...0.> 
+0.5 |0> + 0.5 |1></font></pre> 
+</td> 
+</tr> 
+</table> 
+ 
+<p>In this example, <tt>a</tt> and <tt>b</tt> are completely independent. 
+So if we measure one it should have no effect on the other 
+<p><b>Measurement independent qubits</b> 
+<table BORDER=0 CELLPADDING=0 WIDTH="100%" class="code-sample" > 
+<tr> 
+<td> 
+<pre>qcl&gt; <b><font color="#000099">measure a; 
+</font></b><font color="#007700">[2/8] -0.707107 |00001> + 0.707107 |00011> 
+</font>qcl&gt; <b><font color="#000099">dump b 
+</font></b><font color="#007700">: SPECTRUM b: |...0.> 
+0.5 |0> + 0.5 |1></font></pre> 
+</td> 
+</tr> 
+</table> 
+ 
+<p>As expected, the spectrum of <tt>b</tt> was unchnaged by measuring <tt>a</tt>. 
+<p>If the operations were more complicated than a simple <tt>Not();Mix()</tt>, 
+we might be tempted to perform them only once on <tt>a</tt> and then copy 
+the value from <tt>a</tt> to <tt>b</tt>. Ok, we can't really copy (because 
+it's not a reversable operation), but we can initialize <tt>b</tt> to zero 
+and <tt>CNot(b,a)</tt> which accomplishes the same goal. 
+<p>Alas, this doesn't do what we would expect. Let's just try it and see: 
+<p><b>Attempting a qubit-copy operation</b> 
+<table BORDER=0 CELLPADDING=0 WIDTH="100%" class="code-sample" > 
+<tr> 
+<td> 
+<pre>qcl&gt; <b><font color="#000099">qureg a[1]; 
+</font></b>qcl&gt; <b><font color="#000099">Not(a); 
+</font></b><font color="#007700">[1/8] 1 |00001> 
+</font>qcl&gt; <b><font color="#000099">Mix(a); 
+</font></b><font color="#007700">[1/8] 0.707107 |00000> + -0.707107 |00001> 
+</font>qcl&gt; <b><font color="#000099">qureg b[1]; 
+</font></b>qcl&gt; <b><font color="#000099">CNot(b,a); 
+</font></b><font color="#007700">[2/8] 0.707107 |00000> + -0.707107 |00011> 
+</font>qcl&gt; <b><font color="#000099">dump a; 
+</font></b><font color="#007700">: SPECTRUM a: |....0> 
+0.5 |0> + 0.5 |1> 
+</font>qcl&gt; <b><font color="#000099">dump b; 
+</font></b><font color="#007700">: SPECTRUM b: |...0.> 
+0.5 |0> + 0.5 |1></font></pre> 
+</td> 
+</tr> 
+</table> 
+ 
+<p>The spectrum of <tt>a</tt> and <tt>b</tt> look correct. And indeed if 
+we were to measure just <tt>a</tt> or <tt>b</tt> we would get the same 
+result as above. The difference lies in what happens when we measure both 
+a and b. 
+<p><tt>qcl</tt> has a built-in operator for measuring qubits, so let's 
+use it. Now keep in mind, the outcome of a measurement is random, so if 
+you're repeating this experiment, your mileage may vary. 
+<p><b>Measurement collapsing qubit superposition</b> 
+<table BORDER=0 CELLPADDING=0 WIDTH="100%" class="code-sample" > 
+<tr> 
+<td> 
+<pre>qcl&gt; <b><font color="#000099">measure a; 
+</font></b><font color="#007700">[2/8] -1 |00011> 
+</font>qcl&gt; <b><font color="#000099">dump b 
+</font></b><font color="#007700">: SPECTRUM b: |...0.> 
+1 |1></font></pre> 
+</td> 
+</tr> 
+</table> 
+ 
+<p>By measuring <tt>a</tt>, we have collapsed the superposition of <tt>b</tt>. 
+This is because <tt>a</tt> and <tt>b</tt> were "entangled" in what physicists 
+call an "EPR pair" after Einstein, Podensky, and Rosen who used this in 
+an attempt to show that quantum mechanics was an incomplete theory. John 
+Bell, however later demonstrated entanglement in real particles by experimental 
+refutation of the "Bell Inequality" (which formalized the EPR thought experiment). 
+<p>What happens when you try to copy one quantum variable onto another 
+is that you wind up with is entanglement rather than a real copy. 
+<p><b>Deutches Problem</b> 
+<p>Suppose we are given a function that takes a one bit argument and returns 
+one bit. And to keep things on the up and up, let's require that this be 
+a pseudo-clasical function; which means that if we hand it a clasical bit 
+(0 or 1) as an argument, it will return a classical bit. 
+<p>There are exactly 4 posible functions that fit this requirements. 
+<p><b>All four possible Boolean unary functions</b> 
+<table BORDER=0 CELLPADDING=0 WIDTH="100%" class="code-sample" > 
+<tr> 
+<td> 
+<pre>f(x) -> 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font color="#660000"># constant zero result 
+</font>f(x) -> 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font color="#660000"># constant one result 
+</font>f(x) -> x&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font color="#660000"># identity function 
+</font>f(x) -> ~x&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font color="#660000"># boolean negation</font></pre> 
+</td> 
+</tr> 
+</table> 
+ 
+<p>The first two of the above functions are "constant", meaning it outputs 
+the same value regardless of it's input. The second two are "balanced" 
+meaning the output is 0 half the time and 1 half the time. Classically 
+there's no way to determine if <tt>f()</tt> is constant or balanced without 
+evaluating the function twice. 
+<p>Deutches problem asks us to determine wheather f() is constant or balanced 
+by evaluating <tt>f()</tt> only once. Here's how it works. 
+<p>First, we have to construct a pseudo-classic operator in <tt>qcl</tt> 
+that evalutes <tt>f(x)</tt>. To do this we'll define a qufunct with arguments 
+for input and output. For example: 
+<p><b>Defining a quantum function in qcl</b> 
+<table BORDER=0 CELLPADDING=0 WIDTH="100%" class="code-sample" > 
+<tr> 
+<td> 
+<pre><font color="#000000">qufunct F(qureg out, quconst in) { 
+&nbsp;&nbsp;&nbsp; CNot(out, in); 
+&nbsp;&nbsp;&nbsp; Not(out); 
+}</font></pre> 
+</td> 
+</tr> 
+</table> 
+ 
+<p>If "out" is initialized to 0, calling this function will change out 
+to <tt>f(x)=~x</tt>. You can comment out either the <tt>CNot()</tt> or 
+<tt>Not()</tt> 
+lines to get one of the other 3 posible functions. After we put the above 
+code snipit in a file called f_def.qcl we can test <tt>F()</tt> to make 
+sure it does what we want: 
+<p><b>Interactively importing and testing F()</b> 
+<table BORDER=0 CELLPADDING=0 WIDTH="100%" class="code-sample" > 
+<tr> 
+<td> 
+<pre>qcl&gt; <b><font color="#000099">include "f_def.qcl"; 
+</font></b>qcl&gt; <b><font color="#000099">qureg in[1]; 
+</font></b>qcl&gt; <b><font color="#000099">qureg out[1]; 
+</font></b>qcl&gt; <b><font color="#000099">F(out,in); 
+</font></b><font color="#007700">: f(x)= ~x 
+[2/8] 1 |00010> 
+</font>qcl&gt; <b><font color="#000099">dump out; 
+</font></b><font color="#007700">: SPECTRUM out: |...0.> 
+1 |1> 
+</font>qcl&gt; <b><font color="#000099">reset 
+</font></b><font color="#00CC00">[2/8] 1 |00000> 
+</font>qcl&gt; <b><font color="#000099">Not(in); 
+</font></b><font color="#007700">[2/8] 1 |00001> 
+</font>qcl&gt; <b><font color="#000099">dump in 
+</font></b><font color="#007700">: SPECTRUM in: |....0> 
+1 |1> 
+</font>qcl&gt; <b><font color="#000099">F(out,in); 
+</font></b><font color="#007700">: f(x)= ~x 
+[2/8] 1 |00001> 
+</font>qcl&gt; <b><font color="#000099">dump out 
+</font></b><font color="#007700">: SPECTRUM out: |...0.> 
+1 |0></font></pre> 
+</td> 
+</tr> 
+</table> 
+ 
+<p>Now let's reset the quantum memory, and run Deutches algorithm. It works 
+by first putting the in and out bits into a superposition of 4 basis states. 
+<p><b>Deutches algorithm (line numbers added)</b> 
+<table BORDER=0 CELLPADDING=0 WIDTH="100%" class="code-sample" > 
+<tr> 
+<td> 
+<pre><font color="#660000">(01)</font>&nbsp; qcl&gt; <b><font color="#000099">reset; 
+</font></b><font color="#660000">(02)&nbsp;</font> qcl&gt; <b><font color="#000099">int result; 
+</font></b><font color="#660000">(03)</font>&nbsp; qcl&gt; <b><font color="#000099">Not(out); 
+</font></b><font color="#660000">(04)</font>&nbsp; <font color="#007700">[2/8] 1 |00010> 
+</font><font color="#660000">(05)</font>&nbsp; qcl&gt; <b><font color="#000099">Mix(out); 
+</font></b><font color="#660000">(06)</font>&nbsp; <font color="#007700">[2/8] 0.707107 |00000> + -0.707107 |00010> 
+</font>(<font color="#660000">07)</font>&nbsp; qcl&gt; <b><font color="#000099">Mix(in); 
+</font></b><font color="#660000">(08)</font>&nbsp; <font color="#007700">[2/8] 0.5 |00000> + 0.5 |00001> + -0.5 |00010> + -0.5 |00011> 
+</font><font color="#660000">(09)</font>&nbsp; qcl&gt; <b><font color="#000099">F(out,in); 
+</font></b><font color="#660000">(10)</font>&nbsp; <font color="#007700">: f(x)= ~x 
+</font><font color="#660000">(11)</font>&nbsp; <font color="#007700">[2/8] 0.5 |00010> + 0.5 |00001> + -0.5 |00000> + -0.5 |00011> 
+</font><font color="#660000">(12)</font>&nbsp; qcl&gt; <b><font color="#000099">Mix(in); 
+</font></b><font color="#660000">(13)</font>&nbsp; <font color="#007700">[2/8] 0.707107 |00011> + -0.707107 |00001> 
+</font><font color="#660000">(14)</font>&nbsp; qcl&gt; <b><font color="#000099">Mix(out); 
+</font></b><font color="#660000">(15)</font>&nbsp; <font color="#007700">[2/8] -1 |00011> 
+</font><font color="#660000">(16)</font>&nbsp; qcl&gt; <b><font color="#000099">measure in, result; 
+</font></b><font color="#660000">(17)</font>&nbsp; <font color="#007700">[2/8] -1 |00011> 
+</font><font color="#660000">(18)</font>&nbsp; qcl&gt; <b><font color="#000099">if (result == 0) { print "constant"; } else { print "balanced"; } 
+</font></b><font color="#660000">(19)</font>&nbsp; <font color="#007700">: balanced</font></pre> 
+</td> 
+</tr> 
+</table> 
+ 
+<p>With lines 1-7 we put the in/out bits into a superposition of 4 base 
+states with positive amplitudes +0.5 for states where out=0 and negative 
+amplitudes -0.5 where out=1. Note that even though we have 4 non zero amplitudes, 
+the sum of the squares of the absolute values of the amplitudes always 
+adds up to 1. 
+<p>At line 9 we run the quantum function <tt>F()</tt> which XORs the value 
+of <tt>f(in)</tt> into the <tt>out</tt> qubit. The function <tt>F()</tt> 
+is pseudo-classical, meaning it swaps basis vectors around without out 
+changing any amplitudes. So after applying <tt>F()</tt> we still have two 
+amplitudes with value +0.5 and two with the value -0.5. 
+<p>By applying the <tt>F()</tt> function to a superposition state, we have 
+effectively applied <tt>F()</tt> to all four basis states in one fell swoop. 
+This is what's called "quantum parallelism" and it's a key element of QC. 
+Our simulator will, of course, have to apply <tt>F()</tt> to each of the 
+basis states in turn, but a real QC would apply <tt>F()</tt> to the combined 
+state as a single operation. 
+<p>The <tt>Mix()</tt> functions at lines 14 and 16 flip the machine state 
+out of a superposition and back into a computational base state (<tt>|00011></tt>). 
+If we had not run <tt>F()</tt> at line 9, this would have brought us back 
+to the state we had at line 4 (this is because <tt>Mix()</tt> is its own 
+inverse). But because we swapped amplitudes with <tt>F()</tt>, undoing 
+the superposition puts us into a different state than where we were at 
+line 9. Specifically the <tt>in</tt> qubit is now set to 1 rather than 
+0. 
+<p>It's also instructive to note that the ampitude of -1 in line 15 is 
+unimportant. A quantum state is a vector who's overall length is of no 
+interest to us (as long as it's not zero). Only the direction of the vector, 
+that is the ratios between the component amplitudes, are important. So, 
+by keeping quantum states as unit vectors, the transformations are all 
+unitary. Not only does this make the theoretical math alot easier, it keeps 
+the errors incurred doing numerical calculations on classical computers 
+from snowballing out of control. 
+<p><b>Controlled Phase Transformation</b> 
+<p>The original goal of quantum computing was to simulate the behaviour 
+of arbitrary quantum systems using a small set of basic components. So 
+far we have discussed the <tt>Not()</tt>, <tt>CNot()</tt> and <tt>Mix()</tt> 
+functions. To round out the set and allow for universal quantum computation, 
+we need the Controlled Phase function, <tt>CPhase()</tt>. 
+<p><tt>CPhase()</tt> takes a (clasical) floating point number as its first 
+argument and a qubit as it's second argument. <tt>CPhase(a,x)</tt> alters 
+the component amplitudes of the base states of the machine as follows: 
+The amplitudes for base states where x is <tt>|0></tt> are unchanged, while 
+the amplitudes for base states where x is <tt>|1></tt> are multiplied by 
+exp(i*a)=cos(a)+i*sin(a). In other words, the coefficiants for the machine 
+states where x=1 are rotated in the complex plain by a-radians. For example: 
+<p><b>Demonstrating the CPhase() Function</b> 
+<table BORDER=0 CELLPADDING=0 WIDTH="100%" class="code-sample" > 
+<tr> 
+<td> 
+<pre>$ qcl --bits=5 
+<font color="#007700">[0/5] 1 |00000> 
+</font>qcl&gt; <b><font color="#000099">qureg a[1]; 
+</font></b>qcl&gt; <b><font color="#000099">Mix(a); 
+</font></b><font color="#007700">[1/5] 0.707107 |00000> + 0.707107 |00001> 
+</font>qcl&gt; <b><font color="#000099">CPhase(3.14159265, a); 
+</font></b>[1/5] 0.707107 |00000> + -0.707107 |00001> 
+qcl&gt; <b><font color="#000099">reset 
+</font></b><font color="#007700">[1/5] 1 |00000> 
+</font>qcl&gt; <b><font color="#000099">Mix(a); 
+</font></b><font color="#007700">[1/5] 0.707107 |00000> + 0.707107 |00001> 
+</font>qcl&gt; <b><font color="#000099">CPhase(0.01, a); 
+</font></b><font color="#007700">[1/5] 0.707107 |00000> + (0.707071,0.00707095) |00001> 
+</font>qcl&gt; <b><font color="#000099">dump a 
+</font></b><font color="#007700">: SPECTRUM a: |....0> 
+0.5 |0> + 0.5 |1></font></pre> 
+</td> 
+</tr> 
+</table> 
+ 
+<p>Since exp(i*pi)=-1, <tt>CPhase(pi,x)</tt> will flip the sign of the 
+<tt>|1></tt> 
+component. <tt>CPhase(0.01, x)</tt> rotates the phase of the 
+<tt>|1></tt> 
+component by one one hundredth of a radian in the complex plane. The parenthasized 
+tuple (0.707071,0.00707095) is the 'qcl representation of the complex number 
+exp(0.01*i)=0.707071+i*0.00707095. 
+<p><b>Bigger Problems And Solutions</b> 
+<p>Deutches problem and it's N-bit generalization, the Deutch-Jhosa problem 
+may be interesting, but they don't have much practical value. Fortunately, 
+there are other quantum algorithms that promise bigger payoffs. 
+<p>Shor's algorithm, for example, is able to find the period of a function 
+of N bits in polynomial time. While this doesn't sound like a big deal, 
+the difficulty of factoring and finding a discrete logarithm, form the 
+basis of most if not all public-key cryptography systems. 
+<p>Less spectacular, but much easier to implement is Grover's algorithm 
+which searches an unordered list of N items in O(sqrt(N)) time. The best 
+clasical algorithm takes, on average N/2 iterations to search such a list. 
+<p><b>Conclusions</b> 
+<p>One of the tasks of clasical computers since their inception as been 
+to simulate electrical circuits to help design faster computers. This feedback 
+loop has helped fuel half a century of explosive growth in the computer 
+industry. Quantum Computing has the potential to shift this explosive growth 
+into an even higher gear as QC's are used in the creation of faster and 
+more powerful quantum computing elements. 
+<p>In Aug 2000, Isaac L. Chuang of the IBM Almaden Research Center announced 
+that he and his collaborators had constructed a 5 qubit machine using a 
+molecule with 5 Fl atoms (see Resources). Unfortunatly this technology 
+probably wont scale up to a usable size. 
+<p>So when will the first scaleable quantum computer be built? There are 
+several candidate technologies for storing, manipulating and moving qubits. 
+A complete list is beyond the scope of this article, but it's probably 
+safe to say that the first usefull QC is probably still one or two decades 
+away. 
+<p><b>Resources</b> 
+<p>QCL, the "programming language for quantum computers," discussed throughout 
+this article, may be downloaded from: 
+<blockquote><a href="http://tph.tuwien.ac.at/~oemer/qcl.html">http://tph.tuwien.ac.at/~oemer/qcl.html</a></blockquote> 
+A.M.Turing. "On Computable Numbers, with an Application to the Entscheidungsproblem", 
+<i>Proceedings 
+of London Mathematics Society</i> 2, 42:230, 1936. A reprint can be read 
+at: 
+<blockquote>
+<a href="http://www.abelard.org/turpap2/tp2-ie.asp">http://www.abelard.org/turpap2/tp2-ie.asp</a>
+</blockquote> 
+<i>Quantum Computation and Information</i> by Michael A. Nielsen (Cal Tech) 
+and Isaac L. Chuang (IBM Almadan) is hands down the best text book on on 
+quantum information theory to date. It includes an excelent introduction 
+to QM and CS as well as a review of Linear Algebra. Portions may be read 
+online at: 
+<blockquote><a href="http://www.squint.org/qci/">http://www.squint.org/qci/</a></blockquote> 
+If you have a Real Audio plugin for your web browser, there is an excelent 
+series of "WebSeminars" at: 
+<blockquote><a href="http://www-brims.hpl.hp.com/websems/quantum/home.html.">http://www-brims.hpl.hp.com/websems/quantum/home.html.</a></blockquote> 
+<i>Introduction to Quantum Computation and Information</i> is a good collection 
+of articles, prior to Nielsen and Chuang it was probaly the best available 
+book on the subject. 
+<p>A discussion of the 5 qubit machine built by IBM Almaden Research Center 
+can be found at: Vandersypen, L.M.K., et al. Preprint. "Experimental realization 
+of order-finding with a quantum computer." Available online at: 
+<blockquote><a href="http://xxx.lanl.gov/abs/quant-ph/0007017">http://xxx.lanl.gov/abs/quant-ph/0007017</a></blockquote> 
+<b>About The Authors</b> 
+<p>Brad Huntting WORDS HERE... He may be reached at huntting@glarp.com. 
+<p><img SRC="http://gnosis.cx/cgi/img_dqm.cgi" ALT="Picture of Author" height=110 width=90> 
+David Mertz believes that God had really better check Himself into Gamblers 
+Anonymous. David may be reached at mertz@gnosis.cx; his life pored over 
+at <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a> 
+Suggestions and recommendations on this, past, or future, columns are welcomed. 
+</body> 
+</html> 

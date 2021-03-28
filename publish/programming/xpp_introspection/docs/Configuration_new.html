@@ -1,0 +1,61 @@
+<HTML>
+<HEAD><TITLE>Library : Configuration:new()</TITLE>
+<STYLE type="text/css">
+EM { font-weight: normal; font-style: italic; color: #000066; }
+B { color: #660000; }
+H1 { font-size: large; font-weight: bold; background-color: #DDEEFF; }
+H2 { font-size: medium; font-weight: bold; }
+P.indent { margin-left: 5%; }
+P.code { margin-left: 5%; color: #006600; font-weight: bold; font-family: MONOSPACE; font-size: small; }
+P.synopsis { margin-left: 5%; }
+DL { margin-left: 5%; }
+UL { margin-left: 3%; margin-right: 8%; text-indent: -5%; }
+P.syntax { margin-left: 15%; text-indent: -10%; margin-right: 5%; }
+</STYLE></HEAD>
+
+<BODY>
+
+<H2>Class</H2>
+   <P class="indent">
+   <A HREF="Configuration.html">Configuration()</A>
+
+<H2>Syntax</H2>
+
+   <P class="indent">
+   :new() --&gt; <B>oConfiguration</B>
+
+<H2>Parameters</H2>
+
+   <P class="indent">None
+
+<H2>Return</H2>
+
+   <P class="indent">
+   The class method :new() returns a Configuration object instance.
+
+<H2>Description</H2>
+
+   <P class="indent">
+   The :new() method of the Configuration class initialized introspection
+   data in a somewhat unusual manner, compared to other classes.
+   Since Configuration instances are designed to be serialized and
+   persistently stored, it is necessary to store introspection data in
+   Class data members, as well as in the instance itself.  Doing this
+   allows comparison of a serialized instance with current Class data.
+   Therefore, :_data and :_methods are initialized as
+   Configuration():C_data and Configuration():C_methods, respectively.
+   Also :version is initialized with its corresponding Class data.
+
+   <P class="indent">
+   The member :savedCfg is always initialized as false; by definition,
+   at time of creation an instance has not been read from persistent
+   storage.
+
+   <P class="indent">
+   All other data is initialized with its documented default values.
+
+
+</BODY>
+</HTML>
+
+

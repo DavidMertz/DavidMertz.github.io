@@ -1,0 +1,296 @@
+CHARMING PYTHON #B15:
+Review of Python IDEs
+
+David Mertz, Ph.D.
+Accidental Ideologue, Gnosis Software, Inc.
+November, 2003
+
+    In this installment, David looks at four open source development
+    environments for working with Python code on Unix-like operating
+    systems.  He evaluates two general-purpose editors/environments, and
+    two Python-specific ones, and compares the merits of each.
+
+WHAT I LOOK FOR
+------------------------------------------------------------------------
+
+  While I use a number of computers on a daily basis, running OS/2,
+  Linux, FreeBSD, and once every great while Windows, I find that I do
+  an increasing proportion of my work on my PowerBook laptop; I really
+  like the fact that I have a Unix core underlying a polished GUI--and
+  perhaps I like even more that I can write articles like this at a
+  local cafe. In my experience, a large proportion of the Python
+  developers I chat with use this same platform. One of the best things
+  about developing on such a Unix-like/X11 environment is that every
+  Python application I create works without changes once uploaded to my
+  Linux-based web servers, or distributed to Linux-based desktop users
+  (unfortunately, in my experience, Linux-based laptops still lag behind
+  OSX ones).
+
+  I should start with another confession. Even though I have tried out
+  many IDEs for many programming languages, over the years, I always
+  seem to return to using "favorite text editor plus command-line" when
+  I actually want to get something done.  It is hard to sell me on form
+  builders, code repositories, structured application templating, code
+  wizards, and all those other things  Then again, I wrote a book about
+  text processing--not about GUI development--and most of the
+  programming work I have done in my life has been far closer to the
+  former than to the latter.
+
+  In this installment, I look at four IDEs/programming editors; three of
+  them are widely cross-platform (and run well on Linux desktops), one
+  specific to the Mac. jEdit is a general purpose editor that runs on
+  any recent JVM. LEO and IDLEfork are both themselves written in
+  Python, and use Tkinter for their GUI. PythonIDE is part of the
+  MacPython distribution, and runs just on MacOS.
+
+  There are a few checklist items that I really want in a Python text
+  editor: Syntax highlighting; code folding; autocompletion; sensible
+  indentation behavior; block indent/dedent; block comment/uncomment; an
+  interactive Python shell. A few other things are merely nice-to-have:
+  class browsers, function jump lists; integrated debugger and/or
+  profiler. None of the editors I look at here have screen designers or
+  "drag-and-drop" development.
+
+ONE EDITOR TO RULE THEM ALL
+------------------------------------------------------------------------
+
+  Even though my subject heading probably insinuates emacs to many
+  readers--and even though quite a few readers have suggested I look at
+  emacs--I cannot quite get past the cryptic keystrokes and the like.
+  While I well recognize that emacs -does- everything, what I am writing
+  this article in is jEdit, an editor that covers a surprisingly wide
+  range of the same goals. jEdit is a GPL project, written in Java, that
+  therefore runs on many platforms; it has bindings and customizations
+  for a great many programming languages; it allows users to create and
+  share macros and "plugins" to enhance the capabilities of the editor.
+  There is nothing very Python-specific about jEdit, but you would
+  hardly notice this, given its nice collection of bindings and plugins
+  for Python.
+
+  {Screenshot of jEdit: http://gnosis.cx/publish/programming/jedit.png}
+
+  On the basics, jEdit covers it all. It has good syntax highlighting
+  (in lots of languages), several styles of code folding, block
+  indent/dedent. Built into jEdit is block commenting (either
+  line-by-line or with begin/end comment delimiters for those languages
+  that use them). There is not any standard shortcut to remove comments
+  from a block, but it would not be hard to write a macro to do so.
+  Actually, in general, the scriptability of jEdit is one of its nicest
+  features.
+
+  You can either record keystroke macros (and assign them to shortcuts),
+  or you can write full Java programs as plugins with arbitrarily
+  sophisticated capabilities. However, I have personally never taken the
+  trouble to learn enough of jEdit's API to write my own plugins (Java
+  is not my forte anyway). Luckily, a lot of smart people have written
+  quite a few plugins for me--and best of all, installation, removal,
+  and configuration of these plugins is all contained in a friendly
+  interface within jEdit itself (sometimes you will need to restart
+  jEdit for a new plugin to take effect).  For example, a handy plugin
+  is the -Structure Browser-, which shows a collapsible tree of
+  funtions, classes, and methods which can be used to navigate or show
+  context within a large module.
+
+  Some of the nicest Python-specific functionality for jEdit lies in the
+  Jython plugin. A complete version of Jython is packaged up as a jEdit
+  plugin. Of course, you are stuck at the latest version of Jython
+  itself for this approach, which as of this writing lagged at 2.1
+  (compared to CPython's recent 2.3 release). Still, if you can live
+  with the Jython version, you can do substantial Python development
+  without leaving Jython. Beyond the interactive shell you can open, you
+  can also run a Python buffer, with the output appearing either in the
+  interactive shell or in a new buffer (to save for later, perhaps).
+  Little touches like saving an interactive session are also handy.
+
+  The features I have mentioned really only scratch the surface of
+  jEdit, since it has similar touches for other languages (particularly
+  for Java, as you might expect)--and generic "cool" plugins like JDiff
+  or Code2HTML, the former for comparing files, the latter for creating
+  syntax highlighted HTML.
+
+  Even though this is not a Python issue, I feel particularly compelled
+  to mention the many XML features of jEdit. A number of readers of my
+  _XML Matters_ roundups of XML editors suggested I include jEdit--and,
+  in fact, I often turn to it when I want to edit XML. jEdit's general
+  visual bracket matching is enhanced in XML to recognize corresponding
+  open/close; XPath and XSLT support is included in plugins, as is XML
+  "prettifying."
+
+IDLE CHATTER
+------------------------------------------------------------------------
+
+  I discussed IDLE way back in March 2001 when this column first looked
+  at Python IDEs. In general outline, those remarks are still accurate,
+  but IDLE has added lots of little finishing touches and improvements
+  in the meanwhile. For this look, I downloaded IDLEfork 0.9b1. The
+  project IDLEfork is designed as a place to test improvements to IDLE
+  itself, with the intention of rolling the successful ones back into
+  IDLE itself, with later releases. The latest IDLEfork, 0.9b1, has a
+  number of really significant improvements over basic IDLE, enough so I
+  recommend you download it if you plan to use IDLE. It is now possible
+  to interupt code that is caught in a loop when test-run; runs also
+  create a clean environment for themselves (avoiding namespace
+  contamination). Also of interest is the new GUI configuration screen,
+  which is much friendlier than digging through READMEs to figure out
+  which internal files to change.
+
+  {Screenshot of IDLE: http://gnosis.cx/publish/programming/idle.png}
+
+  IDLE starts out as an enhanced interactive shell window (with a bit
+  better cut-and-paste, scrollback, etc. than the basic interactive
+  prompt). I have mixed feelings the command recall, where you need to
+  move the cursor to the line you want to repeat, I think I prefer the
+  readlines-style of jEdit's Jython or the Python shell. For most
+  development the Python-aware editor is what you will use (no
+  code-folding, but nice syntax highlighting and code-completion). You
+  also get a class-browser, and debugger.
+
+  The menus in IDLE are TK "tear-off" style; that is, clicking on the
+  dashed line at the top of any pull-down menu will promote that menu to
+  its own persistent window. The "Edit" menu in particular is nice if
+  kept "docked" at the side of your desktop. IDLE's debugger provides,
+  breakpoints, stepping and variable watches; but nothing so fancy as
+  poking at memory locations and variable contents, or performing
+  timings and other analyses.
+
+  IDLE has most of the nice touches you want in a Python editor:
+  Commenting/uncommenting blocks; indenting/dedenting; regular
+  expression searches; jump to line; converting tabs to spaces or the
+  reverse. Nothing hugely elaborate, but well-focused on those things
+  you most need for Python. I really like the bold color choices in the
+  syntax highlighting, though most editors are configurable, and just
+  choose more muted defaults. Unfortunately, on Mac OSX, the not all the
+  key binding work--but this is either an issue with the X11 support, or
+  a upshot of the fact I have not gotten a working Tk/Aqua on my system.
+  IDLE itself is blameless; in testing I just used the mouse to get at
+  more menus than I would have liked. Linux systems usually do a better
+  job with getting the key bindings right, though part of that depends
+  on which window manager you use.
+
+  IDLE remains your best choice if you want a general Python IDE/editor
+  that works on most platforms, and does not require anything beyond
+  Python itself and [Tkinter].
+
+A TANGLED WEB
+------------------------------------------------------------------------
+
+  Over time, I have had quite a number of readers approach me to
+  recommend Leo. Leo is a very different kind of application than the
+  other editors/IDEs I discuss, or really than almost anything most
+  readers will have worked with. The insight that prompts Leo is Donald
+  Knuth's concept of "literate programming"--that is, the idea that the
+  source code for a program is only a small part of what makes it up.
+  The real body of a program is descriptions of its algorithms,
+  structure, purpose, and usage--the source code that implements it is
+  almost incidental.  That is the concept anyway; I am not quite
+  convinced, but neither am I sure the idea is wrong.
+
+  {Screenshot of Leo: http://gnosis.cx/publish/programming/leo.png}
+
+
+  A Leo project is organized as a collection of outlines, which are
+  basically a hierarchical and collapsible tree of -things- (nodes) that
+  go into a program. Some nodes contain fragments of source code, others
+  documentation, others mainly organize further child nodes.  Selecting
+  a node within the tree pane displays the code or content associated
+  with it in the editor pane.  For example, a Python module will usually
+  be a node, which contains a number of child nodes for its classes.
+  Each class node might contain some documentation, and also a
+  collection of method nodes.  In effect, this organization of nodes
+  builds folding deeply into the editing environment; but a node is more
+  than just a fold point--for example, nodes can be cloned, so that a
+  view of the same node appears at multiple relevant locations within a
+  larger project.
+
+  Creating actual source code out of a Leo project, or importing it
+  thereto, is done by -tangling- and -untangling- the project.  For
+  example, Leo does a good job of automatically generating an outline
+  from existing '.py' files, but you can equally start from scratch in
+  Leo, and specify what gets written to which files (and in what
+  languages, code or documentation).  Directives within nodes specify
+  both what gets written when untangled, and also the appearance and
+  behavior of sections.
+
+  As editors go, the content pane of Leo is on par with IDLE.  The
+  interactive Python shell in Leo, in fact, appears to be borrowed from
+  Idle directly.  But Leo is not really best thought of in terms of
+  traditional code editing--rather it is an organizer, project
+  workspace, and structured development environment.  Per Knuth's
+  vision, the actual code is almost peripheral.
+
+  I have, in truth, not really used Leo enough to fully -get- the style
+  of development it promotes.  I have an incling that it might be
+  genuinely useful for a wide variety of projects, both applications and
+  documentation--but it takes some work to adapt to the style of Leo.
+  Still, many of my readers swear by it.
+
+THE OSX NATIVE CHOICE
+------------------------------------------------------------------------
+
+  MacPython comes with an IDE called, straightforwardly enough,
+  "PythonIDE." I also looked at this briefly two and a half years back,
+  and much remains the same. Most certainly, PythonIDE feels a whole lot
+  more like you are working on MacOS than do the Tk or Swing interfaces
+  of the other tools I look at in this installment. Other than its
+  native feel, however, PythonIDE feels much simpler--even cruder--than
+  the others. And of course, even though code you write in PythonIDE
+  ports transfers fine to Linux desktops, the environment itself does
+  not.
+
+  For a start, PythonIDE lacks syntax highlighting in its editor, which
+  I have grown accustomed to.  It does have good Python awareness in
+  indentation behavior, block indent/dedent, class/function browser
+  (this hidden next to the horizontal scroll bar).  The object browser
+  is interesting, and somewhat unique.  Rather than simply give you a
+  collapsible tree view of code, you may look at a representation of the
+  live objects themselves--even of the importable modules in your
+  PYTHONPATH.  The last is an interesting way to explore support
+  modules, whether standard or third party (and can give you some
+  details beyond what makes it to documentation).
+
+  For the most part, PythonIDE is similar to IDLE or jEdit in
+  organization.  You get an editor along with an interactive shell.
+  Code and execution output appears in one or the others, and you can
+  interactively copy back and forth.  PythonIDE also use a separate
+  "Output" window, which is probably a better design than IDLE's
+  doubling up of the interactive shell window.  But the editor remains
+  basic in many ways--not even using regular expressions in the search
+  dialog, for example.
+
+  However, two places where PythonIDE stands out though are in its
+  debugger and profiler. IDLE has a debugger (jEdit/Jython does not),
+  but PythonIDE feels nicer to use. The profiler remains unique to
+  PythonIDE, although you can, of course, achieve the effect more
+  awkwardly using the [profile] and [timeit] modules.
+
+RESOURCES
+------------------------------------------------------------------------
+
+  The homepage for jEdit is:
+
+    http://www.jedit.org/
+
+  IDLEfork has some nice imporvements to the version of IDLE that comes
+  with most Python distributions; but the best of these get rolled back
+  into IDLE itself with new Python releases.  Get the latest at:
+
+    http://idlefork.sourceforge.net/
+
+  The homepage for Leo is:
+
+    http://webpages.charter.net/edreamleo/front.html
+
+  Pick up MacPython at:
+
+    http://homepages.cwi.nl/~jack/macpython/index.html
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz is blessed with the virtues of laziness, and impatience,
+  and hubris. David may be reached at mertz@gnosis.cx; his life pored
+  over at http://gnosis.cx/publish/. Check out David's book _Text
+  Processing in Python_ (http://gnosis.cx/TPiP/), written using some of
+  the same tools reviewed in this installation.
+

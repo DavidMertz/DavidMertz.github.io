@@ -1,0 +1,405 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>XML MATTERS #11: Revisiting [xml_pickle] and [xml_objectify] -- Lessons in Open Source and Common Sense -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="xml_matters_10.html" TITLE="XML MATTERS #10">
+<link REL="next" HREF="xml_matters_12.html" TITLE="XML MATTERS #12">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<h1>Xml Matters #11: Revisiting <em><code>xml_pickle</code></em> And <em><code>xml_objectify</code></em></h1>
+<h2>Lessons in Open Source and Common Sense</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Revisionist, Gnosis Software, Inc.<br>
+ May 2001<br>
+ <br>
+</p>
+<blockquote>
+    Since the author introduced his handy utilities for
+    high-level Python handling of XML documents, users and
+    readers have contributed a number of extremely useful
+    enhancements and suggestions.  This column presents some of
+    the changes to David's module suite, as well as some tips on
+    advanced aspects of using and customizing the modules.
+</blockquote>
+<h3>Introduction</h3>
+ <p>
+  My IBM columns, tutorials, and articles have had a dual--or
+  maybe triple--purpose for your humble author.  In the first
+  instance, I cherish the opportunity afforded me to share what
+  knowledge I have with other programmers/developers, and maybe
+  make a few people's tasks easier therein.  It is also awfully
+  nice that I get paid money for writing these things.
+</p>
+<p>
+  Another purpose is also contained in a number of my columns.  I
+  have had the opportunity to release to the public domain
+  programming code that I have written in the course of these
+  columns.  In writing this code, I have had the goal of
+  illustrating general programming concepts--and have tailored
+  the code around that.  But at the same time, I have wanted to
+  give the programming community code that individual developers
+  can utilize directly for their own purposes.
+</p>
+<p>
+  A result of releasing the code that I have, is that I have
+  received back from users of these modules a number of valuable
+  suggestions and enhancement patches.  Most of the improvements
+  users have come up with are ones I would never have imagined on
+  my own; and a few are almost shocking in their insightfulness.
+  I'd like to use this column to present some uses of
+  <em><code>xml_pickle</code></em> and <em><code>xml_objectify</code></em> that were not possible when I
+  wrote the columns that initially discussed these modules:  <cite>XML
+  Matters #1</cite> and <cite>XML Matters #2</cite>.
+</p>
+<h3>Enhancements To <em><code>xml_objectify</code></em></h3>
+ <p>
+  One change, in particular, has been an ongoing struggle.  My
+  timing was probably slightly unlucky.  Within a short time
+  after I first created <em><code>xml_objectify</code></em> and <em><code>xml_pickle</code></em> (in
+  August 2000), the PyXML distribution went through several
+  incompatible versions; and not much later than that Python 2.0
+  came out with its own not-quite-compatible XML support.  Users
+  contributed several patches to match then current Python XML
+  support along the way, but in their current state
+  <em><code>xml_objectify</code></em> and <em><code>xml_pickle</code></em> both require Python 2.0+, and
+  its included PyXML package.  Given the effective requirement
+  for Python 2.0 in terms of the XML packages, I also allowed in
+  a few other changes with Python 2 syntax.  The backwards
+  incompatibility with Python 1.5 is unfortunate, but it would be
+  too unweildy to maintain it in this case.
+</p>
+<p>
+  One of the features of <em><code>xml_objectify</code></em> introduced in <cite>XML
+  Matters #2</cite> was the special <code>_XML</code> attribute that kept complete
+  element contents (including subelement markup of character
+  data).  The default behavior is still to create an <code>_XML</code>
+  attribute of a nested object <em>only</em> when it contains
+  character-level markup.  But you now have a choice about
+  changing this behavior, using the function <code>keep_containers()</code>
+  and the values <code>ALWAYS</code>, <code>MAYBE</code> and <code>NEVER</code>.  For example:
+</p>
+<div class="code-sample"><h4>Default py_obj._XML attribute creation</h4><PRE>&gt;&gt;&gt; xml_str = <FONT COLOR=#115511>'''&lt;doc&gt;&lt;p&gt;Spam and eggs &lt;b&gt;are&lt;/b&gt; tasty&lt;/p&gt;
+...                   &lt;p&gt;The Spanish Inquisition&lt;/p&gt;
+...                   &lt;foot&gt;Our weapon is fear&lt;/foot&gt;&lt;/doc&gt;'''</FONT>
+&gt;&gt;&gt; open(<FONT COLOR=#115511>'test.xml'</FONT>,<FONT COLOR=#115511>'w'</FONT>).write(xml_str)
+&gt;&gt;&gt; <FONT COLOR=#3333CC><B>from</B></FONT> xml_objectify <FONT COLOR=#3333CC><B>import</B></FONT> *
+&gt;&gt;&gt; py_obj = XML_Objectify(<FONT COLOR=#115511>'test.xml'</FONT>).make_instance()
+&gt;&gt;&gt; py_obj.p[0].PCDATA
+u<FONT COLOR=#115511>'Spam and eggs  tasty'</FONT>
+&gt;&gt;&gt; py_obj.p[0]._XML              <FONT COLOR=#1111CC># first &lt;p&gt; has &lt;b&gt; markup</FONT>
+u<FONT COLOR=#115511>'Spam and eggs &lt;b&gt;are&lt;/b&gt; tasty'</FONT>
+&gt;&gt;&gt; py_obj.p[1].PCDATA
+u<FONT COLOR=#115511>'The Spanish Inquisition'</FONT>
+&gt;&gt;&gt; py_obj.p[1]._XML              <FONT COLOR=#1111CC># second &lt;p&gt; has no markup</FONT>
+Traceback (most recent call last):
+  File <FONT COLOR=#115511>"&lt;stdin&gt;"</FONT>, line 1, <FONT COLOR=#3333CC><B>in</B></FONT> ?
+AttributeError: <FONT COLOR=#115511>'_XO_p'</FONT> instance has no attribute <FONT COLOR=#115511>'_XML'</PRE></FONT></div><h3></h3>
+ <div class="code-sample"><h4>Changing py_obj._XML attribute creation</h4><PRE>&gt;&gt;&gt; _=keep_containers(ALWAYS)
+&gt;&gt;&gt; py_obj = XML_Objectify(<FONT COLOR=#115511>'test.xml'</FONT>).make_instance()
+&gt;&gt;&gt; py_obj.p[1]._XML
+u<FONT COLOR=#115511>'The Spanish Inquisition'</FONT>
+&gt;&gt;&gt; _=keep_containers(NEVER)
+&gt;&gt;&gt; py_obj = XML_Objectify(<FONT COLOR=#115511>'test.xml'</FONT>).make_instance()
+&gt;&gt;&gt; py_obj.p[0]._XML
+Traceback (most recent call last):
+  File <FONT COLOR=#115511>"&lt;stdin&gt;"</FONT>, line 1, <FONT COLOR=#3333CC><B>in</B></FONT> ?
+AttributeError: <FONT COLOR=#115511>'_XO_p'</FONT> instance has no attribute <FONT COLOR=#115511>'_XML'</PRE></FONT></div><p>
+  Probably the most powerful feature of <em><code>xml_objectify</code></em> is also a
+  subtle one.  Many users have probably never needed, or even
+  noticed class magic behavior.  What is possible, however, is to
+  have special classes on hand that will determine the behaviors
+  of "objectified" XML nodes.  The original article mentioned
+  this, but it is worth seeing in action.
+</p>
+<p>
+  Before the examples, a few details should be pointed out.  In
+  order to avoid a sloppy conflict in the first module version,
+  <em><code>xml_objectify</code></em> now "mangles" the names of the class templates
+  for XML nodes.  The "abstract" node class is called <code><cite>XO</cite></code>, and
+  it has a few "magic" behaviors in itself.  When concrete node
+  classes are created--by a programmer or dynamically--they have
+  the form <code>_XO_tagname</code> (where <code>&lt;tagname&gt;</code> is a tag that occurs
+  in the objectified XML document).
+</p>
+<p>
+  The "magic" that <code><cite>XO</cite></code> itself provides are the <code>__getitem__()</code>
+  and <code>__len__()</code> methods.  What these let you do is to treat
+  each node attribute as if it was a list in those contexts where
+  it would be nice for the attribute to behave like a list; but
+  at the same time, we can refer to an "only child" node without
+  having to subscript.  For example:
+</p>
+<div class="code-sample"><h4>Node attributes as objects and lists of objects</h4><pre>
+&gt;&gt;&gt; print type(py_obj.p), type(py_obj.foot)
+&lt;type 'list'&gt; &lt;type 'instance'&gt;
+&gt;&gt;&gt; print py_obj.p[1].PCDATA, '...', py_obj.foot.PCDATA
+The Spanish Inquisition ... Our weapon is fear
+&gt;&gt;&gt; for line in py_obj.p: print line.PCDATA,
+...
+Spam and eggs  tasty The Spanish Inquisition
+&gt;&gt;&gt; for line in py_obj.foot: print line.PCDATA,
+...
+Our weapon is fear
+&gt;&gt;&gt; map(lambda line: len(line.PCDATA), py_obj.foot)
+[18]
+&gt;&gt;&gt; map(lambda line: len(line.PCDATA), py_obj.p)
+[20, 23]
+
+</pre></div><p>
+  Still more magic is possible if you want to create your very
+  own node classes within a program.  Basically, you can make a
+  attribute node behave in <em>any</em> way you might wish.
+</p>
+<div class="code-sample"><h4>Creating magic node behaviors for py_obj's</h4><PRE>&gt;&gt;&gt; <FONT COLOR=#3333CC><B>import</B></FONT> xml_objectify
+&gt;&gt;&gt; xml_str = <FONT COLOR=#115511>'''&lt;buffet&gt;
+... &lt;plate&gt;&lt;food&gt;Steak&lt;/food&gt;&lt;food&gt;Potatos&lt;/food&gt;&lt;/plate&gt;
+... &lt;plate&gt;&lt;food&gt;Corn&lt;/food&gt;&lt;food&gt;Broccoli&lt;/food&gt;&lt;/plate&gt;
+... &lt;buffet&gt;'''</FONT>
+&gt;&gt;&gt; open(<FONT COLOR=#115511>'buffet.xml'</FONT>,<FONT COLOR=#115511>'w'</FONT>).write(xml_str)
+&gt;&gt;&gt; <FONT COLOR=#3333CC><B>class</B></FONT><A NAME="plate"><FONT COLOR=#CC0000><B> plate</B></FONT></A>(xml_objectify._XO_):
+...     <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="eat"><FONT COLOR=#CC0000><B> eat</B></FONT></A>(self):
+...         <FONT COLOR=#3333CC><B>for</B></FONT> food <FONT COLOR=#3333CC><B>in</B></FONT> self.food:
+...             <FONT COLOR=#3333CC><B>if</B></FONT> food.PCDATA == <FONT COLOR=#115511>'Broccoli'</FONT>:
+...                 <FONT COLOR=#3333CC><B>return</B></FONT> <FONT COLOR=#115511>"If I liked Broccoli, I might have to eat it!"</FONT>
+...         <FONT COLOR=#3333CC><B>return</B></FONT> <FONT COLOR=#115511>"Yum!"</FONT>
+...
+&gt;&gt;&gt; xml_objectify._XO_plate = plate
+&gt;&gt;&gt; py_obj = XML_Objectify(<FONT COLOR=#115511>'buffet.xml'</FONT>).make_instance()
+&gt;&gt;&gt; <FONT COLOR=#3333CC><B>print</B></FONT> py_obj.plate[1].eat()
+If I liked Broccoli, I might have to eat it!
+&gt;&gt;&gt; <FONT COLOR=#3333CC><B>print</B></FONT> py_obj.plate[0].eat()
+Yum!</PRE></div><p>
+  Notice that the trick with the <code>xml_objectify._XO_plate</code>
+  assignment is important.  To get the proper magic behavior, the
+  right magic and mangled class needs to live in that namespace.
+</p>
+<p>
+  In my opinion, it is fabulously cool to be able to grab a bunch
+  of data from an XML file, then have a perfectly natural Python
+  object act on that data as its own attributes, using its own
+  methods
+</p>
+<p>
+  For working with large XML documents, Costas Malamas has
+  contributed an invaluable enhancement.  Until recently, the
+  only way <em><code>xml_objectified</code></em> worked was to create a DOM tree,
+  then recurse through that tree to generate the "Pythonic"
+  objects.  That worked fine for small XML documents, but for
+  around 50k-100k files, it starts to become absurdly slow.
+  There appears to be a complexity order effect going on that
+  renders <em><code>xml_objectify</code></em> unusable for large documents.
+</p>
+<p>
+  Fortunately, Malamas provided an alternative method for parsing
+  an XML document, based on the Python <em><code>expat</code></em> bindings (<code>expat</code>
+  is a high-performance XML library written in C).  While there
+  are still a few wrinkles to be ironed out in the <code>ExpatFactory</code>
+  class (failure for some documents with processing
+  instructions), for most cases, the new technique provides
+  speedy handling of even huge XML documents.  Using the expat
+  technique imposes a couple limitations by design, also:  You
+  obviously lose the the <code>_dom</code> attribute of your <code>xml_obj</code> (if
+  you kept <code>xml_obj</code> in the first place); and you also do not
+  have an <code>_XML</code> attribute to play with anymore.  The latter
+  limitations might be lifted later, however.
+</p>
+<p>
+  Choosing which parsing technique to use is straightforward:
+</p>
+<div class="code-sample"><h4>Choosing a parsing method</h4><pre>
+&gt;&gt;&gt; xml_obj = XML_Objectify('buffet.xml',EXPAT)
+&gt;&gt;&gt; xml_obj = XML_Objectify('buffet.xml',parser=DOM)
+
+</pre></div><p>
+  If no option is specified, the default is the legacy DOM
+  technique.  But future code should specify explicitly, in case
+  the default changes.  <code>EXPAT</code> and <code>DOM</code> are constants within
+  <em><code>xml_objectify</code></em> that simply contain matching string values.
+</p>
+<h3>Enhancements To <em><code>xml_pickle</code></em></h3>
+ <p>
+  In analogy with <em><code>xml_objectify</code></em>, you will need to populate the
+  <em><code>xml_pickle</code></em> namespace when you want to retain the instance
+  methods of unpickled objects.  That sounds confusing, but some
+  code makes it simple:
+</p>
+<div class="code-sample"><h4>Making sure unpickled Python objects are lively</h4><PRE>&gt;&gt;&gt; <FONT COLOR=#3333CC><B>import</B></FONT> xml_pickle
+&gt;&gt;&gt; <FONT COLOR=#3333CC><B>class</B></FONT><A NAME="MyClass"><FONT COLOR=#CC0000><B> MyClass</B></FONT></A>:
+...     <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="DoIt"><FONT COLOR=#CC0000><B> DoIt</B></FONT></A>(self):
+...         <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"Done!"</FONT>
+...
+&gt;&gt;&gt; o1 = MyClass()
+&gt;&gt;&gt; o1.attr1 = <FONT COLOR=#115511>'spam'</FONT>
+&gt;&gt;&gt; xml_str = xml_pickle.XML_Pickler(o1).dumps()
+&gt;&gt;&gt; o2 = xml_pickle.XML_Pickler().loads(xml_str)
+&gt;&gt;&gt; o2.DoIt()
+Traceback (most recent call last):
+  File <FONT COLOR=#115511>"&lt;stdin&gt;"</FONT>, line 1, <FONT COLOR=#3333CC><B>in</B></FONT> ?
+AttributeError: <FONT COLOR=#115511>'MyClass'</FONT> instance has no attribute <FONT COLOR=#115511>'DoIt'</FONT>
+&gt;&gt;&gt; xml_pickle.MyClass = MyClass
+&gt;&gt;&gt; o2 = xml_pickle.XML_Pickler().loads(xml_str)
+&gt;&gt;&gt; o2.DoIt()
+Done!</PRE></div><p>
+  Basically, if you put the classes you want to pickle into the
+  <code>xml_pickle</code> namespace before you start all the
+  pickling/unpickling, you can restore all your object behavior.
+  But notice that as with <em><code>pickle</code></em> and <em><code>cPickle</code></em>, the methods are
+  not themselves pickled (just the attributes are); you use the
+  class that is present at runtime for the methods (which might
+  have been updates since last pickling).
+</p>
+<p>
+  A limitation of <em><code>xml_pickle</code></em> that was pointed out in the
+  original article has been lifted by Joshua Macy (with some help
+  from Joe Kraska)..  In early versions, <em><code>xml_pickle</code></em> made no
+  efforts to check for cyclical references in pickled objects.
+  Furthermore--and for the same reason--every attribute was
+  pickled as a deep copy of its actual Python object.  If you
+  have a Python object with many substructures containing
+  references to the same objects, the pickled size can get big
+  quickly.  Moreover, unpickled objects will contain multiple
+  objects that, while possibly equal (i.e.  <code>a == a</code>), are not
+  identical (i.e. <code>a is a</code>) as were the pre-pickled originals.
+</p>
+<p>
+  However, despite the gains in Macy's approach, it is desirable
+  to introduce a DEEPCOPY option back into the module.  The main
+  issue with the (quite elegant) <code>refid</code>/'id' scheme used is that
+  it is likely to be much harder for a generic tool to utilize.
+  Maybe users of languages other than Python want to be able to
+  easily use <em><code>xml_pickle</code></em>'d objects (maybe more as hierarchical
+  data stores than as full dynamic objects, but that is fine).
+  Or maybe XSLT transformations of pickled objects would be
+  useful for certain purposes.  A pickled excerpt shows the
+  difficulty:
+</p>
+<div class="code-sample"><h4>Pickled Python object as XML</h4><PRE>&lt;?xml version=<FONT COLOR=#115511>"1.0"</FONT>?&gt;
+&lt;!DOCTYPE PyObject SYSTEM <FONT COLOR=#115511>"PyObjects.dtd"</FONT>&gt;
+&lt;PyObject <FONT COLOR=#3333CC><B>class</B></FONT>=<FONT COLOR=#115511>"XML_Pickler"</FONT> id=<FONT COLOR=#115511>"1383532"</FONT>&gt;
+&lt;attr name=<FONT COLOR=#115511>"lst"</FONT> type=<FONT COLOR=#115511>"list"</FONT> id=<FONT COLOR=#115511>"1391340"</FONT>&gt;
+  &lt;item type=<FONT COLOR=#115511>"numeric"</FONT> value=<FONT COLOR=#115511>"1"</FONT> /&gt;
+  &lt;item type=<FONT COLOR=#115511>"numeric"</FONT> value=<FONT COLOR=#115511>"3.5"</FONT> /&gt;
+  &lt;item type=<FONT COLOR=#115511>"numeric"</FONT> value=<FONT COLOR=#115511>"2"</FONT> /&gt;
+  &lt;item type=<FONT COLOR=#115511>"numeric"</FONT> value=<FONT COLOR=#115511>"(4+7j)"</FONT> /&gt;
+&lt;/attr&gt;
+&lt;attr name=<FONT COLOR=#115511>"lst2"</FONT> type=<FONT COLOR=#115511>"ref"</FONT> refid=<FONT COLOR=#115511>"1391340"</FONT> /&gt;
+&lt;attr name=<FONT COLOR=#115511>"num"</FONT> type=<FONT COLOR=#115511>"numeric"</FONT> value=<FONT COLOR=#115511>"37"</FONT> /&gt;
+...
+&lt;/PyObject&gt;</PRE></div><p>
+  You can see that the attribute <code>lst2</code> would be a bit of work to
+  figure out in a generic way (such as with developer eyeballs).
+  One has to pull aff the <code>refid</code>, then search back for the
+  corresponding <code>id</code>.  Actually, the use of the <code>type="ref"</code> XML
+  attribute may have been badly chosen.  Given that it <em>has</em> a
+  <code>refid</code> XML attribute, things might be made clearer by simply
+  still recording <code>type="list"</code>, as with the <code>lst2</code> referent
+  <code>lst</code>.  But of course, once something is done, it is harder to
+  improve it without breaking backwards compatibility.
+</p>
+<p>
+  A small caveat on references might appeal to subtle-minded
+  hackers.  <code>id</code>/'refid' values are invented out of the Python
+  <code>id()</code> of the relevant objects.  The values do not mean
+  anything inherently, but have the nice property of being unique
+  at any given moment of runtime.  <em><code>xml_pickle</code></em> gives no
+  assurance that pickling the "same" object in different runs
+  will produce entirely identical XML files (the <code>id</code> values will
+  almost certainly change).  In general, the ad hoc <code>id</code> values
+  will not matter to a program, but if things like cryptographic
+  hashes or CRCs are used as part of a process, this could be a
+  gotcha.
+</p>
+<p>
+  Not too much need be described about the enhancement, but in
+  response to user requests, <em><code>Numeric</code></em> arrays have been added to
+  the set of picklable types.  For scientific and mathematical
+  Python users, these types may make up important attributes of
+  their objects.  <em><code>xml_pickle</code></em> makes an intelligent effort to
+  make sure that <em><code>Numeric</code></em> is present when supporting it; if not,
+  it falls back to the <em><code>array</code></em> module.
+</p>
+<h3>Conclusion</h3>
+ <p>
+  One lesson I have learned in developing--or maybe just
+  shepherding the development of--these modules is the the value
+  of a Python truism:  First get it right, then make it fast!
+</p>
+<p>
+  The latter part has now been fairly well reached.  Some
+  optimizations to <em><code>xml_pickle</code></em> have brought its behavior from
+  O(N^2) to a manageable O(N), relative to pickled object size.
+  The trick there is that <code>str = str + "more stuff"</code> can be
+  shockingly inefficient if peformed often enough.  With the
+  expat techniques, <em><code>xml_objectify</code></em> is similarly swift.  I do not
+  think I would have got something to the world quickly, nor
+  received the amount of valuable contributions, had I worried
+  too much about optimization early.
+</p>
+<p>
+  I look forward to learning more about the practical social
+  dynamics of open source software development as I am able to
+  create more tools and libraries like the ones discussed in this
+  column.  It has been an interesting path, and I wonder where it
+  will lead.
+</p>
+<h3>Resources</h3>
+ <p>
+  The current home of David's XML modules is:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/download/xml_objectify.py">http://gnosis.cx/download/xml_objectify.py</a>
+</blockquote>
+<p>
+  And:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/download/xml_pickle.py">http://gnosis.cx/download/xml_pickle.py</a>
+</blockquote>
+<p>
+  For those interested in older--or pre-release--version numbers
+  of the modules, browse through the directory:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/download/">http://gnosis.cx/download/</a>
+</blockquote>
+<p>
+  A variety of versions, named with version numbers, live here.
+  The module that drops a version number is generally the most
+  recent "stable" version.  Plus you can find lots of other
+  goodies in this directory (all public domain).
+</p>
+<p>
+  The initial articles on <em><code>xml_pickle</code></em> and <em><code>xml_objectify</code></em> can be
+  found at:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/publish/programming/xml_matters_1.html">http://gnosis.cx/publish/programming/xml_matters_1.html</a>
+</blockquote>
+<p>
+  and:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/publish/programming/xml_matters_2.html">http://gnosis.cx/publish/programming/xml_matters_2.html</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz is blessed with the virtues of laziness, and
+  impatience, and in his wisdom wishes to warn the world that
+  hubris should not be confused with chutzpah or machismo.  David
+  may be reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+</p>
+</body></html>

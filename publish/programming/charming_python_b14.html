@@ -1,0 +1,498 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>CHARMING 2 PYTHON #B14: Numerical Python -- Working with the [numeric] and [numarray] packages -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="charming_python_b13.html" TITLE="CHARMING 2 PYTHON #b13">
+<link REL="next" HREF="charming_python_b15.html" TITLE="CHARMING 2 PYTHON #b15">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Charming 2 Python #b14: Numerical Python</h1>
+<h2>Working with the <em><code>numeric</code></em> and <em><code>numarray</code></em> packages</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Idempotentate, Gnosis Software, Inc.<br>
+ September, 2003<br>
+ <br>
+</p>
+<blockquote>
+    Numerical Python (often called NumPy) is a widely used extension
+    library for fast operations on fixed-type arrays, of any
+    dimensionality, in Python. Since the underlying code is
+    well-optimized C, any speed limitations of Python's interpreter
+    usually go away when major operations are performed in NumPy calls.
+    As successful as NumPy has been, its developers have decided to
+    supercede NumPy with a new module called Numarray that is mostly,
+    but not quite entirely, compatible with NumPy. This installment
+    looks both at the general features of NumPy, and at the specific
+    improvements forthcoming with Numarray.
+</blockquote>
+<h3>Introduction</h3>
+ <p>
+  The first thing to know about the Numerical Python package is that it
+  doesn't let you do anything you cannot already do with standard
+  Python.  What it does, is let you do many of the same things <em>a heck
+  of a lot faster</em>.  Actually, that's not quite all; there are a number
+  of operations on arrays that are much more elegant to express in
+  <em><code>numeric</code></em> or <em><code>numarray</code></em> than they are with standard Python datatypes
+  and syntax.  But mostly it is the impressive speed that draws users to
+  Numerical Python.
+</p>
+<p>
+  In essence, Numerical Python just gives you a new datatype, the array.
+  Numerical arrays contain only elements of a homogeneous datatype, in
+  contrast to to lists, tuples, and dictionaries which may contain
+  heterogeneous elements. The other useful thing about Numerical arrays
+  is that they may be multi-dimensional--but the dimensionality of
+  arrays is a bit different that the simple nestability of lists.
+  Numerical Python draws on the experience of programmers--particularly
+  those from scientific backgrounds--who have abstracted the best
+  features of arrays languages like APL, FORTRAN, MATLAB, and S, and
+  created arrays whose shape and dimensionality is easily changeable.
+  Back to this soon.
+</p>
+<p>
+  Operations on arrays in Numerical Python are performed <em>elementwise</em>.
+  Even though two dimensional arrays are similar to matrices from linear
+  algebra, operations (like multiply) have nothing to do with the
+  operations in linear algebra (like matrix multiplication).
+</p>
+<p>
+  Let us look at a quick example of all these points.  In plain Python,
+  you could create a "2-D list" with, e.g.:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; pyarr = [[1,2,3],
+...          [4,5,6],
+...          [7,8,9]]
+&gt;&gt;&gt; print pyarr
+[[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+&gt;&gt;&gt; pyarr[1][1] = 0
+&gt;&gt;&gt; print pyarr
+[[1, 2, 3], [4, 0, 6], [7, 8, 9]]
+
+</pre></div><p>
+  Good enough, but about all you can do with this structure is set and
+  retrieve elements by individual (multi-dimesional) index.  In
+  contrast, a Numerical array is a bit more flexible:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; from numarray import *
+&gt;&gt;&gt; numarr = array(pyarr)
+&gt;&gt;&gt; print numarr
+[[1 2 3]
+ [4 0 6]
+ [7 8 9]]
+
+</pre></div><p>
+  Not much has changed, but what about operations?
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; numarr2 = numarr * 2
+&gt;&gt;&gt; print numarr2
+[[ 2  4  6]
+ [ 8  0 12]
+ [14 16 18]]
+&gt;&gt;&gt; print numarr2 + numarr
+[[ 3  6  9]
+ [12  0 18]
+ [21 24 27]]
+
+</pre></div><p>
+  And changing the shape:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; numarr2.shape = (9,)
+&gt;&gt;&gt; print numarr2
+[ 2  4  6  8  0 12 14 16 18]
+
+</pre></div><h3>Changes Between Numeric And Numarray:</h3>
+ <p>
+  For the most part, the newer package <em><code>numarray</code></em> is API compatible
+  with the earlier <em><code>numeric</code></em>.  However, experience using <em><code>numeric</code></em> by
+  many users prompted developers to make a few incompatible
+  improvements.  Instead of breaking the any application that relies on
+  <em><code>numeric</code></em>, developers launched a new project called <em><code>numarray</code></em>.  As of
+  this writing, <em><code>numarray</code></em> lacks a few features in <em><code>numeric</code></em>, but
+  implementation of most is planned.
+</p>
+<p>
+  Some of the improvements for <em><code>numarray</code></em> are:
+</p>
+<p>
+  (1) Element types are arranged in a hierarchical class structure to
+  support isinstance() checks. <em><code>numeric</code></em> used only character type codes
+  when specifying data types (but initializers in <em><code>numarray</code></em> can still
+  accept the old character codes).
+</p>
+<p>
+  (2) The type coercion rules have changed to preserve types in arrays
+  (more often), rather than converting to the type of a Python scalar.
+</p>
+<p>
+  (3) Added array attributes (not just getters and setters).
+</p>
+<p>
+  (4) More flexible exception handling.
+</p>
+<p>
+  New users probably do not to worry about any of these changes; it is
+  best to start out with <em><code>numarray</code></em> at this point, in most cases.
+</p>
+<h3>Timing Example</h3>
+ <p>
+  Let us try to get a sense of just how much faster operations in
+  Numerical Python can be than standard Python.  As a toy task, we will
+  create a sequence of numbers, then double each one.  First, a few
+  variants on standard Python approaches:
+</p>
+<div class="code-sample"><h4></h4><pre>def timer(fun, n, comment=""):
+    from time import clock
+    start = clock()
+    print comment, len(fun(n)), "elements",
+    print "in %.2f seconds" % (clock()-start)
+def double1(n): return map(lambda n: 2*n, xrange(n))
+timer(double1, 5000000, "Running map() on xrange iterator:")
+def double2(n): return [2*n for n in xrange(n)]
+timer(double2, 5000000, "Running listcomp on xrange iter: ")
+def double3(n):
+    double = []
+    for n in xrange(n):
+        double.append(2*n)
+    return double
+timer(double3, 5000000, "Building new list from iterator: ")
+
+</pre></div><p>
+  We can check whether any speed differences exist between <code>map()</code>, list
+  comprehensions, and traditional loops.  What about standard module
+  <em><code>array</code></em>, which also requires homogeneous element types, perhaps it
+  will run faster:
+</p>
+<div class="code-sample"><h4></h4><pre>import array
+def double4(n): return [2*n for n in array.array('i',range(n))]
+timer(double4, 5000000, "Running listcomp on array.array: ")
+
+</pre></div><p>
+  Finally, let us look at how <em><code>numarray</code></em> does.  As an extra check, we
+  should see whether we still benefit if it is necessary to convert an
+  array back into a standard list:
+</p>
+<div class="code-sample"><h4></h4><pre>from numarray import *
+def double5(n): return 2*arange(n)
+timer(double5, 5000000, "Numarray scalar multiplication:  ")
+def double6(n): return (2*arange(n)).tolist()
+timer(double6, 5000000, "Numarray mult, returning list:   ")
+
+</pre></div><p>
+  Now running it:
+</p>
+<div class="code-sample"><h4></h4><pre>$ python2.3 timing.py
+Running map() on xrange iterator: 5000000 elements in 13.61 seconds
+Running listcomp on xrange iter:  5000000 elements in 16.46 seconds
+Building new list from iterator:  5000000 elements in 20.13 seconds
+Running listcomp on array.array:  5000000 elements in 25.58 seconds
+Numarray scalar multiplication:   5000000 elements in 0.61 seconds
+Numarray mult, returning list:    5000000 elements in 3.70 seconds
+
+</pre></div><p>
+  The minor differences between techniques for working with lists is
+  perhaps worth noticing, as is the misstep in trying standard module
+  <em><code>array</code></em>. But the general moral is that <em><code>numarray</code></em> performs the
+  operation in less than 1/20th the time. Coercing back to a standard
+  list loses a lot of that gain.
+</p>
+<p>
+  Do not put too much weight in such a simple comparison, but the
+  speedup is probably about typical.  For big scientific calculations,
+  moving from months to days--or days to hours--become quite worthwhile.
+</p>
+<h3>Modeling Systems</h3>
+ <p>
+  The typical use case for Numerical Python is in scientific modeling,
+  or perhaps in related areas like graphic manipulations and
+  convolutions or signal processing. To illustrate a number of features
+  of <em><code>numarray</code></em>, I will use a moderately realistic problem. Suppose you
+  have a 3D physical space over which a quantity varies. Abstractly, any
+  parametric space, with any number of dimensions, is equally applicable
+  to <em><code>numarray</code></em>. But it is familiar and easy to imagine, for example, a
+  room in which temperature varies from point to point. As winter comes
+  to my New England home, the example starts to seem germane.
+</p>
+<p>
+  While this point is perhaps obvious, it is worth mentioning
+  explicitly.  My below examples work with smallish arrays because it is
+  easier to illustrate with them.  But <em><code>numarray</code></em> remains fast for
+  arrays with millions of elements, rather than merely dozens; the
+  former are probably more common for real scientific models.
+</p>
+<p>
+  As a start, let us create the "room".  There are a number of ways to
+  do this--the most general is with the callable <code>array()</code>.  Using that,
+  we can generate Numerical arrays with a variety of initialization
+  parameters, including initial data from any Python sequences.  But for
+  our room, the convenience function <code>zeros()</code> produces a nice--evenly
+  chilly--room:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; from numarray import *
+&gt;&gt;&gt; room = zeros((4,3,5),Float)
+&gt;&gt;&gt; print room
+[[[ 0.  0.  0.  0.  0.]
+  [ 0.  0.  0.  0.  0.]
+  [ 0.  0.  0.  0.  0.]]
+
+ [[ 0.  0.  0.  0.  0.]
+  [ 0.  0.  0.  0.  0.]
+  [ 0.  0.  0.  0.  0.]]
+
+ [[ 0.  0.  0.  0.  0.]
+  [ 0.  0.  0.  0.  0.]
+  [ 0.  0.  0.  0.  0.]]
+
+ [[ 0.  0.  0.  0.  0.]
+  [ 0.  0.  0.  0.  0.]
+  [ 0.  0.  0.  0.  0.]]]
+
+</pre></div><p>
+  Each 2-D "matrix" printed represents on horizontal slice of the
+  3-D room--we will call it top-to-bottom.  First thing, let us raise
+  the whole room temperature to a comfortable 70 degree Farenheit:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; room += 70
+&gt;&gt;&gt; print room
+[[[ 70.  70.  70.  70.  70.]
+  [ 70.  70.  70.  70.  70.]
+  [ 70.  70.  70.  70.  70.]]
+
+ [[ 70.  70.  70.  70.  70.]
+  [ 70.  70.  70.  70.  70.]
+  [ 70.  70.  70.  70.  70.]]
+
+ [[ 70.  70.  70.  70.  70.]
+  [ 70.  70.  70.  70.  70.]
+  [ 70.  70.  70.  70.  70.]]
+
+ [[ 70.  70.  70.  70.  70.]
+  [ 70.  70.  70.  70.  70.]
+  [ 70.  70.  70.  70.  70.]]]
+
+</pre></div><p>
+  There is a very important difference between Numerical arrays and
+  Python lists to keep in mind for the rest of our operations. When you
+  take slices of arrays--and we will see that slicing is quite flexible
+  and powerful for multiple dimensions--what you get is not a copy, but
+  a "view." There are multiple ways to point to the same data. Let us
+  take a look. Suppose our room has a draft that comes in and cools the
+  floor by four degrees:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; floor = room[3]
+&gt;&gt;&gt; floor -= 4
+&gt;&gt;&gt; print room
+[[[ 70.  70.  70.  70.  70.]
+  [ 70.  70.  70.  70.  70.]
+  [ 70.  70.  70.  70.  70.]]
+
+ [[ 70.  70.  70.  70.  70.]
+  [ 70.  70.  70.  70.  70.]
+  [ 70.  70.  70.  70.  70.]]
+
+ [[ 70.  70.  70.  70.  70.]
+  [ 70.  70.  70.  70.  70.]
+  [ 70.  70.  70.  70.  70.]]
+
+ [[ 66.  66.  66.  66.  66.]
+  [ 66.  66.  66.  66.  66.]
+  [ 66.  66.  66.  66.  66.]]]
+
+</pre></div><p>
+  In contrast, the fireplace on the north wall heats each position next
+  to it by 8 degrees, while itself being an ambient 90 degrees:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; north = room[:,0]
+&gt;&gt;&gt; near_fireplace = north[2:4,2:5]
+&gt;&gt;&gt; near_fireplace += 8
+&gt;&gt;&gt; north[3,2] = 90  # the fireplace cell itself
+&gt;&gt;&gt; print room
+[[[ 70.  70.  70.  70.  70.]
+  [ 70.  70.  70.  70.  70.]
+  [ 70.  70.  70.  70.  70.]]
+
+ [[ 70.  70.  70.  70.  70.]
+  [ 70.  70.  70.  70.  70.]
+  [ 70.  70.  70.  70.  70.]]
+
+ [[ 70.  78.  78.  78.  70.]
+  [ 70.  70.  70.  70.  70.]
+  [ 70.  70.  70.  70.  70.]]
+
+ [[ 66.  74.  90.  74.  66.]
+  [ 66.  66.  66.  66.  66.]
+  [ 66.  66.  66.  66.  66.]]]
+
+</pre></div><p>
+  Here we get into some tricker indexing, where slices can be indicated
+  along multiple dimensions.  These views are nice to keep around.  For
+  example, you might wonder what the current temperatures are over the
+  north wall:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; print north
+[[ 70.  70.  70.  70.  70.]
+ [ 70.  70.  70.  70.  70.]
+ [ 70.  78.  78.  78.  70.]
+ [ 66.  74.  90.  74.  66.]]
+
+</pre></div><h3>More Operations</h3>
+ <p>
+  This introductory look will only a small part of all the convenience
+  functions and array methods/attributes that are available in
+  <em><code>numarray</code></em>.  My hope is only to give reader a general feel; the
+  <em><code>numarray</code></em> documentation is quite excellent.
+</p>
+<p>
+  Now that our room has been subject to various temperature fluctuation,
+  we might want to judge its overall state.  For example, what is the
+  current average temperature in the room:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; add.reduce(room.flat)/len(room.flat)
+70.066666666666663
+
+</pre></div><p>
+  This merits a bit of explanation. All the operations you can perform
+  on arrays have corresponding <em>Universal Functions</em> (ufuncs).  So where
+  we had done something like <code>floor-= 4</code> in the above code, we could
+  have equally well used <code>subtract(floor,4,floor)</code>.  With three
+  arguments, to <code>substract()</code>, the operation is performed in-place. You
+  could also create a copy of <code>floor</code> using <code>floor=subtract(floor,4)</code>;
+  but this is probably not what you want, since the change will be in a
+  new array, not a subsection of <code>room</code>.
+</p>
+<p>
+  However, ufuncs are not merely functions. They are callable objects
+  that also have some methods of their own: <code>.reduce()</code> is probably the
+  most useful of these. It works just like the Python built-in function
+  <code>reduce()</code>, with each operation being the underlying ufunc (the
+  methods are much faster though when applied to Numerical arrays). In
+  other words <code>add.reduce()</code> means <code>sum()</code> and <code>multiply.reduce()</code> means
+  <code>product()</code>.(those shortcut names are defined too).
+</p>
+<p>
+  Before you can sum the room cell temperatures, you need to take a
+  flat, 1-D, view of the data.  Otherwise, you add along the primary
+  dimension, producing an new array of reduced dimension, e.g.:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; add.reduce(room)
+array([[ 276.,  292.,  308.,  292.,  276.],
+       [ 276.,  276.,  276.,  276.,  276.],
+       [ 276.,  276.,  276.,  276.,  276.]])
+
+</pre></div><p>
+  Such dimensional summary can be useful, but it is not what we want in
+  this case.
+</p>
+<p>
+  Since we are modeling a physical system, let us add a bit more
+  realism.  Rooms have air micro-currents in them that mix up
+  temperature.  We might model that by supposing that every once in a
+  while, a cell adjusts to the temperatures around it:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; def equalize(room):
+...     z,y,x = map(randint, (1,1,1), room.shape)
+...     zmin,ymin,xmin = maximum([z-2,y-2,x-2],[0,0,0]).tolist()
+...     zmax,ymax,xmax = [z+1,y+1,x+1]
+...     region = room[zmin:zmax,ymin:ymax,xmin:xmax].copy()
+...     room[z-1,y-1,x-1] = sum(region.flat)/len(region.flat)
+...     return room
+
+</pre></div><p>
+  This model is a bit unrealistic, of course: cells pick up on the
+  temperature around them, but do not impart a differential back to
+  their neighbors. Still, let us look at what it does. First we pick a
+  random cell--or actually we pick one more than the cell itself in each
+  dimension, since <code>.shape</code> gives us the length rather than the maximum
+  index. The value <code>zmin</code> and friends make sure we only index down to
+  zero, not in negative ranges; <code>zmax</code> and friends are not really
+  needed, since indexing past the size of an array dimension is just
+  treated as the maximum value (much as with Python lists).
+</p>
+<p>
+  Next thing, we need to define the region of adjacent cells.  Given our
+  small room dimensions, picking a cell at a room surface, edge, or
+  corner is rather common--the <code>region</code> of a cell is likely to be
+  smaller than the maximum 27-elements of a 3x3x3 subsection.  That is
+  not a problem, we just need to be sure to use the right denominator
+  for our average.  This new average temperature is assigned to the
+  randomly chosen cell.
+</p>
+<p>
+  You can perform as many equalization events as you wish to in your
+  model.  Each call just adjusts one cell.  Asymptotically, a lot of
+  calls will lead to equalization of the temperature in parts of the
+  room.  Even though arrays are mutable, the function <code>equalize()</code>
+  returns its array.  This is useful if you only want to equalize a
+  <em>copy</em> of the model:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; print equalize(room.copy())
+[[[ 70.        70.        70.        70.        70.      ]
+  [ 70.        70.        70.        70.        70.      ]
+  [ 70.        70.        70.        70.        70.      ]]
+
+ [[ 70.        70.        71.333333  70.        70.      ]
+  [ 70.        70.        70.        70.        70.      ]
+  [ 70.        70.        70.        70.        70.      ]]
+
+ [[ 70.        78.        78.        78.        70.      ]
+  [ 70.        70.        70.        70.        70.      ]
+  [ 70.        70.        70.        70.        70.      ]]
+
+ [[ 66.        74.        90.        74.        66.      ]
+  [ 66.        66.        66.        66.        66.      ]
+  [ 66.        66.        66.        68.        66.      ]]]
+
+</pre></div><h3>Conclusion</h3>
+ <p>
+  This introduction touched on only a bit of what <em><code>numarry</code></em> can do.  The
+  full capabilities are quite fancy.  For example, you can populate
+  arrays based on populating functions, which is likely to be useful for
+  physical models.  You can specify subsections of arrays not only with
+  slices, but also with index arrays--this not only lets you operate on
+  non-contiguous segments of an array, it also lets you--via the
+  <code>take()</code> function, redimension and reform arrays in interesting ways.
+  Moreover, for the most part, I have presented only operations between
+  scalars and arrays; you can also perform operations between arrays,
+  including ones of different dimensionality.  There is a lot to it, but
+  the API manages to remain fairly intuitive throughout.
+</p>
+<p>
+  I encourage readers to install <em><code>numarray</code></em> and/or <em><code>numeric</code></em> on their
+  own systems.  It is not hard to get started, and the fast
+  manipulations provided have a surprisingly large area of
+  application--often where you would not, at first, expect it.
+</p>
+<h3>Resources</h3>
+ <p>
+  The Numerical Python homepage is at the below URL.  This has good
+  links to documentation on both <em><code>numarray</code></em> and <em><code>numeric</code></em>.
+</p>
+<blockquote>
+   <a href="http://www.pfdubois.com/numpy/">http://www.pfdubois.com/numpy/</a>
+</blockquote>
+<p>
+  The project itself is hosted by Sourceforge, and you can find the
+  Numerical Python project page at:
+</p>
+<blockquote>
+   <a href="http://sourceforge.net/projects/numpy">http://sourceforge.net/projects/numpy</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  While David Mertz also likes laziness and impatience, this
+  installment is about hubris.  David may be reached at
+  mertz@gnosis.cx; his life pored over at<a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>
+  Suggestions and recommendations on this, past, or future, columns
+  are welcomed.  Check out his book, <cite>Text Processing in Python</cite> at
+  &lt<a href="http://gnosis.cx/TPiP&gt;.">http://gnosis.cx/TPiP&gt;.</a>
+</p>
+</body></html>

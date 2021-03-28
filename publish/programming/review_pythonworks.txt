@@ -1,0 +1,147 @@
+PRODUCT REVIEW:
+PythonWorks Pro 1.2
+
+David Mertz, Ph.D.
+Gnosis Software, Inc.
+June 2001
+
+AT A GLANCE
+------------------------------------------------------------------------
+
+      Creator: PythonWare
+      Price/License: Commercial ($395)
+      Home Page: http://www.pythonware.com/products/works/index.htm
+      Requirements: Win32, Linux, Solaris
+
+
+BACKGROUND
+------------------------------------------------------------------------
+
+  This review is the second in a series of looks at Python IDEs
+  for webreview.com.  The look at Python IDEs, in turn, follows
+  an earlier set of reviews of a number of text editors.  I'm a
+  traditionalist about writing code in text editors, and to
+  convince me, an IDE has to offer some palpable benefit beyond
+  the familiar comforts of a favorite text editor.  Moreover, a
+  commercial IDE like PythonWorks Pro has to do something to sell
+  itself as better than free IDEs like Idle, PythonWin or
+  MacPython IDE (depending on platform), even for those users
+  inclined towards an IDE rather than "just" an editor.  Beyond
+  the review of Idle that appeared earlier in webreview.com, I
+  also wrote a comparative article on a number of IDEs for IBM
+  developerWorks (but did not look at PythonWorks Pro):
+
+    http://www-106.ibm.com/developerworks/linux/library/l-pide/
+
+
+A NEW STATE OF MIND
+------------------------------------------------------------------------
+
+  PythonWorks Pro is quite a bit different than most any IDE or
+  text editor you have used before.  Its use of docked panes is
+  somewhat reminiscent of the style of Microsoft Visual Studio,
+  but the dominant metaphor is of a web browser.  Mind you,
+  PythonWorks Pro is a web browser in metaphor only--unlike the
+  competing Komodo that is based around Mozilla, and whose roots
+  therein are much closer to a browser.  But the basic elements
+  of the main (center) pane are the home, back, and forward
+  buttons.  And as with a browser, one thing exclusively occupies
+  the main pane at a time; there are no multiple windows for
+  different resources, just tabs for those resources that are
+  open.
+
+  The other unusual thing about PythonWorks Pro is its use of a
+  repository model rather than the use of standard files.  There
+  are no File/Open and File/Save commands, but simply "New
+  Project" and "New Resource" and "Delete Resource." Everything
+  is saved within a project as you work.  It takes some getting
+  used to, and the curve is steepened by the idiosyncratic menu
+  options: "works", "project", "resource"; within the editor
+  pane "edit" and "pads".
+
+  I think that with some practice, the PythonWorks Pro interface
+  could well be better than a more traditional one.  But the
+  practice is needed.  Either way, I highly applaud PythonWare
+  for trying such new ideas, since current interfaces risk
+  running into dead ends.  Its nice to open things up.
+
+
+USING THE TOOLS
+------------------------------------------------------------------------
+
+  Let's talk about the tools PythonWorks Pro provides.  There is
+  an editor component, of course.  There is also a form designer,
+  a debugger, picture and sound viewers, and interactive shell,
+  and an output console.  Pretty much what you would want in an
+  IDE, and they achieve a nice seamlessness.
+
+  The editor is adequate, but not exceptional.  Even compared to
+  Idle or PythonWin it has some limits.  You get syntax
+  highlighting, naturally.  And the basic cut/paste, and comment
+  block, and indent/dedent.  But no code folding.  There is some
+  code completion, but it is much less sophisticated than many
+  other IDEs, or even plain editors.  And moreover, the
+  completion requires a special keystroke rather than just
+  popping up as you type.
+
+  The form designer is similarly adequate.  In a gesture to the
+  Delphi style, you can tab between the visual designer, the XML
+  document that records the layout, and the actual Python/TKinter
+  code that implements it.  But unlike Delphi or the best such
+  designers, you cannot dynamically edit code that comes from a
+  the visual designer.  And the widget set has only just enough
+  to create some basic applications (probably about as much as
+  plain TKinter, but several sets of enhanced widgets are
+  available to go with TKinter).
+
+
+PLATFORM ISSUES
+------------------------------------------------------------------------
+
+  Unfortunately, as with the other commercial IDEs I have looked
+  at, PythonWorks Pro has some important glitches.  Under my
+  Mandrake 7.1 out-of-the-box installation, PythonWorks Pro was
+  unable to launch a Python interactive shell or run programs.
+  What makes this especially odd is that fact that PythonWorks
+  Pro relies on finding Python to run itself.  Tech support
+  was curteous and prompt.  But unfortunately, after a few days
+  of back-and-forth emails, they were not yet able to resolve the
+  rather basic issue.  As of right now, I am promised that the
+  "Linux folks" will be back next week, and make solving this a
+  top priority... and assured that it works fine under other
+  Linux distributions (Mandrake is not exactly obscure though).
+
+  I can still -run- the IDE under Linux as far as editing files
+  and creating projects.  But the glitch makes it non-usable for
+  real work.  Fortunately, the IDE installs and runs without any
+  obvious problems on my Win95R2 laptop.  The functionality
+  should be the same (so I am told).  Moreover, if you can get it
+  to work, PythonWorks Pro allows you to quickly toggle between
+  different Python versions in which to run your applications.
+  Nice for compatibility and deployment testing.
+
+
+CONCLUSION
+------------------------------------------------------------------------
+
+  PythonWorks Pro is a program with a lot of promise; but one
+  that I would have to describe as "not quite there yet." It has
+  some nice ideas in it, but it is not either complete or bug
+  free enough to shell out $400 for.  In a free program, you live
+  with little issues; for (fairly much) money it is reasonable to
+  expect more.  My advice: try out the demo version now, but wait
+  for a little more functionality to buy the IDE.
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  David Mertz hopes in earnest that the next buzzword for the web
+  will be "gnostic," its cognates, and related neologisms.  Try
+  out, "let's go gnosticate on the project," for euphony; perhaps
+  it works.  He hopes further that his prior art will support his
+  linguistic patent.  You can reach him at mertz@gnosis.cx, and
+  find copious biographical details by rooting around at
+  http://gnosis.cx/publish/.
+
+

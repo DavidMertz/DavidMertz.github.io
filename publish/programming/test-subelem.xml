@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<!DOCTYPE contacts SYSTEM "subelem.dtd" >
+<contacts>
+  <contact>
+    <name>Jane Doe</name>
+    <age>74</age>
+    <telephone>555-3412</telephone>
+  </contact>
+  <contact>
+    <name>Chieu Win</name>
+    <telephone>555-8888</telephone>
+    <age>44</age>
+  </contact>
+</contacts>
+

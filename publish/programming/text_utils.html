@@ -1,0 +1,1241 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>The GNU Text Utilities</title>
+<body>
+<h1>The GNU Text Utilities</h1>
+<p>by David Mertz, Ph.D. &lt;mertz@gnosis.cx&gt;</p>
+<hr/>
+<h2 align='center'>Introduction: The Unix Philosophy</h2><hr/>
+
+
+<h3>Small utilities combine to do large tasks</h3>
+
+<p> In Unix-inspired operating systems such as Linux, FreeBSD,
+          MacOSX, Solaris, AIX, and so on, a common philosophy underlies the
+          development environment, and even just the shells and working
+          environment. The main jist of this philsophy is using small
+          component utilities to do each small task  <i>well</i>  (and no
+          other thing badly), then combining utilities to perform compound
+          tasks. Most of what has been produced by the GNU project falls
+          under this component philosophy--and indeed the specific GNU
+          implementations have been ported to many platforms, even ones not
+          traditionally thought of as Unix-like. The Linux kernel, however,
+          is of necessity a more monolithic bit of software--though even
+          there kernel modules, filesystems, video drivers, and so on, are
+          largely componentized.  </p>
+<p> For this column, readers should be generally familiar with some
+          Unix-like environment, and especially with a command-line
+          shell.  Readers need not be programmers per se; in fact, the
+          techniques described will be most useful to system administrators
+          and users who process ad hoc reports, log files, project
+          documentation, and the like (and less so for formal programming
+          code processing). </p>
+
+<h3>Files and Streams</h3>
+
+<p> If the  <i>Unix philosophy</i>  has a deontological aspect in
+          advocating minimal modular components and cooperation, it also
+          has an ontological aspect: "everything is a file."  Abstractly, a
+           <i>file</i>  is simply an object that supports a few operations;
+          firstly reading and writing bytes, but also some supporting
+          operations like indicating its current position and knowing when
+          it has reached its end.  The Unix permission model is also
+          oriented around its idea of file. </p>
+<p> Concretely, a file might be an actual region on a recordable
+          media (with appropriate tagging of its name, size, position on
+          disk, and so on, supplied by the filesystem). But a file might
+          also be a virtual device in the  <code>/dev/</code>  hierarchy, or a
+          remote stream coming over a TCP/IP socket or via a higher-level
+          protocol like NFS. Importantly, the special files STDIN and STDOUT
+          and STDERR can be used to read or write to the user console and/or
+          to pass data between utilities. These special files can be
+          indicated by virtual filenames, along with using special syntax:
+          STDIN is  <code>/dev/stdin</code>  and/or  <code>/dev/fd/0</code> ;
+          STDOUT is  <code>/dev/stdout</code>  and/or  <code>/dev/fd/1</code> ;
+          STDERR is  <code>/dev/stderr</code>  and/or  <code>/dev/fd/2</code> .
+           </p>
+<p> The advantage and principle of Unix' file ontology is that most
+          of the utilities discussed here will handle various data sources
+          uniformly and neutrally, regardless of what storage or
+          transmission mechanisms actually underly the delivery of bytes.
+           </p>
+
+<h3>Redirection and Piping</h3>
+
+<p> The way that Unix/Linux utilities are typically combined is via
+          piping and redirection. Many utilites either automatically or
+          optionally take their input from STDIN, and send their output to
+          STDOUT (with special messages sent to STDERR). A pipe sends the
+          STDOUT of one utility to the STDIN of another utility (or to a new
+          invocation of the same utility). A redirect either reads the
+          content of a file as STDIN, or sends the STDOUT and/or STDERR
+          output to a named file. Redirects are often used to save data for
+          later or repeated processing (with the later utility runs using
+          STDIN redirection). </p>
+<p> In almost all shells, piping is performed with the vertical-bar
+           <code>|</code>  symbol, and redirection with the greater-than and
+          less-than symbols:  <code>&gt;</code>  and  <code>&lt;</code> . To
+          redirect STDERR, use  <code>2&gt;</code> , or  <code>&amp;&gt;</code> 
+          to redirect both STDOUT and STDERR to the same place. You may also
+          use a doubled greater-than (&gt;&gt;) to append to the end of an
+          existing file. For example: </p>
+<pre> $ foo fname | bar - &gt; myout 2&gt; myerr </pre>
+<p> The utility  <code>foo</code>  probably processes the file named
+           <code>fname</code> , and outputs to STDOUT. The utility bar uses a
+          common convention of specifying a dash when output is to be taken
+          from STDIN rather than a named file (some other utilities only
+          take STDIN).  The STDOUT from  <code>bar</code>  is saved in
+           <code>myout</code> , and its STDERR in  <code>myerr</code> . </p>
+
+<h3>What are the text utilities?</h3>
+
+<p> The GNU Text Utilities is a collection of some of the tools for
+          processing and manipulating text files and streams that have
+          proven most useful, and been refined, over the evolution of
+          Unix-like operating systems.  Most of them have been part of Unix
+          from the earliest implementations, though many have grown
+          additional options over time. </p>
+<p> The suite of utilities collected in the archive  <code>textutils-2.1</code>  includes twenty-seven tools; however, the GNU
+          project maintainers have more recently decided to bundle these
+          tools instead as part of the larger collection  <code>coreutils-5.0</code>  (and presumably likewise for later versions).
+          On systems derived from BSD rather than GNU tools, the same
+          utilities might be bundled a bit differently, but most of the same
+          utilities will still be present. This tutorial will focus on the
+          twenty-seven utilities traditionally included in
+           <code>textutils</code> , with some occassional mention and use of
+          related tools that are generally available on Unix-like systems.
+          However, I will skip the utility  <code>ptx</code>  (permuted
+          indexes) which is both too narrow in purpose and too difficult to
+          understand for inclusion here.
+           </p>
+
+<h3>grep (Generalized Regular Experession Processor)</h3>
+
+<p> One tool that is not  <i>per se</i>  part of  <code>textutils</code>  still deserves special mention. The utility
+           <code>grep</code>  is one of the most widely used Unix utilities,
+          and will very often be used in pipes to or from the text
+          utilities. </p>
+<p> What  <code>grep</code>  does is in one sense very simple, in
+          another sense quite complex to understand. Basically,
+           <code>grep</code>  identifies lines in a file that match a regular
+          expression. Some switches let you massage the output in various
+          ways, such as printing surrounding context lines, numbering the
+          matching lines, or identifying only the files in which the matches
+          occur rather than individual lines. But at heart,
+           <code>grep</code>  is just a (very powerful) filter on the lines in
+          a file. The complex part of  <code>grep</code>  is the regular
+          expressions you can specify to describe matches of interest. But
+          that's another tutorial (see Resources). A number of other
+          utilities also support regular expression patterns, but
+           <code>grep</code>  is the most general such tool, and hence it is
+          often easier to put  <code>grep</code>  in your pipeline than to use
+          the weaker filters other tools provide. A quick grep example:  </p>
+<pre> 
+          $ grep -c [Ss]ystem$ * 2&gt; /dev/null | grep :[^0]$
+          INSTALL:1
+          aclocal.m4:2
+          config.log:1
+          configure:1
+           </pre>
+<p> The example lists files that contain lines ending with word
+          "system", perhaps with initial cap, at the end of lines; and also
+          show the number of such occurrences (i.e. if non-zero). (Actually,
+          the example does not not handle counts greater than 9 properly).
+           </p>
+
+<h3>Shell Scripting</h3>
+
+<p> While the text utilities are designed to produce outputs in
+          various useful formats--often modified by command-line
+          switches--there are still times when being able to explicitly
+          branch and loop is useful.  Shells like  <code>bash</code>  let you
+          combine utilities with flow control to perform more complex
+          chores.  Shell scripts are especially useful to encapsulate
+          compound tasks that you will perform multiple times, especially
+          those involving some parameterization of the task. </p>
+<p> Explaining  <code>bash</code>  scripting is certainly outside the
+          scope of this tutorial. See Resources for an introduction to
+           <code>bash</code> . Once you understand the text utilities, it is
+          fairly simple to combine them into saved shell scripts. Just for
+          illustration, here is a quick (albeit somewhat contrived) example
+          of flow control with  <code>bash</code> : </p>
+<pre> 
+          [~/bacchus/articles/scratch/tu]$ cat flow
+          #!/bin/bash
+          for fname in `ls $1`; do
+            if (grep $2 $fname &gt; /dev/null); then
+              echo "Creating: $fname.new" ;
+              tr "abc" "ABC" &lt; $fname &gt; $fname.new
+            fi
+          done
+          [~/bacchus/articles/scratch/tu]$ ./flow '*' bash
+          Creating: flow.new
+          Creating: test1.new
+          [~/bacchus/articles/scratch/tu]$ cat flow.new
+          #!/Bin/BAsh
+          for fnAme in `ls $1`; do
+            if (grep $2 $fnAme &gt; /dev/null); then
+              eCho "CreAting: $fnAme.new" ;
+              tr "ABC" "ABC" &lt; $fnAme &gt; $fnAme.new
+            fi
+          done
+           </pre>
+<hr/>
+<h2 align='center'>Stream-Oriented Filtering</h2><hr/>
+
+
+<h3>cat and tac</h3>
+
+<p> The simplest text utilities simply output the exact contents of
+          a file or stream to STDOUT, or perhaps a portion or simple
+          rearrangment of those contents. </p>
+<p> The utility  <code>cat</code>  begins with the first line and ends
+          with the last line. The utility  <code>tac</code>  outputs lines in
+          reverse.  Both utilites will read every file specified as an
+          argument, but default to STDIN if none is specified.  As with many
+          utilities, you may explicitly specify STDIN using the special name
+           <code>-</code> .  Some examples: </p>
+<pre> 
+          $ cat test2
+          Alice
+          Bob
+          Carol
+          $ tac &lt; test3
+          Zeke
+          Yolanda
+          Xavier
+          $ cat test2 test3
+          Alice
+          Bob
+          Carol
+          Xavier
+          Yolanda
+          Zeke
+          $ cat test2 | tac - test3
+          Carol
+          Bob
+          Alice
+          Zeke
+          Yolanda
+          Xavier
+           </pre>
+
+<h3>head and tail</h3>
+
+<p> The utilities  <code>head</code>  and  <code>tail</code>  output
+          only an initial or final portion of a file or stream,
+          respectively. The GNU version of both utilities support the switch
+           <code>-c</code>  to output a number of bytes; most often both
+          utilities are used in their line-oriented mode which output a
+          number of lines (whatever the actual line lengths).  Both
+           <code>head</code>  and  <code>tail</code>  default to outputting ten
+          lines.  As with  <code>cat</code>  or  <code>tac</code> ,
+           <code>head</code>  and  <code>tail</code>  default to STDIN if files
+          are not specified. </p>
+<pre> 
+          $ head -c 8 test2 &amp;&amp; echo # push prompt to new line
+          Alice
+          Bo
+          $ /usr/local/bin/head -2 test2
+          Alice
+          Bob
+          $ cat test3 | tail -n 2
+          Yolanda
+          Zeke
+          $ tail -r -n 2 test3 # reverse
+          Zeke
+          Yolanda
+           </pre>
+<p> By the way, the GNU versions of these utilities (and many
+          others) have more flexible switches than do the BSD versions. </p>
+<p> The  <code>tail</code>  utility has a special mode indicated with
+          the switches  <code>-f</code>  and  <code>-F</code>  that continues to
+          display new lines written to the end of a "followed" file. The
+          capitalized switch watches for truncations and renaming of the
+          file as well as the simple appends the lower case switch
+          monitors.  Follow mode is particularly useful for watching
+          changes to a log file that another process might peform
+          periodically. </p>
+
+<h3>od and hexdump</h3>
+
+<p> The utilities  <code>od</code>  and  <code>hexdump</code>  output
+          octal, hex, or otherwise encoded bytes from a file or stream.
+          These are useful for access to or visual examination of characters
+          in a file that are not directly displayible on your terminal. For
+          example,  <code>cat</code>  or  <code>tail</code>  do not directly
+          disambiguate between tabs, spaces, or other whitespace--you can
+          check which characters are used with  <code>hexdump</code> .
+          Depending on you system type, either or both of these two
+          utilities will be available--BSD systems deprecate  <code>od</code> 
+          for  <code>hexdump</code> , GNU systems the reverse. The two
+          utilities, however, have exactly the same purpose, just slightly
+          different switches. </p>
+<pre> 
+          $ od test3 # default output format
+          0000000 054141 073151 062562 005131 067554 060556 062141 005132
+          0000020 062553 062412
+          0000024
+          $ od -w8 -x test3 # 8 hex digits per line
+          0000000 5861 7669 6572 0a59
+          0000010 6f6c 616e 6461 0a5a
+          0000020 656b 650a
+          0000024
+          $ od -c test3 # 5 escaped ASCII chars per line
+          0000000   X   a   v   i   e   r  \n   Y   o   l   a   n   d   a  \n   Z
+          0000020   e   k   e  \n
+          0000024
+           </pre>
+<p> As with other utilities,  <code>od</code>  and  <code>hexdump</code>  accept input from STDIN or from one or more named files.
+          As well, the  <code>od</code>  switches  <code>-j</code>  and
+           <code>-N</code>  let you skip initial bytes and limit the number
+          read, respectively. You may customize output formats even further
+          than with the standard switches using  <code>fprintf()</code> -like
+          formatting specifiers </p>
+
+<h3>HERE documents</h3>
+
+<p> There is a special kind of redirection that is worth noting in
+          this tutorial.  While HERE documents are, strictly speaking, a
+          feature of shells like  <code>bash</code>  rather than anything to
+          do with the text utilities, they provide a useful way of sending
+          ad hoc data to the text utilities (or to other applications). </p>
+<p> Direction with a double less-than can be used to take
+          pseudo-file contents from the terminal.  A HERE document must
+          specifiy a terminating delimiter immediately after its
+           <code>&lt;&lt;</code> .  For example: </p>
+<pre> 
+          $ od -c &lt;&lt;END
+          &gt; Alice
+          &gt; Bob
+          &gt; END
+          0000000   A   l   i   c   e  \n   B   o   b  \n
+          0000012
+           </pre>
+<p> Any string may be used as a delimiter, input is terminated when
+          the string occurs on a line by itself.  This gives us a quick way
+          to create a persistent file: </p>
+<pre> 
+          $ cat &gt; myfile &lt;&lt;EOF
+          &gt; Dave
+          &gt; Edna
+          &gt; EOF
+          $ hexdump -C myfile
+          00000000  44 61 76 65 0a 45 64 6e  61 0a            |Dave.Edna.|
+          0000000a
+           </pre>
+<hr/>
+<h2 align='center'>Line-Oriented Filtering</h2><hr/>
+
+
+<h3>Lines as records</h3>
+
+<p> Many Linux utilities view files as a line-oriented collection
+          of records or data.  This has proved a very convenient way of
+          aggregating data collections in ways that is both readable to
+          people, and easy to process with tools.  The simple trick is to
+          treat each newline as a delimiter between records, where each
+          record has a similar format. </p>
+<p> As a practical matter, line-oriented records usually should
+          have a relatively limited length--perhaps up through a few
+          hundred characters.  While none of the text utilties have such a
+          limit built in to them, human eyes have trouble working with
+          extremely long lines, even if auto-wrapping or horizontal
+          scrolling is used.  Either a more complex structured data format
+          might be used in such cases, or records might be broken into
+          multiple lines (perhaps flagged for type in a way that
+           <code>grep</code>  can sort out).  As a simple example, you might
+          preserve a hierarchical multi-line data format using prefix
+          characters: </p>
+<pre> 
+          $ cat multiline
+          A Alice Aaronson
+          B System Administrator
+          C 99 9th Street
+          A Bob Babuk
+          B Programmer
+          C 7 77th Avenue
+          $ grep '^A ' multiline # names only
+          A Alice Aaronson
+          A Bob Babuk
+          $ grep '^C ' multiline # address only
+          C 99 9th Street
+          C 7 77th Avenue
+           </pre>
+<p> The output from one of these  <code>grep</code>  filters is a
+          usuable newline-delimited collection of partial records with the
+          field(s) of interest. </p>
+
+<h3>cut</h3>
+
+<p> The utility  <code>cut</code>  writes fields from a file to the
+          standard output, where each line is treated as a delimited
+          collection of fields. The default delimiting character is a tab,
+          but this can be changed with the short form option  <code>-d &lt;DELIM&gt;</code>  or the long form option  <code>--delimiter=&lt;DELIM&gt;</code> . </p>
+<p> You may select one or more fields with the  <code>-f</code> 
+          switch. The  <code>-c</code>  switch selects specific character
+          positions from each line instead. Either switch will accept comma
+          separated numbers or ranges as parameters (including open ranges).
+          For example, we can see that the file  <code>employees</code>  is
+          tab delimited: </p>
+<pre> 
+          $ cat employees
+          Alice Aaronson  System Administrator    99 9th Street
+          Bob Babuk       Programmer      7 77th Avenue
+          Carol Cavo      Manager 111 West 1st Blvd.
+          $ hexdump -n 50 -c employees
+          0000000   A   l   i   c   e       A   a   r   o   n   s   o   n  \t   S
+          0000010   y   s   t   e   m       A   d   m   i   n   i   s   t   r   a
+          0000020   t   o   r  \t   9   9       9   t   h       S   t   r   e   e
+          0000030   t  \n
+          0000032
+          $ cut -f 1,3 employees
+          Alice Aaronson  99 9th Street
+          Bob Babuk       7 77th Avenue
+          Carol Cavo      111 West 1st Blvd.
+          $ cut -c 1-3,20,25- employees
+          Alieministrator 99 9th Street
+          Bobr7th Avenue
+          Car1est 1st Blvd.
+           </pre>
+<p> Later examples will utilize custom delimiters, other than
+          tabs. </p>
+
+<h3>expand and unexpand</h3>
+
+<p> The utilties  <code>expand</code>  and  <code>unexpand</code> 
+          convert tabs to spaces and vice-versa. A tab is considered to
+          align at specific columns, by default every eight columns, so the
+          specific number of spaces that correspond to a tab depends on
+          where those spaces or tab occur. Unless you specify the
+           <code>-a</code>  option,  <code>unexpand</code>  will only entab the
+          initial whitespace (the default is useful for reformatting source
+          code).  </p>
+<p> Continuing with the  <code>employees</code>  file of the last
+          panel, we can peform some substitutions.  Notice that after you
+          run  <code>unexpand</code> , tabs in the output may be follwed by
+          some spaces in order to produce the needed overall alignment. </p>
+<pre> 
+          $ cat -T employees  # show tabs explicitly
+          Alice Aaronson^ISystem Administrator^I99 9th Street
+          Bob Babuk^IProgrammer^I7 77th Avenue
+          Carol Cavo^IManager^I111 West 1st Blvd.
+          $ expand -25 employees
+          Alice Aaronson           System Administrator     99 9th Street
+          Bob Babuk                Programmer               7 77th Avenue
+          Carol Cavo               Manager                  111 West 1st Blvd.
+          $ expand -25 employees | unexpand -a | hexdump -n 50 -c
+          0000000   A   l   i   c   e       A   a   r   o   n   s   o   n  \t  \t
+          0000010       S   y   s   t   e   m       A   d   m   i   n   i   s   t
+          0000020   r   a   t   o   r  \t           9   9       9   t   h       S
+          0000030   t   r
+          0000032
+           </pre>
+
+<h3>fold</h3>
+
+<p> The  <code>fold</code>  utility simply forces lines in a file to
+          wrap. By default, wrapping is to 80 columns, but you may specify
+          other widths. You get a limited sort of word-wrap formatting with
+           <code>fold</code> , but it will not fully rewrap paragraphs. The
+          option  <code>-s</code>  is useful for at least forcing new line
+          breaks to occur on whitespace. Using a recent article of mine as a
+          source (and clipping an example portion using tools we've seen
+          earlier): </p>
+<pre> 
+          $ tail -4 rexx.txt | cut -c 3-
+          David Mertz' fondness for IBM dates back embarrassingly many decades.
+          David may be reached at mertz@gnosis.cx; his life pored over at
+          http://gnosis.cx/publish/. And buy his book: _Text Processing in
+          Python_ (http://gnosis.cx/TPiP/).
+          $ tail -4 rexx.txt | cut -c 3- | fold -w 50
+          David Mertz' fondness for IBM dates back embarrass
+          ingly many decades.
+          David may be reached at mertz@gnosis.cx; his life
+          pored over at
+          http://gnosis.cx/publish/. And buy his book: _Text
+           Processing in
+          Python_ (http://gnosis.cx/TPiP/).
+          $ tail -4 rexx.txt | cut -c 3- | fold -w 50 -s
+          David Mertz' fondness for IBM dates back
+          embarrassingly many decades.
+          David may be reached at mertz@gnosis.cx; his life
+          pored over at
+          http://gnosis.cx/publish/. And buy his book:
+          _Text Processing in
+          Python_ (http://gnosis.cx/TPiP/).
+           </pre>
+
+<h3>fmt</h3>
+
+<p> For most purposes,  <code>fmt</code>  is a more useful tool for
+          wrapping lines than is  <code>fold</code> . The utility
+           <code>fmt</code>  will wrap lines, while both preserving initial
+          indentation and aggregating lines for paragraph balance (as
+          needed).  <code>fmt</code>  is useful for formatting documents such
+          as email messages before transmission or final storage.  </p>
+<pre> 
+          $ tail -4 rexx.txt  | fmt -40 -w50 # goal 40, max 50
+            David Mertz' fondness for IBM dates back
+            embarrassingly many decades.  David may be
+            reached at mertz@gnosis.cx; his life pored
+            over at http://gnosis.cx/publish/. And
+            buy his book: _Text Processing in Python_
+            (http://gnosis.cx/TPiP/).
+          $ tail -4 rexx.txt  | fold -40
+            David Mertz' fondness for IBM dates ba
+          ck embarrassingly many decades.
+            David may be reached at mertz@gnosis.c
+          x; his life pored over at
+            http://gnosis.cx/publish/. And buy his
+           book: _Text Processing in
+            Python_ (http://gnosis.cx/TPiP/).
+           </pre>
+<p> The GNU version of  <code>fmt</code>  provides several options
+          regarding how indentation of first and subsequent lines is handled
+          in determining indentation style.  An option particularly likely
+          to be useful is  <code>-u</code>  which normalizes word and sentence
+          spaces. </p>
+
+<h3>nl (and cat)</h3>
+
+<p> The utility  <code>nl</code>  numbers the lines in a file, with a
+          variety of options for how numbers appear.  For the most part,
+           <code>cat</code>  contains the line numbering options you will need
+          for most purposes--choose the more general tool,  <code>cat</code> 
+          when it does what you need.  Only in special cases such as
+          controlling display of leading zeros is  <code>nl</code>  needed
+          (historically,  <code>cat</code>  did not always include line
+          numbering). </p>
+<pre> 
+          $ nl -w4 -nrz -ba rexx.txt | head -6  # width 4, zero padded
+          0001    LINUX ZONE FEATURE: Regina and NetRexx
+          0002    Scripting with Free Software Rexx Implementations
+          0003
+          0004    David Mertz, Ph.D.
+          0005    Text Processor, Gnosis Software, Inc.
+          0006    January, 2004
+          $ cat -b rexx.txt | head -6   # don't number bare lines
+               1  LINUX ZONE FEATURE: Regina and NetRexx
+               2  Scripting with Free Software Rexx Implementations
+
+               3  David Mertz, Ph.D.
+               4  Text Processor, Gnosis Software, Inc.
+               5  January, 2004
+           </pre>
+<p> Aside from making discussions of lines within files easier,
+          line numbers potentially provide sort or filter criteria for
+          downstream processes. </p>
+
+<h3>tr, Part 1</h3>
+
+<p> The utility  <code>tr</code>  is a powerful tool for tranforming
+          the characters that occur within a file--or rather, within STDIN,
+          since  <code>tr</code>  operates exclusively on STDIN and writes
+          exclusively to STDOUT (redirection and piping is allowed, of
+          course). </p>
+<p> <code>tr</code>  is somewhat more limited in capability than is
+          its big sibling  <code>sed</code> , which is not included in the
+          text utilities (nor in this tutorial) but is still almost always
+          available on Unix-like systems. Where  <code>sed</code>  can perform
+          general replacements of regular expressions,  <code>tr</code>  is
+          limited to replacing and deleting single characters (it has no
+          real concept of context). At its most basic,  <code>tr</code> 
+          replaces the characters of STDIN that are contained in a source
+          string with those in a target string. </p>
+<p> A simple example helps illustrate  <code>tr</code> . We might
+          have a file with variable numbers of tabs and spaces, and with to
+          normalize these separators, and replace them with a new
+          delimiter.  The trick is to use the  <code>-s</code>  (squeeze) flag
+          to eliminate runs of the same character:
+           </p>
+<pre> 
+          $ expand -26 employees | unexpand -a &gt; empl.multitab
+          $ cat -T empl.multitab
+          Alice Aaronson^I^I  System Administrator^I    99 9th Street
+          Bob Babuk^I^I  Programmer^I^I    7 77th Avenue
+          Carol Cavo^I^I  Manager^I^I    111 West 1st Blvd.
+          $ tr -s "\t " "| " &lt; empl.multitab | /usr/local/bin/cat -T
+          Alice Aaronson| System Administrator| 99 9th Street
+          Bob Babuk| Programmer| 7 77th Avenue
+          Carol Cavo| Manager| 111 West 1st Blvd.
+           </pre>
+
+<h3>tr, Part 2</h3>
+
+<p> As well as translating explicitly listed characters,
+           <code>tr</code>  supports ranges and several named character
+          classes.  For example, to translate lower-case characters to
+          upper-case, you may use either of: </p>
+<pre> 
+          $ tr "a-z" "A-Z" &lt; employees
+          ALICE AARONSON  SYSTEM ADMINISTRATOR    99 9TH STREET
+          BOB BABUK       PROGRAMMER      7 77TH AVENUE
+          CAROL CAVO      MANAGER 111 WEST 1ST BLVD.
+          $ tr [:lower:] [:upper:] &lt; employees
+          ALICE AARONSON  SYSTEM ADMINISTRATOR    99 9TH STREET
+          BOB BABUK       PROGRAMMER      7 77TH AVENUE
+          CAROL CAVO      MANAGER 111 WEST 1ST BLVD.
+           </pre>
+<p> If the second range is not as long as the first, the second is
+          padded with occurrences of its last character: </p>
+<pre> 
+          $ tr [:upper:] "a-l#" &lt; employees
+          alice aaronson  #ystem administrator    99 9th #treet
+          bob babuk       #rogrammer      7 77th avenue
+          carol cavo      #anager 111 #est 1st blvd.
+           </pre>
+<p> You may also delete characters from the STDIN stream. Typically
+          you might delete special characters like formfeeds or high-bit
+          characters you want to filter. But for this, let us continue with
+          the prior example: </p>
+<pre> 
+          $ tr -d [:lower:] &lt; employees
+          A A     S A     99 9 S
+          B B     P       7 77 A
+          C C     M       111 W 1 B.
+           </pre>
+<hr/>
+<h2 align='center'>File-Oriented Filtering</h2><hr/>
+
+
+<h3>Working with line collections</h3>
+
+<p> The tools we have seen so far operate on each line
+          individually.  Another subset of the text utilities treats files
+          as collections of lines, and performs some kind of global
+          manipulation on those lines. </p>
+<p> Pipes under Unix-like operating systems can operate very
+          efficiently in terms of memory and latency. When a process earlier
+          in a pipe produces a line to STDOUT, that line is immediately
+          available to the next stage. However, the below utilities will not
+          produce output until they have (mostly) completed their
+          processing. For large files, some of these utilities can take a
+          while to complete (but they are nonetheless all well optimized for
+          the tasks they perform). </p>
+
+<h3>sort</h3>
+
+<p> The utility  <code>sort</code>  does just what the name
+          suggests: it sorts the lines within a file or files.  A variety of
+          options exist to allow sorting on fields or character positions
+          within the file, and to modify the comparison operation (numeric,
+          date, case-insensitive, etc). </p>
+<p> A common use of sort is in combining multiple files.  Building
+          on our earlier example: </p>
+<pre> 
+          $ cat employees2
+          Doug Dobrovsky  Accountant      333 Tri-State Road
+          Adam Aman       Technician      4 Fourth Street
+          $ sort employees employees2
+          Adam Aman       Technician      4 Fourth Street
+          Alice Aaronson  System Administrator    99 9th Street
+          Bob Babuk       Programmer      7 77th Avenue
+          Carol Cavo      Manager 111 West 1st Blvd.
+          Doug Dobrovsky  Accountant      333 Tri-State Road
+           </pre>
+<p> Field and character position within a field may be specified as
+          sort criteria, as may use of numeric sorting: </p>
+<pre> 
+          $ cat namenums
+          Alice   123
+          Bob     45
+          Carol   6
+          $ sort -k 2.1 -n namenums
+          Carol   6
+          Bob     45
+          Alice   123
+           </pre>
+
+<h3>uniq</h3>
+
+<p> The utility  <code>uniq</code>  removes adjacent lines which are
+          identical to each other--or if some switches are used, close
+          enough to count as identical (you may skip fields, character
+          postitions, or compare as case-insensitive).  Most often, the
+          input to  <code>uniq</code>  is the output from  <code>sort</code> ,
+          though GNU  <code>sort</code>  itself contains a limited ability to
+          eliminate duplicate lines with the  <code>-u</code>  switch. </p>
+<p> The most typical use of  <code>uniq</code>  is in the expression
+           <code>sort list_of_things | uniq</code> , producing a list with
+          just one of each item (one per line).  But some fancier uses let
+          you analyze duplicates or use different duplication criteria: </p>
+<pre> 
+          $ uniq -d test5 # identify duplicates
+          Bob
+          $ uniq -c test5 # count occurrences
+          1 Alice
+          2 Bob
+          1 Carol
+          $ cat test4
+          1       Alice
+          2       Bob
+          3       Bob
+          4       Carol
+          $ uniq -f 1 test4  # skip first field in comparisons
+          1       Alice
+          2       Bob
+          4       Carol
+           </pre>
+
+<h3>tsort</h3>
+
+<p> The utility  <code>tsort</code>  is a bit of an oddity in the
+          text utilities collection.  The utility itself is quite useful in
+          a limited context, but what it does is not something you would
+          centrally think of as text processing-- <code>tsort</code>  performs
+          a  <i>topological</i>  sort on a directed graph.  Don't panic just
+          yet if this concept is not familiar to you: in simple terms,
+           <code>tsort</code>  is good for finding a suitable order among
+          dependencies.  For example, installing packages might need to
+          occur with certain order constraints, or some system daemons
+          might need to be initialized before others. </p>
+<p> Using  <code>tsort</code>  is quite simple, really.  Just create
+          a file (or stream) that lists each known dependency (space
+          separated).  The utility will produce a suitable (not necessarily
+          uniquely so) order for the whole collection.  E.g.: </p>
+<pre> 
+          $ cat dependencies # not necessarily exhaustive, but realistic
+          libpng XFree86
+          FreeType XFree86
+          Fontconfig XFree86
+          FreeType Fontconfig
+          expat Fontconfig
+          Zlib libpng
+          Binutils Zlib
+          Coreutils Zlib
+          GCC Zlib
+          Glibc Zlib
+          Sed Zlibc
+          $ tsort dependencies
+          Sed
+          Glibc
+          GCC
+          Coreutils
+          Binutils
+          Zlib
+          expat
+          FreeType
+          libpng
+          Zlibc
+          Fontconfig
+          XFree86
+           </pre>
+
+<h3>pr</h3>
+
+<p> The  <code>pr</code>  utility is a general page formatter for
+          text files that provides facilities such as page headers,
+          linefeeds, columnization of source texts, indentation margins, and
+          configurable page and line width.  However,  <code>pr</code>  does
+          not itself rewrap paragraphs, and so might often be used in
+          conjunction with  <code>fmt</code> . </p>
+<pre> 
+          $ tail -5 rexx.txt | pr -w 60 -f | head
+          2004-01-31 03:22                                      Page 1
+
+
+            {Picture of Author: http://gnosis.cx/cgi/img_dqm.cgi}
+            David Mertz' fondness for IBM dates back embarrassingly many decades.
+            David may be reached at mertz@gnosis.cx; his life pored over at
+            http://gnosis.cx/publish/. And buy his book: _Text Processing in
+            Python_ (http://gnosis.cx/TPiP/).
+           </pre>
+<pre> 
+          $ tail -5 rexx.txt | fmt -30 &gt; blurb.txt
+          $ pr blurb.txt -2 -w 65 -f | head
+          2004-01-31 03:24                 blurb.txt                 Page 1
+
+
+            {Picture of Author:              at mertz@gnosis.cx; his life
+            http://gnosis.cx/cgi-bin/img_d   pored over at http://gnosis.cx
+            David Mertz' fondness for IBM    And buy his book: _Text
+            dates back embarrassingly many   Processing in Python_
+            decades.  David may be reached   (http://gnosis.cx/TPiP/).
+           </pre>
+<hr/>
+<h2 align='center'>Combining and Splitting Multiple Files</h2><hr/>
+
+
+<h3>comm</h3>
+
+<p> The utility  <code>comm</code>  is used to compare the contents
+          of already (alphabeticly) sorted files.  This is useful when the
+          lines of files are considered as unordered collections of
+           <i>items</i> .  The  <code>diff</code>  utility, though not included
+          in the text utilities, is a more general way of comparing files
+          that might have isolated modifications--but that are treated in an
+          ordered manner (such as source code files or documents).  On the
+          other hand, files that are considered as fields of records do not
+          have any inherent order, and sorting does not change the
+          information content. </p>
+<p> Let us look at the difference between two sorted lists of
+          names; the columns displayed are those in first file only, those
+          in the second only, and those in common: </p>
+<pre> 
+          $ comm test2b test2c
+                          Alice
+          Betsy
+                          Bob
+          Brian
+                  Cal
+                          Carol
+           </pre>
+<p> Introducing an out-of-order name, we see that  <code>diff</code> 
+          compares happily, while  <code>comm</code>  fails to identify
+          overlaps anymore: </p>
+<pre> 
+          $ cat test2d
+          Alice
+          Zack
+          Betsy
+          Bob
+          Carol
+          $ diff -U 2 test2d test2c
+          --- test2d      Sun Feb  1 18:18:26 2004
+          +++ test2c      Sun Feb  1 18:01:49 2004
+          @@ -1,5 +1,4 @@
+           Alice
+          -Zack
+          -Betsy
+           Bob
+          +Cal
+           Carol
+          $ comm test2d test2c
+                          Alice
+                  Bob
+                  Cal
+                  Carol
+          Zack
+          Betsy
+          Bob
+          Carol
+           </pre>
+
+<h3>join</h3>
+
+<p> The utility  <code>join</code>  is quite interesting; it performs
+          some basic relational calculus (as will be familiar to readers who
+          know relational database theory). In short,  <code>join</code>  lets
+          you find records that share fields between (sorted) record
+          collections. For example, you might be interested in which IP
+          addresses have vistited both your web site and your FTP site,
+          along with information on these visits (resources requested,
+          times, etc., which will be in your logs).  </p>
+<p> To present a simple example, suppose you issue color-coded
+          access badges to various people: vendors, partners, employees.
+          You'd like information on which badge types have been issued to
+          employees.  Notice that names are the first field in
+           <code>employees</code> , but second in  <code>badges</code> , all tab
+          separated: </p>
+<pre> 
+          $ cat employees
+          Alice Aaronson  System Administrator    99 9th Street
+          Bob Babuk       Programmer      7 77th Avenue
+          Carol Cavo      Manager 111 West 1st Blvd.
+          $ cat badges
+          Red     Alice Aaronson
+          Green   Alice Aaronson
+          Red     David Decker
+          Blue    Ernestine Eckel
+          Green   Francis Fu
+          $ join -1 2 -2 1 -t $'\t' badges employees
+          Alice Aaronson  Red     System Administrator    99 9th Street
+          Alice Aaronson  Green   System Administrator    99 9th Street
+           </pre>
+
+<h3>paste</h3>
+
+<p> The utility  <code>paste</code>  is approximately the reverse
+          operation of that performed by  <code>cut</code> .  That is,
+           <code>paste</code>  combines multiple files into columns, e.g.
+          fields.  By default, the corresponding lines between files are tab
+          separated, but you may use a different delimiter by specifying a
+           <code>-d</code>  option. </p>
+<p> While  <code>paste</code>  can combine unrelated files (leaving
+          empty fields if one input is longer), it generally makes the most
+          sense to  <code>paste</code>  synchronized data sources.  One
+          example of this is in reorganizing the fields of an existing data
+          file, e.g.:  </p>
+<pre> 
+          $ cut -f 1 employees &gt; names
+          $ cut -f 2 employees &gt; titles
+          $ paste -d "," titles names
+          System Administrator,Alice Aaronson
+          Programmer,Bob Babuk
+          Manager,Carol Cavo
+           </pre>
+<p> The flag  <code>-s</code>  lets you reverse the use of rows and
+          columns, which amounts to converting successive lines in a file
+          into delimited fields: </p>
+<pre> 
+          $ paste -s titles | cat -T
+          System Administrator^IProgrammer^IManager
+           </pre>
+
+<h3>split</h3>
+
+<p> The utility  <code>split</code>  simply divides a file into
+          multiple parts, each one of a specified number of lines or bytes
+          (the last one perhaps smaller). The parts are written to files
+          whose names are sequenced with two suffix letters (by default
+           <code>xaa</code> ,  <code>xab</code> , ...  <code>xzz</code> ) . </p>
+<p> While  <code>split</code>  can be useful just in managing the
+          size of large files or data sets, it is more intersting in
+          processing more structured data. For example, in the panel "Lines
+          as Records" we saw an example of splitting fields across
+          lines--what if we want to assemble those back into
+           <code>employees</code>  style tab separated fields, one per line.
+          Here is a way to do it: </p>
+<pre> 
+          $ cut -b 3- multiline | split -l 3 - employee
+          $ cat employeeab
+          Bob Babuk
+          Programmer
+          7 77th Avenue
+          $ paste -s employeea*
+          Alice Aaronson  System Administrator    99 9th Street
+          Bob Babuk       Programmer      7 77th Avenue
+           </pre>
+
+<h3>csplit</h3>
+
+<p> The utility  <code>csplit</code>  is similar to
+           <code>split</code> , but it divides files based on context lines
+          within them, rather than on simple line/byte counts.  You may
+          divide on one or more different criteria within a command, and may
+          repeat each criterion however many times you wish.  The most
+          interesting criterion-type is regular expressions to match against
+          lines.  For example, as an odd cut-up of  <code>multiline</code> :
+           </p>
+<pre> 
+          $ csplit multiline -zq 2 /99/ /Progr/ # line 2, find 99, find Progr
+          $ cat xx00
+          A Alice Aaronson
+          $ cat xx01
+          B System Administrator
+          $ cat xx02
+          C 99 9th Street
+          A Bob Babuk
+          $ cat xx03
+          B Programmer
+          C 7 77th Avenue
+           </pre>
+<p> The above division is a bit perverse in that it does not
+          correspond with the data structure.  A more usual approach might
+          be to arrange to have delimiter  <i>lines</i> , and split on those
+          throughout: </p>
+<pre> 
+          $ head -5 multiline2
+          Alice Aaronson
+          System Administrator
+          99 9th Street
+          -----
+          Bob Babuk
+          $ csplit -zq multiline2 /-----/+1 {*} # incl dashes at end, per chunk
+          $ cat xx01
+          Bob Babuk
+          Programmer
+          7 77th Avenue
+          -----
+           </pre>
+<hr/>
+<h2 align='center'>Summarizing and Identifying Files</h2><hr/>
+
+
+<h3>The simplest summary: wc</h3>
+
+<p> Most of the tools we have seen before produce output that is
+          largely reversible to create the original form--or at the least,
+          each line of input contributes in some straightforward way to the
+          output. A number of tools in the GNU Text Utilities can instead be
+          best described as producing a summary a file. Specifically, the
+          output of these utilities are generally much shorter than their
+          inputs, and the utilities all discard most of the information in
+          their input (technically, you could describe them as  <i>one-way functions</i> .  </p>
+<p> About the simplest one-way function on an input file is to
+          count its lines, words, and/or bytes, which is what
+           <code>wc</code>  does.  These are interesting things to know about
+          a file, but are clearly non-unique among distinct files.  For
+          example: </p>
+<pre> 
+          $ wc rexx.txt # lines, words, chars, name
+               402    2585   18231 rexx.txt
+          $ wc -w &lt; rexx.txt # bare word count
+              2585
+          $ wc -lc rexx.txt # lines, chars, name
+               402   18231 rexx.txt
+           </pre>
+<p> Put to a bit of use, suppose I wonder which developerWorks
+          articles I have written are the wordiest, I might use (note
+          inclusion of total, another pipe to  <code>tail</code>  could remove
+          that): </p>
+<pre> 
+          $ wc -w *.txt | sort -nr | head -4
+              55190 total
+               3905 quantum_computer.txt
+               3785 filtering-spam.txt
+               3098 linuxppc.txt
+           </pre>
+
+<h3>cksum and sum</h3>
+
+<p> The utilities  <code>cksum</code>  and  <code>sum</code>  produce
+          checksums and block counts of files.  The latter exists for
+          historical reasons only, and implements a less robust method.
+          Either utility produces a calculated value that is unlikely to be
+          the same between randomly chosen files.  In particular, a checksum
+          lets you establish to a reasonable degree of certainty that a file
+          has not become corrupted in transmission or accidentally modified.
+           <code>cksum</code>  implements four successively more robust
+          techniques, where  <code>-o 1</code>  is the behavior of
+           <code>sum</code> , and the default (no switch) is best. </p>
+<pre> 
+          $ cksum rexx.txt
+          937454632 18231 rexx.txt
+          $ cksum -o 3 &lt; rexx.txt
+          4101119105 18231
+          $ cat rexx.txt | cksum -o 2
+          47555 36
+          $ cksum -o 1 rexx.txt
+          10915 18 rexx.txt
+           </pre>
+
+<h3>md5sum and sha1sum</h3>
+
+<p> The utilities  <code>md5sum</code>  and  <code>sha1sum</code>  are
+          similar in concept to that of  <code>cksum</code> .  Note, by the
+          way, that in BSD-derived systems, the former command goes by the
+          name  <code>md5</code> .  However,  <code>md5sum</code>  and
+           <code>sha1sum</code>  produce 128-bit and 160-bit checksums,
+          respectively, rather than the 16-bit or 32-bit outputs of
+           <code>cksum</code> .  Checksums are also called hashes. </p>
+<p> The difference in checksum lengths gives a hint as to a
+          difference in purpose. In truth, comparing a 32-bit hash value is
+          quite unlikely to falsely indicate that a file was transmitted
+          correctly and left unchanged.   But protection against accidents
+          is a much weaker standard than protection against malicious
+          tamperers.  And MD5 or SHA hash is a value that is computationally
+          infeasable to spoof.  The hash length of a  <i>cryptographic</i> 
+          hash like MD5 or SHA is necessary for its strength, but a lot more
+          than just the length went into their design. </p>
+<p> The scenario to imagine is where you are sent a file on an
+          insecure channel.  In order to make sure that you receive the real
+          data rather than some malicious substitute, the sender publishes
+          (through a different channel) an MD5 or SHA hash for the file.  An
+          adversary cannot create a false file with the published MD5/SHA
+          hash--the checksum, for practical purposes, uniquely identifies
+          the desired file.  While  <code>sha1sum</code>  is actually a bit
+          better cryptographically, for historical reasons,
+           <code>md5sum</code>  is in more widespread use. </p>
+<pre> 
+          $ md5sum rexx.txt
+          2cbdbc5bc401b6eb70a0d127609d8772  rexx.txt
+          $ cat md5s
+          2cbdbc5bc401b6eb70a0d127609d8772  rexx.txt
+          c8d19740349f9cd9776827a0135444d5  metaclass.txt
+          $ md5sum -cv md5s
+          rexx.txt       OK
+          metaclass.txt  FAILED
+          md5sum: 1 of 2 file(s) failed MD5 check
+           </pre>
+<hr/>
+<h2 align='center'>Working with Log Files</h2><hr/>
+
+
+<h3>The structure of a weblog</h3>
+
+<p> A weblog file provides a good data source for demonstrating a
+          variety of real world uses of the text utilities.  Standard Apache
+          log files contain a variety of space-separated fields per line,
+          with each line describing one access to a web resource.
+          Unfortunately for us, spaces also occur at times inside quoted
+          fields, so processing is often not quite as simple as we might
+          hope.(or as it might be if the delimiter was excluded from the
+          fields).  Oh well, we must work with what we are given. </p>
+<p> Let us take a look at a line from one of my weblogs before we
+          perform some tasks with it: </p>
+<pre> 
+          $ wc access-log
+             24422  448497 5075558 access-log
+          $ head -1 access-log | fmt -25
+          62.3.46.183 - -
+          [28/Dec/2003:00:00:16 -0600]
+          "GET /TPiP/cover-small.jpg
+          HTTP/1.1" 200 10146
+          "http://gnosis.cx/publish/programming/regular_expressions.html"
+          "Mozilla/4.0 (compatible;
+          MSIE 6.0; Windows NT 5.1)"
+           </pre>
+<p> We can see that the original file is pretty large--24k records.
+          Wrapping the fields with  <code>fmt</code>  does not always
+          wrap on field boundaries, but the quotes let you see what the
+          fields are. </p>
+
+<h3>Extracting the IP addresses of Website visitors</h3>
+
+<p> A very simple task to peform on a weblog file is to extract all
+          the IP addresses of visitors to the site.  This combines a few of
+          our utilities.in a common pipe pattern (let us only look at the
+          first few): </p>
+<pre> 
+          $ cut -f 1 -d " " access-log | sort | uniq | head -5
+          12.0.36.77
+          12.110.136.90
+          12.110.238.249
+          12.111.153.49
+          12.13.161.243
+           </pre>
+<p> We might wonder, as well, just how many such distinct visitors
+          have visited in total: </p>
+<pre> 
+          $ cut -f 1 -d " " access-log | sort | uniq | wc -l
+              2820 
+           </pre>
+
+<h3>Counting occurences</h3>
+
+<p> In the last panel, we determined how many visitors our website 
+          got, but perhaps we are also interested in how much each of 
+          those 2820 visitors contribute to the overal 24422 hits.  Or 
+          specifically, who are the most frequent visitors.  In one line 
+          we can run: </p>
+<pre> 
+          $ cut -f 1 -d " " access-log | sort | uniq -c | sort -nr | head -5 
+          1264 131.111.210.195
+           524 213.76.135.14
+           307 200.164.28.3
+           285 160.79.236.146
+           284 128.248.170.115
+           </pre>
+<p> While this approach works, it might be nice to pull out the 
+          histogram part into a reusable shell script: </p>
+<pre> 
+          $ cat histogram 
+          #!/bin/sh
+          sort | uniq -c | sort -nr | head -n $1
+          $ cut -f 1 -d " " access-log | ./histogram 3
+          1264 131.111.210.195
+           524 213.76.135.14
+           307 200.164.28.3
+           </pre>
+<p> Now we can pipe any line-oriented list of items to our
+           <code>histogram</code>  shell script.  The number of most frequent
+          items we want to display is a parameter passed to the script. </p>
+
+<h3>Generate a new ad hoc report</h3>
+
+<p> Sometimes existing data files contain information we need, but
+          not necessarily in the arrangement needed by a downstream process.
+          As a basic example, suppose you want to pull several fields out of 
+          the weblog shown above, and combine them in different order (and 
+          skipping unneeded fields): </p>
+<pre> 
+          $ cut -f 6 -d \" access-log &gt; browsers
+          $ cut -f 1 -d " " access-log &gt; ips
+          $ cut -f 2 -d \" access-log | cut -f 2 -d " " 
+                 | tr "/" ":" &gt; resources
+          $ paste resources browsers ips &gt; new.report
+          $ head -2 new.report | tr "\t" "\n"
+          :TPiP:cover-small.jpg
+          Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)
+          62.3.46.183
+          :publish:programming:regular_expressions.html
+          Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)
+          62.3.46.183
+           </pre>
+<p> The line the produces  <code>resources</code>  uses two passes 
+          through  <code>cut</code> , with different delimiters.  That is 
+          because what  <code>access-log</code>  thinks of as a REQUEST 
+          contains more information than we want as a RESOURCE, i.e.: </p>
+<pre> 
+          $ cut -f 2 -d \" access-log | head -1
+          GET /TPiP/cover-small.jpg HTTP/1.1
+           </pre>
+<p> We also decide to massage the path delimiter in the Apache log
+          to use a colon path separator (which is the old MacOS format, but
+          we really just do it here to show a type of operation). </p>
+
+<h3>cut_by_regex</h3>
+
+<p> This next script combines much of what we have seen in this
+          tutorial into a rather complex pipeline.  Suppose that we know we
+          want to cut a field from a data file, but we do not know its 
+          field position.  Obviously, visual examination could provide the 
+          answer, but to automate processing different types of data files,
+          we can cut  <i>whichever</i>  field matches a regular expression: </p>
+<pre> 
+          $ cat cut_by_regex
+          #!/bin/sh
+          # USAGE: cut_by_regex &lt;pattern&gt; &lt;file&gt; &lt;delim&gt; 
+          cut -d "$3" -f \
+            `head -n 1 $2 | tr "$3" "\n" | nl | \
+             egrep $1 | cut -f 1 | head -1` \
+            $2 
+           </pre>
+<p> In practice, we might use this as, e.g.: </p>
+<pre> 
+          $ ./cut_by_regex "([0-9]+\.){3}" access-log " " | ./histogram 3
+          1264 131.111.210.195
+           524 213.76.135.14
+           307 200.164.28.3
+           </pre>
+<p> Several parts of this could use further explanation.  The 
+          backtick is a special syntax in  <code>bash</code>  to treat the 
+          result of a command as a an argument to another command. 
+          Specifically, the pipe in the backticks produces the  <i>first</i> 
+          field number that matches the regular expression given as the
+          first argument.  How does it mangage this? First we pull off only
+          the first line of the data file; then we transform the specified
+          delimiter to a newline (one field per line now); then we number
+          the resulting lines/fields; then we search for a line with the 
+          desired pattern pattern; then we cut just the field number from 
+          the line; and finally, we only take the first match, even if 
+          several fields match.  It takes a bit of thought to put a good
+          pipeline together, but a lot can be done this way </p>
+<hr/>
+<h2 align='center'>Summary and resources</h2><hr/>
+
+
+<h3>Summary</h3>
+
+<p> This tutorial only directly presents a small portion of what
+          you can achieve with creative use of the GNU Text Utilities.  
+          The final few examples start to give a good sense of just how
+          powerful they can be with creative use of pipes and redirection.
+          The key is to break an overall transformation down into useful
+          intermediate data, either saving that intermediary to another 
+          file or piping it to a utility that deals with that data format.
+           </p>
+<p> I wish to thank my colleage Andrew Blais for assistance in
+          preparation of this tutorial. </p>
+
+<h3>Resources</h3>
+
+<p> You can  <a>download the 27 GNU Text Utilities from their FTP site.</a> </p>
+<p> The most current utilities have been incorporated into the  <a>GNU Core Utilies (88 in all).</a> </p>
+<p> Peter Seebach's  <a>The art of writing Linux utilities: Developing small, useful command-line tools</a> </p>
+<p> David Mertz's  <a>Regular Expression Tutorial</a>  is a
+          good starting point for understanding the tools like
+           <code>grep</code>  and  <code>csplit</code>  that utilize regular
+          expressions. </p>
+<p> David's book  <i>Text Processing in Python</i>  (Addison Wesley,
+          2003; ISBN: 0-321-11254-7) also contains an introduction to
+          regular expressions, as well as extensive discussion of performing
+          many of the techniques in this tutorial using Python. </p>
+<p> The Linux Zone article  <a>Scripting with Free Software Rexx Implementations</a> , written by David Mertz, might be useful
+          for an alternative approach to simple text processing tasks.  The
+          scope of the text utilities is nearly identical to the core
+          purpose of the Rexx programming language. </p>
+
+<h3>Feedback</h3>
+
+<p> Please let us know whether this tutorial was helpful to you and
+          how we could make it better. We'd also like to hear about other
+          tutorial topics you'd like to see covered. </p>
+<p> For questions about the content of this tutorial, contact the
+          author, David Mertz, at  <a>mertz@gnosis.cx</a> . </p>
+
+</body>
+</html>

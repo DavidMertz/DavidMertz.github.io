@@ -1,0 +1,380 @@
+XML MATTERS #24: reStructuredText
+A Light, Powerful Document Markup
+
+David Mertz, Ph.D.
+Floating Signifier, Gnosis Software, Inc.
+December, 2002
+
+    The document format called reStructuredText has been adopted
+    as (one of) the official source format(s) for Python
+    documentation, but is also useful for other types of
+    documentation. reStructuredText is an interesting hybrid of
+    technologies--in syntax and appearance it is similar to
+    other "almost-plaintext" formats, but in semantics and API it
+    is very close to XML.   Moreover, existing tools can
+    transform reStructuredText into several XML dialects
+    (docutils, DocBook, OpenOffice), along with other useful
+    formats like LaTeX, HTML, PDF.
+
+ABOUT [reStructuredText]
+-----------------------------------------------------------------------
+
+  Previous articles I have written for the XML Zone have looked
+  at alternatives to XML--document formats that satisfy many of
+  the same purposes for which you might use XML. reStructuredText
+  continues this tradition. In contrast to YAML, which is good
+  for data formats, reStructuredText is designed for documentation;
+  in contrast to smart ASCII, reStructuredText is heavier, more
+  powerful, and more formally specified. All of these formats, in
+  contrast to XML, are easy and natural to read and edit with
+  standard text editors.  Working with XML more-or-less requires
+  specialized XML editors, such as those I have reviewed
+  previously.
+
+  reStructuredText--frequently abbreviated as reST--is part of the
+  Python Docutils project. The goal of this project is to create a
+  set of tools for manipulating plaintext documents, including
+  exporting them to structured formats like HTML, XML, and TeX.
+  While this project comes from the Python community, the needs it
+  addresses extend beyond Python. Programmers and writers of all
+  stripes frequently create documents such as READMEs, HOWTOs,
+  FAQs, application manuals, and in Python's case PEPs (Python
+  Enhancement Proposals). For these types of documents, requiring
+  users to deal with verbose and difficult formats like XML or
+  LaTeX is not generally reasonable, even if those users are
+  programmers. But it is still often desirable to utilize these
+  types of documents for purposes beyond simple viewing: i.e.,
+  indexing, compilation, pretty-printing, filtering, etc.
+
+  For Python programmers, the Docutils tools can satisfy a
+  similar purpose to JavaDoc does for Java programmers, or POD
+  does for Perl programmers.  The documentation within Python
+  modules can be converted to Docutils "document trees", and
+  thence to various output formats (usually within a single
+  script).  But for this article, the more interesting use is for
+  general documentation.  For articles like this, and even for my
+  forthcoming book, I write using smart ASCII; but I am coming to
+  feel I would be better off with the formality of
+  reStructuredText (and I may develop tools to convert my
+  existing documents).
+
+  As of this writing, the Docutils project is under development,
+  and has not released a "stable" version.  The tools that exist
+  are good, but the overall project is a mixture of promises,
+  good intentions, partial documentation, and some actual
+  working tools.  However, progress is steady, and what you can
+  do already is very useful.
+
+EXAMPLES OF [reStructuredText]
+-----------------------------------------------------------------------
+
+  Readers will get a better sense of what reStructured text is
+  about with a brief example.  The following text is an example
+  in PEP 287 (of part of a hypothetical PEP):
+
+      #-------------- Plaintext version of PEP ----------------#
+      Abstract
+
+          This PEP proposes adding frungible doodads [1] to the
+          core. It extends PEP 9876 [2] via the BCA [3] mechanism.
+
+      ...
+
+      References and Footnotes
+
+          [1] http://www.example.org/
+
+          [2] PEP 9876, Let's Hope We Never Get Here
+              http://www.python.org/peps/pep-9876.html
+
+          [3] "Bogus Complexity Addition"
+
+  The format is exactly how PEPs prior to 287 were formatted.  If
+  reStructuredText is used to "markup" the same PEP, it could
+  look like:
+
+      #---------------- reST version of PEP -------------------#
+      Abstract
+      ========
+
+      This PEP proposes adding `frungible doodads`_ to the core.
+      It *extends* PEP 9876 [#pep9876]_ via the BCA [#]_ mechanism.
+
+      ...
+
+      References & Footnotes
+      ======================
+
+      .. _frungible doodads: http://www.example.org/
+
+      .. [#pep9876] PEP 9876, Let's Hope We Never Get Here
+
+      .. [#] "Bogus Complexity Addition"
+
+  There are a few details that differ from the plaintext.  But
+  readability is really not harmed by the very light sprinkling
+  of special characters.  You would not need to look twice to
+  read this if you saw it in a text editor or a printed page.
+
+  The above reST formatted document can be automatically
+  transformed into an XML dialect, such as that defined by the
+  Docutils Generic DTD:
+
+      #-------------- Docutils XML version of PEP -------------#
+      <?xml version="1.0" encoding="UTF-8"?>
+      <document source="test">
+        <section id="abstract" name="abstract">
+          <title>Abstract</title>
+          <paragraph>This PEP proposes adding <reference
+            refname="frungible doodads">Frungible doodads</reference>
+            to the core. It<emphasis>extends</emphasis><reference
+            refuri="http://www.python.org/peps/pep-9876.html">
+            PEP 9876</reference><footnote_reference auto="1" id="id1"
+            refname="pep9876"/> via the BCA <footnote_reference
+            auto="1" id="id2"/> mechanism.</paragraph>
+          <paragraph>...</paragraph>
+        </section>
+        <section id="references-footnotes"
+                 name="references &amp; footnotes">
+          <title>References &amp; Footnotes</title>
+          <target id="frungible-doodads" name="frungible doodads"
+                  refuri="http://www.example.org/"/>
+          <footnote auto="1" id="pep9876" name="pep9876">
+            <paragraph><reference
+              refuri="http://www.python.org/peps/pep-9876.html">PEP
+              9876</reference>, Let&apos;s Hope We Never Get Here
+            </paragraph>
+          </footnote>
+          <footnote auto="1" id="id3">
+            <paragraph>&quot;Bogus Complexity Addition&quot;
+            </paragraph>
+          </footnote>
+        </section>
+      </document>
+
+  You can see several things in contrasting these three formats.
+  The most dramatic difference is how much harder it is to skim
+  the XML version.  But it is also notable just how much
+  information the reStructuredText tools have located in the reST
+  document.  References of several types are properly matched up,
+  document sections are identified, character-level typographic
+  markup is added.  In other examples, linked TOCs can be
+  generated during processing, along with other special
+  directives.
+
+THE DOCUTILS PROJECT STRUCTURE
+-----------------------------------------------------------------------
+
+  The [docutils] package consists of quite a few subpackages, in
+  a fairly complicated relationship to each other.  PEP 258,
+  _Docutils Design Specification_, contains a chart that is
+  useful for understanding the overall pattern:
+
+      #-------------- Docutils Project model -------------------#
+      .                +---------------------------+
+                       |        Docutils:          |
+                       | docutils.core.Publisher,  |
+                       | docutils.core.publish_*() |
+                       +---------------------------+
+                        /            |            \
+                       /             |             \
+                      /              |              \
+             +--------+       +-------------+       +--------+
+             | READER | ----> | TRANSFORMER | ====> | WRITER |
+             +--------+       +-------------+       +--------+
+              /     \\                                  |
+             /       \\                                 |
+            /         \\                                |
+      +-------+   +--------+                        +--------+
+      | INPUT |   | PARSER |                        | OUTPUT |
+      +-------+   +--------+                        +--------+
+
+  A more complete explanation of the component subpackages is
+  contained in that PEP, but a brief explanation is worth
+  repeating here.
+
+  The heavy work of converting a reST text into a tree of nodes
+  is done by the [docutils.parsers.rst] subpackage.  The
+  reStructuredText parser treats a source in a line-oriented
+  fashion, looking for a state transition on each line; if none
+  of the other transition patterns are found, the 'text'
+  transition catches the line.  Transitions consist of features
+  like change in indentation, special leading symbols, and so on.
+  The default just includes the next line as more text within the
+  current node.
+
+  This structure is similar to that used in the smart ASCII parsers
+  'txt2dw' and 'txt2html'. Other parsers would live under the
+  [docutils.parsers] hierarchy, but none are currently provided.
+  There is an experimental Python source code parser though, which
+  treats a Python source file as a document tree.
+
+  Once a tree of nodes is generated for a document, the
+  [docutils.transforms] subpackage is enlisted to massage the
+  tree in various ways.  For example, if you have specified a
+  directive to include a table-of-contents, the document tree is
+  walked to identify listed items.  Also, some cleanup of
+  references and links is performed at this stage.  During the
+  initial pass, the places in the tree where unresolved elements
+  will go is filled with placeholders that cue the
+  transformations.
+
+EVENT-ORIENTED OUTPUT
+------------------------------------------------------------------------
+
+  Of most interest to readers of this article are probably the
+  various [docutils.writers] modules.  Some of the more
+  interesting writers are still kept in the experimental
+  "sandbox" area at the time of this writing (check the Docutils
+  website), but the principles are the same in any case.  A
+  writer module should define a 'Writer' class that inherits from
+  'docutils.writers.Writer'  This 'Writer' class defines some
+  settings, but mostly defines a '.translate()' method, that
+  might look something like:
+
+      #------- Typical custom Writer.translate() method --------#
+      def translate(self):
+          visitor = DocBookTranslator(self.document)
+          self.document.walkabout(visitor)
+          self.output = visitor.astext()
+
+  The writer, as you can see, depends on a "visitor" that knows
+  what to do with nodes of each type. A visitor will generally
+  inherit from 'docutils.nodes.NodeVisitor'. Programming a visitor
+  is quite a lot like programming a [SAX], [expat], [REXML], or
+  other event-oriented XML parser.  However, a visitor is even
+  closer to the programming style of Python's [xmllib] module.
+  That is, a visitor will have a '.visit_FOO()' and
+  '.depart_FOO()' method for each type of node, rather than
+  switching on type within large '.startElement()' and
+  'endElement()' methods.  OOP purists are likely to prefer this
+  style.  An simple example from the Docbook/XML writer is:
+
+      class DocBookTranslator(nodes.NodeVisitor):
+          [...lots of methods...]
+          def visit_block_quote(self, node):
+            self.body.append(self.starttag(node, 'blockquote'))
+          def depart_block_quote(self, node):
+            self.body.append('</blockquote>\n')
+          [...lots more methods...]
+
+  Programming a custom writer/visitor is a straightforward enough
+  matter, and existing writers exist for Docutils/XML, HTML,
+  PEP-HTML, PseudoXML (a sort of "light" XML that combines start
+  tags with indentation, but no closing tags), LaTeX,
+  DocBook/XML, PDF, OpenOffice/XML, and Wiki-HTML.
+
+
+TREE-ORIENTED PROCESSING
+------------------------------------------------------------------------
+
+  You may transform a reStructuredText document into a tree of
+  nodes that can be manipulated in a DOM-like fashion.  The below
+  is an example using the prior brief example of a reST PEP.
+
+      #--------------- Creating a reST Node Tree ---------------#
+      >>> txt = open('pep.txt').read()
+      >>> def rst2tree(txt):
+      ...     import docutils.parsers.rst
+      ...     parser = docutils.parsers.rst.Parser()
+      ...     document = docutils.utils.new_document("test")
+      ...     document.settings.tab_width = 4
+      ...     document.settings.pep_references = 1
+      ...     document.settings.rfc_references = 1
+      ...     parser.parse(txt, document)
+      ...     return document
+      ...
+      >>> doc = rst2tree(txt)
+      >>> doc.children
+      [<section "abstract": <title...><paragraph...><paragraph...>>,
+       <section "references & footnotes": <title...>
+         <target "frungible doodads"...><footnote "pep9 ...>]
+      >>> print doc.autofootnotes
+      [<footnote "pep9876": <paragraph...>>, <footnote: <paragraph...>>]
+      >>> print doc.autofootnotes[0].rawsource
+      PEP 9876, Let's Hope We Never Get Here
+
+  One thing to notice in contrast with DOM is that reStructuredText
+  is already a fixed document dialect. So rather than use generic
+  methods to search for matching nodes, you can search for nodes
+  using attributes named for their meaning. The '.children'
+  attribute is generically hierarchical, but most attributes
+  collect nodes of a given type.
+
+  One convenient method of reST nodes is '.pformat()', which
+  produces a pseudo-XML representation of the document tree for
+  pretty-printing. E.g.:
+
+      #-------- Pseudo-XML representation of reST node ---------#
+      >>> print doc.autofootnotes[0].pformat('  ')
+      <footnote auto="1" id="pep9876" name="pep9876">
+        <paragraph>
+          <reference refuri="http://www.python.org/peps/pep-9876.html">
+            PEP 9876,
+          Let's Hope We Never Get Here
+
+  Node methods like '.remove()', '.copy()', '.append()',
+  '.insert()' are useful for pruning and manipulating trees.
+
+  For XML programmer, a possibly more desirable API is actual
+  DOM.  Fortunately, this API is a single method call away:
+
+      #-------- Converting a reST tree to a DOM tree -----------#
+      >>> dom = doc.asdom()
+      >>> foot0 = dom.getElementsByTagName('footnote')[0]
+      >>> print foot0.toprettyxml('  ')
+      <footnote auto="1" id="pep9876" name="pep9876">
+        <paragraph>
+          <reference refuri="http://www.python.org/peps/pep-9876.html">
+            PEP 9876
+          </reference>
+          , Let's Hope We Never Get Here
+        </paragraph>
+      </footnote>
+
+  Unfortunately, as of this writing, there are no tools or
+  functions to convert a DOM tree or XML document -back- into
+  reStructuredText.  It would be nice, especially, to have a
+  reader for the Docutils Generic DTD; this would let us produce
+  a reST document tree for the corresponding XML.  We could write
+  it back out as reST with the '.astext()' node method.  It would
+  not be hard to write such a reader, and I am sure it will
+  happen over time (perhaps by me or one of my readers).
+
+RESOURCES
+------------------------------------------------------------------------
+
+  The Doctuils website is at the below URL.  You can find
+  extensive references both for the reStructuredText format
+  itself, and for the [docutils] package.
+
+    http://docutils.sourceforge.net/
+
+  Python Enhancement Proposal 287 recommends the use of
+  reStructuredText for inline documentation of Python code.  This
+  PEP also usefully contrasts reST with other documentation
+  formats considered for the same purpose (XML, TeX, HTML, POD,
+  SEText, etc).
+
+    http://docutils.sourceforge.net/spec/pep-0287.html
+
+  The Docutils Generic XML DTD can be found at:
+
+    http://docutils.sourceforge.net/spec/docutils.dtd
+
+  You can read about the smart ASCII format, and converting it to
+  the XML format used by developerWorks at:
+
+    http://www-106.ibm.com/developerworks/library/x-tipt2dw.html
+
+  I wrote about YAML, a data-oriented alternative to XML, at:
+
+    http://www-106.ibm.com/developerworks/library/x-matters23.html
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz wishes to let a thousand flowers bloom.  David may
+  be reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/.

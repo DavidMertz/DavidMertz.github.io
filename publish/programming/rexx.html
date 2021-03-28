@@ -1,0 +1,443 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>LINUX ZONE FEATURE: Regina and NetRexx -- Scripting with Free Software Rexx Implementations -- </title>
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Linux Zone Feature: Regina And Netrexx</h1>
+<h2>Scripting with Free Software Rexx Implementations</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Text Processor, Gnosis Software, Inc.<br>
+ January, 2004<br>
+ <br>
+</p>
+<blockquote>
+    It is easy to get lost in the world of "little languages"--quite a
+    few have been written to scratch some itch of a company, individual
+    or project.  Rexx is one of these languages, with a long history of
+    use on IBM OS's, and good current implementations for Linux and
+    other Free Software operating systsems.  Moreover, David argues that
+    Rexx occupies a useful ecological niche between the relative
+    crudeness of shell scripting and the cumbersome formality of full
+    systems languages.  Many Linux programmers and systems
+    administrators would benefit from adding a Rexx implementation to
+    their collection of go-to tools.
+</blockquote>
+<h3>About Rexx</h3>
+ <p>
+  The Rexx programming language was first created in 1979, as a very
+  high level scripting language that had a particularly strong facility
+  for text processing tasks. Since Rexx's inception, IBM has included
+  versions of Rexx with most of its operating systems--all the way from
+  its mainframes, to its mid-level systems, to end user OS's like OS/2
+  and PC-DOS. Other OS makers, such as Amiga, have also integrated Rexx
+  as an always-available system scripting language. A number of ISVs,
+  moreover, have created Rexx environments for many platforms. Somewhat
+  late in the game, ANSI officially adopted a standard for Rexx in 1996.
+</p>
+<p>
+  Nowadays (especially on Linux or BSD-derived OS's), most of those
+  older implementations of Rexx are primarily interesting as historical
+  footnotes. However, two currently maintained implementations of Rexx
+  remain available across a wide range of platforms, including Linux,
+  MacOSX and Windows: Regina and NetRexx. Regina is a native executable,
+  available as Free Software source code, or pre-compiled to a large
+  number of platforms--install it pretty much as you would any other
+  programming language interpreter.  NetRexx is an interesting hybrid.
+  Much like Jython or Jacl, NetRexx compiles Rexx source code into Java
+  bytecodes, and (optionally) runs the resulting <code>.class</code> file within
+  a JVM.
+</p>
+<p>
+  In capabilities and programming level, Rexx can be compared most
+  closely to <code>bash</code> plus the GNU text utilities (throwing in <code>grep</code> and
+  <code>sed</code> for good measure); or maybe to <code>awk</code> or Perl. Certainly Rexx has
+  more of a quick-and-dirty feel to it than do, e.g., Python, Ruby, or
+  Java. The verbosity--or rather, conciseness--of Rexx is similar to
+  that of Perl, Python, Ruby or TCL. And Rexx is certainly
+  Turing-complete, enables modules and structured programming, and has
+  libraries for tasks such as GUI interfaces, network programming,
+  database access. But its most natural target is in automation of
+  system scripting and text processing tasks. As with shell scripting,
+  Rexx allows very natural and transparent control of external
+  application; but compared to <code>bash</code> (or <code>tcsh</code>, <code>ksh</code>, etc.), Rexx
+  contains a much richer collection of built-in control structures and
+  (text processing) functions.
+</p>
+<p>
+  Stylistically, the IBM/mainframe roots of Rexx show in its case
+  insensitive commands; and to a lesser degree in the relative sparcity
+  of punctuation it uses (prefering keywords to symbols). I tend to find
+  that these qualities aid readability; but this is mostly a matter of
+  individual taste.
+</p>
+<h3>A Start At Streams And Stacks</h3>
+ <p>
+  As a simple conceit, let me present a number of versions of a very
+  simple utility that lists files and numbers them. One feature that
+  Rexx has in common with shell scripting is that it has a relatively
+  impovershed collection of functions for working with the underlying
+  operating system--mostly limited to the the ability to open, read, and
+  modify files.  For most anything else, you rely on external utilities
+  to perform the job at hand.  The utility <code>numbered-1.rexx</code> simply
+  processes STDIN:
+</p>
+<div class="code-sample"><h4>numbered-1.rexx</h4><pre>
+#!/usr/bin/rexx
+DO i=1 UNTIL lines()==0
+  PARSE LINEIN line
+  IF line\="" THEN
+    SAY i || ") " || line
+END
+
+</pre></div><p>
+  The ubiquitous instruction <code>PARSE</code> can read from various sources. In
+  this case, it puts the next line of STDIN into the variable <code>line</code>.
+  We also check if a line is blank, and skip showing and numbering it
+  if so. For example, combined with <code>ls</code> we can get:
+</p>
+<div class="code-sample"><h4>piping command to numbered-1</h4><pre>
+$ ls | ./numbered-1.rexx
+1) ls-1.rexx
+2) ls-2.rexx
+3) ls-3.rexx
+4) ls-4.rexx
+5) ls-5.rexx
+6) ls-6.rexx
+7) numbered-1.rexx
+8) numbered-2.rexx
+
+</pre></div><p>
+  You can equally pipe any other command in.
+</p>
+<p>
+  A concept at the core of Rexx is juggling multiple stacks/streams. In
+  <code>bash</code>-like fashion, anything in Rexx that is not recognized as an
+  internal instruction or function is assumed to be an external utility.
+  There is no special function or syntax for calling an external
+  command.  Taking advantage of the Regina utility, <code>rxqueue</code> that puts
+  output onto the Rexx stack, we can write a "numbered ls" utility as:
+</p>
+<div class="code-sample"><h4>ls-1.rexx</h4><pre>
+#!/usr/bin/rexx
+"ls | rxqueue"
+DO i=1 WHILE queued() \= 0
+  PARSE PULL line
+  SAY i || ") " || line
+END
+
+</pre></div><p>
+  Some instructions in Rexx may explicitly specify a stack to operate
+  on; but other instructions operate within an <em>environment</em> which you
+  configure with the <code>ADDRESS</code> instruction.  STDIN, STDOUT, STDERR,
+  files, and in-memory data stacks are all handled in a uniform and
+  elegant fashion.  Above we used the external <code>rxqueue</code> utility, but we
+  can equally well redirect output of utilities right within Rexx.  For
+  example:
+</p>
+<div class="code-sample"><h4>ls-2.rexx</h4><pre>
+#!/usr/bin/rexx
+ADDRESS SYSTEM ls WITH OUTPUT FIFO '' ERROR NORMAL
+DO i=1 WHILE queued() \= 0
+  PARSE PULL line; SAY i || ") " || line; END
+
+</pre></div><p>
+  It might appear that the <code>ADDRESS</code> command is grabbing the output of
+  just the <code>ls</code> utility; but it is actually changing the general
+  execution environment for later external calls, e.g. this behaves
+  identically:
+</p>
+<div class="code-sample"><h4>ls-5.rexx</h4><pre>
+#!/usr/bin/rexx
+ADDRESS SYSTEM WITH OUTPUT FIFO '' ERROR NORMAL
+ls
+DO i=1 WHILE queued()\=0; PARSE PULL ln; SAY i||") "||ln; END
+
+</pre></div><p>
+  Any subsequent external commands, if they are run in the default
+  <code>SYSTEM</code> environment, will direct their output to the default
+  FIFO.(first-in-first-out). You could also output to a LIFO instead
+  (either named or default)--the difference being that a FIFO adds to
+  the "bottom" of the stack, and a LIFO to the "top." The instructions
+  <code>PUSH</code> and <code>QUEUE</code> correspond to LIFO and FIFO operations on the
+  stack. The instruction <code>PULL</code> or <code>PARSE PULL</code> take a string off the
+  top of the stack.
+</p>
+<p>
+  Another useful stack to look at is that of the command-line arguments
+  to a Rexx script.  For example, we might want to execute an arbitrary
+  command in our numbering utility, not always <code>ls</code>:
+</p>
+<div class="code-sample"><h4>numbered-1.rexx</h4><pre>
+#!/usr/bin/rexx
+PARSE ARG cmd
+ADDRESS SYSTEM cmd WITH OUTPUT FIFO ''
+DO i=1 WHILE queued()\=0; PARSE PULL ln; SAY i||") "||ln; END
+
+</pre></div><p>
+  For example:
+</p>
+<div class="code-sample"><h4>passing command to numbered-1</h4><pre>
+$ ./numbered-2.rexx ps -a -x
+1)   PID  TT  STAT      TIME COMMAND
+2)     1  ??  Ss     0:00.00 /sbin/init
+3)     2  ??  Ss     0:00.19 /sbin/mach_init
+4)    51  ??  Ss     0:01.95 kextd
+[...]
+
+</pre></div><p>
+  <code>PARSE PULL</code> can be used to pull lines from user input. Following the
+  example of the execution of the argument <code>cmd</code>, you could write a
+  shell or interactive environment in Rexx (perhaps running either
+  external utilities or built-in commands, much like <code>bash</code>).
+</p>
+<h3>Stem Variables And Associative Arrays</h3>
+ <p>
+  In Rexx--somewhat like in TCL--to a large extent <em>everything is a
+  string</em>. Having stacks and streams composed of lines gives you a
+  simple list or array of strings. But mostly, strings simply act like
+  other datatypes <em>as needed</em>. For example, a string that contains a
+  suitable representation of a number (digits, decimal, an exponent "e",
+  etc.) can be used in arithmetic operations.  For processing reports,
+  log files, and the like, this is exactly the behavior you want.
+</p>
+<p>
+  Rexx, however, does have one additional standard datatype: associative
+  arrays. In Rexx they go under the name "stem variables," but the
+  concept is very similar that of dictionaries in many other languages.
+  The syntax for stem variables will be oddly familiar to users of OOP
+  languages like Java, Python, or Ruby: a dot separates "objects" and
+  their "attributes."  This is not really object-orientation, but the
+  syntax does (accidentally) highlight the degree to which an object
+  resembles a particularly robust dictionary; there <em>are</em> OOP extensions
+  to Rexx out there, but this article will not address them.
+</p>
+<p>
+  Not every string is valid Rexx symbol--which restricts the keys in the
+  dictionary--but Rexx is pretty liberal about its symbol names,
+  compared to most languages. E.g.
+</p>
+<div class="code-sample"><h4>Using stem variables in Rexx</h4><pre>
+$ cat stems.rexx
+#!/usr/bin/rexx
+foo.X_!1.bar = 1
+foo.X_!1.23 = 2
+foo.fop.fip = 3
+foo.fop = 4
+SAY foo.X_!1.bar # foo.X_!1.23 # foo.fop.fip # foo.fop # foo.fop.NOPE
+$ ./stems.rexx
+1 # 2 # 3 # 4 # FOO.FOP.NOPE
+
+</pre></div><p>
+  A couple features stand out in the example. We set a value for both a
+  stem and its compound (e.g. <code>foo.fop</code> and <code>foo.fop.fip</code>). Also notice
+  that the undefined symbol <code>foo.fop.nope</code> simply stands for its own
+  spelling, absent an assignment to the contrary. This lets us skip
+  quotes in most situations. Case of names is normalized to upper case
+  in most Rexx contexts.
+</p>
+<p>
+  One useful trick is to set a value for the dotted stem, which then
+  acts as a default value for compound names based on the stem.  For the
+  next example, we also make use of the capability to <code>ADDRESS</code> the
+  sequential numbered symbols of a compound name as an output
+  environment:
+</p>
+<div class="code-sample"><h4>ls-3.rexx</h4><pre>
+#!/usr/bin/rexx
+ls. = UNDEF
+ADDRESS SYSTEM ls WITH OUTPUT STEM ls.
+DO i=1
+    IF ls.i == UNDEF THEN LEAVE
+    SAY i || ") " || ls.i
+END
+
+</pre></div><p>
+  As soon as the loop gets to some compound variable name that was not
+  populated by the output of the external <code>ls</code> utility, we detect the
+  default value of "UNDEF" and leave the loop (if the output might
+  contain that string, a false collision could occur, however).
+</p>
+<p>
+  Rexx also has an error handling system that lets you <code>SIGNAL</code>
+  conditions, and handle them appropriately.  Instead of checking for a
+  default compound value, you can also catch the access to an undefined
+  variable.  E.g.:
+</p>
+<div class="code-sample"><h4>ls-6.rexx</h4><pre>
+#!/usr/bin/rexx
+ADDRESS SYSTEM ls WITH OUTPUT STEM ls.
+SIGNAL ON NOVALUE NAME quit
+DO i=1
+    SAY i || ") " || ls.i
+END
+quit:
+
+</pre></div><p>
+  Just to round our <code>ls</code> variants out, here is one more that uses a file
+  for its I/O:
+</p>
+<div class="code-sample"><h4>ls-4.rexx</h4><pre>
+#!/usr/bin/rexx
+ADDRESS SYSTEM ls WITH OUTPUT STREAM files
+DO i=1
+    line = linein(files)
+    IF line = "" THEN LEAVE
+    SAY i || ") " || line
+END
+rm files
+
+</pre></div><p>
+  Since the output stream is a regular file, it is probably good to
+  remove it at the end.
+</p>
+<h3>Text Processing Functions</h3>
+ <p>
+  The brief examples above will give readers a bit of the feel of Rexx
+  as a programming language.  You can also, of course, define your own
+  procedures and functions--in separate module files, if you wish--and
+  call them either with the <code>CALL</code> instruction or using parenthesized
+  arguments, as with some of the examples that use standard functions.
+</p>
+<p>
+  Perhaps the greatest strength in Rexx as a text processing language is
+  its useful collection of built-in string manipulation functions.
+  Somewhere over half of all the standard Rexx functions are for working
+  with strings, with a chunk of others thrown in for quite readable
+  manipulation of bit vectors.  Moreover, even bit vectors are often
+  manipulated (or read in) as strings of ones and zeros:
+</p>
+<div class="code-sample"><h4>bits.rexx</h4><pre>
+#!/usr/bin/rexx
+SAY b2c('01100001') b2c('01100010')         /* --&gt; a b */
+SAY bitor(b2c('01100001'), b2c('01100010')) /* --&gt; c   */
+SAY bitor('a','b')                          /* --&gt; c   */
+EXIT
+/* Function in ARexx, but not ANSI Rexx */
+b2c: PROCEDURE
+  ARG bits
+  return x2c(b2x(bits))
+
+</pre></div><p>
+  A nice feature of Rexx's text handling functions is the naturalness of
+  treating lines as being composed of whitespace separated <em>words</em>. For
+  textual reports and log files, easily ignoring extraneous whitespace
+  is quite useful--'awk' does something similar, but Python's
+  <code>string.split()</code> quickly gets more "busy" in describing the same
+  operations. In fact, "arrays" is Rexx just amount to whitespace
+  separated strings. The <code>PULL</code> instruction will pull out variables from
+  a general template pattern for a line, which at a minimal case allows
+  word division:
+</p>
+<div class="code-sample"><h4>pushpull.rexx</h4><pre>
+#!/usr/bin/rexx
+PUSH "a b c d e f"
+PULL x y " C " z   /* pull x and y before the C, remainder into z */
+SAY x # y # z    /* --&gt; A # B # D E F */
+
+</pre></div><p>
+  Further dividing strings that may or may not have been pulled with a
+  template is elegant. Functions like <code>wordpos()</code>, <code>word()</code>,
+  <code>wordindex()</code> or <code>words()</code>, <code>subword()</code> let you refer to the "words"
+  in a string as if they made up a list, e.g.:
+</p>
+<div class="code-sample"><h4>Working with words in a string</h4><pre>
+seuss = "The cat in the hat came back"
+thehat = wordpos('the hat', seuss)
+SAY "'came'" is wordlength(seuss, thehat+2) letters long
+/* --&gt; 'came' IS 4 LETTERS LONG */
+
+</pre></div><p>
+  Of course, you also get a rich collection of character-oriented
+  functions as well.  It is equally easy to work with character
+  positions using functions like <code>reverse()</code>, <code>right()</code>, <code>justify()</code>,
+  <code>center()</code>, <code>pos()</code>, or <code>substr()</code> (and others).
+</p>
+<p>
+  Another batch of the built-in functions let you work with dates and
+  numbers in a flexible, report-oriented, way. That is, numbers can be
+  read and written in a variety of formats, with arbitrary
+  (configurable) precision. Dates, similarly, can be read, written and
+  converted among many formats with standard function calls (e.g.
+  day-of-week, days-in-century, European versus US dates, etc.). The
+  flexibility with dates and numbers is probably less often necessary in
+  writing system scripts and processing log files than it is in working
+  with semi-structured output reports from database applications. But
+  when you need it, it is much more robust to have well-tested built-in
+  functions than to write your own ad-hoc converters and formatters.
+</p>
+<h3>Wrap Up</h3>
+ <p>
+  Coming more out of an IBM "big-iron" environment than from Unix
+  systems, Rexx is little-known to many Linux programmers and systems
+  administrators.  But there remains an important Linux niche where
+  Rexx is a better scripting solution than either the "too-light" <code>bash</code>
+  or <code>ksh</code> shells, or the "too-heavy" interpreted programming languages
+  like Python, Perl, Ruby, TCL, or maybe Scheme.  For quick and easily
+  readable scripts that perform text manipulation on the inputs and
+  outputs of external processes, Rexx is hard to beat, and not hard to
+  learn or install.
+</p>
+<h3>Resources</h3>
+ <p>
+  Regina is the LGPL Rexx implementation used in writing and testing the
+  examples in this article, and for most people will be the best choice
+  for an environment to install.  Regina is available on an extremely
+  wide range of platforms, and is fully ANSI compliant (with a few
+  extensions added):
+</p>
+<blockquote>
+   <a href="http://regina-rexx.sourceforge.net/">http://regina-rexx.sourceforge.net/</a>
+</blockquote>
+<p>
+  At the URL for Regina, you can also find links to a number of useful
+  Rexx libraries for working with application areas like Tk, Curses,
+  Sockets, SQL, and other areas.
+</p>
+<p>
+  NetRexx is an IBM project for compiling Rexx code for a Java Virtual
+  Machine.  While it is certainly possible to use NetRexx for
+  client/workstation scripting needs, the main focus of NetRexx is to
+  allow more rapid development of server-side Java applications (JSP and
+  related technologies):
+</p>
+<blockquote>
+   <a href="http://www2.hursley.ibm.com/netrexx/">http://www2.hursley.ibm.com/netrexx/</a>
+</blockquote>
+<p>
+  The Rexx Language Association is a a general advocacy group for the
+  Rexx programming language.  Their site contains miscellaneous links to
+  useful libraries and other resources.
+</p>
+<blockquote>
+   <a href="http://www.rexxla.org/">http://www.rexxla.org/</a>
+</blockquote>
+<p>
+  IBM also maintains a nice list of Rexx resources.  You can find
+  tutorials, references, and links to a variety of modern libraries
+  here:
+</p>
+<blockquote>
+   <a href="http://rexx.hursley.ibm.com/rexx/">http://rexx.hursley.ibm.com/rexx/</a>
+</blockquote>
+<p>
+  David Mertz and Andrew Blais have written a tutorial introducing the
+  GNU Text Utilities, which cover a similar range of capabilities to
+  those contained in Rexx.
+</p>
+<blockquote>
+    PENDING
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz' fondness for IBM dates back embarrassingly many decades.
+  David may be reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a> And buy his book: <cite>Text Processing in
+  Python</cite> (http://gnosis.cx/TPiP/).
+</p>
+</body></html>

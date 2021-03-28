@@ -1,0 +1,404 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>LINUX ZONE FEATURE: Linux on PowerPC Processors -- Your favorite operating system isn't only for x86 -- </title>
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Linux Zone Feature: Linux On Powerpc Processors</h1>
+<h2>Your favorite operating system isn't only for x86</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Text Processor, Gnosis Software, Inc.<br>
+ January, 2004<br>
+ <br>
+</p>
+<blockquote>
+    Even though most Linux users have treated Linux as an operating
+    system for their x86 white boxes, Linux runs equally well on PowerPC
+    machines.  With the appealing range of PPC machines produced by
+    Apple, the option of using Linux on one of these is of great value
+    to many users.
+</blockquote>
+<h3>About Ppc</h3>
+ <p>
+  The POWER architecture describes a family of RISC CPUs that arose out
+  of a consortium of IBM, Apple and Motorola. Within this chip family,
+  higher-end POWER4 chips are used in various IBM "big iron" or
+  mid-range machines; at a personal computer, workstation, or
+  workgroup-server level, the PowerPC branch of POWER chips are used in
+  widely-used consumer machines from Apple Computer. Chips in the
+  PowerPC family--especially those from Motorola--are also used in
+  various embeded and specialized systems, including in PCs from smaller
+  manufacturers such as the phoenix-like current incarnation of Amiga.
+</p>
+<p>
+  The interelations among various POWER architecture chips are similar
+  to those in the x86 world--for the most part, later generations of
+  chips provide backwards compatibility with earlier ones while also
+  offering new and enhanced capabilities. Within the PowerPC family
+  branch, five+-year old Apple machines used 601, 603, and 604 model
+  chips. The current models have phased out the G3 but continue to use
+  the similar G4, both 32-bit chips, running at various clock speeds;
+  the recently introduced G5 is an 64-bit IBM chip that mostly adds some
+  multimedia-specialized instructions to the POWER4 chip models.
+</p>
+<p>
+  The bottom line on all these chips, from a Linux developer's
+  perspective, is that they all run Linux happily and well. For the
+  PowerPC branch of the chips, excellent consumer-friendly distributions
+  are available, and offer commercial customer support. IBM is also
+  happy to install Linux for customers of its high-end POWER4 machines.
+</p>
+<h3>So You Want To Run Linux, Why Buy A Powerpc Machine?</h3>
+ <p>
+  The "default" system for running Linux is unquestionably x86 machines.
+  Whether based on CPUs from Intel, AMD, Cyrix, Transmeta, or smaller
+  makers, the x86 architecture is well-known and makes up the large
+  majority of personal computers, workstations, and small servers.  It
+  is certainly safe to go with the majority.
+</p>
+<p>
+  For most Linux users, the best reason to buy a PowerPC machine will
+  be, quite simply, the range of well-engineered and reasonably-priced
+  machines available from Apple. Admittedly, the G4 lines--bottom
+  line--do not quite keep up with comparably priced x86 machines in CPU
+  power. The G4s do not lag <em>that</em> far behind, but they do a little bit.
+  However, Apple makes most of the best laptops available from an
+  ergonomic, aesthetic, battery-life, and weight perspective. All of
+  those features are far more important to me, for a laptop, than is raw
+  number-crunching.  On the desktop, the G4 models differentiate
+  themselves mostly on an aesthetic or ergonomic perspective--for
+  example in the compactness of Apple's cantilever-mounted flat-panel
+  iMacs.  All of Apple's machines, moreover, have a good reputation for
+  durability and reliability--including their rackmount servers, which
+  are nice for clusters and server arrays.
+</p>
+<p>
+  At the high-end, Apple's G5 towers are comparable in speed to the
+  fastest x86-derived CPUs and systems; i.e. the Intel Itanium and AMD
+  Athlon64. Benchmarks among the three contenders are a mixed bag, but
+  all three chips obtain quite similar performance (all are remarkably
+  fast, and suitable for intensive number crunching applications).
+  Moreover, on price, Apple's G5 towers seem to sell for <em>less</em> than
+  comparably configured systems from x86 vendors like Dell, Gateway, HP,
+  and other well-known PC retailers (contrary to Apple's reputation for
+  imposing a price premium). It is worth noting that Apple has
+  contributed optimizations to GCC3+ that bring its generation of PPC
+  object code to a quality similar to that of Intel's ICC or IBM's
+  VisualAge C++ compilers for x86 (i.e. arguably better than GCC on
+  x86).
+</p>
+<p>
+  At the end of the day, the differences between Linux/x86 and Linux/PPC
+  are remarkably minimal. This article will cover a bit more detail on
+  distributions below, but generally, on Linux/PPC you can use the same
+  window managers, run the same utilities, host the same servers, and so
+  on, as you might on any x86 box. Unless you look at the physical
+  hardware--or are a rare user with a need for precise performance
+  characteristics of various operations (e.g. your application is
+  specially designed around the PPC Altivec vector extensions)--you will
+  not even know which architecture you are running Linux on. The screen
+  will look exactly the same, most configuration files will contain the
+  same settings, and the same bytes will go out over the wired.
+</p>
+<h3>So You Own A Mac, Why Run Linux?</h3>
+ <p>
+  To a surprising degree, operating systems (other than those from the
+  highly-proprietary Microsoft) have become commodities. What this means
+  is that most vertical applications are a mere recompilation away from
+  running equally well on Linux, FreeBSD, SunOS, Irix, AIX, or indeed on
+  MacOSX (in some cases even this step is not necessary, since ABIs
+  support foreign binaries).
+</p>
+<p>
+  If you bought an Apple machine in the last few years, it came
+  preinstalled with a high-quality Unix-derived operating system called
+  OSX. OSX has a kernel and collection of base utilities called Darwin
+  which is under a Free Software license, and is derived (in part) from
+  FreeBSD--the only proprietary elements are in the GUI (Aqua) and in
+  the collection of end-user and system-administration applications that
+  come bundled with OSX. Even X11 (specifically XFree86, despite what
+  the name insinuates) is supported on OSX, in either fullscreen or
+  rootless modes; "rootless" here means that X11 applications run
+  side-by-side with native Aqua ones.  You can run Apache on OSX; you
+  can run NcFTP server, you can even run GIMP or KOffice.  Why bother
+  installing Linux?
+</p>
+<p>
+  There are a number of scenarios where it makes more sense to run Linux
+  on your Apple machine than to run OSX. A first situation--one that
+  will appeal much more to hobbyists than to corporate users--is when
+  the Mac in question is an older machine. OSX is either entirely
+  unsupported, or at least quite sluggish, on older Macs: 603s, 604s, or
+  even early G3s.  Linux can be quite snappy on these older systems; and
+  Linux is a lot more useful as a server, or in many cases even as a
+  desktop, than is the MacOS9 (or earlier) that came with those older
+  machines.  Still, the hobbyist segment is fairly narrow, or at least
+  does not need to look here for advice.
+</p>
+<p>
+  A more important situation where Linux is worthwhile as an operating
+  system for G3, G4, or G5 machines from Apple is when you want to
+  assure a uniform system/user interface across machines. Many
+  enterprises, hosting companies, schools, or research facilities will
+  have a mixture of x86 and PPC systems that it provides to users. While
+  you <em>can</em> recompile most specific Linux applications for OSX, doing so
+  does not bring the systems all the way to having a uniform GUI,
+  configuration files, directory structure, and build environment
+  between the various maintained machines. "Linux everywhere" assures a
+  much greater degree of consistency. One thing in particular that can
+  be confusing to Linux developers about OSX is its overlay of two
+  distinct directory organizations--the traditional <code>/etc/</code>,
+  <code>/usr/local/</code>, <code>/sbin/</code> and so on of Linux/Unix systems, and the
+  <code>/Application/</code>, <code>/Library/</code>, <code>/System/</code> from MacOS9. The <code>/sw/</code>
+  hierarchy <code>fink</code> creates, additionally, is almost like a third
+  overlay. Moreover, even though OSX has an X11 server built in, I have
+  still found a variety of minor glitches (redraws, key bindings, etc)
+  in using X11 applications there--Linux with a good window manager like
+  KDE or Gnome is a much more seamless environment in this case.
+</p>
+<p>
+  Apart from developers who might use PPC desktops or laptop machines,
+  web-hosting companies would like to present a predictable system to
+  its customers who maintain sites via SSH, FTP, or web-based
+  interfaces--regardless of whether a domain is hosted on PPC or x86
+  chips. Considering servers further, Linux offers several advantages
+  over OSX, even over the server version of OSX. One major strength of
+  Linux is the variety of filesystems that have been developed for it or
+  ported to it: ext2, ext3, ReiserFS, IBM's JFS, SGI's XFS, etc. Each of
+  these has its own strengths, often specific to particular usage
+  scenarios (web host, streaming multimedia server, RDBMS, etc.). While
+  the server version of OSX supports an enhanced version of HFS+ with
+  journaling and optional filename case-sensitivity, it cannot match
+  Linux' range of filesystem options. As well, I should mention--but not
+  overemphasiz--the little matter of cost: An unlimited-client version
+  of MacOSX Server will cost you US$1000 per machine, Linux is free of
+  cost (and even a support contract from a distribution vendor is much
+  cheaper than this). The caveat here is that if OSX Server's
+  administration tools save your IS staff even a little work each day,
+  that kilodollar outlay can quickly pay for itself.
+</p>
+<h3>Distributions</h3>
+ <p>
+  For this article, I installed and evaluated four distributions of
+  Linux for PowerPC machines. All were installed and tested on a G4
+  iMac. I found two of the distributions to be well-polished and easy to
+  use, right on par with the best x86 Linux distributions; the other two
+  I would have to describe as "not ready yet." A few other distributions
+  exist as well--and more will certainly be created over time. I was not
+  aiming to provide a thorough comparison of every distribution readers
+  might choose to use, but simply to get a sense of the "state of the
+  art"--no slight is intended towards those distributions I did not look
+  at.
+</p>
+<p>
+  The two distributions that I found less that compelling were Debian
+  (Woody) and Knoppix. The latter is an interesting creature that I've
+  found useful on x86 machines. Knoppix uses a "live boot" CD--that is,
+  booting from the Knoppix CD gives you a working Linux environment with
+  KDE, OpenOffice, and a good collection of utilities. Using Knoppix,
+  there is no need to create any partions or boot setup on a PC, and you
+  can carry the Knoppix CD between various machines to have a uniform
+  configuration on each. Unfortunately, testing on three separate
+  systems, Knoppix/PPC never managed to boot quite right--KDE would not
+  load, and the fallback was a crude TWM shell that did not get the
+  video mode quite right (colormap and sizing problems). Networking,
+  including wireless, however, seem to be recognized correctly; so you
+  can use the command-line tools. Once Knoppix/PPC gets some more polish
+  to it, it--or something like it--will be a very useful way to run
+  Linux non-destructively on existing MacOSX machines.
+</p>
+<p>
+  The problems I had with Debian/PPC are probably similar to what
+  dedicated Debian users most love about their distribution to start
+  with. Installation is strictly a text-mode affair, with no options for
+  changing configuration once a fatal "Y" or "N" has been pressed. As
+  long as you make no mistakes, and read each installation screen
+  carefully, installation proceeds well enough--it even automatically
+  finds on the network any modules that do not happen to be on the
+  installation CD(s). Many installed utilities and applications--GCC,
+  Python, the kernel, OpenOffice, etc. lag quite a few versions behind
+  the most current ones, but most widely used tools are available as
+  Debian packages (and hence fetchable using the wonderful <code>apt-get</code>).
+  However, the killer problem I found with Debian/PPC was my inability
+  to get X11 working on it--the installation seemed wholly unaware of
+  any remotely relevant video card models, and some post-installation
+  attempts at configuration proved fruitless too.  I am certain that
+  there are Debian/PPC users who have worked out the configuration
+  issues, but compared to the ease of installation of other
+  distributions, I have trouble recommending Debian to many users.
+</p>
+<p>
+  Both YellowDog (Sirius/3.0.1) and Mandrake (Bamboo/9.1) have quite
+  slick Linux distributions for PowerPC. Overall, I would recommend
+  YellowDog over Mandrake to most users, but each have some strengths
+  and weaknesses. The fact that YellowDog's maker, Terrasoft,
+  specializes in PowerPC systems probably leads them to pay a somewhat
+  greater attention to the small details of tuning Linux for PPC. On the
+  other hand, for enterprise users aiming at a thorough consistency
+  might choose Mandrake for both their x86 and PPC machines.
+</p>
+<p>
+  YellowDog and Mandrake both use attractive and friendly installation
+  GUIs; perhaps a slight edge functionally goes to Mandrake for its list
+  of pending and completed steps to the left of the dialog area, but I
+  nonetheless prefer the aesthetics of YellowDog screens. Both systems
+  come with a large collection of applications and utilities: Gnome/KDE,
+  OpenOffice, XFree86 4.3, Mozilla, Mac-on-Linux, various servers. For
+  most applications and utilities (and the kernel), YellowDog ships with
+  slightly more recent versions, but generally only a micro-release
+  difference, not a whole minor version. In any case, neither YellowDog
+  nor Mandrake had any difficulty recognizing my network, graphics card,
+  partitions, mouse, keyboard, and so on.  However, I did experience a
+  glitch with YellowDog's first attempt to reboot into X11--I needed to
+  run <code>/usr/X11R6/bin/Xautoconfig</code> once to clear up the problem.
+</p>
+<p>
+  A few differences between Mandrake and YellowDog stand out. The menu
+  organization and theme is a bit different under the KDE window manager
+  that I selected (the default for both), but both systems were very
+  reasonable (and configurable once the system is installed, in any
+  case). And the package selection presets contained a similar set of
+  "personal", "server", "workstation" options (with customization
+  allowed). I really like(d) Mandrake's <code>DiskDrake</code> tool for partition
+  management--this graphical utility lets you add, delete,
+  non-destructively resize, format, and otherwise manipulate partitions
+  (but no non-destructive resize on HFS+). Among other things,
+  <code>DiskDrake</code> let me choose the format for my Mandrake partition(s)
+  during installation, rather than simply defaulting to ext3 as
+  YellowDog did (but I could still add an extra ReiserFS partition
+  easily enough later under YellowDog).  And I am generally very
+  impressed with Mandrake's Control Center, on both x86 and PPC, not
+  because it <em>does</em> anything unique, but because it unifies
+  configuration tasks under one interace.
+</p>
+<p>
+  Despite Mandrake's advantages, my ultimate reason for preferring
+  YellowDog is its package management system. YellowDog seems to be
+  something of a hybrid system: it uses RPMs during installation, but it
+  also installs <code>apt-get</code> for later updates to the system. I have not
+  looked at the internals of the setup, but I could type <code>apt-get
+  install openoffice</code> at one line, and have every dependency resolved
+  correctly, the whole 350 megabytes (after expansion) of files
+  download, and the links added to my KDE menu without restarting X11.
+  After wasting <em>many</em> hours wrestling with RPM dependencies, this was a
+  marvel to behold.  Of course, I've been spoiled by using <code>fink</code> under
+  MacOSX, which does the same thing (and is based on <code>apt-get</code>).
+</p>
+<h3>Partioning, Multi-boot Management, And Emulation</h3>
+ <p>
+  Linux/PPC has an important disadvantage relative to Linux/x86: As of
+  this writing, no tools yet exist for non-destructive repartitioning of
+  HFS+ partitions (at least none that are post-alpha and can run from
+  OSX or Linux). Unfortunately, this means that you cannot easily
+  configure a multiboot system from an existing MacOSX system; most
+  recent Linux/x86 distributions provide an analogous capability to add
+  Linux to an existing Windows system. It <em>is</em> simple enough to
+  destructively partition an existing drive, then reinstall OSX to one
+  of those new partitions; but doing this losing your existing data and
+  system configuration (backup/restore might work, but can be tricky to
+  get right).  Of course, if you simply want a dedicated Linux machine,
+  this is not something you need worry about.
+</p>
+<p>
+  Partitioning and bootstrapping works a bit differently on Apple
+  machines than on x86 ones. Specifically, Apple's Open Firmware (an
+  enhanced version of the BIOS Linux users know from x86 PCs) relies on
+  an small "Apple Bootstrap" partition (<code>hda2</code>) to load the subsequent
+  operating system from one of the regular partitions. The partition map
+  also occupies <code>hda1</code>, so the first partition you will install any
+  operating system in is numbered at least <code>hda3</code>. During machine
+  startup--using the multi-boot tool <code>yaboot</code>--your boot process goes
+  through two stages, rather than the one level x86 MBR boot loaders
+  like <code>lilo</code> and <code>grub</code> use.  At the first stage, you have a choice of
+  booting from e.g. harddisk, CD-ROM, or to Open Firmware; assuming you
+  proceed to the harddisk, you might have the option of booting various
+  operating systems/versions that live on normal partitions.
+</p>
+<p>
+  Configuring <code>yaboot</code> is generally similar to working with <code>lilo</code>. A
+  file called <code>/etc/yaboot.conf</code> contains options for various systems,
+  kernels, partitions, and so on; the format is mostly the same as in
+  <code>lilo.conf</code>. When you have configured <code>yaboot.conf</code> properly, you load
+  <code>yaboot</code> onto the bootstrap partition using the command <code>ybin</code> (as
+  root, of course). To find partition information, you must use the tool
+  <code>pdisk</code> rather than the traditional <code>fdisk</code> on x86 Linux systems.
+  Again, the interface is similar, but not quite the same, between the
+  tools. For Mandrake users, the tool <code>DiskDrake</code> is a much friendlier
+  and more flexible GUI based tool to do the same thing.  Using
+  <code>yaboot</code>, you can choose among multiple Linux distributions and/or
+  MacOS versions at boot time.
+</p>
+<p>
+  One nice thing about running Linux on PPC machines is that you can run
+  the Free Software tool <code>Mac-on-Linux</code> this way. This works much like
+  the commercial VMWare does on x86 machines. An entire MacOS system
+  (either OSX, or an earlier version like MacOS9) runs inside a window
+  within a Linux/X11 display--in fact, you can run multiple MacOS
+  versions simultaneously, each in their own virtual display window. The
+  MacOS lives in a kind of "sandbox" where it cannot see its Linux
+  environment, but PPC instructions nonetheless run at full native
+  speed. Assuming you have enough memory to run such a sandbox,
+  <code>Mac-on-Linux</code> gives you a nice way to continue using your MacOS
+  applications while running Linux--even proprietary applications that
+  you have no source code for; no need for recompilation, as is needed
+  to move Linux applications to an OSX environment.
+</p>
+<h3>Resources</h3>
+ <p>
+  You can read a concise history of the POWER architecture at:
+</p>
+<blockquote>
+   <a href="http://en.wikipedia.org/wiki/IBM_POWER">http://en.wikipedia.org/wiki/IBM_POWER</a>
+</blockquote>
+<p>
+  For the PowerPC branch, take a look at:
+</p>
+<blockquote>
+   <a href="http://en.wikipedia.org/wiki/PowerPC">http://en.wikipedia.org/wiki/PowerPC</a>
+</blockquote>
+<p>
+  You can find some general information about distributions of LinuxPPC,
+  and additional installation tips at:
+</p>
+<blockquote>
+   <a href="http://www.rietman.biz/~wijnand/linux/mac/index.html?main">http://www.rietman.biz/~wijnand/linux/mac/index.html?main</a>
+</blockquote>
+<p>
+  TerraSoft are the makers of YellowDog Linux, and also offer custom
+  PowerPC systems--both as an Apple reseller and their own systems--with
+  pre-installed versions of YellowDog on them:
+</p>
+<blockquote>
+   <a href="http://www.yellowdoglinux.com/">http://www.yellowdoglinux.com/</a>
+</blockquote>
+<p>
+  Mandrake's PowerPC Linux distribution can be found at:
+</p>
+<blockquote>
+   <a href="http://www.linux-mandrake.com/en/ppc.php3">http://www.linux-mandrake.com/en/ppc.php3</a>
+</blockquote>
+<p>
+  Apple Computer offers a wide range of PowerPC-based computer systems:
+</p>
+<blockquote>
+   <a href="http://www.apple.com/">http://www.apple.com/</a>
+</blockquote>
+<p>
+  You can find out the current status of Mac-on-Linux at:
+</p>
+<blockquote>
+   <a href="http://www.maconlinux.org/">http://www.maconlinux.org/</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz is Turing complete, but probably would not pass the Turing
+  Test. David may be reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a> And buy his book: <cite>Text Processing in
+  Python</cite> (http://gnosis.cx/TPiP/).
+</p>
+</body></html>

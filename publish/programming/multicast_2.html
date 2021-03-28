@@ -1,0 +1,233 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>MULTICASTING STRATEGIES: PROTOCOLS AND TOPOLOGIES -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="multicast_1.html" TITLE="MULTICASTING STRATEGIES: PROTOCOLS AND TOPOLOGIES #1">
+<link REL="next" HREF="multicast_3.html" TITLE="MULTICASTING STRATEGIES: PROTOCOLS AND TOPOLOGIES #3">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Multicasting Strategies: Protocols And Topologies<h1>
+<h2></h2>
+ <p>Brad Huntting, University of Colorado<br>
+ David Mertz, Gnosis Software<br>
+ March 2003<br>
+ <br>
+</p>
+<blockquote>
+    The first installment of this series provided a general
+    introduction to multicasting, and touched on some protocols
+    and topologies.  We expand on topologies in this installment,
+    and look at the "last mile" problem.
+</blockquote>
+<h3>Routing Multicast Traffic With Dvmrp</h3>
+ <p>
+  When an application joins an IP multicast group G, the host OS
+  issues an Internet Group Management Protocol (IGMP) membership
+  report on the local network.  From this point it becomes the
+  local routers' responsibility to locate multicast traffic for
+  group G, and forward it to the local network.  How does the
+  Internet assure the right traffic gets forwarded to interested
+  routers?
+</p>
+<p>
+  The first attempt to route multicast was the Distance-Vector
+  Multicast Routing Protocol (DVMRP).  DVMRP is commonly
+  implemented by "mrouted" on Unix-like operating systems.  In
+  DVMRP's "flood-and-prune" model, a router maintains a list of
+  interesting multicast groups for each network the router
+  connect to.  When a new source S sends traffic to a group G, it
+  first "floods" the entire network to establish a source based
+  tree.  Then, starting with the leaves of the tree, routers that
+  have no interested networks send prune messages back toward the
+  root of the tree.  When things work optimally, it costs just a
+  single packet from each source to each group to setup an
+  optimal distribution tree.
+</p>
+<p>
+  If your network has only a few dozen routers, and only a few
+  dozen multicast groups active at any given time, DVMRP is a
+  reasonable solution.  And if your network hardware doesnt
+  implement DVMRP, you can setup a tunnel and run mrouted on a
+  Linux or BSD machine.
+</p>
+<p>
+  The global Internet, however, outgrew the DVMRP backbone many
+  years ago.  The requirement that every router maintain state
+  for every sender simply does not scale.  In addition, DVMRP
+  shares some basic limitations with its unicast sibling <code>RIP</code>:
+  rather than distribute actual network topology information,
+  these protocols propagate digested information about which
+  network addresses or multicast groups should be sent in which
+  general direction.  Rita Perlman called this "routing on
+  rumor."  DVMRP and RIP give rise to a host of well-known
+  network pathologies, including very slow convergence time after
+  network change.
+</p>
+<h3>Better Scaling Models</h3>
+ <p>
+  In 1997, Tony Ballardie proposed what is to-date the most
+  elegant multicast routing solution.  Core Based Trees (CBT)
+  creates a bidirectional tree for each multicast group, and
+  distribute the roots of these trees throughout the Internet.
+  Routers need only keep state information for groups that are of
+  local interest; traffic for unknown groups is simply directed
+  toward the the groups' <code>core</code>.  CBT centralizes the problem of
+  multicast routing in a distributed directory of core locations.
+</p>
+<p>
+  Unfortunately, CBT came out at the same time as Protocol
+  Independent Multicast-Sparse Mode (PIM-SM).  Despite its
+  shortcomings PIM has become the de facto standard for Internet
+  multicast because PIM is the solution Cisco implemented.
+</p>
+<p>
+  PIM has both source based trees (traffic flows directly from
+  source to listeners) and shared trees (traffic is directed
+  through intermediary Rendezvous Points (RPs)).  Like DVMRP, RPs
+  have to keep information about every multicast sender on the
+  entire Internet.  Fortunately, the other PIM routers can forget
+  this information.  A PIM router requests a multicast group by
+  sending a message to the local RP.  This sets up a shared tree
+  to the RP, and multicast traffic will start to flow.
+</p>
+<p>
+  For single-homed networks with a single uplink, PIM was a great
+  improvement over DVMRP.  By the late 1990s, however,
+  flood-and-prune created a maelstrom of traffic that could not
+  be effectively pruned.  PIM produces very little traffic unless
+  a multicast group is actually requested.
+</p>
+<p>
+  PIM-SM has a flood-and-prune sibling, PIM-Dense Mode (PIM-DM).
+  PIM-DM has been largely eclipsed by Multicast Source
+  Distribution Protocol (MSDP) which allows PIM rendezvous points
+  to more efficiently share information about known senders.  But
+  MSDP is a temporary hack to hold the Any Source Multicast
+  backbone together long enough for Border Gateway Multicast
+  Protocol (BGMP) to be developed, debugged, and deployed.
+  Maybe--some network developers think that BGMP is too complex
+  to be implemented.
+</p>
+<p>
+  Fortunately, PIM-SM works quite well for Single Source
+  Multicast (SSM) since the source is known routers can build a
+  source based tree, and bypass the Rendezvous Points all
+  together.
+</p>
+<h3>Multicasting To The "last Mile" With Igmp Proxy</h3>
+ <p>
+  Most core routers on the Internet today support multicast, and
+  many ISPs run multicast traffic across the backbone.
+  Unfortunately, getting multicast all the way to end users is
+  not so simple.  Most customer equipment (e.g.  DSL and cable
+  modems) cannot handle PIM, so their only option is IGMP proxy.
+  Unfortunately, IGMP proxy can wreak havok with upstream
+  connections.
+</p>
+<p>
+  Suppose you start up a multicast video conference on your LAN,
+  with no participants outside your local network.  If you ran a
+  full multicast routing protocol on your Internet gateway, it
+  would tell your ISP about the multicast session.  With no
+  participants (group members) on the Internet at large, the
+  distribution tree is pruned to your local network.  Your link
+  to the Internet stays free of unnecessary traffic.  Should
+  someone else on the Internet join, the multicast traffic will
+  then flow over your Internet connection.
+</p>
+<p>
+  With IGMP proxy, however, there is no mechanism to inform your
+  router that no one else on the Internet is interested in your
+  multicast.  Consequently, your Internet connection becomes
+  swamped with potentially unnecessary traffic.
+</p>
+<p>
+  It may seem like a bad idea to allow just anyone to join your
+  video conference.  But that is the way the Internet is supposed
+  to work; physical location should not matter.  If the
+  conference is private, the proper approach is encryption; even
+  though anyone can join, they won't be able to make sense of the
+  data without the decryption key.
+</p>
+<h3>A Better Last Mile Protocol</h3>
+ <p>
+  Multimedia is currently the primary application for multicast.
+  The bandwidth requirements for multimedia limit its market to
+  high speed DSL, cable modem, and traditional leased line
+  customers.  Moreover, many business customers associate
+  multimedia with non-productive entertainment.  As a result,
+  many ISPs have back-burnered multicast.  Those Internet users
+  who want to experiment with multicast have been forced to use
+  specialized (usually higher priced) ISPs, or construct Rube
+  Goldberg-esque tunnels with people and institutions that
+  support MBone access.
+</p>
+<p>
+  Automatic Multicast Tunnels (AMT) is a recent instantiation of
+  an idea Tony Ballardie proposed to the IETF in 2000.  AMT
+  allows any host or network to receive both Any Source and
+  Single Source multicast through a User Datagram Protocol (UDP)
+  tunnel, even from behind a firewall.
+</p>
+<p>
+  On the client end is an "AMT gateway," i.e. a router or a
+  single Intel PC host.  Once the gateway has located an "AMT
+  relay" (which may be a PC rather than a traditional router), it
+  periodically sends IGMP message, in much the same way it would
+  to request native multicast traffic from a local router.  The
+  IGMP messages are encapsulated in UDP, so they create
+  connection state on any packet filtering firewalls they pass
+  through.  The mechanism is wonderfully simple and allows anyone
+  on the Internet to create a dynamic tunnel to download
+  multicast data streams.  AMT may also allow end users to send
+  Single Source multicast data, once some details are worked out.
+</p>
+<p>
+  An ingenious aspect of AMT is the way in which AMT gateways
+  locate an AMT relay.  "Anycast" is a mechanism wherein a sender
+  transmits data to the single nearest member of a group of
+  network nodes.  Each node, announces to the local routing
+  protocol that it is a gateway to the special anycast address A;
+  normal unicast dynamic routing takes care of the rest.  Packets
+  destined for address A will naturally find their way to the
+  nearest node in the anycast group.  This mechanism is a simple
+  way to distribute load among a group of machines providing a
+  service, such as DNS.
+</p>
+<p>
+  AMT gateways and hosts only use anycast as a means to discover
+  the "real" address of the nearest anycast relay point.  This
+  mechanism helps spread the load among all the AMT relays on the
+  Internet.
+</p>
+<p>
+  Using AMT, an ISP can deploy a single AMT relay to provide
+  service to all its customers.  Before that relay becomes
+  overloaded--or if the tunnel traffic it generates causes an
+  undue load on certain links in the network--the ISP can deploy
+  additional AMT relays, both to distribute the server load and
+  to lessen the network load.  Since the AMT relays fetch data
+  using native multicast, only their outgoing tunnel traffic that
+  taxes the network.
+</p>
+<h3>Whither Multicast?</h3>
+ <p>
+  AMT allows otherwise unicast-only Internet users to receive
+  multicast data streams; AMT may prove exactly what is necessary
+  to generate enough demand for multicast that multicast becomes
+  a standard component of Internet service.
+</p>
+<p>
+  In the final installment, we will introduce the concept of
+  "reliable multicast" and discuss multicast applications in some
+  more detail.
+</p>
+</body></html>

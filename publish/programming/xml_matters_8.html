@@ -1,0 +1,417 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>XML MATTERS #8 -- XML and Data Models: Hierarchical, Relational and Object-Oriented -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="xml_matters_7.html" TITLE="XML MATTERS #7">
+<link REL="next" HREF="xml_matters_9.html" TITLE="XML MATTERS #9">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<h1>Xml Matters #8</h1>
+<h2>XML and Data Models: Hierarchical, Relational and Object-Oriented</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Ideationist, Gnosis Software, Inc.<br>
+ March 2001<br>
+ <br>
+</p>
+<blockquote>
+    This column discusses several <em>paradigms</em> for data modelling
+    that are used by DBMS's.  The reader is led through some
+    advantages and disadvantages of each.  Following an
+    introduction to data-modelling concepts, David attempts to
+    place XML within the world of data models.
+</blockquote>
+<h3>Introduction</h3>
+ <p>
+  XML is an extremely versitile data <strong>transport</strong> format; but
+  despite some high hopes for it, XML is mediocre to poor as a
+  data <strong>storage</strong> and <strong>access</strong> format.  It is not nearly time to
+  throw away your (SQL) relational databases which are tuned to
+  quickly and reliably query complex data.  So just what is the
+  relationship between XML and the relational data model?  And
+  more specifically, how can a project that utilizes both--with
+  data transitions between the two--be well designed?  This
+  column discusses data <strong>models</strong> as they have been abstractly
+  theorized by computer scientists, with an eye to figuring out
+  just how those models help us in developing specific
+  multi-representational data flows.  Future columns will look at
+  specific code and tools to aid the transitions; this column
+  addresses the design considerations.
+</p>
+<h3>Data Models</h3>
+ <p>
+  Let's bracket XML for a few moments, and talk about for a bit
+  about abstract data models.  A lot of work goes into the
+  details of a good database design, at the level of specific
+  project requirements.  We are interested in something more
+  general than that--in <em>paradigms</em> of data modelling.
+</p>
+<p>
+  In broad themes, database mangagement systems (DBMSs) have been
+  of three types historically:  Hierarchical, Relational, and
+  Object Oriented.  At this same level of high generality, the
+  three types of DBMSs occurred in the historical order listed.
+  Hierarchical database arose in the 1960s, on mainframe data
+  processing of the time.  "Network databases" are similar to
+  hierarchical ones, but with mutliple parent/child relations
+  allowed.  In the 1970s, the rigorous mathematical work of E.F.
+  Codd and others created the now upiquitous Relational database
+  model.  In the 1980s--largely because of the growing popularity
+  of object-oriented programming--Object databases gained a
+  measure of popularity, especially to model so-called "rich
+  data" such as multimedia formats.
+</p>
+<p>
+  Currently, Relational database management systems (RDMSs)
+  continue to be the dominant data storage technique for large
+  scale systems.  Hierarchical and Object databases fill niche
+  requirements.  However, for many years, many popular DBMSs have
+  been hybrid Object-Relational, so some borders between data
+  model paradigms are blurred in practice.
+</p>
+<h3>The Hierarchical Model</h3>
+ <p>
+  In a Hierarchical database (HDBMS), we begin with a strictly
+  defined tree of data nodes.  Each node can contain some
+  identifying data, plus a set of subnodes of a specific child
+  type.  The number of subnodes can vary between sibling nodes at
+  the same level, but the type of all "cousins" is identical.  An
+  illustration makes this clear:
+</p>
+<p>
+  <img src="http://gnosis.cx/publish/programming/hier.gif" alt="Hypothetical Hierarchical Database Model">
+</p>
+<p>
+  A nice property of Hierarchical databases is that data access
+  is utterly predictable in structure, and therefore both
+  retrieval and updates can be highly optimized by a DBMS.  For
+  example, in the pictured model, we might determine a particular
+  book's publisher, in a pseudo query syntax, with:
+</p>
+<div class="code-sample"><h4></h4><pre>Programming/C.J.Date/An Introduction to Database Systems/Publisher?
+
+</pre></div><p>
+  Any such query will have a precise path to the specified datum,
+  which may be quickly determinable in balanced trees and
+  byte-offset codings.  Any question about any books publisher
+  will have exactly the same (unique) form, just with different
+  category, author, etc.  To continue with our hypothetical DBMS,
+  we might write a more general procedural query in something
+  like this (Python-like) pseudo-code:
+</p>
+<div class="code-sample"><h4></h4><pre>for book in get_children("Programming/C.J.Date"):
+    print book.field("Title"), book.field("Publisher")
+
+</pre></div><p>
+  At this point, XML programmers will have started to notice that
+  our pseudo-query syntax looks a lot like XPATH, and our
+  procedural pseudo-code looks a fair amount like DOM.  Let's
+  keep that in mind as we go through some more models.
+</p>
+<h3>The Relational Model</h3>
+ <p>
+  A Relational database consists a set of tables, where each
+  table consists a fixed collection of <em>columns</em> (also called
+  <em>fields</em>).  An indefinite number of <em>rows</em> (or <em>records</em>) occur
+  within each table.  However, each row must have a unique
+  <em>primary key</em>, which is a sort of name for that particular
+  bundle of data.  An illustration of this is worthwhile also
+  (covering roughtly the same data as the Hierarchical example):
+</p>
+<p>
+  <img src="http://gnosis.cx/publish/programming/relat.gif" alt="Hypothetical Relational Database Model">
+</p>
+<p>
+  As well as having primary keys, tables typically have some
+  <em>secondary</em> keys.  These secondary keys correspond with primary
+  keys in other tables.  For example, in the picture, the BOOKS
+  table has secondary keys "AuthorID" and "PubID".  These, in
+  turn, serve as primary keys for the AUTHORS and PUBLISHERS
+  tables.  The idea here is that every BOOKS row has a distinct
+  ISBN value, each AUTHORS a unique AuthorID, and each PUBLISHERS
+  a unique PubID.
+</p>
+<p>
+  As a constaint on the <em>relation</em> between tables we can state,
+  for example, that for a row to exist in BOOKS, there must exist
+  a row in PUBLISHERS with the PubID we want to use in BOOKS.  If
+  one publisher can "have" multiple books in this way, we call
+  the relation "one-to-many."  On the other hand, if one author
+  can have multiple books, but one book can also have multiple
+  authors, we call it "many-to-many."  To round things out, there
+  also exist "one-to-one" relations where one primary key must
+  match exactly one secondary key.  It is the job of RDBMSs to
+  enforce just these types of rules.
+</p>
+<p>
+  In Relational databases, the design of tables can become quite
+  elaborate, and involve subtle decisions.  The main concern in
+  design is for the proper <em>normalization</em> of tables.  The goal
+  in normalization--to condense the first through fifth "form" of
+  normalization--is to remove all redundancy in the way data is
+  stored.  Each non-key datum should live in just one place, and
+  nowhere else.  This goal is accomplished almost automatically in
+  Hierarchical databases, but takes work in Relational ones.  For
+  example, our picture probably has a normalization problem.  If
+  books can have multiple authors, where might we store a second
+  author?  The only real option is by creating an extra row in
+  BOOKS.  But if we do that, we need repeat an identical PubID,
+  Date and Title just to mention a second author.  Not only does
+  this require extra storage space, it risks introducing errors
+  if the Titles do not quite match up between the rows.  To fix
+  this, we would need to rethink our design, and probably create
+  some more tables and relations.
+</p>
+<p>
+  Compared to the Hierarchical model, the Relational model is
+  quite complicated.  But with the complication comes a huge
+  increase in power.  You can ask essentially <em>any</em> question you
+  want of an RDBMS, but only the questions designed into the
+  system for an HDBMS.  For example, suppose you wondered what
+  authors were born later than 1970.  In a HDBMS like that
+  illustrated above, the only way to find this out would be an
+  extremely costly search of <em>every</em> book leaf node.  With an
+  RDBMS you use the staightforward SQL query:
+</p>
+<div class="code-sample"><h4></h4><pre>SELECT AuthorName FROM AUTHORS WHERE AuthorBDay &gt; 1970
+
+</pre></div><p>
+  For a more complex question, you have to <em>join</em> multiple
+  tables, but normalization allows you to do this in complex
+  ways.  For example, the above authors who publish with Random
+  House might be queried as:
+</p>
+<div class="code-sample"><h4></h4><pre>SELECT AuthorName
+FROM AUTHORS a, BOOKS b, PUBLISHERS p
+WHERE AuthorBDay &gt; 1970
+  AND a.AuthorID = b.AuthorID
+  AND b.PubID = p.PubID
+  AND p.Publisher = "Random House"
+
+</pre></div><p>
+  In the query we state several relations we want to hold.
+  Another way to think of this is as a filter on the tables, each
+  narrowing the search.  The RDBMS can implement these internally
+  however it wants, but we can imagine the following steps (in
+  the reverse order of the specified query; but query conditions
+  can occur in any order):
+</p>
+<blockquote>
+    - Narrow PUBLISHERS to only "Random House" (PubID 03-4472822);
+</blockquote>
+<blockquote>
+    - Only consider BOOKS with matching PubID;
+</blockquote>
+<blockquote>
+    - Grab the list of AuthorID's from these considered BOOKS
+      rows;
+</blockquote>
+<blockquote>
+    - Of the AUTHORS rows with considered AuthorID's, how many
+      have the right AuthorBDay?
+</blockquote>
+<p>
+  The problem with a query like this is that it requires a number
+  of steps, some of which can be resource intensive.  Even those
+  things that are easy in a HDBMS are likely to be relatively
+  hard in an RDBMS.  However, the things that are <em>extremely</em>
+  hard in HDBMS (all but a very limited few) are only
+  <em>moderately</em> hard in an RDBMS.
+</p>
+<h3>The Object Database Model</h3>
+ <p>
+  Object databases in some ways go back to the Hierarchical
+  model.  Objects in an ODBMS--much like objects in an OO
+  programming language--are bundles of data and behaviors.  In
+  this sense, objects are similar to branch nodes of an HDBMS,
+  which likewise contain a bundle of child nodes.
+</p>
+<p>
+  There are two unique features of Object databases.  (1) Objects
+  can be heterogeneous, and each contain a different collection
+  of "owned" data; (2) Objects can contain some inherent
+  "intelligence."  Each of these features merit brief
+  elaboration.  As with the other models, let us suggest a
+  diagram to start with:
+</p>
+<p>
+  <img src="http://gnosis.cx/publish/programming/odbms.gif" alt="Hypothetical Object Database Model">
+</p>
+<p>
+  Heterogeneous objects in and ODBMS allow each bundle of data to
+  contain just what it needs.  To help with this, imagine our
+  database is not simply the library book records that our
+  previous models covered, but rather an actual online library
+  whose content was delivered out of the database.  Different
+  media (sound recordings, etexts, movies, etc) will require
+  different descriptive information from each other (as well as
+  containing different content bitstreams).  Each object is
+  pointed to be a known ObjectID, but within the object we do not
+  have a rigidly uniform set of child nodes as in a HDBMS.
+</p>
+<p>
+  Since objects in an ODBMS can contain a variety of attributes
+  and data, querying objects is often performed through a set of
+  "methods" that objects implement--but each object in a way that
+  is appropriate for itself.  In the example given, two such
+  methods might be "summarize" and "transport."  A summary of a
+  book might be its abstact, while the summary of a movie might
+  be a trailer.  Each object has the necessary intelligence to
+  know what a relevant way of summarizing itself is.  Another way
+  of thing of an object's "intelligence" is in terms of
+  "meta-data" that it carries.
+</p>
+<p>
+  The Object Database Management Group (ODMG) has proposed a
+  standard query language for ODBMS's called OQL.  See Resources
+  for details.
+</p>
+<h3>So Where Does Xml Fit?</h3>
+ <p>
+  As readers already familiar with XML will have pieced together,
+  XML is something of a hybrid.  XML is probably most similar to
+  Object databases in data model inasmuch as it also consists of
+  nodes, and nodes can contain heterogeneous data.  On the other
+  hand, just how heterogeneous nodes are depends a lot on the
+  particular DTDs or Schemas used to define the structure of an
+  XML document.  In something like XHTML or DocBook, almost any
+  element can appear almost anywhere (this is a slight
+  exaggeration, but it points in the right direction).  But in
+  DTDs oriented more to data records, an XML document could be as
+  rigid as a Hierarchical database.  As a <em>transport</em> XML is rich
+  enough to represent either objects or hierarchies fully, given
+  only the right DTD/Schema.
+</p>
+<p>
+  What XML is less natural in representing is Relational
+  databases.  But we should be precise about what is less natural
+  here.  XML is certainly adequate to represent anything that
+  comes out of an RDBMS.  Individual tables can be directly
+  represented literally, albeit far more verbosely than actual
+  RDBMS's do.  For example, we might propose the following DTD to
+  represent the BOOKS table in our example:
+</p>
+<div class="code-sample"><h4></h4><pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!ELEMENT BOOKS (BOOK*)&gt;
+&lt;!ELEMENT BOOK (ISBN,AuthorID,PubID,Date,Title)&gt;
+&lt;!ELEMENT ISBN (#PCDATA)&gt;
+&lt;!ELEMENT AuthorID (#PCDATA)&gt;
+&lt;!ELEMENT PubID (#PCDATA)&gt;
+&lt;!ELEMENT Date (#PCDATA)&gt;
+&lt;!ELEMENT Title (#PCDATA)&gt;
+
+</pre></div><p>
+  Schemas could be used for richer typing, but the point is that
+  there is almost nothing involved in representing a particular
+  RDBMS table as XML.
+</p>
+<p>
+  Similarly, any specific join we might perform (as in the above
+  SQL examples) can equally easily be represented in XML.  In
+  practice, representing a query result is the greatest and most
+  common use of XML for RDBMS's.  I particular contact usually
+  does not need an entire data set, but rather simply some
+  particular filtered and structured part of it.  The "GROUP BY"
+  and "SORT" clauses in SQL allow for more structuring than we
+  have seen, but their results are similarly well represented by
+  XML node hierarchies.
+</p>
+<p>
+  The problem for many XML-everywhere (and XML-only) aspirations
+  is that the core of an RDBMS are its <strong>relations</strong>.  In
+  particular, the set of constraints that exist between tables,
+  and that are enforced by the RDBMS are what make RDBMS's so
+  useful and powerful.  While it would surely be possible to
+  represent a constraint set in XML for purposes of communicating
+  it, XML has no inherent mechanism for enforcing constraints of
+  this sort (DTDs and Schemas are constraints of a sort, but in a
+  different and more limited way).  Without constraints, you just
+  have data, not a data model (to put matters in slight
+  caricature).
+</p>
+<p>
+  One sometimes sees the notion bandied of adding RDBMS-type
+  constraints back into XML, and building XML into RDBMS's in
+  some deep way.  I believe that these are extremely bad ideas
+  that arise mostly out of a "buzzword compliance" style of
+  thinking.  Major RDBMS vendors have spent many years of effort
+  in getting these matters right--and especially to getting them
+  right in a way that maximizes performance.  You cannot just
+  quickly tack on a set of robust and reliable relational
+  constraints to a representation that, really, is closer to a
+  different modelling paradigm.  Moreover, the verboseness and
+  formatting loseness of XML are at heart quite opposite to the
+  strategies RDBMS's use to maximize performance (and to a lesser
+  extent, reliability), such as fixed record lengths and compact
+  storage formats.  In other words, be excited by XML's promise
+  of a universal data transport mechanism, but keep your back-end
+  data on DB2 or Oracle (or on Postgres or MySQL for smaller
+  scale systems).
+</p>
+<h3>Resources</h3>
+ <p>
+  The original paper introducing the relational data model is:
+</p>
+<blockquote>
+    E.F. Codd, "A Relational Model of Data for Large Shared Data
+    Banks", Comm.  ACM 13 (6), June 1970, pp.  377-387.
+</blockquote>
+<p>
+  A standard and excellent reference for learning relational
+  database theory is:
+</p>
+<blockquote>
+    <cite>An Introduction to Database Systems (Introduction to
+    Database Systems, 7th Ed)</cite>, C. J. Date, Addison-Wesley Pub
+    Co, 1999.  ISBN:  0201385902
+</blockquote>
+<p>
+  Two tools the simplify working with XML in an object oriented
+  manner (in Python) are David Mertz' <em><code>xml_objectify</code></em> and
+  <em><code>xml_pickle</code></em>.  You can read his earlier columns discussing
+  these modules at:
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/library/xml-matters1/?dwzone=ws">http://www-106.ibm.com/developerworks/library/xml-matters1/?dwzone=ws</a>
+</blockquote>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/library/xml-matters2/index.html?dwzone=ws">http://www-106.ibm.com/developerworks/library/xml-matters2/index.html?dwzone=ws</a>
+</blockquote>
+<p>
+  The tools themselves can be found at:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/download/xml_pickle.py">http://gnosis.cx/download/xml_pickle.py</a>
+</blockquote>
+<blockquote>
+   <a href="http://gnosis.cx/download/xml_objectify.py">http://gnosis.cx/download/xml_objectify.py</a>
+</blockquote>
+<p>
+  The Object Database Management Group (ODMG) homepage can be
+  found at the below URL.  Like many places nowadays, they have
+  information on use of XML as a data transport format.
+</p>
+<blockquote>
+   <a href="http://www.odmg.org/">http://www.odmg.org/</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz is frequently torn between formalism and
+  nominalism.  He suspects that spirit is a bone, but also
+  titters about emergent properties of skeletons.  David may be
+  reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+</p>
+</body></html>

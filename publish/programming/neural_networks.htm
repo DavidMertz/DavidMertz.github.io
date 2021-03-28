@@ -1,0 +1,812 @@
+<html>
+<head>
+<title>An introduction to neural networks</title>
+</head>
+<meta name="keywords" content="neural network back-propagation languages delta_rule threshold logic units pattern learning"/>
+<meta name="abstract" content="A convenient way to introduce neural nets is with a puzzle
+that they can be used to solve. Suppose that you are given, for example, 500 characters
+of code that you know to be either C, C++, Java or Python. Now, construct
+a program that identifies the code's language. One solution is to construct
+a neural net that learns to identify these languages. In what follows,
+we give an overview of the basic features of neural nets, and we discuss
+an approach to solving this puzzle."/>
+<meta name="description" content="A convenient way to introduce neural nets is with a puzzle
+that they can be used to solve. Suppose that you are given, for example, 500 characters
+of code that you know to be either C, C++, Java or Python. Now, construct
+a program that identifies the code's language. One solution is to construct
+a neural net that learns to identify these languages. In what follows,
+we give an overview of the basic features of neural nets, and we discuss
+an approach to solving this puzzle."/>
+
+<!-- Title -->
+<table>
+<tr>
+<td><h1>An introduction to neural networks</h1></td></tr>
+<tr>
+<td><h2>Pattern learning with back-propagation</h2></td></tr>
+</table>
+<!-- End title -->
+
+<!-- Start TOC (optional) -->
+<!--  add toc items below (as many as needed). Only subheadings go into the toc. -->
+
+<table width="150" border="0" cellspacing="0" cellpadding="0">
+<tr><td><a href="#1">Threshold logic units</a></td></tr>
+<tr><td><a href="#2">Learning stuff</a></td></tr>
+<tr><td><a href="#3">The delta rule</a></td></tr>
+<tr><td><a href="#4">Back-propagation</a></td></tr>
+<tr><td><a href="#5">Recognizing success</a></td></tr>
+<tr><td><a href="#6">Summary</a></td></tr>
+<tr><td><a href="#resources">Resources</a></td></tr>
+<tr><td><a href="#author1">About the authors</a></td></tr>
+</table>
+
+<!-- End TOC -->
+
+<!--  AUTHOR -->
+
+<p>
+<a href="#author1">Andrew Blais, Ph.D.</a> (<a href="mailto:onlymice@gnosis.cx">onlymice@gnosis.cx</a>)<br />
+<a href="#author2">David Mertz, Ph.D.</a> (<a href="mailto:mertz@gnosis.cx">mertz@gnosis.cx</a>)<br />
+Gnosis Software, Inc.<br />
+June 2001</p>
+
+<!--  End AUTHOR -->
+
+<!-- ABSTRACT -->
+
+<p><blockquote>
+A convenient way to introduce neural nets is with a puzzle
+that they can be used to solve. Suppose that you are given, for example, 500 characters
+of code that you know to be either C, C++, Java or Python. Now, construct
+a program that identifies the code's language. One solution is to construct
+a neural net that learns to identify these languages. In what follows,
+we give an overview of the basic features of neural nets, and we discuss
+an approach to solving this puzzle.
+</blockquote></p>
+
+<!-- END ABSTRACT -->
+
+
+
+
+<p>
+According to a simplified account, the human brain consists of about ten
+billion neurons, and a neuron is, on average, connected to several thousand
+other neurons. By way of these connections, neurons both send and receive
+varying quantities of energy. One very important feature of neurons is
+that they don't react immediately to the reception of energy. Instead,
+they sum their received energies, and they send their own quantities of
+energy to other neurons only when this sum has reached a certain critical
+threshold. The brain learns by adjusting the number and strength of these
+connections. Even though this picture is a simplification of the biological
+facts, it is sufficiently powerful to serve as a model for the neural net.
+</p>
+
+
+
+<!-- HEADING and MORE CONTENT Threshold logic units-->
+<p><a name="1"></a><h3>Threshold logic units</h3>
+<br />
+The first step toward neural nets is to abstract from the biological neuron,
+and to focus on its character as a threshold logic unit (TLU). A TLU is
+an object that inputs an array of weighted quantities, sums them, and if
+this sum meets or surpasses some threshold, outputs a quantity. Let us
+label these features. First, there are the inputs and their weights: X<sub>1</sub>,
+X<sub>2</sub>, ..., X<sub>n</sub> and W<sub>1</sub>, W<sub>2,</sub> ...,
+W<sub>n</sub>. Then, there are the X<sub>i</sub>*W<sub>i </sub>that are
+summed, which yields the activation level a, i.e.:
+</p>
+<pre STYLE="margin-bottom: 0.2in">&nbsp;a = (X1 * W1)+(X2 * W2)+...+(Xi * Wi)+...+ (Xn * Wn)</pre>
+<p>
+The threshold is called theta. Lastly, there is the output: y. When a >=
+theta, y=1, else y=0. Notice that the output doesn't need to be discontinuous,
+since it could also be determined by a squashing function, s (or, sigma),
+whose argument is a, and whose value is between 0 and 1. Then, y=s(a).
+</p>
+
+<p>
+<b>Figure 1: Threshold logic unit, with sigma function (top) and cutoff
+function (bottom)</b>
+<br />
+<img SRC="mp.gif" NAME="Threshhold Logic Unit" ALT="Threshhold Logic Unit" BORDER=0 height=275 width=300 align=TEXTTOP>
+</p>
+<p>
+A TLU can classify. Imagine a TLU that has two inputs, whose weights
+equal 1, and whose theta equals 1.5. When this TLU inputs &lt;0,0>, &lt;0,1>,
+&lt;1,0>, and &lt;1,1>, it outputs 0, 0, 0, and 1 respectively. This TLU
+classifies these inputs into two groups: the 1 group and the 0 group. Insofar
+as a human brain that knows about logical conjunction (Boolean AND) would
+similarly classify logically conjoined sentences, this TLU knows something
+like logical conjunction.
+</p>
+
+<p>This TLU has a geometric interpretation that clarifies what is happening.
+Its four possible inputs correspond to four points on a Cartesian graph.
+>From X<sub>1</sub>*W<sub>1 </sub>+ X<sub>2</sub>*W<sub>2</sub> = theta,
+i.e., the point at which the TLU switches its classificatory behavior,
+it follows that X<sub>2</sub> = -X<sub>1</sub> + 1.5. The graph of this
+equation cuts the four possible inputs into two spaces that correspond
+to the TLU's classifications. This is an instance of a more general principle
+about TLUs. In the case of a TLU with an arbitrary number of inputs, N,
+the set of possible inputs corresponds to a set of points in N-dimensional
+space. If these points can be cut by a hyperplane -- i.e., an N-dimensional
+geometric figure corresponding to the line in the above example -- then
+there is a set of weights and a threshold that define a TLU whose classifications
+match this cut.
+</p>
+
+<!-- HEADING and MORE CONTENT Learning stuff-->
+<p><a name="2"></a><h3>Learning stuff</h3>
+<br />
+Since TLUs can classify, they know stuff. Neural nets are also supposed
+to learn. Their learning mechanism is modeled on the brain's adjustments
+of its neural connections. A TLU learns by changing its weights and threshold.
+Actually, the weight-threshold distinction is somewhat arbitrary from a
+mathematical point of view. Recall that the critical point at which a TLU
+outputs 1 instead of 0 is when the SUM(Xi * Wi) >= theta. This is equivalent
+to saying that the critical point is when the SUM(X<sub>i</sub> * W<sub>i</sub>)
++ (-1 * theta) >= 0. So, it is possible to treat -1 as a constant input
+whose weight, theta, is adjusted in learning, or, to use the technical
+term, training. In this case, y=1 when SUM(X<sub>i</sub> * W<sub>i</sub>)
++ (-1 * theta) >= 0, else y=0.
+</p>
+<p>
+During training, a neural net inputs:
+<ol>
+<li>a series of examples of the
+items to be classified; </li>
+<li>their proper classifications or targets.</li>
+</ol>
+</p>
+<p>Such
+input can be viewed as a vector: &lt;X<sub>1</sub>, X<sub>2</sub>, ...,
+X<sub>n</sub>, theta, t>, where t is the target or true classification.
+The neural net uses these to modify its weights, and it aims to match its
+classifications with the targets in the training set. More precisely, this
+is supervised training, as opposed to unsupervised training. The former
+is based on examples accompanied by targets, whereas the latter is based
+on statistical analysis (see <a href="#resources">Resources</a>). Weight modification follows a
+learning rule. One idealized learning algorithm goes something like this:
+</p>
+
+
+
+<!-- A CODE SAMPLE -->
+
+<p><a name="listing1"></a><b>Listing 1. Idealized learning algorithm</b>
+<table border="1" cellpadding="5"  width="100%" cellspacing="0" bgcolor="#cccccc"><tr><td><pre><code>
+fully_trained = FALSE
+DO UNTIL (fully_trained):
+    fully_trained = TRUE
+    FOR EACH training_vector = &lt;X1, X2, ..., Xn, theta, target>::
+                               <font color="#990000"># Weights compared to theta</font>
+        a = (X1 * W1)+(X2 * W2)+...+(Xn * Wn) - theta
+        y = sigma(a)
+        IF y != target:
+            fully_trained = FALSE
+        FOR EACH Wi:
+        MODIFY_WEIGHT(Wi)      <font color="#990000"># According to the training rule</font>
+
+    IF (fully_trained):
+        BREAK
+</code></pre></td></tr></table></p>
+
+<!-- end of Code Sample -->
+
+
+
+
+
+
+
+
+<p>
+You should be wondering, "What training rule?" There are many, but one
+plausible rule is based on the idea that weight and threshold modification
+should be determined by a fraction of (t - y). This is accomplished by
+introducing alpha (0 &lt; alpha &lt; 1), which is called the learning rate.
+The change in W<sub>i</sub> equals (alpha * (t - y) * Xi). When alpha is
+close to 0, the neural net will engage in more conservative weight modifications,
+and when it is close to 1, it will make more radical weight modifications.
+A neural net that uses this rule is known as a perceptron, and this rule
+is called the perceptron learning rule. One result about perceptrons, due
+to Rosenblatt, 1962 (see <a href="#resources">Resources</a>), is that if a set of points in N-space
+is cut by a hyperplane, then the application of the perceptron training
+algorithm will eventually result in a weight distribution that defines
+a TLU whose hyperplane makes the wanted cut. Of course, to recall Keynes,
+eventually, we're all dead, but more than computational time is at stake,
+since we may want our neural net to make more than one cut in the space
+of possible inputs.
+</p>
+<p>
+Our initial puzzle illustrates this. Suppose that you were given N characters
+of code that you knew to be either C, C++, Java or Python. The puzzle is
+to construct a program that identifies the code's language. A TLU that
+could do this would need to make more than one cut in the space of possible
+inputs. It would need to cut this space into four regions, one for each
+language. This would be accomplished by training a neural net to make two
+cuts. One cut would divide the C/C++ from the Java/Python, and the other
+cut would divide the C/Java from the C++/Python. A net that could make
+these cuts could also identify the language of a source code sample. However,
+this requires our net to have a different structure. Before we describe
+this difference, we will briefly turn to practical considerations.
+</p>
+<p>
+<b>Figure 2: Preliminary (and insufficient) Perceptron Learning Model</b>
+<br /><a href="lr.gif"><img SRC="lr.gif" NAME="Graphic2" BORDER=0 height=300 width=430 align=TEXTTOP></a>
+<br />Considerations of computational time rule out taking N-character chunks
+of code, counting the frequency of the visible ASCII characters, 32 through
+127, and training our neural net on the basis of these counts and target
+information about the code's language. Our way around this was to limit
+our character counts to the twenty most frequently occurring non-alphanumeric
+characters in a pool of C, C++, Java and Python code. For reasons that
+concern the implementation of floating point arithmetic, we decided to
+train our net with these twenty counts divided by a normalizing factor.
+Clearly, one structural difference is that our net has twenty input nodes,
+but this should not be surprising, since our description has already suggested
+this possibility. A more interesting difference is a pair of intermediary
+nodes, N1 and N2, and an increase in the number of output nodes from two
+to four, O1-O4.
+</p>
+<p>
+N1 would be trained so that upon seeing C or C++, it would set y1=1,
+and upon seeing Java or Python, it would set y1=0. N2 would be similarly
+trained. Upon seeing C or Java, N2 would set y2=1, and upon seeing C++
+or Python, it would set y2=0. Furthermore, N1 and N2 would output 1 or
+0 to the Oi. Now, if N1 sees C or C++, and N2 sees C or Java, then the
+code in question is C. Moreover, if N1 sees C or C++, and N2 sees C++ or
+Python, the code is C++. The pattern is obvious. So, suppose that the Oi
+were trained to output 1 or 0 on the basis of the following table:
+
+<p STYLE="margin-bottom: 0in"><a name="listing2"></a><b>Listing 2: Intermediate nodes mapped to
+output (as Boolean functions)</b>
+<br />&nbsp;
+<table BORDER CELLSPACING=0 CELLPADDING=4 BORDERCOLOR="#000000" >
+<tr VALIGN=TOP>
+<td WIDTH="17%" bgcolor="#cccccc">
+<center>N1</center>
+</td>
+
+<td WIDTH="17%" bgcolor="#cccccc">
+<center>N2</center>
+</td>
+
+<td WIDTH="17%" bgcolor="#cccccc">
+<center>O1 (C)</center>
+</td>
+
+<td WIDTH="17%" bgcolor="#cccccc">
+<center>O2 (C++)</center>
+</td>
+
+<td WIDTH="17%" bgcolor="#cccccc">
+<center>O3 (Java)</center>
+</td>
+
+<td WIDTH="17%" bgcolor="#cccccc">
+<center>O4 (Python)</center>
+</td>
+</tr>
+
+<tr VALIGN=BOTTOM>
+<td WIDTH="17%" bgcolor="#cccccc" SDVAL="0" SDNUM="1033;">
+<center><font size=-2>0</font></center>
+</td>
+
+<td WIDTH="17%" bgcolor="#cccccc" SDVAL="0" SDNUM="1033;">
+<center><font size=-2>0</font></center>
+</td>
+
+<td WIDTH="17%" bgcolor="#cccccc" SDVAL="0" SDNUM="1033;">
+<center><font size=-2>0</font></center>
+</td>
+
+<td WIDTH="17%" bgcolor="#cccccc" SDVAL="0" SDNUM="1033;">
+<center><font size=-2>0</font></center>
+</td>
+
+<td WIDTH="17%" bgcolor="#cccccc" SDVAL="0" SDNUM="1033;">
+<center><font size=-2>0</font></center>
+</td>
+
+<td WIDTH="17%" bgcolor="#cccccc" SDVAL="1" SDNUM="1033;">
+<center><font size=-2>1</font></center>
+</td>
+</tr>
+
+<tr VALIGN=BOTTOM>
+<td WIDTH="17%" bgcolor="#cccccc" SDVAL="0" SDNUM="1033;">
+<center><font size=-2>0</font></center>
+</td>
+
+<td WIDTH="17%" bgcolor="#cccccc" SDVAL="1" SDNUM="1033;">
+<center><font size=-2>1</font></center>
+</td>
+
+<td WIDTH="17%" bgcolor="#cccccc" SDVAL="0" SDNUM="1033;">
+<center><font size=-2>0</font></center>
+</td>
+
+<td WIDTH="17%" bgcolor="#cccccc" SDVAL="0" SDNUM="1033;">
+<center><font size=-2>0</font></center>
+</td>
+
+<td WIDTH="17%" bgcolor="#cccccc" SDVAL="1" SDNUM="1033;">
+<center><font size=-2>1</font></center>
+</td>
+
+<td WIDTH="17%" bgcolor="#cccccc" SDVAL="0" SDNUM="1033;">
+<center><font size=-2>0</font></center>
+</td>
+</tr>
+
+<tr VALIGN=BOTTOM>
+<td WIDTH="17%" bgcolor="#cccccc" SDVAL="1" SDNUM="1033;">
+<center><font size=-2>1</font></center>
+</td>
+
+<td WIDTH="17%" bgcolor="#cccccc" SDVAL="0" SDNUM="1033;">
+<center><font size=-2>0</font></center>
+</td>
+
+<td WIDTH="17%" bgcolor="#cccccc" SDVAL="0" SDNUM="1033;">
+<center><font size=-2>0</font></center>
+</td>
+
+<td WIDTH="17%" bgcolor="#cccccc" SDVAL="1" SDNUM="1033;">
+<center><font size=-2>1</font></center>
+</td>
+
+<td WIDTH="17%" bgcolor="#cccccc" SDVAL="0" SDNUM="1033;">
+<center><font size=-2>0</font></center>
+</td>
+
+<td WIDTH="17%" bgcolor="#cccccc" SDVAL="0" SDNUM="1033;">
+<center><font size=-2>0</font></center>
+</td>
+</tr>
+
+<tr VALIGN=BOTTOM>
+<td WIDTH="17%" bgcolor="#cccccc" SDVAL="1" SDNUM="1033;">
+<center><font size=-2>1</font></center>
+</td>
+
+<td WIDTH="17%" bgcolor="#cccccc" SDVAL="1" SDNUM="1033;">
+<center><font size=-2>1</font></center>
+</td>
+
+<td WIDTH="17%" bgcolor="#cccccc" SDVAL="1" SDNUM="1033;">
+<center><font size=-2>1</font></center>
+</td>
+
+<td WIDTH="17%" bgcolor="#cccccc" SDVAL="0" SDNUM="1033;">
+<center><font size=-2>0</font></center>
+</td>
+
+<td WIDTH="17%" bgcolor="#cccccc" SDVAL="0" SDNUM="1033;">
+<center><font size=-2>0</font></center>
+</td>
+
+<td WIDTH="17%" bgcolor="#cccccc" SDVAL="0" SDNUM="1033;">
+<center><font size=-2>0</font></center>
+</td>
+</tr>
+</table>
+</p>
+
+<p>
+If this worked, our net could identify the language of a code sample.
+It is a pretty idea, and its practical ramifications seem to be incredibly
+far reaching. However, this solution presupposes that the C/C++ and the
+Java/Python inputs are cut by one hyperplane, and that the C/Java and the
+C++/Python inputs are cut by the other. There is an approach to net training
+that bypasses this kind of assumption about the input space.
+</p>
+
+<!-- HEADING and MORE CONTENT The delta rule-->
+<p><a name="3"></a><h3>The delta rule</h3>
+<br />
+Another training rule is the delta rule. The perceptron training rule is
+based on the idea that weight modification is best determined by some fraction
+of the difference between target and output. The delta rule is based on
+the idea of gradient descent. This difficult mathematical concept has a
+prosaic illustration. From some given point, a Southward path may be steeper
+than an Eastward path. Walking East may take you off a cliff, while walking
+South may only take you along its gently sloping edge. West would take
+you up a steep hill, and North leads to level ground. All you want is a
+leisurely walk, so you seek ground where the overall steepness of your
+options is minimized. Similarly, in weight modification, a neural net can
+seek a weight distribution that minimizes error.
+</p>
+<p>
+Limiting ourselves to nets with no hidden nodes, but possibly having
+more than one output node, let p be an element in a training set, and t(p,n)
+be the corresponding target of output node n. However, let y(p,n) be determined
+by the squashing function, s, mentioned above, where a(p,n) is n's activation
+relative to p, y(p,n) = s( a(p,n) ) or the squashed activation of node
+n relative to p.&nbsp; Setting the weights (each Wi) for a net also sets
+the difference between t(p,n) and y(p,n) for every p and n, and this means
+setting the net's overall error for every p. Therefore, for any set of
+weights, there is an average error. However, the delta rule rests on refinements
+in the notions of average and error. Instead of discussing the minutiae,
+we shall just say that the error relative to some p and n is: &frac12;
+* square( t(p,n) - y(p,n) ) (see <a href="#resources">Resources</a>). Now,
+for each Wi, there is an average error defined as:
+</p>
+
+
+<!-- A CODE SAMPLE -->
+
+<p><a name="listing3"></a><b>Listing 3: Finding the average error</b>
+<table border="1" cellpadding="5"  width="100%" cellspacing="0" bgcolor="#cccccc"><tr><td><pre><code>
+sum = 0
+FOR p = 1 TO M:         <font color="#990000"># M is number of training vectors</font>
+    FOR n = 1 TO N:     <font color="#990000"># N is number of output nodes</font>
+        sum = sum + (1/2 * (t(p,n)-y(p,n))^2)
+average = 1/M * sum
+</code></pre></td></tr></table></p>
+
+<!-- end of Code Sample -->
+
+
+<p>
+The delta rule is defined in terms of this definition of error. Because
+error is explained in terms of all the training vectors, the delta rule
+is an algorithm for taking a particular set of weights and a particular
+vector, and yielding weight changes that would take the neural net on the
+path to minimal error. We won't discuss the calculus underpinning this
+algorithm. Suffice it to say that the change to any Wi is:
+<pre STYLE="margin-bottom: 0.2in">&nbsp;alpha * s'(a(p,n)) * (t(p,n) - y(p,n)) * X(p,i,n).</pre>
+</p>
+<p>
+X(p,i,n) is the i<sup>th</sup> element in p that is input into node n, and alpha is
+the already noted learning rate. Finally, s'( a(p,n) ) is the rate of change
+(derivative) of the squashing function at the activation of the n<sup>th</sup> node
+relative to p. This is the delta rule, and Widrow and Stearns (See <a href="#resources">Resources</a>)
+showed that when alpha is sufficiently small, the weight vector approaches
+a vector that minimizes error. A delta rule based algorithm for weight
+modification looks like this.
+</p>
+
+
+<!-- A CODE SAMPLE -->
+
+<p><a name="listing4"></a><b>Listing 4: Downward slope (follow until error is suitably small)</b>
+<table border="1" cellpadding="5"  width="100%" cellspacing="0" bgcolor="#cccccc"><tr><td><pre><code>
+step 1: for each training vector, p, find a(p)
+step 2: for each i, change Wi by:
+            alpha * s'(a(p,n)) * (t(p,n)-y(p,n)) * X(p,i,n)
+</code></pre></td></tr></table></p>
+
+<!-- end of Code Sample -->
+
+
+<p>
+There are important differences from the perceptron algorithm. Clearly,
+there are quite different analyses underlying the weight change formulae.
+The delta rule algorithm always makes a change in weights, and it is based
+on activation as opposed to output. Lastly, it isn't clear how this applies
+to nets with hidden nodes.
+</p>
+
+
+<!-- HEADING and MORE CONTENT Back-propagation-->
+<p><a name="4"></a><h3>Back-propagation</h3>
+<br />
+Back-propagation is an algorithm that extends the analysis that underpins
+the delta rule to neural nets with hidden nodes. To see the problem, imagine
+that Bob tells Alice a story, and then Alice tells Ted. Ted checks the
+facts, and finds that the story is erroneous. Now, Ted needs to find out
+how much of the error is due to Bob and how much to Alice. When output
+nodes take their inputs from hidden nodes, and the net finds that it is
+in error, its weight adjustments require an algorithm that will pick out
+how much the various nodes contributed to its overall error. The net needs
+to ask, "Who led me astray? By how much? And, how do I fix this?" What's
+a net to do?
+</p>
+
+<p>
+<b>Figure 3: "Code Recognizer" back-propagation neural network</b>
+<br /><img SRC="code_recognizer.gif" NAME="Graphic1" BORDER=0 height=437 width=464 align=TEXTTOP>
+</p><p>The back-propagation algorithm also rests on the idea of gradient descent,
+and so the only change in the analysis of weight modification concerns
+the difference between t(p,n) and y(p,n). Generally, the change to W<sub>i</sub>
+is:
+</p>
+<pre STYLE="margin-bottom: 0.2in">&nbsp;alpha * s'(a(p,n)) * d(n) * X(p,i,n)</pre>
+<p>
+where d(n)&nbsp; for a hidden node n, turns on (1) how much n influences
+any given output node; and (2) how much that output node itself influences
+the overall error of the net. On the one hand, the more n influences an
+output node, the more n affects the net's overall error. On the other hand,
+if the output node influences the overall error less, then n's influence
+correspondingly diminishes. Where d(j)&nbsp; is output node j's contribution
+to the net's overall error, and W(n,j) is the influence that n has on j,
+d(j) * W(n,j) is the combination of these two influences. However, n almost
+always influences more than one output node, and it may influence every
+output node. So, d(n) is:
+</p>
+<pre STYLE="margin-bottom: 0.2in">&nbsp;SUM(d(j)*W(n,j)), for all j</pre>
+<p>
+where j is an output node that takes input from n. Putting this together
+gives us a training rule. First part: the weight change between hidden
+and output nodes, n and j, is:
+</p>
+<pre STYLE="margin-bottom: 0.2in">&nbsp;alpha * s'(a(p,n))*(t(p,n) - y(p,n)) * X(p,n,j)</pre>
+<p>
+Second part: the weight change between input and output nodes, i and n,
+is:
+</p>
+<pre STYLE="margin-bottom: 0.2in">&nbsp;alpha * s'(a(p,n)) * sum(d(j) * W(n,j)) * X(p,i,n)</pre>
+<p>where j varies over all the output nodes that receive input from n. Moreover,
+the basic outline of a back-propagation algorithm runs like this.
+</p>
+
+<p>
+Initialize Wi to small random values.
+</p>
+
+
+<!-- A CODE SAMPLE -->
+
+<p><a name="listing5"></a><b>Listing 5: Steps to follow until error is suitably small</b>
+<table border="1" cellpadding="5"  width="100%" cellspacing="0" bgcolor="#cccccc"><tr><td><pre><code>
+Step 1: Input training vector.
+Step 2: Hidden nodes calculate their outputs.
+Step 3: Output nodes calculate their outputs on the basis of Step 2.
+Step 4: Calculate the differences between the results of Step 3 and
+        targets.
+Step 5: Apply the first part of the training rule using the results of
+        Step 4.
+Step 6: For each hidden node, n, calculate d(n).
+Step 7: Apply the second part of the training rule using the results of
+        Step 6.
+</code></pre></td></tr></table></p>
+
+<!-- end of Code Sample -->
+
+
+<p>
+Steps 1 through 3 are often called the forward pass, and steps 4 through
+7 are often called the backward pass. Hence, the name: back-propagation.
+</p>
+
+<!-- HEADING and MORE CONTENT Recognizing success-->
+<p><a name="5"></a><h3>Recognizing success</h3>
+<br />
+With the back-propagation algorithm in hand, we can turn to our puzzle
+of identifying the language of source code samples.&nbsp; To do this, our
+solution extends Neil Schemenauer's Python module <tt><i>bpnn</i></tt> (see <a href="#resources">Resources</a>).
+Using
+his module is amazingly simple.&nbsp; We customized the class
+<code><i>NN</i></code>
+in our class <code><i>NN2</i></code>, but our changes only modify the presentation
+and output of the process, nothing algorithmic. The basic code looks like:
+</p>
+
+
+<!-- A CODE SAMPLE 3 -->
+
+<p><a name="listing6"></a><b>Listing 6: Setting up a neural network with bpnn.py</b>
+<table border="1" cellpadding="5"  width="100%" cellspacing="0" bgcolor="#cccccc"><tr><td><pre><code>
+<code><font color="#990000"># Create the network (number of input, hidden, and training nodes)</font>
+net = NN2(INPUTS, HIDDEN, OUTPUTS)
+
+<font color="#990000"># create the training and testing data</font>
+trainpat = []
+testpat = []
+for n in xrange(TRAINSIZE+TESTSIZE):
+    <font color="#990000">#... add vectors to each set</font>
+
+<font color="#990000"># train it with some patterns</font>
+net.train(trainpat, iterations=ITERATIONS, N=LEARNRATE, M=MOMENTUM)
+
+<font color="#990000"># test it </font>
+net.test(testpat)
+
+<font color="#990000"># report trained weights </font>
+net.weights()</code>
+</code></pre></td></tr></table></p>
+
+<!-- end of Code Sample -->
+
+<p>
+Of course, we need input data. Our utility <tt>code2data.py</tt> provides
+this.&nbsp; It's interface is straightforward: just put a bunch of source
+files with various extensions into a subdirectory called
+<tt>./code</tt>,
+and then run the utility listing these extensions as options,&nbsp; e.g.:
+</p>
+<p><tt>&nbsp;&nbsp;&nbsp; python code2data.py py c java</tt>
+</p>
+<p>What you get is a bunch of vectors on <tt>STDOUT</tt>, which you can
+pipe to another process or redirect to a file.&nbsp; This output looks
+something like:
+</p>
+
+<p STYLE="margin-bottom: 0in"><a name="listing7"></a> <b>Listing 7: Code2Data output vectors</b>
+<br />&nbsp;
+<table BORDER CELLSPACING=0 CELLPADDING=0 >
+<tr>
+<td WIDTH="100%" bgcolor="#cccccc">
+<pre>0.15 0.01 0.01 0.04 0.07 0.00 0.00 0.03 0.01 0.00 0.00 0.00 0.05 0.00 > 1 0 0
+0.14 0.00 0.00 0.05 0.13 0.00 0.00 0.00 0.02 0.00 0.00 0.00 0.13 0.00 > 1 0 0
+[...]</pre>
+</td>
+</tr>
+</table>
+
+</p>
+<p>
+Recall that the input values are normalized numbers of occurrences of
+various special characters.&nbsp; The target values (after the greater
+than sign) are YES/NO representing the type of source code file containing
+these characters.&nbsp; But there is nothing very obvious about what is
+what.&nbsp; That's the great thing, the data could by <b>anything </b>that
+you can generate input and targets for.
+</p>
+
+<p>
+The next step is to run the actual <tt>code_recognizer.py</tt> program.&nbsp;
+This takes (on <tt>STDIN</tt>) a collection of vectors like those above.&nbsp;
+The program has a wrapper that deduces how many input nodes (count and
+target) are needed, based on the actual input file.&nbsp; Choosing the
+number of hidden nodes is trickier.&nbsp; For source code recognition,
+6-8 hidden nodes seem to work very well.&nbsp; You can override all the
+parameters on the command-line, if you want to experiment with the net
+to discover how it does with various options -- each run might take a while,
+so be warned.&nbsp; It is worth noting that <tt>code_recognizer.py</tt>
+sends its (large) test result file to <tt>STDOUT</tt>, but puts some friendly
+messages on
+<tt>STDERR</tt>.&nbsp; So most of the time, you will want to
+direct <tt>STDOUT</tt> to a file for safe keeping, and watch <tt>STDERR</tt>
+for progress and result summaries.
+</p>
+
+
+
+
+<p><a name="listing8"></a><b>Listing 8: Running code_recognizer.py</b>
+<table border="1" cellpadding="5"  width="100%" cellspacing="0" bgcolor="#cccccc"><tr><td><pre><code>
+> code2data.py py c java | code_recognizer.py > test_results.txt
+Total bytes of py-source: 457729
+Total bytes of c-source: 245197
+Total bytes of java-source: 709858
+Input set: ) ( _ . = ; " , ' * / { } : - 0 + 1 [ ]
+HIDDEN = 8
+LEARNRATE = 0.5
+ITERATIONS = 1000
+TRAINSIZE = 500
+OUTPUTS = 3
+MOMENTUM = 0.1
+ERROR_CUTOFF = 0.01
+TESTSIZE = 500
+INPUTS = 20
+error -> 95.519... 23.696... 19.727... 14.012... 11.058... 9.652...
+8.858... 8.236... 7.637... 7.065... 6.398... 5.413... 4.508...
+3.860... 3.523... 3.258... 3.026... 2.818... 2.631... 2.463...
+2.313... 2.180... 2.065... 1.965... 1.877... 1.798... 1.725...
+[...]
+0.113... 0.110... 0.108... 0.106... 0.104... 0.102... 0.100...
+0.098... 0.096... 0.094... 0.093... 0.091... 0.089... 0.088...
+0.086... 0.085... 0.084...
+Success rate against test data: 92.60%
+</code></pre></td></tr></table></p>
+
+
+
+</p>
+<p>
+The decreasing error is a nice reminder, and acts as a sort of progress
+meter during long runs.&nbsp; But, the final result is what is impressive.
+The net does a quite respectable job, in our opinion, of recognizing code
+--&nbsp; we would love to hear how it does on your data vectors, or whatever
+creative sorts they imagine.
+
+
+<!-- HEADING and MORE CONTENT Summary-->
+</p><p><a name="6"></a><h3>Summary</h3>
+<br />
+We have explained the basics of the neural net in a way that should allow
+you to begin to apply them in your own coding. We encourage you to take
+what you have learned here and attempt to write your own solution to our
+puzzle. (See <a href="#resources">Resources</a> for our solution.)
+</p>
+
+<!-- Enter list of article resources here -->
+
+<a name="resources"></a><p><h3>Resources</h3>
+<ul>
+<li>Our <a href="http://gnosis.cx/download/neural_net_1.zip">Code Recognizer</a> program
+is based on Neil Schemenauer's <a href="http://www.enme.ucalgary.ca/~nascheme/python/bpnn.py">back
+propagation module</a>.</li>
+
+<li>For the distinction between supervised and unsupervised training, and
+neural nets in general, see <a href="http://www.amsta.leeds.ac.uk/~charles/statlog">Machine
+Learning, Neural and Statistical Classification</a>, edited by D. Michie,
+D.J. Spiegelhalter, and C.C. Taylor. Specifically, see
+<a href="http://www.amsta.leeds.ac.uk/~charles/statlog/chap6.ps.gz">chapter
+six</a>.</li>
+
+<li>For Rosenblatt's result about perceptrons, see his <i>Principles of
+Neurodynamics</i>, 1962, New York: Spartan Books.</li>
+
+<li>For some of the minutiae of the delta rule, see Kevin Gurney's most
+excellent <i>An Introduction to Neural Networks</i>, 1997, London: Routledge.
+Also see <a href="http://www.shef.ac.uk/psychology/gurney/notes/contents.html">Neural
+Nets</a> for an early on-line version.</li>
+
+<li>For the proof about the delta rule, see: B. Widrow and S.D. Stearns,
+<i>Adaptive Signal Processing</i>, 1985, New Jersey: Prentice-Hall.</li>
+
+<li>For an implementation of the perceptron with a GUI, see <a href="http://www.cs.bgu.ac.il/~omri/Perceptron/">The
+Perceptron </a>by Omri Weisman and Ziv Pollack.
+</li>
+
+<li>What is a subject without its FAQ? Here is the ever useful <a href="ftp://ftp.sas.com/pub/neural/FAQ.html">Neural
+Net FAQ</a>.</li>
+
+<li>For a wide-ranging collection of links, see <a href="http://www.dontveter.com/bpr/bpr.html">The
+Backpropagator's Review</a>.</li>
+
+<li>University courses are a rich source of information for the beginner
+in any subject. Here is a <a href="http://www.emsl.pnl.gov:2080/proj/neuron/neural/courses.html">list</a>
+of courses.</li>
+</p>
+<p><i><b>Library resources</b></i></p>
+<li>The
+<a href="http://www.babst.org/~jhuwaldt/NeuralNets/NeuralNets.html">Neural
+Network Package</a> is a LGPL package written in Java. It permits experimentation
+with all the algorithms discussed here.</li>
+
+<li>See
+<a href="http://www.geocities.com/CapeCanaveral/1624/">Neural
+Networks at your Fingertips</a> for a set of C packages that illustrate
+Adaline networks, back-propagation, the Hopfield model, and others. A particularly
+interesting item is <a href="http://www.geocities.com/CapeCanaveral/1624/bpn.html">The
+Back-propagation Network, </a>a C package that illustrates a net that analyzes
+sunspot data.</li>
+
+<li>At
+<a href="http://www.dontveter.com/nnsoft/nnsoft.html">Neural
+Networking Software</a>, you will find neural net code with graphical interfaces,
+and it's both DOS and Linux friendly.
+</li>
+
+<li><a href="http://www.disi.unige.it/person/ValentiniG/NEURObjects">NEURObjects</a>
+provides C++ libraries for neural network development, and this has the
+advantage of being object oriented.</li>
+
+<li><a href="http://www-ra.informatik.uni-tuebingen.de/SNNS/">Stuttgart
+Neural Network Simulator</a> (SNNS) is what the name says. It is written
+in C with a GUI. It has an extensive manual, and is also Linux friendly.</li>
+
+</ul></p>
+
+
+<!-- Enter author bio here; make author heading singular or plural as needed -->
+<p>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr><td>
+<a name="author1"><h3>About the authors</h3></a>
+<br />Andrew Blais divides his time between home schooling his son, writing
+for Gnosis, and teaching philosophy and religion at Anna Maria College.
+He can be reached at <a href="mailto:onlymice@gnosis.cx">onlymice@gnosis.cx</a>.
+</p>
+<p>
+<img src="http://gnosis.cx/cgi-bin/img_dqm.cgi" border="0" align="left" alt=""/>
+David Mertz thinks that if there are any uninteresting Natural numbers,
+there must be a least such uninteresting number. David may be reached at
+<a HREF="mailto:mertz@gnosis.cx">mertz@gnosis.cx</a>; his life pored over at
+<a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>
+Suggestions and recommendations on this, past, or future, columns are welcomed.
+</td></tr>
+</table>
+
+
+<!-- END PAPER BODY -->
+
+
+</body>
+</html>

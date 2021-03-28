@@ -1,0 +1,353 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>CHARMING PYTHON #B8: -- Book Roundup, Part 3 -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="charming_python_b7.html" TITLE="CHARMING PYTHON #b7">
+<link REL="next" HREF="charming_python_b9.html" TITLE="CHARMING PYTHON #b9">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<h1>Charming Python #b8:</h1>
+<h2>Book Roundup, Part 3</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Au courantist, Gnosis Software, Inc.<br>
+ November, 2001<br>
+ <br>
+</p>
+<blockquote>
+    Since my last book roundup in November's Charming Python a
+    number of interesting books on Python have been published.
+    This installments provides new comparative reviews of recent
+    Python titles (or titles missed in the last roundup).
+</blockquote>
+<h3>Introduction</h3>
+ <p>
+  Python books have moved steadily to occupy larger shares of
+  bookstore shelf space.  Since I started these roundups, the
+  number of dead-tree titles has probably doubled twice.  And
+  this says nothing of the many excellent electronic documents
+  about Python out there on the web (including some full-length
+  books).  This article touches on a handful of Python books that
+  have made it to my bookshelf in the last months.
+</p>
+<h3>Internet Related</h3>
+ <h3>Python and the Web
+</h3>
+ <p>
+  Two of the titles I have recently received cover almost the
+  same range of material:  Holden and Beazley's <cite>Python Web
+  Programming</cite> and Thiruvathukal, Christopher and Shafaee's <cite>Web
+  Programming in Python</cite>.  Both reflect well on the excellent
+  reputations of their respective publishers, New Riders and
+  Prentice Hall.  It is hard to recommend one of these over the
+  other, but let me point to a few difference.
+</p>
+<p>
+  <cite>Python Web Programming</cite> has quite good introduction to XML
+  programming in Python.  Not as extensive as <cite>Python &amp; XML</cite>
+  (discussed below), but a solid start.  <cite>Web Programming in
+  Python</cite>, in contrast, omits XML, but provides introductions (as
+  the full title indicates) to Linux, Apache and MySQL.  Both
+  books spend somewhere around 100 pages explaining Python
+  itself, but <cite>Python Web Programming</cite> does quite a bit more on
+  the general networking libraries that come with Python.  Both
+  books end with some sample concrete applications, based on the
+  various topics covered earlier, but <cite>Web Programming in Python</cite>
+  is probably a better choice if your goal is to use the samples
+  as templates for your own development project--_Python Web
+  Programming_ has a bit more of a reference/academic feel to it.
+</p>
+<p>
+  Both books contain indices, but <cite>Python Web Programming</cite> adds
+  to that a glossary (helpful in the world of internet acronyms)
+  and an appendix on changes in Python versions.  You will not go
+  wrong with either title (assuming you are looking for something
+  on Python and the web), but <cite>Web Programming in Python</cite> feels a
+  bit handier for a site-developer.  Assuming you <em>do</em> want to
+  use Linux, Apache and MySQL, along with Python, <cite>Web
+  Programming in Python</cite> gives you enough to work with, without
+  requiring two or three additional books.  Of course, if you
+  insist on using Windows or, even worse, IIS/MSSQL for your
+  site, less of <cite>Web Programming in Python</cite> is relevant.  <cite>Python
+  Web Programming</cite> (mostly) sticks to material relevant across
+  platforms.
+</p>
+<h3>Python &amp; XML
+</h3>
+ <p>
+  The short of it is that Jones and Drake's <cite>Python &amp; XML</cite> is the
+  book you should by if you want to work with XML in Python.
+  McGrath's <cite>XML Processing with Python</cite>, which I reviewed
+  previously, at a certain level covers a similar range of
+  material.  But in most every respect, I prefer Jones and
+  Drake's book.  The writing in <cite>Python &amp; XML</cite> is clear,
+  detailed, and generally precise--certainly in comparison to the
+  XML standards documents it paraphrases.  There are a couple
+  points where the intricacies of XML are characterized slightly
+  wrong--such as the implication on page 27 that there are four
+  rather than five inherent entities (omitting &amp;amp;)--but in
+  general, this is the best book I have encountered for
+  understanding XML.
+</p>
+<p>
+  As the title may or may not indicate, <cite>Python &amp; XML</cite> is really
+  a book about XML, not one about Python.  That is, it contains
+  no explanation of the Python language as such--readers are
+  assumed to understand Python (but not necessarily the XML
+  libraries).  The XML libraries addressed are basically
+  fourfold:  the builtin support in Python 2.0+; the PyXML (of
+  the XML-SIG); Fourthought Inc.'s 4Suite; and bindings for MSXML
+  (on Windows).  Brief mention is made in an appendix of some
+  other libraries (I personally wish that some of the tools I
+  have written for developerWorks columns were mentioned, but
+  that may be vanity).  In general, the examples in the book are
+  compatible with Python's Standard Library XML support.
+</p>
+<h3>Learning The Language</h3>
+ <h3>Python Programming Patterns
+</h3>
+ <p>
+  Thomas W. Christopher's <cite>Python Programming Patterns</cite> is an
+  unusual book in the Python repertoire.  The title is obviously
+  intended as a reference to the famous <cite>Design Patterns:
+  Elements of Reusable Object-Oriented Software</cite> by the so-called
+  "Gang of Four (GoF)"--Gamma, Helm, Johnson, Vlissides.  But
+  <cite>Python Programming Patterns</cite> is not really a recapitulation of
+  that other title into Python examples; it tries at the same
+  time to be a first book on Python itself.  A few strikingly
+  negative notices about Christopher's title have appeared on
+  comp.lang.python; while I agree it has some weaknesses, I think
+  the sentiment misunderstands the intent of the book.
+</p>
+<p>
+  I think of <cite>Python Programming Patterns</cite> not so much as a book
+  about Python, but as a book about programming.  Each chapter
+  introduces some new Python constructs, while simultaneously
+  using those constructs to explain a few general computer
+  science concepts.  As such, the target for Christopher's book
+  is not so much a person trying to pick up Python as it is an
+  introductory to middle-level course in computer science.  Some
+  of the general concepts are interesting for even an advanced
+  programmer to review.  That said, for its best matched purpose,
+  <cite>Python Programming Patterns</cite> spends far too much time
+  explaining basic Python constructs.  Someone advanced enough to
+  understand the "patterns" will <em>get</em> Python syntax quicker than
+  this; someone just beginning programming will have the abstract
+  concepts completely lost on them.  The book could use a bit
+  better focus, overall.
+</p>
+<h3>Visual QuickStart Guide: Python
+</h3>
+ <p>
+  The cover Chris Fehily's book for Peachpit Press boldly
+  proclaims:  "Teach yourself Python the quick and easy way!
+  This Visual QuickStart Guide uses pictures rather than lengthy
+  explanations.  You'll be up and running in no time!"  Stop for
+  a moment, and contemplate what the publisher decides to put in
+  36 point font.  To my mind, this is a decidedly inauspicious
+  beginning.  Then again, I think <cite>USA Today</cite> also advertises
+  itself as "America's most widely read newspaper."
+</p>
+<p>
+  <cite>Visual QuickStart Guide: Python</cite> is chock full of pictures,
+  on literally every page.  Many of these are semi-relevant shell
+  session samples; but quite a few others are almost completely
+  superfluous pictures of web pages, or code listings that decide
+  to include the window decorations of Fehily's text editor
+  (usually under MacOS, in case anyone cares, but sometimes under
+  Windows 2000).  In some cases some genuinely helpful tables and
+  diagrams make it in there too.  Fehily's actual <em>writing</em> is
+  pretty good.  But he is constrained by the publisher's style
+  which precedes every paragraph by one of a half dozen different
+  bullet styles (each apparently indicating something about the
+  paragraph).  The little quips are well chosen and interesting,
+  but it doesn't make for very systematic study of the Python
+  language.
+</p>
+<p>
+  On a lark, I decided to lookup a moderately obscure topic, the
+  <code>.__delattr__()</code> magic method.  The index has no listing for
+  this, and I presume it is not discussed.  Fair enough, this
+  book is for beginners.  There is, however, a listing for the
+  <code>delattr()</code> builtin function.  On page 261 we find a heading
+  called "Manipulating Attributes", with a subheading that
+  describes <code>delattr()</code>.  With the busy page, I initially thought
+  the form <code>del obj.attr</code> was ommitted entirely; but it <em>is</em>
+  mentioned in a little floating bullet elsewhere on the page.
+  Even so, we are simply told that the two are equivalent (with
+  no hint to why both exist).  If I did not have a good knowledge
+  of Python, I think I would get the impression that it was a
+  badly thought out language (rather than one that can deal with
+  transient object names).
+</p>
+<h3>Core Python Programming
+</h3>
+ <p>
+  I have seen a lot of good buzz around Wesley Chun's <cite>Core
+  Python Programming</cite>.  It turns all the buzz is well earned.  I
+  think this is the best book currently available for someone to
+  use in independently learning Python (except those completely
+  new to programming who are better off with Gauld's <cite>Learn to
+  Program Using Python</cite>).  But I would recommend Chun's book
+  above <cite>Learning Python</cite>, <cite>Programming Python</cite>, or <cite>The Quick
+  Python Book</cite>, all of which are good; and I would <em>certainly</em>
+  receommend any of these above <cite>Programming with Python</cite> or
+  <cite>Python:  Annotated Archives</cite>, neither of which I much liked.
+  <cite>Python 2.1 Bible</cite> was also good, but designed for a somewhat
+  more advanced audience.
+</p>
+<p>
+  The strategy of <cite>Core Python Programming</cite> is a logical,
+  progressive presentation of various Python features; but the
+  book is organized well enough into chapters that it is not
+  entirely necessary to read in order.  <cite>Core Python
+  Programming</cite> is not terrible as a reference, but it is more
+  suited to learning Python in the first place.  One thing I
+  really like about Chun's approach is that he is generous with
+  presenting code samples illustrating each concept (but does not
+  attempt to build a single growing application, as some texts
+  do--an approach I find slightly contrived).  The explanation,
+  organization, and typography is clear throughout (although the
+  bottom margins are sometimes extremely small, even while the
+  other margins are generous, which looks odd).
+</p>
+<p>
+  The one complaint I have with Chun's book is that it is
+  physically larger than I would like for easy carrying.  As a
+  desk reference, the size is OK, but as a learning text, it is
+  too big.  The font is rather large, and the paper rather thick.
+  Combined with about 800 pages of length once you count the
+  non-numbered pages, it is a hefty book.  Reducing the physical
+  weight by 30% would be possible without losing any content, and
+  would make for a more useful volume (maybe in the next
+  edition).
+</p>
+<h3>Reference Material</h3>
+ <h3>Python Pocket Reference, 2nd Edition
+</h3>
+ <p>
+  When I last looked at Mark Lutz' <cite>Python Pocket Reference</cite> it
+  was in its first edition.  Since then, Python has gone through
+  some new versions, and Lutz and O'Reilly have updated this thin
+  volume.  The obvious change, and what probably chiefly
+  motivated the update, is that the 2nd edition covers Python 2.
+  But in the process of getting updated, the <cite>Python Pocket
+  Reference</cite> has grown from 74 to 124 pages; to my mind nudging
+  it into somewhat more substantial territory.  My previous
+  complaints still mostly remain:  there is no index, and most of
+  the time no real advantage over the online Language and Library
+  references.  But the few extra pages make it a better book in
+  my mind.  Beyond documenting new features, a sometimes
+  clarification is added to the explanations of existing Python
+  features--just enough possibly to warrant carrying the book
+  around.  Of course, the cover price has correspondingly gone
+  from US$6.95 to US$11.95, still perhaps more than it is worth
+  for someone who does not get free review copies.
+</p>
+<h3>The DOSSIER Series
+</h3>
+ <p>
+  A company called Prime Time Freeware publishes a number of
+  books with an interesting twist to them.  All of their titles
+  are based on documents in the public domain, or under liberal,
+  royalty-free licenses.  Two of these books--in the so-called
+  "Documenting Open Source Software for Industry, Education and
+  Research (DOSSIER)" series are about Python:  <cite>Python:  Library
+  Reference</cite> and <cite>Python:  Miscellanea</cite>.  The first covers
+  exactly what the title says, the latter includes a number of
+  smaller documents, such as Greg Ward's "Distributing Python
+  Modules," Fred Drake's "Documenting Python," the Python
+  Reference Manual, the Python Tutorial, and other documents
+  taken from python.org.  One set of documents omitted would, in
+  my opinion, be valuable to include--Andrew Kuchling's excellent
+  series "What's New in Python X.X?" is the best way to see what
+  has changed between versions.
+</p>
+<p>
+  There is not much I can really add about the content of these
+  books.  You can read them for yourself online, and I have
+  previously praised the high quality of Python's standard
+  documentation.  I can observe that the DOSSIER books are nicely
+  laid out, with a good font and paper stock, and an attractive
+  (although common between titles) cover design.  Apparently the
+  series is physically printed in a print-on-demand arrangement,
+  to avoid warehousing copies.  As such, I might expect the
+  documentation to be more up-to-date than Python 2.0 (the layout
+  is some work, but it is closely based on what the Python team
+  provides as LaTeX, Postscript, or other printable formats).
+  Moreover, as much as I like printed books, I am not sure that
+  $35 is really a fair price for otherwise free words (especially
+  since commercially copyrighted books usually sell at a
+  discount from cover price).  The DOSSIER books are available
+  through Prime Time Freeware's website (shipped by BSDMall), and
+  do not carry an ISBN.
+</p>
+<h3>Resources</h3>
+ <p>
+  <cite>Python Web Programming</cite>, Steve Holden with David Beazley, New
+  Riders, 2002.  ISBN: 0-7357-1090-2.
+</p>
+<p>
+  <cite>Web Programming in Python:  Techniques for Integrating Linux,
+  Apache, and MySQL</cite>, George K. Thiruvathukal, Thomas W.
+  Christopher &amp; John P. Shafaee, Prentice Hall, 2002.  ISBN:
+  0-13-041065-9.
+</p>
+<p>
+  <cite>Python Programming Patterns</cite>, Thoma W. Christopher, Prentice
+  Hall 2002. ISBN: 0-13-040956-1.
+</p>
+<p>
+  <cite>Python &amp; XML</cite>, Christopher A. Jones &amp; Fred L. Drake, Jr.,
+  O'Reilly 2002. ISBN: 0-596-00128-2.
+</p>
+<p>
+  <cite>XML Processing with Python</cite>, Sean McGrath, Prentice Hall,
+  2000.  ISBN: 0-13-021119-2.
+</p>
+<p>
+  <cite>Python Pocket Reference</cite>, 2nd Edition, Mark Lutz, O'Reilly,
+  2002.  ISBN:  1-596-00189-4.
+</p>
+<p>
+  Prime Time Freeware's titles can be examined at:
+</p>
+<blockquote>
+   <a href="http://ptf.com/">http://ptf.com/</a>
+</blockquote>
+<p>
+  Andrew Kuchling's "What's New" series can be found on his
+  website (along with some other documents and modules he has
+  written):
+</p>
+<blockquote>
+   <a href="http://www.amk.ca/python/">http://www.amk.ca/python/</a>
+</blockquote>
+<p>
+  <cite>Visual QuickStart Guide:  Python</cite>, Chris Fehily, Peachpit
+  Press, 2002.  ISBN: 0-201074884-3.
+</p>
+<p>
+  <cite>Core Python Programming</cite>, Wesley J. Chun, Prentice Hall, 2001.
+  ISBN:
+</p>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz' failures as a hunter, fisherman, and shepherd have
+  led him to his life of critical criticism.  Tomorrow he may try
+  something else.  David may be reached at mertz@gnosis.cx; his
+  life pored over at<a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and
+  recommendations on this, past, or future, columns are welcomed.
+</p>
+</body></html>

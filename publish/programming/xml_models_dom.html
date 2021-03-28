@@ -1,0 +1,363 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+  <title>XML Programming Paradigms (part one) -- Object Oriented Programming
+with the Document Object Model --</title>
+</head>
+  <body>
+
+
+ 
+<h1>Xml Programming Paradigms (part One)</h1>
+ 
+<h2>Object Oriented Programming with the Document Object Model</h2>
+ 
+<p>  David Mertz, Ph.D.            &lt;mertz@gnosis.cx&gt;<br>
+          Gnosis Software, Inc.         &lt;http://gnosis.cx/publish/&gt;<br>
+          November 2001 </p>
+ 
+<blockquote>    Several very distinct conceputation models exist for    
+manipulation of XML documents.  This series will look at each     model.
+The Document Object Model is a World Wide Web Consortium     Recommendation
+for an object oriented approach to XML     programming.  This article gives
+a primer on how DOM     represents XML trees conceptually.  Source code examples
+     of using DOM are provided, along with pointers to further     resources. 
+      </blockquote>
+   
+  <h2>About This Series</h2>
+   
+  <p>  As XML has developed into a widely used data format, a number   of
+    programming models have arisen for manipulating XML   documents.  Some
+ of   these models--or "paradigms"--have been   enshrined as standards, while
+  others  remain only informally   specified (but equally widely used nonetheless).
+     In a general   way, the several models available for manipulating XML
+   documents closely mirror the underlying approaches and   techniques that
+  programmers in different traditions bring to   the task of working with
+XML.   It is worth noticing that   "models" are at a higher level of abstraction
+  than a particular   programming language; most of the models discussed
+in   this   series are associated with APIs that have been implemented in
+  multiple   programming languages. </p>
+   
+  <p>  In part, the richness of available XML programming models   simply
+    allows programmers and projects to work in the ways that   are most comfortable
+    and familiar to them.  In many ways, there   is overlap--at least in
+achievable     outcomes--between all the   XML programming models.  However,
+different   models  also carry   with them specific pros and cons in the
+context of XML    manipulation;  and these might urge the use of particular
+models   for particular projects.   This series of five articles aims to
+  provide readers with an overview of the costs, benefits, and   motivations
+for all of the major approaches to programmatic   manipulation of XML documents
+(manipulation  here, should be   understood also to mean "using XML to drive
+or communicate    other application  processes"). </p>
+   
+  <p>  The current article, Part 1, discusses the Document Object   Model
+    (DOM), which is a W3C Recommendation.  DOM is an Object   Oriented Programming
+    (OOP) approach to the manipulation of XML   documents.  Part 2 of this
+ series   will address the Simple API   for XML (SAX), which is an event-driven
+ and   procedural style of   XML programming.  Part 3 will look at XSLT,
+which   brings  a   declarative programming style to transformations of XML
+  documents.     In Part 4, we will see the application of   full-fledged
+Functional Programming     (FP) techniques to XML   manipulation--these in
+some ways unify the earlier     models (but   are less commonly used).  The
+final installment, Part 5,  will     look briefly at a number of tools and
+techniques that did not   quite fit into the previous discussion, but that
+readers would   do well to be aware of. </p>
+   
+  <h2>DOM's Conceptual Framework</h2>
+   
+  <p>  DOM represents an XML document as a <code>Node</code>, which contains, 
+      hierarchically, zero or more "child" <code>Node</code>'s.  What is OOP
+   about   a particular DOM tree is its containment tree, not any   inheritence
+  trees   (although there is also an inheritence   structure to the special<code>
+    Node</code>     types).  In fact, every such   descendent <code>Node</code>
+     has pretty  much the same structure as the   <code>Document</code> itself.
+   Conceptually,   every <code>Node</code> is a fairly   ordinary in-memory
+  object from the  point-of-view of an   object-oriented programming language.
+   A <code>Node</code>    is just an   object which has a few API-specified
+  attributes/data-members,     and a few methods/member-functions (the terminology
+  varies   between languages).     </p>
+   
+  <p>  There are two wrinkles to the system to address immediately.   First,
+    there are actually two sorts of "children" that a<code>Node</code>  
+might     have.  Some types of <code>Node</code>'s have children, while others
+  do   not.  One type of child is an 'ELEMENT_NODE's subelements,   the other
+ is   its XML attributes.  These two types of children   are both specialized
+  'Node's  themselves.  Subelements are found   in the DOM <code>Node</code>
+      data-member    <code>childNodes</code>; XML attributes are   found
+in  the data-member   <code>attributes</code>. </p>
+   
+  <p>  This brings us to the second wrinkle.  As well as <code>Node</code>
+           objects, DOM has two types of collection objects.  Ordered   collections
+    of <code>Node</code> objects live in a <code>NodeList</code> object.
+  Unordered   collections of named <code>Node</code> objects line in a  
+  <code>   NamedNodeMap</code>     .  The value of the <code>childNodes</code>
+ data-member,  for   example,  is a <code>NodeList</code> (several <code>
+Node</code> methods  also return  a   <code>NodeList</code>).  The value
+of the <code>attributes</code>    data-member,   in   contrast, is a <code>
+NamedNodeMap</code>. </p>
+   
+  <p>  Node collections have a nice property:  they are "live"   connections
+    to the underlying DOM <code>Document</code>.  A list or map is   not
+just     a snapshot of an XML document at a moment in time, but   is the
+actual  collection   of <code>Node</code> objects that fulfill some   property
+(like  living under   a particular parent).  The W3C DOM   FAQ emphasizes
+this:   </p>
+   
+  <blockquote>    NodeList, although it resembles an array or vector (it
+has a     length attribute, and you can access the members of the list  
+  via an integer index), is <em>not</em> an array.  Think of it     instead
+as another way of looking at the DOM's document tree.     If that tree changes
+        <em></em> if something inserts or appends or     removes Nodes <em></em>
+         the NodeList will be automatically adjusted     at the same time.
+  The   result is that a NodeList is always an     accurate representation 
+ of the   getChildNodes or     getElementsByTagName results as if you had 
+just issued   that     call, so there is no need to refresh the NodeList to
+pick up     changes to the underlying document. </blockquote>
+     
+    <p>  The overall picture here is that a DOM object represents an   entire
+    XML document, but it is possible to provide "handles" or   "pointers"
+or   "proxies" into particular parts or samples of the   structure for convenience.
+        </p>
+     
+    <h2>Types Of Nodes</h2>
+     
+    <p>  Nodes are lower level and more numerous than one might expect  
+at first.  Basically, <em>everything</em> is a <code>Node</code>, but they
+come   in different types.  In terms of OOP inheritance, all the   specific
+types descend from the abstract class <code>Node</code>.  Each   concrete
+node is one of the following types:  ELEMENT_NODE,   ATTRIBUTE_NODE, TEXT_NODE,
+    CDATA_SECTION_NODE, ENTITY_NODE,   PROCESSING_INSTRUCTION_NODE, COMMENT_NODE,
+    DOCUMENT_NODE,   DOCUMENT_TYPE_NODE, NOTATION_NODE.  These types are
+fairly       self-explanatory, and the uppercase names indicated are usually
+  defined     as constants in a particular DOM implementation (import   syntax
+and name     qualification will depend on the programming   language). </p>
+     
+    <p>  The top <code>Node</code> of any DOM representation of an XML document
+    is   a DOCUMENT_NODE.  This <code>Document</code> node will contain zero
+   or   more PROCESSING_INSTRUCTION_NODE's and COMMENT_NODE's, and   <em>
+exactly     one</em> ELEMENT_NODE.  The one ELEMENT_NODE is the root   element
+of the    XML document.  The root element, in turn, may   contain nodes of
+the various    other types--and perhaps children   of the root will contain
+nodes of the    various types. </p>
+     
+    <p>  TEXT_NODE's in particular are a little suprising in their   behavior.
+     On the one hand, one might expect the text of an   element to simply
+be   a string-type data-member of an   ELEMENT_NODE.  In some ways that would
+  be more convenient.  But   instead, the textual contents inside an XML
+element     is   contained in its own TEXT_NODE.  And being a type of <code>
+Node</code>        , a   TEXT_NODE is not itself a string, but is instead
+a DOM object    whose <em>attribute</em><code>nodeValue</code> has a string
+in it.   Its     <code>nodeName</code>, for what it's worth, contains the
+string       <code>#text</code>. </p>
+     
+    <p>  But the thing that is most surprising about TEXT_NODE's is that 
+ they are not guaranteed to contain <em>all</em> the text inside a   particular
+    element, even if there is nothing other than text in   the element. 
+A  TEXT_NODE   is simply promised to contain <em>some</em>   text--the entire
+ textual content   of an ELEMENT_NODE might be   split between any number
+of TEXT_NODE's.  Fortunately,  the DOM   method <code>normalize()</code>
+can be used to transform a DOM tree, and   minimize the number of TEXT_NODE's
+ contained (and more   importantly,  make each such node of maximal relevant
+ length). </p>
+     
+    <h2>DOM At Work</h2>
+     
+    <p>  If you are like me, it is hard to process the abstract   descriptions
+    of DOM without some concrete code to look at.  To   show readers what
+is   going on, I will use some commands pasted   from a Python interactive
+shell.    DOM implementations exist in   Java, C++, ECMAScript, Perl, Ruby,
+and many   other programming   languages.  A nice thing about DOM is that
+the code usually     looks almost the same across languages.  But Python
+has two   advantages   for presentation:  (1) it has an interactive shell
+  to try variations on   commands (what the user types is preceded   by<code>
+&gt;&gt;&gt;</code> );  (2) its code is particularly concise, and resembles
+  pseudo-code.   In general,  in this series I will make efforts to   avoid
+using constructs   which are idiomatic to one particular   programming language
+(so Python programmers  may find that there   is a more "Pythonic" way of
+implementing my examples). &nbsp;In the code samples, those elements that
+are generic DOM (and common to all languages) are marked in red.        
+  </p>
+     
+    <p>  For this simple demonstration, I created the following trivial 
+ XML document: </p>
+     
+    <div align="Center">     
+    <h3>test.xml</h3>
+     </div>
+     
+    <table border="0" cellpadding="0" class="code-sample" width="80%" bgcolor="#e0e0e0" align="Center">
+       <tbody>
+         <tr>
+           <td valign="Middle">           
+          <pre>&lt;?xml version="1.0"?&gt;<br>&lt;!DOCTYPE Spam SYSTEM "spam.dtd" &gt;<br>&lt;!-- Document Comment --&gt;<br>&lt;?xml-stylesheet href="test.css" type="text/css"?&gt;<br>&lt;Spam flavor="pork" size="8oz"&gt;<br>  &lt;Eggs&gt;Some text about eggs.&lt;/Eggs&gt;<br>  &lt;MoreSpam&gt;Ode to Spam&lt;/MoreSpam&gt;<br>&lt;/Spam&gt;<br></pre>
+           </td>
+         </tr>
+       
+      </tbody>     
+    </table>
+     
+    <p>Let's work with the XML document a bit: </p>
+     
+    <div align="Center">     
+    <h3>Python interactive shell: DOMify XML</h3>
+     </div>
+     
+    <table border="0" cellpadding="0" class="code-sample" width="80%" bgcolor="#e0e0e0" align="Center">
+       <tbody>
+         <tr>
+           <td>           
+          <pre>&gt;&gt;&gt; <font color="#3333cc"><b>from</b></font> xml.dom <font color="#3333cc"><b>import</b></font> minidom<br>&gt;&gt;&gt; dom = minidom.parse(<font color="#115511">'test.xml'</font>)<br>&gt;&gt;&gt; <font color="#3333cc"><b>print</b></font> dom.<font color="#990000"><b>attributes<br></b></font>None<br>&gt;&gt;&gt; <font color="#3333cc"><b>for</b></font> node <font color="#3333cc"><b>in</b></font> dom.<font color="#990000"><b>childNodes</b></font>: <font color="#3333cc"><b>print</b></font> node<br>...<br>&lt;xml.dom.minidom.ProcessingInstruction instance at 0x938ec&gt;<br>&lt;DOM Element: Spam at 1644588&gt;<br>&gt;&gt;&gt; <font color="#3333cc"><b>print</b></font> dom.<font color="#990000"><b>documentElement</b></font><br>&lt;DOM Element: Spam at 1644588&gt;<br>&gt;&gt;&gt; dom.<b><font color="#990000">documentElement</font></b>.<font color="#990000"><b>isSameNode</b></font>(dom.<font color="#990000"><b>childNodes</b></font>[0])<br>0<br>&gt;&gt;&gt; dom.<font color="#990000"><b>documentElement</b></font>.<font color="#990000"><b>isSameNode</b></font>(dom.<font color="#990000"><b>childNodes</b></font>[1])<br>1<br></pre>
+           </td>
+         </tr>
+       
+      </tbody>     
+    </table>
+     
+    <p>  Our start shows off several DOM features.  After the requisite 
+ imports, we generally create a DOM object by parsing an XML   document using
+    a <code>parse()</code> or <code>parseString()</code> method.  The   latter
+    allows XML documents to come from a source other than a   file.  Neither
+   of these methods is actually part of the W3C   standard, but both are
+present     in almost every implementation.   We also might have created
+a new DOM  object   from scratch, but   starting with an existing XML document
+is more  common.       </p>
+     
+    <p>  When we check, we find that a <code>Document</code> node has no 
+ <code>attributes</code>; it does, however, have some <code>childNodes</code>
+        .  One of   the <code>childNodes</code> is the same as the <code>
+documentElement</code>         (as is   demonstrated).  In our example, another
+child of <code>Document</code>         is   a processing instruction.  In
+this paricular DOM   implementation--and     in a number of others--comment
+nodes are   ignored by the parser (and do   not appear in the <code>childNodes</code>
+).   While this limitation is not   usually a problem since the   programmatic
+content should not be in comments,   it is something   to be aware of. </p>
+     
+    <p>  Let us start working with the root node of the document, which 
+ is what we are usually concerned with (and the descendents   thereof). 
+Any descendent element will behave almost exactly   the same way the root
+node does. </p>
+     
+    <div align="Center">     
+    <h3>Python interactive shell: XML attributes</h3>
+     </div>
+     
+    <table border="0" cellpadding="0" class="code-sample" width="80%" bgcolor="#e0e0e0" align="Center">
+       <tbody>
+         <tr>
+           <td>           
+          <pre>&gt;&gt;&gt; Spam = dom.<font color="#990000"><b>documentElement</b></font><br>&gt;&gt;&gt; Spam.<font color="#990000"><b>getAttribute</b></font>(<font color="#115511">'flavor'</font>)<br>u<font color="#115511">'pork'</font><br>&gt;&gt;&gt; Spam.<font color="#990000"><b>attributes</b></font><br>&lt;xml.dom.minidom.NamedNodeMap instance at 0x141b0c&gt;<br>&gt;&gt;&gt; Spam..<font color="#990000"><b>attributes</b></font>.<font color="#990000"><b>length</b></font><br>2<br>&gt;&gt;&gt; i = 0<br>&gt;&gt;&gt; <font color="#3333cc"><b>while</b></font> i &lt; Spam.<font color="#990000"><b>attributes</b></font>.<font color="#990000"><b>length</b></font>:<br>...     item = Spam.<font color="#990000"><b>attributes</b></font>.<font color="#990000"><b>item</b></font>(i)<br>...     <font color="#3333cc"><b>print</b></font> item.<font color="#990000"><b>name</b></font>, item.<font color="#990000"><b>nodeValue</b></font><br>...     i += 1<br>...<br>size 8oz<br>flavor pork<br></pre>
+           </td>
+         </tr>
+       
+      </tbody>     
+    </table>
+     
+    <p>  The attributes are interesting in their behavior.  If you   happen
+    to know that an ELEMENT_NODE has a specific attribute,   it is easy to
+ get   its value with a method call.  But if you are   not sure what XML
+attributes     are present, you have to use a   slightly more roundabout
+technique of  first   looking at the   <code>NamedNodeMap</code> data-member
+    <code>length</code>        , then iterating through the   attributes
+based on the number of them.     Guessing an XML   attribute that might be
+present is not really reliable--this       Python DOM implementation returns
+an empty string if the   attribute does   not exist.  But this implementation
+is flawed,   since it cannot distinguish    the below cases (vis-a-vis the
+  <code>color</code> attribute): </p>
+     
+    <div align="Center">     
+    <h3>Absent versus empty XML attributes</h3>
+     </div>
+     
+    <table border="0" cellpadding="0" class="code-sample" width="80%" align="Center" bgcolor="#e0e0e0">
+       <tbody>
+         <tr>
+           <td>           
+          <pre>&lt;Spam color="" /&gt;<br>&lt;Spam /&gt;<br></pre>
+           </td>
+         </tr>
+       
+      </tbody>     
+    </table>
+     
+    <p>  To round the brief examples, let us take a look at TEXT_NODE   objects,
+    which is usually our main interest in the end.  First,   let's see the
+ non-normalized   and normalized forms: </p>
+     
+    <div align="Center">     
+    <h3>Python interactive shell: normalized TEXT_NODE's</h3>
+     </div>
+     
+    <table border="0" cellpadding="0" class="code-sample" width="80%" bgcolor="#e0e0e0" align="Center">
+       <tbody>
+         <tr>
+           <td>           
+          <pre>&gt;&gt;&gt; <font color="#3333cc"><b>for</b></font> node <font color="#3333cc"><b>in</b></font> Spam.<font color="#990000"><b>childNodes</b></font>: <font color="#3333cc"><b>print</b></font> node<br>...<br>&lt;DOM Text node <font color="#115511">"\n"</font>&gt;<br>&lt;DOM Text node <font color="#115511">"  "</font>&gt;<br>&lt;DOM Element: Eggs at 1510572&gt;<br>&lt;DOM Text node <font color="#115511">"\n"</font>&gt;<br>&lt;DOM Text node <font color="#115511">"  "</font>&gt;<br>&lt;DOM Element: MoreSpam at 1513292&gt;<br>&lt;DOM Text node <font color="#115511">"\n"</font>&gt;<br>&gt;&gt;&gt; Spam.normalize()<br>&gt;&gt;&gt; <font color="#3333cc"><b>for</b></font> node <font color="#3333cc"><b>in</b></font> Spam.<font color="#990000"><b>childNodes</b></font>: <font color="#3333cc"><b>print</b></font> node<br>...<br>&lt;DOM Text node <font color="#115511">"\n  "</font>&gt;<br>&lt;DOM Element: Eggs at 1510572&gt;<br>&lt;DOM Text node <font color="#115511">"\n  "</font>&gt;<br>&lt;DOM Element: MoreSpam at 1513292&gt;<br>&lt;DOM Text node <font color="#115511">"\n"</font>&gt;</pre>
+           </td>
+         </tr>
+       
+      </tbody>     
+    </table>
+     
+    <p>To follow, let us see a typical usage of the contents in a   TEXT_NODE: 
+        </p>
+     
+    <div align="Center">     
+    <h3>Python interactive shell: extracting TEXT_NODE's</h3>
+     </div>
+     
+    <table border="0" cellpadding="0" class="code-sample" width="80%" bgcolor="#e0e0e0" align="Center">
+       <tbody>
+         <tr>
+           <td>           
+          <pre>&gt;&gt;&gt; firstEggs = Spam.<font color="#990000"><b>getElementsByTagName</b></font>(<font color="#115511">'Eggs'</font>)[0]<br>&gt;&gt;&gt; <font color="#3333cc"><b>print</b></font> firstEggs.<font color="#990000"><b>childNodes</b></font>[0].<font color="#990000"><b>nodeValue</b></font><br>Some text about eggs.<br>&gt;&gt;&gt; <font color="#3333cc"><b>print</b></font> firstEggs.<font color="#990000"><b>childNodes</b></font>[0].<font color="#990000"><b>nodeName</b></font><br><font color="#1111cc">#text</font></pre>
+           </td>
+         </tr>
+       
+      </tbody>     
+    </table>
+     
+    <h2>The Good And The Bad Of DOM</h2>
+     
+    <p>  The strong point of DOM is that it provides an OOP framework   for
+    manipulating XML documents that will be familiar to   programmers in
+many     object oriented languages.  The method and   attribute names suggest
+a  particular   affinity with Java, but   the model is common to OOP thinking.
+  Moreover,   although the   short article has not touched on it in any detail,
+ DOM provides     a strong set of <code>Node</code> methods for filtering
+and modifying   nodes and collections. </p>
+     
+    <p>  The weak point of DOM is that it is very poorly suited for   handling
+    large XML documents.  For the trivial case we have   presented there
+is   no  issue, but DOM is extremely memory   hungry.  A DOM representation
+of   an XML document is likely to   be several times the size of the underlying
+  document  (each   <code>Node</code> needs an object, and carries a variety
+  of instance    data).  While DOM readers that operate incrementally upon
+   file-based  XML documents are in experimental stages, by far the   rule
+ is to read in  an entire XML document at one time in order   to create a
+DOM object.  OOP  programmers are often lured by the   familiarity of DOM
+techniques, but consequently  make decisions   that use resources inefficiently.
+ In some ways, the SAX    approach that the next installment will address
+answers the   limits of  DOM (but introduces its own set of limitations.
+    </p>
+     
+    <h2>Resources</h2>
+     
+    <p>  The official word on everything DOM is at the World Wide Web   Consortium's
+    (W3C) website.  Many links to further resources   can be found there
+also:         </p>
+     
+    <blockquote><a href="http://www.w3.org/DOM/">http://www.w3.org/DOM/</a></blockquote>
+       
+      <p>  One particularly useful source of hints at the W3C's DOM site 
+ is the DOM FAQ: </p>
+       
+      <blockquote><a href="http://www.w3.org/DOM/faq.html:">http://www.w3.org/DOM/faq.html:</a></blockquote>
+         
+        <p>  A good starting point for the conceptual framework of DOM  
+is Jonathan Robie's "What is the Document Object Model?": </p>
+         
+        <blockquote><a href="http://www.w3.org/TR/2000/WD-DOM-Level-1-20000929/introduction.html">
+        http://www.w3.org/TR/2000/WD-DOM-Level-1-20000929/introduction.html</a></blockquote>
+           
+          </body>
+          </html>

@@ -1,0 +1,432 @@
+CHARMING PYTHON #4
+State Machines: Algorithms and programming approaches in Python
+
+David Mertz, Ph.D.
+President, Gnosis Software, Inc.
+May 2000
+
+    State machines, in a theoretical sense, underlay almost
+    everything computer- and programming-related.  But a Python
+    programmer does not necessarily need to consider highly
+    theoretical matters in writing programs.  Nonetheless, there
+    are a large class of ordinary programming problems where the
+    best and most natural approach is to explicitly code a state
+    machine as the solution.  This article discusses some
+    practical cases of using state machines, how to recognize
+    them, and how to code them in Python.
+
+
+WHAT IS PYTHON?
+------------------------------------------------------------------------
+
+  Python is a freely available, very-high-level, interpreted
+  language developed by Guido van Rossum.  It combines a clear
+  syntax with powerful (but optional) object-oriented semantics.
+  Python is available for almost every computer platform you
+  might find yourself working on, and has strong portability
+  between platforms.
+
+
+WHAT IS A STATE MACHINE?
+------------------------------------------------------------------------
+
+  A much too accurate description of a state machine is that it
+  is a directed graph, consisting of a set of nodes and a set of
+  transition functions.  Such a machine "runs" by responding to a
+  series of events, each event is in the domain of the transition
+  function of the "current" node, where the range is a subset of
+  the nodes.  The function return is a "next" (maybe
+  self-identical) node. A subset of the nodes are end-states; if
+  an end-state is reached, the machine stops.
+
+  An abstract mathematical description--like the above--is of
+  little use for most practical programming problems.  Equally
+  picayune is the observation that every program in an imperative
+  programming language is a state machine whose nodes are its
+  source lines (but not really in a declarative--functional or
+  constraint-based--language such as Haskell, Scheme, Prolog).
+  Furthermore, every regular expression is logically equivalent
+  to a state machine; and every parser implements an abstract
+  state machine.  Most programmers write lots of state machines
+  without really thinking about it, but that fact provides little
+  guidance to specific programming techniques.
+
+  An informal, heuristic definition is more useful than the
+  abstract ones.  Often we encounter a program requirement that
+  includes a handful of distinct ways of treating clusters of
+  events.  Furthermore, it is sometimes the case that individual
+  events need to be put in a context to determine which type of
+  treatment is appropriate (as opposed to each event being
+  "self-identifying").  The state machines discussed in this
+  article are high-level machines that are intended to express
+  clearly the programming requirements of a class of problems.
+  If it makes sense to talk about your programming problem in
+  terms of categories of behavior in response to events, it is
+  likely to be a good idea to program the solution in terms of
+  explicit state machines.
+
+
+A TEXT PROCESSING STATE MACHINE
+------------------------------------------------------------------------
+
+  One of the programming problems most likely to call for an
+  explicit state machine is processing text files.  Processing a
+  text file very often consists of sequential reading of each
+  chunk of a text file (typically either a character or a line),
+  and doing something in response to each chunk read.  In some
+  cases, this processing is "stateless"--that is, each chunk has
+  enough information internally to determine exactly what to do
+  in response to that chunk of text.  And in other cases, even
+  though the text file is not 100% stateless, there is a very
+  limited context to each chunk (for example, the line number
+  might matter for the action taken, but not much else besides
+  the line itself).  But in other common text processing
+  problems, the text files we deal with are highly
+  "stateful"--the meaning of a chunk all depends on what types of
+  chunks preceded it (and maybe on what chunks come next).
+  Files like report files, mainframe datafeeds, human-readable
+  texts, programming source files, and other sorts of text files
+  are stateful.  A very simple example of a stateful chunk is a
+  line that might occur in a Python source file:
+
+      myObject = SomeClass(this, that, other)
+
+  That line means something very different if it happens to be
+  surrounded by these lines:
+
+      """How to use SomeClass:
+      myObject = SomeClass(this, that, other)
+      """
+
+  That is, we needed to know that we were in a "blockquote"
+  *state* to determine that the line was a comment rather than an
+  action.
+
+
+WHEN NOT TO USE A STATE MACHINE
+------------------------------------------------------------------------
+
+  When we begin the task of writing a processor for any stateful
+  text file, the first question we should ask ourselves is "what
+  types of things do we expect to find in the file?" Each type of
+  thing is a candidate for a state.  These types should be
+  several in number, but if the number is huge or indefinite, a
+  state machine is probably not the right approach--maybe some
+  sort of database solution is appropriate (or maybe the problem
+  has not been formulated right if there appear to by that many
+  types of things)
+
+  Moreover, we are not quite ready for a state machine yet; there
+  may yet be a simpler approach. It might turn out that even
+  though our text file is stateful there is an easy way to read
+  in chunks where each chunk is a single type of thing.  A state
+  machine is really only worth implementing if the transitions
+  between types of text require some calculation based on the
+  content within a single state-block.
+
+  An example of a somewhat stateful text file that is nonetheless
+  probably not best handled with a state machine is Windows-style
+  '.ini' files.  Those files consist of some section headers,
+  some comments, and a number of value assignments.  For example:
+
+      #-------------- File: hypothetical.ini ------------------#
+      ; set the colorscheme and userlevel
+      [colorscheme]
+      background=red
+      foreground=blue
+      title=green
+
+      [userlevel]
+      login=2
+      title=1
+
+  This example has no real-life meaning, but it was constructed
+  to indicate some features of the '.ini' format.  (1) In one
+  sense, the type of each line is determined by its first
+  character (either semi-colon, left-brace, or alphabetic); (2)
+  In another sense, the format is "stateful" insofar as the
+  keyword "title" presumably means something independent when it
+  occurs in each section.  One could program a text processor
+  that had a COLORSCHEME state and a USERLEVEL state, and
+  processed the values assignments of each state.  But that does
+  not seem like the *right* way to handle this problem.
+
+  On the one hand, we could simply create the natural chunks in
+  this text file with some Python code like:
+
+      #---- Chunking Python code to process .INI file --------#
+      import string
+      txt = open('hypothetical.ini').read()
+      sects = string.split(txt, '[')
+      for sect in sects:
+        # do something with sect, like get its name
+        # (the stuff up to ']') and read its assignments
+
+  Or, if we wished, we could use a single 'current_section'
+  variable to keep place:
+
+      #---- Counting Python code to process .INI file --------#
+      for line in open('hypothetical.ini').readlines():
+          if line[0] == '[':
+              current_section = line(1:-2)
+          elif line[0] == ';':
+              pass    # ignore comments
+          else:
+              apply_value(current_section, line)
+
+
+WHEN TO USE A STATE MACHINE
+------------------------------------------------------------------------
+
+  Now that we have established not to use a state machine if the
+  text file is "too simple" we should look at a case where a
+  state machine is worthwhile.  _Charming Python #3_ discussed
+  the utility 'Txt2Html' that converts "smart ASCII" files to
+  HTML (including this article itself).  In very brief recap,
+  "smart ASCII" format is a text format that uses a few spacing
+  conventions to distinguish different types of text blocks, such
+  as headers, regular text, quotations, code samples.  While it
+  is easy for a human reader or writer to visually parse the
+  transitions between these text block types, there is no simple
+  way to chunk a whole text file into its text blocks.  Unlike in
+  the '.ini' file example, text block types can occur in any
+  pattern of alternation.  There is no single delimiter that
+  separates blocks in all cases (a blank line *usually* separates
+  blocks, but a blank line within a code sample does not end the
+  code sample necessarily; and blocks need not be separated by
+  blank lines).  But we do need to perform somewhat different
+  formatting behavior on each text block type for the correct
+  final HTML output.  A state machine suggests itself as a
+  natural solution here.
+
+  The general behavior of the 'Txt2Html' reader is as follows:
+  (1) Start in a particular state; (2) Read a line of the text
+  file and go to current state context; (3) Decide if conditions
+  have been met to leave the current state and enter another; (4)
+  Failing (3), process the line in a manner appropriate for the
+  current state.  This example is about the simplest case one
+  would encounter, but it expresses the pattern described:
+
+      #----- A simple state machine input loop in Python -----#
+      global state, blocks, bl_num, newblock
+      for line in fhin.readlines():
+          if state == "HEADER":         # blank line means new block of ??
+              if blankln.match(line):   newblock = 1
+              elif textln.match(line):  startText(line)
+              elif codeln.match(line):  startCode(line)
+              else:
+                  if newblock: startHead(line)
+                  else: blocks[bl_num] = blocks[bl_num] + line
+          elif state == "TEXT":         # blank line means new block of ??
+              if blankln.match(line):   newblock = 1
+              elif headln.match(line):  startHead(line)
+              elif codeln.match(line):  startCode(line)
+              else:
+                  if newblock: startText(line)
+                  else: blocks[bl_num] = blocks[bl_num] + line
+          elif state == "CODE":         # blank line does not change state
+              if blankln.match(line):   blocks[bl_num] = blocks[bl_num] + line
+              elif headln.match(line):  startHead(line)
+              elif textln.match(line):  startText(line)
+              else: blocks[bl_num] = blocks[bl_num] + line
+          else:
+              raise ValueError, "unexpected input block state: "+state
+
+  The full source file this code is taken from can be
+  downloaded with 'Txt2Html' (see Resources).  The only real
+  thing to notice is that the variable 'state' is declared
+  'global', and its value is changed in functions like
+  'startText()'.  The transition conditions--such as
+  'textln.match()' are regular expression patterns, but they
+  could just as well be custom functions.  The formatting itself
+  is actually done later in the program, the state machine just
+  parses the text file into labelled blocks in the 'blocks' list.
+
+
+AN ABSTRACT STATE MACHINE CLASS
+------------------------------------------------------------------------
+
+  It is easy in Python to abstract the form of a state machine.
+  Coding in this manner makes the state machine model of the
+  program stand out more clearly than does the simple conditional
+  block in the previous example (which doesn't right-away look
+  all that much different from any other conditional).
+  Furthermore, the class presented--and the associated
+  handlers--do a very good job of isolating in-state behavior.
+  This improves both encapsulation and readability in many cases.
+
+      #-------------- File: statemachine.py ------------------#
+      from string import upper
+      class StateMachine:
+          def __init__(self):
+              self.handlers = {}
+              self.startState = None
+              self.endStates = []
+
+          def add_state(self, name, handler, end_state=0):
+              name = upper(name)
+              self.handlers[name] = handler
+              if end_state:
+                  self.endStates.append(name)
+
+          def set_start(self, name):
+              self.startState = upper(name)
+
+          def run(self, cargo):
+              try:
+                  handler = self.handlers[self.startState]
+              except:
+                  raise "InitializationError", "must call .set_start() before .run()"
+              if not self.endStates:
+                  raise "InitializationError", "at least one state must be an end_state"
+
+              while 1:
+                  (newState, cargo) = handler(cargo)
+                  if upper(newState) in self.endStates:
+                      break
+                  else:
+                      handler = self.handlers[upper(newState)]
+
+  The 'StateMachine' class is really all you need for the form of
+  a state machine.  It is a whole lot fewer lines than something
+  similar would require in most languages--mostly because of the
+  ease of passing function objects in Python.
+
+  To actually *use* the 'StateMachine' class, you need to create
+  some handlers for each state you want to use.  A handler must
+  follow a particular pattern.  Generally, it should loop
+  indefinitely; but in any case it must have some breakout
+  condition(s).  Each pass through the state handler's loop
+  should process another event of the state's type. But probably
+  even before handling events, the handler should check for
+  breakout conditions, and determine what state is appropriate to
+  transition to.  At the end, a handler should pass back a tuple
+  consisting of the target state's name, and any cargo the new
+  state-handler will need.
+
+  An encapsulation device is the use of 'cargo' as a variable in
+  the 'StateMachine' class (not necessarily called 'cargo' by the
+  handlers). This is used to pass around "whatever is needed" by
+  one state-handler to take over where the last state-handler
+  left off.  Most typically, 'cargo' will consist of a
+  filehandle, which would allow the next handler to read some
+  more data after the point where the last state-handler stopped.
+  But a database connection might get passed, or a complex
+  class instance, or a list with several things in it.  In the
+  case of the test below, the cargo consists simply of a number
+  that keeps getting fed back into an iterative function.  That
+  is the next value of 'val' is always simply 'math_func(val)'.
+  But depending on what the function does, the value may be in a
+  range so as to either push it to a different handler, or reach
+  an exit condition (which is really just a do-nothing end-state
+  handler).  One thing the example illustrates is that an *event*
+  is not necessarily an input event, it can sometimes be a
+  computational event also (but atypically so). The
+  state-handlers differ from one another only in using a
+  different marker when outputting the events they handle; this is
+  trivial, and does not require a state machine, but it
+  illustrates the concept. The code is probably easier to
+  understand than its explanation:
+
+      #------------ File: statemachine_test.py ---------------#
+      from statemachine import StateMachine
+      def ones_counter(val):
+          print "ONES State:    ",
+          while 1:
+              if val <= 0 or val >= 30:
+                 newState = "Out_of_Range" ; break
+              elif 20 <= val < 30:
+                  newState = "TWENTIES";     break
+              elif 10 <= val < 20:
+                  newState = "TENS";         break
+              else:
+                  print "  @ %2.1f+" % val,
+              val = math_func(val)
+          print "  >>"
+          return (newState, val)
+
+      def tens_counter(val):
+          print "TENS State:    ",
+          while 1:
+              if val <= 0 or val >= 30:
+                 newState = "Out_of_Range";  break
+              elif 1 <= val < 10:
+                  newState = "ONES";         break
+              elif 20 <= val < 30:
+                  newState = "TWENTIES";     break
+              else:
+                  print "  #%2.1f+" % val,
+              val = math_func(val)
+          print "  >>"
+          return (newState, val)
+
+      def twenties_counter(val):
+          print "TWENTIES State:",
+          while 1:
+              if val <= 0 or val >= 30:
+                 newState = "Out_of_Range";  break
+              elif 1 <= val < 10:
+                  newState = "ONES";         break
+              elif 10 <= val < 20:
+                  newState = "TENS";         break
+              else:
+                  print "  *%2.1f+" % val,
+              val = math_func(val)
+          print "  >>"
+          return (newState, val)
+
+      def math_func(n):
+          from math import sin
+          return abs(sin(n))*31
+
+      if __name__== "__main__":
+          m = StateMachine()
+          m.add_state("ONES", ones_counter)
+          m.add_state("TENS", tens_counter)
+          m.add_state("TWENTIES", twenties_counter)
+          m.add_state("OUT_OF_RANGE", None, end_state=1)
+          m.set_start("ONES")
+          m.run(1)
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  Charming Python #3 (a discussion of the 'Txt2Html' tool):
+
+    http://gnosis.cx/publish/programming/charming_python_3.html
+
+  This article as "smart ASCII" text:
+
+    http://gnosis.cx/publish/programming/charming_python_4.txt
+
+  To obtain or use Txt2Html, just point to:
+
+    http://gnosis.cx/cgi-bin/txt2html.cgi
+
+  Files used and mentioned in this article:
+
+    http://gnosis.cx/download/charming_python_4.zip
+
+  The concept of a state machine is, at a deeper level, closely
+  related to the concepts of coroutines.  A reader who really
+  wants to make her brain hurt can read about Christian Tismer's
+  Stackless Python, which efficiently implements coroutines,
+  generators, continuations, and micro-threads.  This is not for
+  the faint of heart:
+
+    http://www.stackless.com/
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  In a ramiculated career, David Mertz has produced his share of
+  synecdoches. Most of them have been in areas of academic
+  "postmodern" philosophy, but this article also occupies several
+  levels of descriptive "states." David may be reached at
+  mertz@gnosis.cx; his life pored over at http://gnosis.cx/publish/.
+  Suggestions and recommendations on this, past, or future, columns
+  are welcomed.
+

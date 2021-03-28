@@ -1,0 +1,420 @@
+XML MATTERS #34: GUIs and XML Configuration Data
+A look at the use of XML in MacOSX and KDE
+
+David Mertz, Ph.D.
+User, Gnosis Software, Inc.
+April 2004
+
+    Over time, XML seems to permeate many niches.  One area where XML is
+    used increasingly is in the configuration of GUI interfaces,
+    especially in elements that are persistent but should not be fixed
+    at compile-time.  In this installment, David looks at the usage of
+    XML in Mac OSX' Aqua GUI, and in the K Desktop Environment (KDE)
+    which is either standard or available in most modern Linux
+    distributions (and also elsewhere, such as in *BSDs).
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  Structured, persistent data has been maintained by OSs--and in
+  particular by their GUIs--through a variety of mechanisms and in a
+  variety of formats.  Windows versions used INI files, then moved to a
+  binary (and unified) Registry; MacOS in earlier versions had resource
+  forks in the filesystem and a Desktop file for its Finder; Linux and
+  other Unix-like systems typically used dotted, hidden files in home
+  directories, with configuration detailed in dozens of incompatible
+  ways between window managers and applications.
+
+  Over time, I think, XML files--in specified locations on the
+  filesystem--will take over from all these earlier mechanisms and
+  formats.  No GUI that I know of really uses "XML everywhere," but most
+  of them are adding more uses over time.  Two GUIs that currently make
+  fairly extensive use of XML are Aqua (in Mac OSX) and KDE (on any
+  XWindow System, e.g. on top of Linux).
+
+MAC OSX
+------------------------------------------------------------------------
+
+Property Lists
+
+  The XML format used in Mac OSX is a simple DTD called property lists,
+  or specifically, http://www.apple.com/DTDs/PropertyList-1.0.dtd. This
+  DTD serializes data into a (nested) set of data structures common in
+  object oriented programming languages: dictionaries, arrays, strings,
+  numbers, booleans, dates, and binary data. This format looks pretty
+  similar to the XML serialization formats that have been created for
+  scripting languages like Python, Perl and Ruby, some of which I have
+  covered in prior installments. I assume the object model for property
+  lists is most directly borrowed from Objective-C, which is the dynamic
+  C superset most widely used for MacOS development.
+
+  The property list DTD is short enough to copy here (reformatted for
+  presentation, with some comments shortened):
+
+      #-------------------- PropertyList-1.0.dtd ----------------------#
+      <!ENTITY % plistObject "(array | data | date | dict | real |
+                               integer | string | true | false )" >
+      <!ELEMENT plist %plistObject;>
+      <!ATTLIST plist version CDATA "1.0" >
+      <!-- Collections -->
+      <!ELEMENT array (%plistObject;)*>
+      <!ELEMENT dict (key, %plistObject;)*>
+      <!ELEMENT key (#PCDATA)>
+      <!--- Primitive types -->
+      <!ELEMENT string (#PCDATA)>
+      <!ELEMENT data (#PCDATA)>
+        <!-- Contents interpreted as Base-64 encoded -->
+      <!ELEMENT date (#PCDATA)>
+        <!-- Contents should conform to a subset of ISO 8601 -->
+      <!-- Numerical primitives -->
+      <!ELEMENT true EMPTY>  <!-- Boolean constant true -->
+      <!ELEMENT false EMPTY> <!-- Boolean constant false -->
+      <!ELEMENT real (#PCDATA)>
+        <!-- Contents should represent a floating point number -->
+      <!ELEMENT integer (#PCDATA)>
+        <!-- Contents should represent a (possibly signed) int number -->
+
+  It is interesting how little XML files conforming to this DTD are
+  really XML-oriented; XML simply acts as a convenient serialization of
+  programming data. Of course, using property lists makes configuration
+  data easily available to all XML tools. The freely-available
+  Developers Tools collection contains a tool for editing property lists
+  called, simply enough, -Property List Editor-; but any tool for
+  editing XML--including basic text editors--works just fine too.
+
+Application Bundles
+
+  There are several distinct roles that property lists occupy.  I will
+  look at two, probably the most important two.  A concept to understand
+  first is the structure of modern MacOS applications: Rather than a
+  single file, many application are actually directories whose name ends
+  with '.app'.  Within this directory, Mac OSX expects to find certain
+  mandatory subdirectories and files (and various optional content).  To
+  the Aqua GUI these packages/bundles look just like single-file
+  executables.  An XML file called 'Info.plist' within this hierarchy
+  controls things like the icon displayed for the application,
+  information provided in the "Get Info" dialog, and where the
+  application preferences are stored.  These preferences are themselves
+  stored in another property list XML file.
+
+  The file 'Info.plist' is restricted to a special collection of
+  dictionary keys and values (see Resources). However, the data
+  contained in a preferences property list are application specific, and
+  may be pretty much whatever your application needs for its
+  configuration. I decided to "Aquaify" a PyQT application that was
+  created as part of the Open Voting Consortium (OVC) project I am part
+  of: the application BRP (Ballot Reconciliation) is not Mac-specific,
+  and will usually run on Linux. But I figured I could make it fit in.
+  To do so, I created the following files and directories:
+
+      #-------------- Creating a MacOS application package ------------#
+      $ ls -R BallotReconciliation.app/
+      Contents
+
+      BallotReconciliation.app//Contents:
+      Info.plist      MacOS           PkgInfo         Resources
+
+      BallotReconciliation.app//Contents/MacOS:
+      run_brp
+
+      BallotReconciliation.app//Contents/Resources:
+      BRP.icns
+
+  A few comments on these. The file 'PkgInfo' contains eight bytes that
+  tells the finder whether the package is something to run, or to open
+  with another application. It also specifies a creator code. Usually
+  you can use the string 'APPL????' for this. The file 'run_brp', in
+  this case, is a bash script that starts with '#!/bin/bash' and that
+  mainly winds up running the Python interpreter with an appropriate
+  script. Any executable works, including Python, Perl, bash, Java, etc.
+  scripts and programs.  If a different executable was needed for a
+  different platform, you might put it in a directory like
+  'Contents/MacOSClassic/' instead--the same package can have multiple
+  executables for different platforms.  The file 'BRP.icns' is the icon
+  data in MacOS's multi-resolution format (it is not strictly required,
+  but a custom icon looks nice).
+
+  Of most interest to readers of this column is the file 'Info.plist';
+  let us take a look at it:
+
+      #-------- BallotReconciliation.app/Contents/Info.plist ----------#
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN"
+                "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+      <dict>
+        <key>CFBundleExecutable</key>
+        <string>run_brp</string>
+        <key>CFBundleGetInfoString</key>
+        <string>© 2004 Open Voting Consortium (EVMPLv.1.1)</string>
+        <key>CFBundleIconFile</key>
+        <string>BRP.icns</string>
+        <key>CFBundleIdentifier</key>
+        <string>com.openvoting.BRP</string>
+        <key>CFBundleInfoDictionaryVersion</key>
+        <string>0.1</string>
+        <key>CFBundleName</key>
+        <string>BallotReconciliation</string>
+        <key>CFBundlePackageType</key>
+        <string>APPL</string>
+        <key>CFBundleShortVersionString</key>
+        <string>0.10</string>
+        <key>CFBundleSignature</key>
+        <string>????</string>
+        <key>CFBundleVersion</key>
+        <string>0.10</string>
+      </dict>
+      </plist>
+
+  As mentioned, the data is a dictionary of metadata about our
+  application.  'CFBundleExecutable' specifies the executable file;
+  'CFBundleIconFile' gives the icon; 'CFBundleGetInfoString' specifies
+  information displayed about the application.
+
+  The key 'CFBundleIdentifier' is of some interest: it tells us where to
+  look for configured preferences for the application. Preference
+  property lists will usually live in '~/Library/Preferences', and
+  should best be named in Java-style with a complete owner prefix.  For
+  this, I used the OVC's domain combined with the application name:
+  'com.openvoting.BRP'.  This name is only a fiction for now, since BRP
+  does not store any configuration information in this file.  However,
+  other applications do store configuration preferences in files like
+  'com.apple.Terminal.plist' (under the mentioned user directory).
+
+Configuration Preferences
+
+  Just for an example, let us take a look at a portion of my
+  configuration property list for Terminal.app:
+
+      #-------- ~/Library/Preferences/com.apple.Terminal.plist --------#
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN"
+                "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+      <dict>
+        <key>AppleSavePanelExpanded</key>
+        <string>NO</string>
+        <key>Autowrap</key>
+        <string>YES</string>
+        <key>BlinkCursor</key>
+        <string>NO</string>
+        <key>CleanCommands</key>
+        <string>rlogin;telnet;ssh;slogin</string>
+        <key>Columns</key>
+        <string>80</string>
+        <key>FontAntialiasing</key>
+        <string>YES</string>
+        <key>NSFixedPitchFontSize</key>
+        <integer>15</integer>
+        <key>NSTableView Sort Ordering NSNavOutlineColumnSettings.v1</key>
+        <array>
+          <data>
+          BAt0eXBlZHN0cmVhbYED6IQBQISEhAhOU1N0cmluZwGEhAhOU09iamVjdACF
+          hAErHE5TTmF2RGlzcGxheU5hbWVGaWxlUHJvcGVydHmG
+          </data>
+          <true/>
+        </array>
+        <key>NSWindow Frame Inspector</key>
+        <string>102 397 268 435 0 0 1280 832 </string>
+        <key>TermCapString</key>
+        <string>vt102</string>
+      </dict>
+      </plist>
+
+  You can see from the names of the keys that some of the configuration
+  is about the actual display of the application (font used,
+  antialiasing, window size, etc) while others are more functional
+  (terminal emulation, special sub-shells).  I also left in an example
+  of nested data just to show that you may freely nest collections
+  inside each other.
+
+THE K DESKTOP ENVIRONMENT
+------------------------------------------------------------------------
+
+  THE KDE project makes use of XML in a number of places: XML is used in
+  the build process for (many) KDE applications; XML-RPC can be used to
+  script application behaviors; XML is used to configure syntax
+  highlighting in Kate; various applications, like KOffice, use XML for
+  data formats.  But for the context of this article, I am interested in
+  XML where it is used to change GUI elements dynamically.
+
+The 'kpartgui' DTD
+
+  As far as I can determine, there is not actually a readily available
+  DTD called 'kpartgui.dtd', it looks like a place-holder. However,
+  resources in KDE that control (optional) pulldown and popup menu items,
+  shortcut keys, and toolbar actions have the declaration '<!DOCTYPE
+  kpartgui>' (or '<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">'). Many or
+  most KDE applications have their own configuration dialogs that write
+  to these XML resources, but you may also modify them in an external
+  text or XML editor and/or programmatically. Either way, next time you
+  launch the configured application, its menus or toolbars will be
+  modified.
+
+  Not every aspect of the configuration of KDE applications--not even
+  what one would call GUI aspects--is held in XML files.  My hunch is
+  that KDE will move farther in the XML direction; probably in some
+  future KDE version, pretty much everything will be configured with
+  XML.  But not yet.  For example, the file '~/.kde/share/config/keditrc'
+  in an INI-style configuration file that, among other things, sets the
+  icon size and captioning; the actual toolbar actions displayed in
+  'KEdit', however, are set in '.kde/share/apps/kedit/keditui.rc', which
+  uses 'kpartgui' XML.
+
+  Menu items listed in such an XML configuration files are -added- to
+  the menus that are compiled into the application.  The basic menus are
+  still decided at compile time--runtime changes just change the
+  optional extras.  Menus, toolbar items, and shortcuts all refer to
+  actions that exist in a given application--or to 'ActionList'
+  collections that are dynamically generated (e.g. actions on the
+  currently opened windows).  KDE applications -are- generally
+  scriptable in various languages, but that is a different topic.
+  Generally menus, toolbars, and shortcuts must refer to actions that
+  the application developer has already contemplated at compile time.
+
+Configuring 'KEdit'
+
+  Just to give readers a feel for 'kpartgui' configuration files, let me
+  show readers a mildly customized version I created.  What is presented
+  below was generated by a combination of using the configuration
+  dialogs in 'KEdit', and touching up the file in a text editor.  Notice
+  that menu names should match existing one to add items to KDE standard
+  pulldown menus.
+
+      #--------------------- A keditui.rc sample --------------------#
+      <!DOCTYPE kpartgui>
+      <kpartgui version="2" name="
+      " >
+       <MenuBar>
+        <Menu name="edit" >
+         <text>&amp;Edit</text>
+         <Action name="insert_file" />
+         <Action name="insert_date" />
+        </Menu>
+        <Menu name="tools">
+         <text>&amp;Tools</text>
+         <Action name="file_mail" />
+        </Menu>
+       </MenuBar>
+       <ActionProperties>
+        <Action shortcut="F1" name="help_about_kde" />
+       </ActionProperties>
+       <ToolBar noMerge="1" name="mainToolBar" >
+        <text>Main Toolbar</text>
+        <Action name="file_new" />
+        <Action name="file_open" />
+        <Action name="file_print" />
+        <Action name="edit_cut" />
+        <Action name="edit_copy" />
+        <Action name="edit_paste" />
+        <Action name="help_about_app" />
+       </ToolBar>
+      </kpartgui>
+
+  One nice thing about KDE is its well-thought and consistent style
+  guidelines.  It is easy to add menu items in places that you probably
+  -should not-.  I think the above example is pretty on-target, but it
+  also is pretty simple.
+
+Adding popup and nested menus
+
+  'KEdit' is a simple application that does not use context-sensitive
+  popup menus.  'KWord' is a more sophisticated application that uses
+  popup menus in various document elements.  Configuring popup menus
+  differs from configuring pulldown menus only in the name of the menu,
+  set in the 'name' attribute.  For example:
+
+      #-------------- Popup menu configured in kword.rc ---------------#
+      <Menu name="footnote_popup" >
+        <Action name="text_default" />
+        <Action name="format_font" />
+        <Action name="format_paragraph" />
+        <Separator/>
+        <Action name="border_backgroundcolor" />
+        <Separator/>
+        <Action name="edit_cut" />
+        <Action name="edit_copy" />
+        <Action name="edit_paste" />
+        <Separator/>
+        <Action name="edit_footendnote" />
+        <Action name="change_footendtype" />
+      </Menu>
+
+  Nested menus are setup pretty much as you would expect, by nesting
+  '<Menu>' tags, e.g.:
+
+      #------------------- Nested menus in kword.rc -------------------#
+      <Menu name="table" >
+        <text>Ta&amp;ble</text>
+        <Action name="table_propertiesmenu" />
+        <Separator/>
+        <Menu name="Row" >
+          <text>Row</text>
+          <Action name="table_insrow" />
+          <Action name="table_delrow" />
+        </Menu>
+        <Menu name="Column" >
+          <text>Column</text>
+          <Action name="table_inscol" />
+          <Action name="table_delcol" />
+          <Action name="table_resizecol" />
+        </Menu>
+        <!-- ...etc... -->
+
+  Complex applications like KWord tend to make a large part of their
+  menus configurable, while simpler ones tend not to have much beyond
+  the standard menus.  This lets you, for example, create a copy of
+  'KWord' that provides only a minimal set of menus for users who only
+  use a few functions.
+
+CONCLUSION
+------------------------------------------------------------------------
+
+  The use of XML in configuring modern GUIs is, so far, a bit haphazard.
+  Most interfaces use XML in places, but other mechanisms elsewhere.
+  But the uses are enough to sense a general movement towards XML.
+
+  Between Mac OSX Aqua and KDE there is a difference in XML "philosophy"
+  that jumps out at you.  Mac OSX uses solely XML elements that
+  correspond to broad data types, while everything that is really
+  application-specific or GUI-specific is shunted off into the PCDATA
+  content of container elements.  In contrast, KDE's XML feels very
+  usage-specific.  Tags are named for what they mean semantically, in a
+  GUI-specific way (e.g. '<dict>' versus '<Menu>'), and most content
+  specification is put into the 'name' attribute.
+
+RESOURCES
+------------------------------------------------------------------------
+
+  A list of all the keys and expected values that can be contained in a
+  Mac OSX application package 'Info.plist' file can be found at:
+
+    http://developer.apple.com/documentation/MacOSX/Conceptual/BPRuntimeConfig/Concepts/PListKeys.html#//apple_ref/doc/uid/20001431
+
+  The paper "Using KConfig XT" discusses the use of XML in building KDE
+  applications:
+
+    http://developer.kde.org/documentation/tutorials/kconfigxt/kconfigxt.html
+
+  The Kate editor uses XML files to configure syntax highlighting:
+
+    http://kate.kde.org/doc/hlhowto.php
+
+  You can find some discussion of KDE XML configuration at "Handling App
+  Specific Actions":
+
+    http://developer.kde.org/documentation/tutorials/xmlui/step5.html#keditui
+
+  And for KOffice, specifically, at "Customizing the KOffice GUI":
+
+    http://docs.kde.org/en/HEAD/koffice/koffice/custom-gui.html
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz thinks the WIMP interface will really take off one of
+  these days. David may be reached at mertz@gnosis.cx; his life pored
+  over at http://gnosis.cx/publish/. Suggestions and recommendations on
+  this, past, or future, columns are welcomed. Check out David's book
+  _Text Processing in Python_ at http//gnosis.cx/TPiP/.

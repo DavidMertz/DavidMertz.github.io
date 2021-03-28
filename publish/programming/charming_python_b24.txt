@@ -1,0 +1,454 @@
+CHARMING PYTHON #B24: Decorators make magic easy
+A look at the newest Python facility for meta-programming
+
+David Mertz, Ph.D.
+Functional Prestidigitator, Gnosis Software
+June, 2006
+
+    Python has long made metaprogramming possible, but each Python
+    version has added slightly different--and not quite
+    compatible--wrinkles to exactly how you accomplish metaprogramming
+    tricks. Playing with first-class function objects has long been
+    around, as have techniques for peaking and poking at magic
+    attributes. With version 2.2, Python grew a custom metaclass
+    mechanism that went a long way, but at the cost of melting users'
+    brains.  Most recently, with version 2.4, Python has grown
+    "decorators", which are the newest--and by far the most
+    user-friendly way, so far--to perform most metaprogramming.
+
+DOING A LOT BY DOING VERY LITTLE
+------------------------------------------------------------------------
+
+  Decorators have something with previous meta-programming abstractions
+  introduced to Python: they do not actually do anything you could not
+  do without them.  As Michele Simionato and I pointed out in earlier
+  _Charming Python_ installments, it was possible even in Python 1.5 to
+  manipulate Python class creation without the "metaclass" hook.
+
+  Decorators are similar in their ultimate banality.  All a decorator
+  does is modify the function or method that is defined immediately
+  after the decorator.  This was always possible, but the capability was
+  particularly motivated by the introduction of the 'classmethod()' and
+  'staticmethod()' built-in functions in Python 2.2.  In the older
+  style, you would use, e.g., a 'classmethod()' call as follows:
+
+      #-------------- Typical "old style" classmethod -----------------#
+      class C:
+          def foo(cls, y):
+              print "classmethod", cls, y
+          foo = classmethod(foo)
+
+  Though 'classmethod()' is a built-in, there is nothing unique about
+  it, you could also have "rolled your own" method transforming
+  function, e.g.:
+
+      #----------- Typical "old style" method transform ---------------#
+      def enhanced(meth):
+          def new(self, y):
+              print "I am enhanced"
+              return meth(self, y)
+          return new
+      class C:
+          def bar(self, x):
+              print "some method says:", x
+          bar = enhanced(bar)
+
+  All that a decorator does is let you avoid repeating the method name,
+  and put the decorator near the first mention of the method in its
+  definition.  For example:
+
+      #-------------- Typical "old style" classmethod -----------------#
+      class C:
+          @classmethod
+          def foo(cls, y):
+              print "classmethod", cls, y
+          @enhanced
+          def bar(self, x):
+              print "some method says:", x
+
+  Decorators work for regular functions too, in just the same manner as
+  for methods in classes.  It is surprising just how much easier such a
+  simple, and strictly-speaking unnecessary, change in syntax winds up
+  making things work better, and makes reasoning about programs easier.
+  Decorators can be chained together by listing more than one prior to a
+  function of method definition; good sense urges avoiding chaining -too
+  many- decorators together, but several are sometimes sensible, e.g.:
+
+      #-------------------- Chained decorators ------------------------#
+      @synchronized
+      @logging
+      def myfunc(arg1, arg2, ...):
+          # ...do something
+      # decorators are equivalent to ending with:
+      #    myfunc = synchronized(logging(myfunc))
+      # Nested in that declaration order
+
+  Being simply syntax sugar, decorators let you shoot yourself in the
+  foot if you are so inclined.  A decorator is just a function that
+  takes at least one argument--it is up the programmer of the decorator
+  to make sure that what it returns is still a meaningful function or
+  method that does enough of what the original function did for the
+  connection to be useful.  For example, a couple syntactic misuses are:
+
+      #-------- Bad decorator that does not even return function ------#
+      >>> def spamdef(fn):
+      ...     print "spam, spam, spam"
+      ...
+      >>> @spamdef
+      ... def useful(a, b):
+      ...     print a**2 + b**2
+      ...
+      spam, spam, spam
+      >>> useful(3, 4)
+      Traceback (most recent call last):
+        File "<stdin>", line 1, in ?
+      TypeError: 'NoneType' object is not callable
+
+  A decorator might return a function, but one that is not meaningfully
+  associated with the undecorated function:
+
+      #----- Decorator whose function ignores passed-in function ------#
+      >>> def spamrun(fn):
+      ...     def sayspam(*args):
+      ...         print "spam, spam, spam"
+      ...     return sayspam
+      ...
+      >>> @spamrun
+      ... def useful(a, b):
+      ...     print a**2 + b**2
+      ...
+      >>> useful(3,4)
+      spam, spam, spam
+
+  Finally, a better behaved decorator will in some way enhance or modify
+  the action of the undecorated function:
+
+      #------ Decorator that modifies behavior of undecorated func ----#
+      >>> def addspam(fn):
+      ...     def new(*args):
+      ...         print "spam, spam, spam"
+      ...         return fn(*args)
+      ...     return new
+      ...
+      >>> @addspam
+      ... def useful(a, b):
+      ...     print a**2 + b**2
+      ...
+      >>> useful(3,4)
+      spam, spam, spam
+      25
+
+  One might quibble over just how useful 'useful()' is, or whether
+  'addspam()' is really such a good -enhancement-, but at least the
+  mechnisms follow the pattern you will typically see in useful
+  decorators.
+
+INTRODUCTION TO HIGH LEVEL ABSTRACTION
+------------------------------------------------------------------------
+
+  Most of what metaclasses are used for, in my experience, is modifying
+  the methods contained in a class once it is instantiated. Decorators
+  do not currently let you modify class instantiation -per se-, but they
+  can massage the methods that are attached to the class. This does not
+  let you dynamically add or remove methods or class attributes during
+  instantiation, but it does let the methods change their behavior
+  depending on conditions in the environment at runtime. Now
+  technically, a decorator applies when a 'class' statement is run,
+  which for top-level classes is closer to "compile time" than to
+  "runtime". But arranging runtime determination of decorators is as
+  simple as creating a class factory.  For example:
+
+      #------------- Robust, but deeply nested, decorator -------------#
+      def arg_sayer(what):
+          def what_sayer(meth):
+              def new(self, *args, **kws):
+                  print what
+                  return meth(self, *args, **kws)
+              return new
+          return what_sayer
+
+      def FooMaker(word):
+          class Foo(object):
+              @arg_sayer(word)
+              def say(self): pass
+          return Foo()
+
+      foo1 = FooMaker('this')
+      foo2 = FooMaker('that')
+      print type(foo1),; foo1.say()  # prints: <class '__main__.Foo'> this
+      print type(foo2),; foo2.say()  # prints: <class '__main__.Foo'> that
+
+  The '@arg_sayer()' example goes through a lot of contortions to obtain
+  a rather limited result; but it is worthwhile for the several things
+  it illustrates.
+
+    * The 'Foo.say()' method has different behaviors for different
+    instances.  In the actual example, the difference only amounts to a
+    data value that could easily be varied by other means; but in
+    principle, the decorator could have completely rewritten the method
+    based on runtime decisions.
+
+    * The undecorated 'Foo.say()' method in this case in a simple
+    placeholder, with the entire behavior determined by the decorator.
+    However, in other cases, the decorator might -combine- the
+    undecorated method behavior with some new capabilities.
+
+    * As already observed, the modification of 'Foo.say()' is determined
+    strictly at runtime, via the use of the 'FooMaker()' class factory.
+    Probably more typical is using decorators on top-level defined
+    class, which depend only on conditions available at compile-time
+    (which are often adequate).
+
+    * The decorator is parameterized.  Or rather 'arg_sayer()' itself is
+    not really a decorator at all; rather, the function -returned by-
+    'arg_sayer()', namely 'what_sayer()', is a decorator function that
+    uses a closure to encapsulate its data.  Paramaterized decorators
+    are common, but they wind up needing functions nested three-levels
+    deep.
+
+MARCHING INTO METACLASS TERRITORY
+------------------------------------------------------------------------
+
+  I told you in the last section that decorators could not completely
+  replace the metaclass hook since they only modified methods rather
+  than add or delete methods.  That was actually not quite true.  A
+  decorator, being a Python function, can do absolutely anything other
+  Python code can.  By decorating the '.__new__()' method of a class,
+  even a placeholder version of it, you can in fact change what methods
+  attach to a class.  I have not seen this pattern "in the wild", but I
+  think it has a certain explicitness, perhaps even as an improvement on
+  the '__metaclass__' assignment:
+
+      #----------- A decorator to add and remove methods --------------#
+      def flaz(self): return 'flaz'     # Silly utility method
+      def flam(self): return 'flam'     # Another silly method
+
+      def change_methods(new):
+          "Warning: Only decorate the __new__() method with this decorator"
+          if new.__name__ != '__new__':
+              return new  # Return an unchanged method
+          def __new__(cls, *args, **kws):
+              cls.flaz = flaz
+              cls.flam = flam
+              if hasattr(cls, 'say'): del cls.say
+              return super(cls.__class__, cls).__new__(cls, *args, **kws)
+          return __new__
+
+      class Foo(object):
+          @change_methods
+          def __new__(): pass
+          def say(self): print "Hi me:", self
+
+      foo = Foo()
+      print foo.flaz()  # prints: flaz
+      foo.say()         # AttributeError: 'Foo' object has no attribute 'say'
+
+  In the sample 'change_methods()' decorator, some fixed methods are
+  added and removed, fairly pointlessly. A more realistic case would use
+  some patterns from the previous section. For example, a parameterized
+  decorator could accept a data structure indicating methods to be added
+  or removed; or perhaps some feature of the environment like a database
+  query could make this decision. This manipulation of attached methods
+  could also be wrapped in a function factory as before, deferring the
+  final decision until runtime. These latter techniques might even be
+  more versatile than '__metaclass__' assignment, for example, you might
+  call and enhanced 'change_methods()' like:
+
+      class Foo(object):
+          @change_methods(add=(foo, bar, baz), remove=(fliz, flam))
+          def __new__(): pass
+
+CHANGING A CALL MODEL
+------------------------------------------------------------------------
+
+  The most typical examples you will see discussed for decorators can
+  probably be described as making a function or method "do something
+  extra" while it does its basic job.  For example, on places like the
+  Python cookbook website you might see decorators to add capabilities
+  like tracing, logging, memoization/caching, thread locking, output
+  redirection.  Related to these modifications--but in a slightly
+  different spirit--are "before" and "after" modifications.  One
+  interesting possibility for before/after decoration is checking the
+  types of arguments to a function and the return value from a function.
+  Presumably such a 'type_check()' decorator would raise an exception or
+  take some corrective action if the types are not as expected.
+
+  In somewhat the same vein as before/after decorators, I got to
+  thinking about the "elementwise" application of functions that is
+  characteristic of the R programming language, and of [NumPy].  In
+  these languages, numeric functions generally apply to -each element-
+  in a sequence of elements, but also to an individual number.
+
+  Certainly the 'map()' function, list-comprehensions, and more recently
+  generator-comprehensions, let you do elementwise application.  But
+  these require minor work-arounds to get R-like behavior: the type of
+  sequence returned by 'map()' is always a list; and the call will fail
+  if you pass it a single element rather than a sequence, e.g.:
+
+      >>> from math import sqrt
+      >>> map(sqrt, (4, 16, 25))
+      [2.0, 4.0, 5.0]
+      >>> map(sqrt, 144)
+      TypeError: argument 2 to map() must support iteration
+
+  It is not hard to create a decorator that "enhances" a regular
+  numerical function:
+
+      #------- Converting a function to an elementwise function -------#
+      def elementwise(fn):
+          def newfn(arg):
+              if hasattr(arg,'__getitem__'):  # is a Sequence
+                  return type(arg)(map(fn, arg))
+              else:
+                  return fn(arg)
+          return newfn
+
+      @elementwise
+      def compute(x):
+          return x**3 - 1
+
+      print compute(5)        # prints: 124
+      print compute([1,2,3])  # prints: [0, 7, 26]
+      print compute((1,2,3))  # prints: (0, 7, 26)
+
+  It is not hard, of course, to write a 'compute()' function that simply
+  builds in the different return types; the decorator only takes a few
+  lines, after all. But in what might be described as a nod to
+  aspect-oriented programming, this example lets us -separate concerns-
+  that operate at different levels. We might write a variety of numeric
+  computation functions, and wish to turn them each into elementwise
+  call models without thinking about the details of argument type
+  testing and return value type coercion.
+
+  The 'elementwise()' decorator works equally well for any function that
+  might operate on either an individual thing or on a sequence of things
+  (while preserving the sequence type). As an exercise, readers might
+  try working out how to allow the same decorated call to also accept
+  and return iterators (hint: it is easy if you just iterate a completed
+  elementwise computation, it is less straightforward to do lazily if
+  and only if an iterator object is passed in).
+
+  Most good decorators you will encounter have much of this paradigm of
+  combining orthogonal concerns.  Traditional object-oriented
+  programming, especially in languages like Python that allow multiple
+  inheritance, attempt to modularize concerns with an inheritance
+  hierarchy.  However, merely getting some methods from one ancestor,
+  and other methods from other ancestors requires a conception in which
+  concerns are much more separated than they are in aspect-oriented
+  thinking.  Taking best advantage of generators involves thinking about
+  issues somewhat differently than does mix-and-matching methods: -each-
+  method might be made to work in different ways depending on concerns
+  that are outside of the "heart" of the method itself.
+
+DECORATING YOUR DECORATORS
+------------------------------------------------------------------------
+
+  Before end this installment, I would like to point readers to a really
+  wonderful Python module called [decorator] written by my sometimes
+  co-author Michele Simionato.  This module makes developing decorators
+  much nicer.  Having a certain reflexive elegance, the main component
+  of the [decorator] module is a decorator called 'decorator()'.
+  A function decorated with '@decorator' can be written in a simpler
+  manner than one without it.
+
+  Michele has produced quite good documentation of his module, so I will
+  not attempt to reproduce it; but I would like to point out the basic
+  problems it solves.  There are two main benefits to the [decorator]
+  module.  On the one hand it lets you write decorators with fewer
+  levels of nesting than you would otherwise need ("flat is better than
+  nested"); but more interesting possibly is the fact it makes decorated
+  functions actually match their undecorated version in metadata, which
+  my examples have not.  For example, recalling the somewhat silly
+  "tracing" decorator 'addspam()' that I used above:
+
+      #---------- How a naive decorator corrupts metadata -------------#
+      >>> def useful(a, b): return a**2 + b**2
+      >>> useful.__name__
+      'useful'
+      >>> from inspect import getargspec
+      >>> getargspec(useful)
+      (['a', 'b'], None, None, None)
+      >>> @addspam
+      ... def useful(a, b): return a**2 + b**2
+      >>> useful.__name__
+      'new'
+      >>> getargspec(useful)
+      ([], 'args', None, None)
+
+  While the decorated function -does- its enhanced job, a closer look
+  shows it is not quite right, especially to code-analysis tools or
+  IDEs that care about these sorts of details.  Using [decorator], we
+  can improve matters:
+
+      >>> from decorator import decorator
+      >>> @decorator
+      ... def addspam(f, *args, **kws):
+      ...     print "spam, spam, spam"
+      ...     return f(*args, **kws)
+      >>> @addspam
+      ... def useful(a, b): return a**2 + b**2
+      >>> useful.__name__
+      'useful'
+      >>> getargspec(useful)
+      (['a', 'b'], None, None, None)
+
+  This looks better both to write the decorator in the first place, and
+  in its behavior preserving metadata.  Of course, reading the full
+  incantations that Michele used to develop the module brings you back
+  into brain-melting territory; we can leave that for cosmologists like
+  Dr. Simionato.
+
+RESOURCES
+------------------------------------------------------------------------
+
+  "Metaclass programming in Python" was two previous _Charming Python_
+  installment I wrote with Michele Simionato:
+
+    http://www-128.ibm.com/developerworks/linux/library/l-pymeta.html
+
+  Followed by "Metaclass programming in Python, Part 2: Understanding
+  the arcana of inheritance and instance creation":
+
+        http://www-128.ibm.com/developerworks/linux/library/l-pymeta2/
+
+  Michele's module 'decorator.py' makes working with decorators
+  considerably easier.  Read about it at:
+
+    http://www.phyast.pitt.edu/~micheles/python/documentation.html
+
+  The ASPN online Python Cookbook is a good source for examples of
+  decorator usage, as well as other esoteric Python examples:
+
+    http://aspn.activestate.com/ASPN/Cookbook/Python/
+
+  David, with some help from co-author Brad Huntting, wrote a three part
+  introductin to "Statistical programming with the R programming
+  language" for IBM developerWorks:
+
+    Part 1. Dabbling with a wealth of statistical facilities:
+    http://www-128.ibm.com/developerworks/linux/library/l-r1/
+
+    Part 2. Functional programming and data exploration:
+    http://www-128.ibm.com/developerworks/linux/library/l-r2/
+
+    Part 3. Reusable and object-oriented programming:
+    http://www-128.ibm.com/developerworks/linux/library/l-r3.html
+
+  An installment of "Charming Python" addressed NumPy, and in passing
+  its "elementwise" function application:
+
+    http://www-128.ibm.com/developerworks/linux/library/l-cpnum.html
+
+  Wikipedia's article on aspect-oriented programming is a good place to
+  start if you are unfamiliar with this concept:
+
+    http://en.wikipedia.org/wiki/Aspect_oriented_programming
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz has many versions of each of his thoughts, and overall
+  lacks any unity of ego. David may be reached at mertz@gnosis.cx; his
+  life pored over at http://gnosis.cx/publish/. Check out David's book
+  _Text Processing in Python_ (http://gnosis.cx/TPiP/).

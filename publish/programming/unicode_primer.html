@@ -1,0 +1,317 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>TECHNICAL TIPS -- Understanding Unicode -- </title>
+<style>
+             {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+em           {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt}
+ul, ol, li   {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+tt           {font-family: mono, courier}
+pre          {font-family: mono; font-size: 9pt}
+th           {font-family: mono, courier; font-size: 8pt}
+
+.code-sample {background-color: #CCCCCC}
+.sidebar     {background-color: #FFFFCC}
+.title       {font-size: medium; color: #3333CC}
+.subtitle    {font-size: 9pt; color: #3333CC}
+.subhead     {font-size: 12pt}
+.input       {background: #FFFFFF; color: #000000; font-weight: normal}
+</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<p><strong class="title">Technical Tips</strong><br>
+<strong class="subtitle">Understanding Unicode</strong></p>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ February, 2001<br>
+ <br>
+</p>
+<blockquote>    Unicode provides a unified means of representing character
+    sets across languages, and makes multi-language and
+    multi-national computing much more transparent.  This article
+    provides some background on the development of Unicode, and
+    some beginning hints on working with Unicode.
+</blockquote><p><strong class="subhead">Some Background On Characters</strong></p>
+ <p>  Before we see what Unicode is, it makes sense to step back
+  slightly to think about just what it means to store
+  "characters" in digital files.  Anyone who uses a tool like a
+  text editor usually just thinks of what they are doing as
+  entering some characters--numbers, letters, punctuation, etc.
+  But behind the scene a little bit more is going on.
+  "Characters" that are stored on digital media must be stored as
+  sequences of ones and zeros, and some encoding and decoding
+  must happen to make these ones and zeros into characters we see
+  on a screen or type in with a keyboard.
+</p>
+<p>  Sometime around the 1960s, a few decisions were made about just
+  what ones and zeros (bits) would represent characters.  One
+  important choice that most modern computer users give no
+  thought to was the decision to use 8-bit bytes on nearly all
+  computer platforms.  In other words, bytes have 256 possible
+  values.  Within these 8-bit bytes, a consensus was reached to
+  represent one character in each byte.  So at that point,
+  computers needed a particular <em>encoding</em> of characters into
+  byte values; there were 256 "slots" available, but just which
+  character would go in each slot?  The most popular encoding
+  developed was Bob Bemers' American Standard Code for
+  Information Interchange (ASCII), which is now specified in
+  exciting standards like ISO-14962-1997 and
+  ANSI-X3.4-1986(R1997).  But other options, like IBM's mainframe
+  EBCDIC linger on, even now.
+</p>
+<p>  ASCII itself is of somewhat limited extent.  Only the values of
+  the lower-order 7-bits of each byte might contain ASCII encoded
+  characters.  The top 7-bits worth of positions (128 of them)
+  are "reserved" for other uses (back to this).  So, for example,
+  a byte that contains "01000001" <em>might</em> be an ASCII encoding of
+  the letter "A", but a byte containing "11000001" cannot be an
+  ASCII encoding of anything.  Of course, a given byte may or may
+  not <em>actually</em> represent a character; if it is part of a text
+  file, it probably does, but if it is part of object code, a
+  compressed archive, or other binary data, ASCII decoding is
+  misleading.  It depends on context.
+</p>
+<p>  The reserved top 7-bits in common 8-bit bytes have been used
+  for a number of things in a character-encoding context.  On
+  traditional textual terminals (and printers, etc.) it has been
+  common to allow switching between <em>codepages</em> on terminals to
+  allow display of a variety of national language characters (and
+  special characters like box-drawing borders), depending on the
+  needs of a user.  In the world of internet communications,
+  something very similar to the codepage system exists with the
+  various ISO-8859-* encodings.  What all these systems do is
+  assign a set of characters to the 128 slots that ASCII reserves
+  for other uses.  These might be accented roman characters (used
+  in many Western European languages), they might be non-roman
+  character sets like Greek, Cyrillic, Hebrew, or Arabic (or in
+  the future, Thai and Hindi).  By using the right codepage,
+  8-bit bytes can be made quite suitable for encoding reasonable
+  sized (phonetic) alphabets.
+</p>
+<p>  Codepages and ISO-8859-* encodings, however, have some definite
+  limitations.  For one thing, a terminal can only display one
+  codepage at a given time, and a document with an ISO-8859-*
+  encoding can only contain one character set.  Documents that
+  need to contain text in multiple languages are not possible to
+  represent by these encodings.  A second issue is equally
+  important:  many ideographic and pictographic character sets
+  have far more than 128 or 256 characters in them (the former is
+  all we would have in the codepage system, the latter if we used
+  the whole byte and discarded the ASCII part).  It is simply not
+  possible to encode languages like Chinese, Japanese, and
+  Korean in 8-bit bytes.  Systems like ISO-2022-JP-1 and codepage
+  943 allow larger character sets to be represented using two or
+  more bytes for each character.  But even when using these
+  language-specific multi-byte encodings, the problem of mixing
+  languages is just as present.
+</p>
+<p><strong class="subhead">What Is Unicode?</strong></p>
+ <p>  Unicode solves the problems of previous character encoding
+  schemes by providing a unique code-number for <em>every</em> character
+  needed, worldwide and across languages.  Over time, more
+  characters are being added, but the allocation of available
+  ranges for future uses has already been planned out, so the
+  room exists).  In Unicode encoded documents, no ambiguity
+  exists about how a given character should display (for example,
+  should byte value <code>0x89</code> appear as e-umlaut, as in codepage 850,
+  or as the per-mil mark, as in codepage 1004?).  Furthermore, by
+  giving each character its own code, there is no problem or
+  ambiguity in creating multi-lingual documents that utilize
+  multiple character sets at the same time.  Or rather, these
+  documents actually utilize the single (very large) character
+  set of Unicode itself.
+</p>
+<p>  Unicode is managed by the Unicode Consortium (see Resources), a
+  non-profit group with corporate, institutional, and individual
+  members.  Originally, Unicode was planned as a 16-bit
+  specification.  However, this original plan failed to leave
+  enough room for national variations on related (but distinct)
+  ideographs across East Asian Languages (Chinese, Japanese, and
+  Korean), nor for specialized alphabets used in mathematics and
+  the scholarship of historical languages.  As a result, the code
+  space of Unicode is currently 32-bits (and anticipated to
+  remain fairly sparsely populated, given the 4 billion allowed
+  characters).
+</p>
+<p><strong class="subhead">Encodings</strong></p>
+ <p>  A full 32-bits of encoding space leaves plenty of room for
+  every character we might want to represent, but it has its own
+  problems.  If we need to use 4 bytes for every character we
+  want to encode, that makes for rather verbose files (or
+  strings, or streams).  Furthermore, these verbose files are
+  likely to cause a variety of problems for legacy tools.  As a
+  solution to this, Unicode is itself often encoded using
+  "Unicode Transformation Formats" (appreviated as <code>UTF-*</code>).  The
+  encodings <code>UTF-8</code> and <code>UTF-16</code> use rather clever techniques to
+  encode characters in a variable number of bytes, but with the
+  most common situation being the use of just the number of bits
+  indicated in the encoding name.  In addition, the use of
+  specific byte value ranges in multi-byte characters is designed
+  in such a way as to be friendly to existing tools.  <code>UTF-32</code> is
+  also an available encoding, one that simply uses all four bytes
+  in a fixed-width encoding.
+</p>
+<p>  The design of <code>UTF-8</code> is such that <code>US-ASCII</code> characters are
+  simply encoded as themselves.  For example, the English letter
+  "e" is encoded as the single byte <code>0x65</code> in both ASCII and in
+  <code>UTF-8</code>.  However, the non-English "e-umlaut" diacritic, which
+  is Unicode character <code>0x00EB</code> is encoded with the two bytes
+  <code>0xC3 0xAB</code>.  In contrast, the <code>UTF-16</code> representation of
+  every character is always at least 2 bytes (and sometimes 4
+  bytes).  <code>UTF-16</code> has the rather straightforward
+  representations of the letters "e" and "e-umlaut" as <code>0x65
+  0x00</code> and <code>0xEB 0x00</code>, respectively.  So where does the odd
+  value for the e-umlaut in <code>UTF-8</code> come from.  Here is the
+  trick:  no multi-byte encoded <code>UTF-8</code> character is allowed to
+  be in the 7-bit range used by ASCII, to avoid confusion.  So
+  the <code>UTF-8</code> scheme uses some bit shifting, and encodes every
+  Unicode character using up to 6 bytes.  But the byte values
+  allowed in each position are arranged in such a manner as not
+  to allow confusion of byte positions (for example, if you read
+  a file non-sequentially).
+</p>
+<p>  Let's look at another example, just to see it layed out.  Here
+  is a simple text string encoded in several ways.  The view
+  presented in the graphic is what you would see in a hex-mode
+  file viewer.  This way, it is easy to see both a likely
+  onscreen character representation (on a legacy, non-Unicode
+  terminal) and a representation of the underlying hexadecimal
+  values each byte contains:
+</p>
+<p>  <img src="http://gnosis.cx/publish/programming/unicode1.gif" alt="Hex view of several character string encodings">
+</p>
+<p><strong class="subhead">Declarations</strong></p>
+ <p>  We have seen how Unicode characters are actually encoded, at
+  least briefly, but how do applications know to use a particular
+  decoding procedure when Unicode is encountered?  How
+  applications are alerted to a Unicode encoding depends upon the
+  type of data stream in question.
+</p>
+<p>  Normal text files do not have any special header information
+  attached to them to explicitly specify type.  However, some
+  operating systems (like MacOS, OS/2 and BeOS--Windows and Linux
+  only in a more limited sense) have mechanisms to attach
+  extended attributes to files; increasingly, MIME header
+  information is stored in such extended attributes.  If this
+  happens to be the case, it is possible to store MIME header
+  information such as:
+</p>
+<p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>Content-Type: text/plain; charset=UTF-8
+
+</pre>
+</td></tr></table></p>
+<p>  Nonetheless, having MIME headers attached to files is not a
+  safe generic assumption.  Fortunately, the actual byte
+  sequences in Unicode files provides a tip to applications.  A
+  Unicode-aware application, absent contrary indication, is
+  supposed to assume that a given file is encoded with <code>UTF-8</code>.
+  A non-Unicode-aware application reader the same file will find
+  a file that contains a mixture of ASCII characters and high-bit
+  characters (for multi-byte <code>UTF-8</code> encodings).  All the
+  ASCII-range bytes will have the same values as if they were
+  ASCII encoded.  If any multi-byte <code>UTF-8</code> sequences were used,
+  those will appear as non-ASCII bytes, and should be treated as
+  non-character data by the legacy application.  This may result
+  in non-processing of those extended characters, but that is
+  pretty much the best we could expect from a legacy application
+  (that, by definition, does not know how to deal with the
+  extended characters).
+</p>
+<p>  For <code>UTF-16</code> encoded files, a special convention is followed
+  for the first two bytes of the file.  One of the sequences
+  <code>0xFF 0xFE</code> or <code>0xFE 0xFF</code> act as small headers to the file.
+  The choice of which header specifies the <code>endianness</code> of a
+  platform's bytes (most common platforms are little-endian, and
+  will use <code>0xFF 0xFE</code>).  It was decided that the collision risk
+  of a legacy file beginning with these bytes was small, and
+  therefore these could be used as a reliable indicator for
+  <code>UTF-16</code> encoding.  Within a <code>UTF-16</code> encoded text file, plain
+  ASCII characters will appear every other byte, interspersed
+  with <code>0x00</code> (null) bytes.  Of course, extended characters will
+  produce non-null bytes, and in some cases double-word (4 byte)
+  representations.  But a legacy tool that ignores embedded nulls
+  will wind up doing the right thing with <code>UTF-16</code> encoded files,
+  even without knowng about Unicode.
+</p>
+<p>  Many communications protocols--and more recent document
+  specifications--allow for explicit encoding specification.  For
+  example, a HTTPd application (a web server) can return a header
+  such as the following to provide explicit instructions to a
+  client:
+</p>
+<p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>HTTP/1.1 200 OK
+Content-Type: text/html; charset:UTF-8;
+
+</pre>
+</td></tr></table></p>
+<p>  Similarly, an NNTP, SMTP/POP3 message can carry a similar
+  <code>Content-Type:</code> header field that makes explict the encoding to
+  follow (most likely as <code>text/plain</code> rather than <code>text/html</code>,
+  however; or at least we can hope).
+</p>
+<p>  HTML and XML documents can contain tags and declarations to
+  make Unicode encoding expicit.  An HTML document can provide a
+  hint in a <code>META</code> tag, like:
+</p>
+<p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>&lt;META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8"&gt;
+
+</pre>
+</td></tr></table></p>
+<p>  However, a <code>META</code> tag should properly take lower precedence
+  than an HTTP header, in a situation where both are part of the
+  communication (but for, e.g., a local HTML file such an HTTP
+  header does not exist).
+</p>
+<p>  In XML, the actual document declaration should indicate the
+  Unicode encoding, as in:
+</p>
+<p><strong></strong>
+<table border="0" cellpadding="0" class="code-sample" width="100%"><tr><td>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+
+</pre>
+</td></tr></table></p>
+<p>  Other formats and protocols may provide explicit encoding
+  specification by similar means.
+</p>
+<p><strong class="subhead">Resources</strong></p>
+ <p>  More-or-less definitive information on all matters Unicode can
+  be found at:
+</p>
+<blockquote>   <a href="http://www.unicode.org/">http://www.unicode.org/</a>
+</blockquote><p>  The Unicode Consortium:
+</p>
+<blockquote>   <a href="http://www.unicode.org/unicode/consortium/consort.html">http://www.unicode.org/unicode/consortium/consort.html</a>
+</blockquote><p>  ISO 8859 Alphabet Soup:
+</p>
+<blockquote>   <a href="http://czyborra.com/charsets/iso8859.html">http://czyborra.com/charsets/iso8859.html</a>
+</blockquote><p>  Unicode Technical Report #17--Character Encoding Model:
+</p>
+<blockquote>   <a href="http://www.unicode.org/unicode/reports/tr17/">http://www.unicode.org/unicode/reports/tr17/</a>
+</blockquote><p>  Yudit Unicode Text Editor:
+</p>
+<blockquote>   <a href="http://yudit.org">http://yudit.org</a>
+</blockquote><p>  A number of TrueType Unicode fonts can be found at:
+</p>
+<blockquote>   <a href="http://www.ccss.de/slovo/unifonts.htm">http://www.ccss.de/slovo/unifonts.htm</a>
+</blockquote><p>  A brief history of ASCII:
+</p>
+<blockquote>   <a href="http://www.bobbemer.com/ASCII.HTM">http://www.bobbemer.com/ASCII.HTM</a>
+</blockquote><p><strong class="subhead">About The Author</strong></p>
+ <p>  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz knows a little bit about a lot of things, but a lot
+  about fewer things than he once did.  The smooth overcomes the
+  striated.  David can be reached at mertz@gnosis.cx; his life
+  pored over at<a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and
+  recommendations on this, past, or future, columns are welcomed.
+</p>
+</body></html>

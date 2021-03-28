@@ -1,0 +1,419 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>TUTORIAL FOR LPI EXAM 201: part 7 -- Topic 213: System Customization and Automation -- </title>
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Tutorial For Lpi Exam 201: Part 7</h1>
+<h2>Topic 213: System Customization and Automation</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Professional Neophyte<br>
+ August, 2005<br>
+ <br>
+</p>
+<blockquote>
+    Welcome to "System Customization and Automation", the seventh of
+    eight tutorials designed to prepare you for LPI exam 201. In this
+    tutorial you will learn some basic approaches to scripting and
+    automating system events such as report and status generation,
+    cleanup and general upkeep.
+</blockquote>
+<h3>Before You Start</h3>
+ <h3>About this series
+</h3>
+ <p>
+  The Linux Professional Institute (LPI) certifies Linux system
+  administrators at junior and intermediate levels. There are two exams
+  at each certification level. This series of eight tutorials helps you
+  prepare for the first of the two LPI intermediate level system
+  administrator exams--LPI exam 201. A companion series of tutorials is
+  available for the other intermediate level exam--LPI exam 202. Both
+  exam 201 and exam 202 are required for intermediate level
+  certification. Intermediate level certification is also known as
+  certification level 2.
+</p>
+<p>
+  Each exam covers several or topics and each topic has a weight. The
+  weight indicate the relative importance of each topic. Very roughly,
+  expect more questions on the exam for topics with higher weight. The
+  topics and their weights for LPI exam 201 are:
+</p>
+<p>
+  <strong> Topic 201: Linux Kernel (5)
+  </strong> Topic 202: System Startup (5)
+  <strong> Topic 203: Filesystems (10)
+  </strong> Topic 204: Hardware (8)
+  <strong> Topic 209: File Sharing Servers (8)
+  </strong> Topic 211: System Maintenance (4)
+  <strong> Topic 213: System Customization and Automation (3)
+  </strong> Topic 214: Troubleshooting (6)
+</p>
+<h3>About this tutorial
+</h3>
+ <p>
+  Welcome to "System Customization and Automation", the seventh of eight
+  tutorials designed to prepare you for LPI exam 201. In this tutorial
+  you will learn some basic approaches to scripting and automating
+  system events such as report and status generation, cleanup and
+  general upkeep.
+</p>
+<h3>Prerequisites
+</h3>
+ <p>
+  To get the most from this tutorial, you should already have a basic
+  knowledge of Linux and a working Linux system on which you can
+  practice the commands covered in this tutorial.
+</p>
+<h3>About customization and automation
+</h3>
+ <p>
+  One of the task categories a system administrator needs to perform is
+  the automation of various things that should occur either
+  periodically, or with minimal fuss when a recurrent need arises.  For
+  automatic scheduling, your primary tools are <code>cron</code> and <code>at</code>.  Tasks
+  themselves, whether regularly scheduled or manually launched can be
+  scripted with various languages, including <code>bash</code>, <code>awk</code>, <code>perl</code> or
+  <code>python</code>.  Tools in the GNU text utilities are very frequently useful
+  as part of many processing tasks; these are most often used within
+  <code>bash</code> scripts, since more sophisticated languages like <code>awk</code>, <code>perl</code>,
+  and <code>python</code> build in most of the capabilities in the text utilities.
+</p>
+<h3>Scheduling Periodic Tasks</h3>
+ <h3>Configuring cron
+</h3>
+ <p>
+  The daemon <code>cron</code> is used to run commands periodically. You can use
+  <code>cron</code> for all manner of system housekeeping and administration.
+  Anything you want to happen repeatedly on a schedule should be
+  controlled by <code>cron</code>. <code>cron</code> has a granularity of one minute--that is,
+  it wakes up once a minute to check if it needs to do anything, but
+  cannot peform tasks more than once per minute (if you want to do that,
+  you probably want a daemon of some sort, not a "cron job"). <code>cron</code> logs
+  its action to the syslog facility.
+</p>
+<p>
+  There are several places where <code>cron</code> searches for configuration files
+  that indicate environment settings and commands to run.  The first
+  place is in <code>/etc/crontab</code>.  These are "system" tasks.  As well, the
+  directory <code>/etc/cron.d/</code> may contain multiple configuration files that
+  are treated as supplements to <code>/etc/crontab</code>.  Special packages may
+  add files (matching package name) to <code>/etc/cron.d/</code>, but system
+  administrators should use <code>/etc/crontab</code>.
+</p>
+<p>
+  User-level <code>cron</code> configurations are stored in
+  <code>/var/spool/cron/crontabs/$USER</code>.  However, these should always be
+  configured using the tool <code>crontab</code>.  Using <code>crontab</code>, users can
+  schedule their own recurrent tasks.
+</p>
+<h3>Daily, weekly and monthly jobs
+</h3>
+ <p>
+  A special convention is used to jobs that should be run daily, weekly
+  or monthly, rather than on other more complex schedules.  These are
+  probably the most common schedules in practice.  Directories called
+  <code>/etc/cron.daily/</code>, <code>/etc/cron.weekly/</code> and <code>/etc/cron.monthly/</code> are
+  created with collections of scripts to run on those respective
+  schedules.  Adding or removing scripts from these directories is a
+  simple way to schedule system tasks.  For example, a system I maintain
+  rotates logs daily simply by having a script file:
+</p>
+<div class="code-sample"><h4></h4><pre>$ cat /etc/cron.daily/logrotate
+#!/bin/sh
+test -x /usr/sbin/logrotate || exit 0
+/usr/sbin/logrotate /etc/logrotate.conf
+
+</pre></div><h3>cron and anacron
+</h3>
+ <p>
+  <code>anacron</code> can be used to execute commands periodically, with a
+  frequency specified in days. Unlike <code>cron</code>, <code>anacron</code> checks whether
+  each job has been executed in the last N days, where N is the period
+  specified for that job (as opposed to whether the current time matches
+  the scheduled execution). If not, <code>anacron</code> runs the job’s command,
+  after waiting for the number of minutes specified as the delay
+  parameter. Hence, on machines that are not running continuously
+  periodic jobs will still be executed once the machine is actually
+  running (obviously, the exact timing might vary, but the task will not
+  be forgotten).
+</p>
+<p>
+  <code>anacron</code> reads a list of jobs from the configuration file
+  <code>/etc/anacrontab</code>. Each job entry specifies a period in days, a delay
+  in minutes, a unique job identifier, and a shell command. For example,
+  on one Linux system I maintain, <code>anacron</code> is used to run daily, weekly
+  and monthly jobs even if the machine is not running at the scheduled
+  time of day:
+</p>
+<div class="code-sample"><h4></h4><pre>$ cat /etc/anacrontab
+# /etc/anacrontab: configuration file for anacron
+SHELL=/bin/sh
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+# These replace cron's entries
+1         5  cron.daily    nice run-parts --report /etc/cron.daily
+7        10  cron.weekly   nice run-parts --report /etc/cron.weekly
+@monthly 15  cron.monthly  nice run-parts --report /etc/cron.monthly
+
+</pre></div><h3>The contents of a crontab
+</h3>
+ <p>
+  The format of <code>/etc/crontab</code> (or the contents of <code>/etc/cron.d/</code> files)
+  is slightly different from user <code>crontab</code> files.  Basically, this just
+  amounts to an extra field in <code>/etc/crontab</code> that indicates the user a
+  command runs as.  This is not needed for user <code>crontab</code> files since
+  they are already stored in a file matching username
+  (<code>/var/spool/cron/crontabs/$USER</code>).
+</p>
+<p>
+  Each line of <code>/etc/crontab</code> either sets an environment variable or
+  configures a recurring job. Comment and blank lines are ignored. For
+  "cron jobs", the first five fields specify times to run, where each
+  zero-based field may have a list and/or a range. The fields are
+  minute, hour, day-of-month, month, day-of-week (space or tab
+  separated). An asterisk in any position indicates "any". For example,
+  to run a task at midnight on Tuesdays and Thursdays during August
+  through October, you could use:
+</p>
+<div class="code-sample"><h4></h4><pre># line in /etc/crontab
+0 0 * 7-9 2,5  root /usr/local/bin/the-task -opt1 -opt2
+
+</pre></div><h3>Special scheduling values
+</h3>
+ <p>
+  Some common scheduling patterns have shortcut names that may be used
+  in place of the first five fields:
+</p>
+<div class="code-sample"><h4></h4><pre>@reboot        Run once, at startup.
+@yearly        Run once a year, "0 0 1 1 *".
+@annually      (same as @yearly)
+@monthly       Run once a month, "0 0 1 * *".
+@weekly        Run once a week, "0 0 * * 0".
+@daily         Run once a day, "0 0 * * *".
+@midnight      (same as @daily)
+@hourly        Run once an hour, "0 * * * *".
+
+</pre></div><p>
+  For example, you might have a configuration containing:
+</p>
+<div class="code-sample"><h4></h4><pre>@hourly       root /usr/local/bin/hourly-task
+0,29 * * * *  root /usr/local/bin/twice-hourly-task
+
+</pre></div><h3>Using crontab
+</h3>
+ <p>
+  To setup a user-level scheduled task, use the <code>crontab</code> command (as
+  opposed to the <code>/etc/crontab</code> file.  Specifically, <code>crontab -e</code>
+  launches and editor to modify a file.  You can list current jobs with
+  <code>crontab -l</code>, and remove the file with <code>crontab -r</code>.  Optionally, you
+  can specify <code>crontab -u user</code> to schedule tasks for a given user, but
+  the default is to do so for yourself (permission limits apply).
+</p>
+<p>
+  The file <code>/etc/cron.allow</code>, if present, must contain the names of all
+  user allowed to schedule jobs.  Alternately, if there is no
+  <code>/etc/cron.allow</code> then a user must not be in <code>/etc/cron.deny</code> if they
+  are allowed to schedule tasks (if neither file exists, everyone may
+  use <code>crontab</code>).
+</p>
+<h3>Scheduling One-time Tasks</h3>
+ <h3>at and friends
+</h3>
+ <p>
+  If you need to run a task in the future rather than immediately, you
+  can use the command <code>at</code>.  The command <code>at</code> takes a command either
+  from STDIN or from a file (using the <code>-f</code> option), and accepts time
+  descriptions in a flexible collection of formats.
+</p>
+<p>
+  A family of commands are used in association with <code>at</code> itself'.  <code>atq</code>
+  lists pending tasks.  <code>atrm</code> removes a task fro the pending queue.
+  <code>batch</code> works much like <code>at</code> except it only runs jobs if the system
+  load is low when the job is requested, otherwise deferring run until a
+  low system load exists.
+</p>
+<h3>Permissions
+</h3>
+ <p>
+  Much like with <code>/etc/cron.allow</code> and <code>/etc/cron.deny</code>, <code>at</code> has
+  <code>/etc/at.allow</code> and <code>/etc/at.deny</code> to configure permissions for
+  running <code>at</code>. The file <code>/etc/at.allow</code>, if present, must contain the
+  names of all user allowed to schedule jobs. Alternately, if there is
+  no <code>/etc/at.allow</code> then a user must not be in <code>/etc/at.deny</code> if they
+  are allowed to schedule tasks (if neither file exists, everyone may
+  use <code>crontab</code>).
+</p>
+<h3>Time specifications
+</h3>
+ <p>
+  See the manpage on your <code>at</code> version for full details. You can specify
+  a particular time as <code>HH:MM</code>, which will happen the next time that
+  time occurs (if it is passed today, it means tomorrow). If you use 12
+  hour time, you may add <code>AM</code> or <code>PM</code>. You may give a date as <code>MMDDYY</code>
+  or <code>MM/DD/YY</code> or <code>DD.MM.YY</code> or <code>month-name day</code>.  You may increment
+  from the current time with <code>now + N units</code>, which N is a number and
+  units is <code>minutes</code>, <code>hours</code>, <code>days</code> or <code>weeks</code>.  The words <code>today</code> and
+  <code>tomorrow</code> have their obvious meaning; as do <code>midnight</code> and <code>noon</code>
+  (<code>teatime</code> is 4pm).  Some examples:
+</p>
+<div class="code-sample"><h4></h4><pre>% at -f ./foo.sh 10am Jul 31
+% echo 'bar -opt' | at 1:30 tomorrow
+
+</pre></div><p>
+  The exact definition of the time specification can be found in
+  <code>/usr/share/doc/at/timespec</code>.
+</p>
+<h3>Scripting Tips</h3>
+ <h3>Outside resources
+</h3>
+ <p>
+  This relatively short tutorial cannot really touch on the ins-and-outs
+  of even one major scripting language. A number of excellent books have
+  been written on each of Awk, Perl, Bash, Python. The author, however,
+  might particularly recommend his own <cite>Text Processing in Python</cite> as a
+  good starting point for scripting in Python. Most scripts you will
+  write for system administration are aimed at text manipulation:
+  extracting values from logs and configuration files; generating
+  reports and summaries; but also cleaning up system cruft and sending
+  notifications of tasks performed.
+</p>
+<p>
+  The most common scripts in Linux system administration are written in
+  <code>bash</code>.  However, <code>bash</code> itself has relatively few built-in
+  capabilities.  Instead, <code>bash</code> makes it particularly easy to utilize
+  external tools, both basic file utilities like <code>ls</code>, <code>find</code>, <code>rm</code>,
+  <code>cd</code>, and the like; but especially text tools like those found in the
+  GNU text utilities.  A good introduction to these utilities can be
+  found in "Using the GNU text utilities"
+  (http://www-128.ibm.com/developerworks/edu/l-dw-linux-gnutex-i.html).
+</p>
+<h3>Bash tips (part one)
+</h3>
+ <p>
+  One particularly helpful setting to include in <code>bash</code> scripts that run
+  on a schedule is the <code>set -x</code> switch that echos the commands run to
+  STDERR.  This is helpful in debugging scripts if they do not seem to
+  have the effects anticipated.  Another useful option during testing is
+  <code>set -n</code> that causes a script to look for syntax problems, but not
+  actually run.  Obviously, you don't want a <code>-n</code> version scheduled in
+  <code>cron</code> or <code>at</code>, but to get it working in the first place, it can help.
+</p>
+<p>
+  A <code>cron</code> job that runs a <code>bash</code> script might start something like:
+</p>
+<div class="code-sample"><h4></h4><pre>#!/bin/bash
+exec 2&gt;/tmp/my_stderr
+set -x
+# functional commands here
+
+</pre></div><p>
+  This redirects STDERR to a file, and outputs the commands run to
+  STDERR.  Examining that file later can be useful.
+</p>
+<p>
+  The manpage for <code>bash</code> is quite good, though quite long.  Of
+  particular interest are all the options that the builtin <code>set</code> can
+  accept.
+</p>
+<h3>Bash tips (part two)
+</h3>
+ <p>
+  One of the common things you do in a system administration script is
+  process a collection of files, often with the files of interest
+  identified using the <code>find</code> command.  However, a problem can arise
+  when filenames contain whitespace, and especially newline characters.
+  Much of the looping and processing of filenames you are likely to do
+  can be confused by these internal whitespace characters.  For example,
+  these two commands are different:
+</p>
+<div class="code-sample"><h4></h4><pre>% rm foo bar baz bam
+% rm 'foo bar' 'baz bam'
+
+</pre></div><p>
+  The first unlinks four files (assuming they exist to start with); the
+  second removes just two files, each with an internal space in the
+  name.  Filenames with spaces are particularly common among multimedia
+  content.
+</p>
+<p>
+  Fortunately, the GNU version of the <code>find</code> command has a a <code>-print0</code>
+  option to NULL terminate each result; and the <code>xargs</code> command has a
+  corresponding <code>-0</code> command to treat arguments as NULL separated.
+  Putting these together, you might cleanup stray files (that might
+  contain whitespace in their names) using:
+</p>
+<div class="code-sample"><h4></h4><pre>#!/bin/bash
+# Cleanup some old files
+set -x
+find /home/dqm \( -name '*.core' -o -name '#*' \) -print0 \
+ | xargs -0 rm -f
+
+</pre></div><h3>Perl taint mode
+</h3>
+ <p>
+  Perl has a handy switch <code>-T</code> to enable so-called "taint mode."  In
+  this mode, Perl takes a variety of extra security precautions, but
+  most especially it limits execution of commands arising from external
+  input.  If you use <code>sudo</code> execution, taint mode might be enabled
+  automatically, but the safest thing is to start your administration
+  scripts with:
+</p>
+<div class="code-sample"><h4></h4><pre>#!/usr/local/bin/perl –T
+
+</pre></div><p>
+  Once you do this, all command line arguments, environment variables,
+  locale information (see perllocale), results of certain system calls
+  (readdir(), readlink(), the variable of shmread(), the messages
+  returned by msgrcv(), the password, gcos and shell fields returned by
+  the getpwxxx() calls), and all file input are marked as "tainted".
+  Tainted data may not be used directly or indirectly in any command
+  that invokes a sub-shell, nor in any command that modifies files,
+  directories, or processes, with a few exceptions.
+</p>
+<p>
+  It's possible to "untaint" particular external values by (cautiously)
+  checking them for expected patterns, e.g.:
+</p>
+<div class="code-sample"><h4></h4><pre>if ($data =~ /^([-\@\w.]+)$/) {
+   $data = $1;                     # $data now untainted
+} else {
+   die "Bad data in ’$data’";      # log this somewhere
+}
+
+</pre></div><h3>Perl CPAN packages
+</h3>
+ <p>
+  One of the handy things about Perl is that it comes with a very
+  convenient mechanism for installing extra support packages, called
+  "CPAN" (Comprehensive Perl Archive Network). RubyGems is similar in
+  function. Python, unfortunately, does not yet have as automated of an
+  installation mechanism (but comes with more in the default
+  installation).  Simpler languages like Bash and Awk do not really have
+  many add-ons to install in an analogous sense.
+</p>
+<p>
+  The manpage on the <code>cpan</code> command is a good place to get started.  In
+  general, if you have a task to perform for which you think someone
+  might have done most of the work already, you can look for candidate
+  modules at<a href="http://www.cpan.org/modules/.">http://www.cpan.org/modules/.</a>
+</p>
+<p>
+  The tool <code>cpan</code> has both an interactive shell and a command-line
+  operation.  Once configured (run the interactive shell once to be
+  prompted on configuration options), <code>cpan</code> handles dependencies and
+  download locations in an automated fashion.  For example, suppose I
+  discover that I have a system administration task that involves
+  processing configuration files in YAML format.  Installing support for
+  YAML is as simple as:
+</p>
+<div class="code-sample"><h4></h4><pre>% cpan -i YAML  # maybe with 'sudo' first
+
+</pre></div><p>
+   Once installed your scripts can contain <code>use YAML;</code> at top.
+   Similarly for whatever capabilities you need that someone has created
+   a package for.
+</p>
+</body></html>

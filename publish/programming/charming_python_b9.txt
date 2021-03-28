@@ -1,0 +1,409 @@
+CHARMING PYTHON #B9: Making Python Run as Fast as C
+Psyco - The Python Specializing Compiler
+
+David Mertz, Ph.D.
+Just-in-time Writer, Gnosis Software, Inc.
+August, 2002
+
+    In some ways the design of Python resembles the design of
+    Java. Both utilize a virtual machine that interprets
+    specialized pseudo-compiled byte-codes.  One area where JVM's
+    are more advanced than Python is in optimizing the execution
+    of byte-codes. To Python's rescue comes Psyco--the Python
+    Specializing Compiler--which right now is an external module,
+    but which could someday be included in Python itself.  With
+    only a tiny amount of extra programming, Psyco can often
+    be used to increase the speed of Python code by orders of
+    magnitude. This article looks at what Psco is, and tests it
+    in some applications.
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  Python is usually fast enough for what you want it to do.
+  Ninety percent of the concerns that novice programmers express
+  about the execution speed of an interpreted/byte-compiled
+  language like Python are simply naive.  On modern hardware,
+  most unoptimized Python programs run as fast as they need to,
+  and there is really no point in spending extra programming
+  effort to make an application run faster.
+
+  This installment, therefore, is only interested in that other
+  10%.  Once in while, Python programs (or programs in other
+  languages) run impracticably slowly.  What is needed for a
+  given purpose varies greatly--shaving off milliseconds is
+  rarely compelling (but more often than never), but speeding up
+  tasks that run for minutes, hours, days, or weeks is often
+  worthwhile.  Moreover, it should be noted that not everything
+  that runs slowly is CPU bound; if a database query takes hours
+  to complete, for example, it makes little difference whether
+  the resulting dataset takes one or two minutes to process.
+  This installment is also not about I/O issues.
+
+  There are a number of ways to speed up Python programs.  The
+  first technique that should come to every programmers mind is
+  an improvement to the algorithms and data structures used.
+  Micro-optimizing the steps of an inefficient algorithm is a
+  fool's errand.  For example, if the complexity order of the
+  current technique is O(n**2), speeding up the steps by 10x is a
+  lot less helpful where it matters than is finding an O(n)
+  substitute.  This comparative moral applies even where
+  approaches as extreme as a rewrite in assembly are
+  considered--the right algorithm in Python will often go faster
+  than the wrong algorithm in hand-tuned assembly.
+
+  The second technique to consider is to profile your Python
+  application, with an eye toward rewriting key portions as C
+  extension modules.  Using an extension wrapper like SWIG, you
+  can create a C extension that executes the most time consuming
+  elements of your program as C code.  Extending Python in this
+  manner is relatively straightforward, but does require a bit of
+  a learning curve (and knowledge of C).  Very often you will
+  find that the large majority of the time spent in executing
+  your Python application is spent in just a handful of
+  functions, so considerable gains are possible.
+
+  A third technique builds on the second.  Greg Ewing has created
+  a language called Pyrex, which melds Python and C.  In
+  particular, to use Pyrex, you write functions in a Python-like
+  language that adds type-declarations to selected variables.
+  Pyrex (the tool) processes ".pyx" file into ".c" extensions.
+  Once compiled with a C compiler, these Pyrex (the language)
+  modules can be imported into and used in your regular Python
+  applications.  Since Pyrex uses almost the same syntax as
+  Python itself--including loop, branch and exception statements;
+  assigment forms; block indentation; and so on--a Pyrex
+  programmer need not learn C to write extensions.  Moreover,
+  Pyrex allows more seamless mixing of C-level variables and
+  Python-level variables (objects) within the same code than does
+  an extension written directly in C.
+
+  A final technique is the subject of this installment.  The
+  extension module Psyco can plug in to the guts of the Python
+  interpreter, and selectively substitute optimized machine code
+  for portions of Python's interpreted byte-code.  Unlike the
+  other techniques described, Psyco operates strictly at Python
+  runtime.  That is, Python source code is compiled by the
+  'python' command to byte-code in exactly the same manner as
+  before (except for a couple 'import' statements and function
+  calls added to invoke Psyco).  But while the Python interpreter
+  is running an application, Psyco sometimes checks to see if it
+  can substitute some specialized machine code for regular Python
+  byte-code actions.  This specialized compilation is both
+  very similar to what Java just-in-time compilers do--broadly
+  speaking, at least--and is architecture specific.  As of right
+  now, Psyco is only available for i386 CPU architectures.  The
+  nice thing about Psyco is that you can use the very same Python
+  code you have been writing all along (and -very same- is quite
+  literally true), but let it run much faster.
+
+
+HOW PSYCO WORKS
+------------------------------------------------------------------------
+
+  To understand Psyco completely, you probably need to have a
+  good grasp of both the Python interpreter's 'eval_frame()'
+  function and i386 Assembly.  Unfortunately, I myself can claim
+  neither expertise--but I think I can explain Psyco in outline
+  wihtout going too far wrong.  For more definative word, consult
+  Psyco creator Armin Rigo's essay entitled _Psyco, the Python
+  Specializing Compiler_ (see Resources).
+
+  In regular Python, the 'eval_frame()' function is the inner
+  loop of the Python interpreter.  Basically, the 'eval_frame()'
+  function looks at the current byte-code in an execution
+  context, and switches control out to a function appropriate for
+  implementing that byte-code.  The specifics of what this
+  support function will do depend, in general, upon that states
+  of various Python objects held in memory.  To make it simple,
+  adding the Python objects "2" and "3" produces a different
+  result than adding the objects "5" and "6".  But both
+  operations are dispatched in a similar way.
+
+  Psyco replaces the 'eval_frame()' function with a compound
+  evaluation unit.  There are several ways that Psyco is able to
+  improve upon what Python does.  In the first place, Psyco
+  compiles operations to somewhat opitimized machine code; in
+  itself this produces only slight improvements, since what the
+  machine code needs to accomplish is the same as what Python's
+  dispatched functions do.  Moreover, what is "specialized" in
+  Psyco compilation is more than the choice of Python byte-codes,
+  Psyco also specializes over variable values that are known in
+  execution contexts.  For example, in code like the below, the
+  variable 'x' is knowable for the duration of the loop:
+
+      x = 5
+      l = []
+      for i in range(1000):
+          l.append(x*i)
+
+  An optimized version of this code need not multiply each 'i' by
+  "the content of the x variable/object"--it is less expensive to
+  simply multiply each 'i' by 5, saving a lookup/dereference.
+
+  Aside from creating i386 specific codes for small operations,
+  Psyco caches this compiled machine code for later reuse.  If
+  Psyco is able to recognize that a particular operation is the
+  same as something that was performed (and "specialized")
+  earlier, it can rely on this cached code, rather than need to
+  recompile the segment.  This saves a bit more time.
+
+  The real savings in Psyco, however, relates to Psyco's
+  categorization of operations into three different levels.
+  For Psyco, there are "run-time", "compile-time" and
+  "virtual-time" variable.  Psyco promotes and demotes variables
+  between the levels as needed.  Run-time variables are simply
+  the raw byte-codes and object structures that the regular
+  Python interpreter handles.  Compile-time variables are
+  represented in machine registers and directly accessed memory
+  locations, once operations have been compiled by Psyco into
+  machine code.
+
+  The most interesting level is virtual-time variables.  A Python
+  variable is, internally, a complete structure, with lots of
+  members--even when the object only represents an integer, for
+  example.  Psyco virtual time variables represent Python objects
+  that could potentially be built if the need arose, but whose
+  details are omitted until such time.  For example, consider an
+  assignment like:
+
+      x = 15 * (14 + (13 - (12 / 11)))
+
+  Standard Python builds and destroys a number of objects to
+  compute this value.  An entire integer object is built to hold
+  the value of '(12/11)'; then a value is pulled out of the
+  temporary object's structure, and used to compute a new
+  temporary object '(13-PyInt)'.  Psyco skips the objects, and
+  just computes the values--knowing that an object can be created
+  "if needed" from the value.
+
+
+USING PSYCO
+------------------------------------------------------------------------
+
+  Explaining Psyco is relatively difficult.  -Using- Psyco is far
+  easier.  Basically, all there is to it is telling the Psyco
+  module which which functions/methods to "specialize." No code
+  changes need be made to any of your Python functions and
+  classes themselves.
+
+  There are a couple approaches to specifying what Psyco should
+  do.  The "shotgun" approach is to enable Psyco just-in-time
+  operation everywhere.  To do that, put the following lines at
+  the top of your module:
+
+      import psyco ; psyco.jit()
+      from psyco.classes import *
+
+  The first line tells Psyco to do its magic on all global
+  functions.  The second line--in Python 2.2 and above--tells
+  Psyco to do the same with class methods.  To target Psyco's
+  behavior a bit more precisely, you can use the commands:
+
+      psyco.bind(somefunc)          # or method, class
+      newname = psyco.proxy(func)
+
+  The second form leaves 'func' as an standard Python function,
+  but optimizes calls involving 'newname'.  In almost all cases
+  other than testing and debugging, the 'psyco.bind()' form is
+  what you will use.
+
+
+THE PERFORMANCE OF PSYCO
+------------------------------------------------------------------------
+
+  As magic as Psyco is, using it still requires a little of
+  thought and testing.  The main thing to understand is that
+  Psyco is useful for handling blocks that loop many times, and
+  knows how to optimize operations involving integers and
+  floating point numbers.  By the way, Rigo's excellent, but year
+  old, introduction to Psyco states that Psyco only optimizes
+  integers--that is no longer true, floats benefit also.  For
+  non-looping functions, and for operations on other types of
+  objects, Psyco mostly just adds overhead for its analysis and
+  internal-compilation.  Moreover, for applications with large
+  numbers of functions and classes, enabling Psyco
+  application-wide adds a large burden in machine-code
+  compilation and memory-usage for this caching.  It is far
+  better to selectively bind those functions that can benefit
+  most from Psyco's optimizations.
+
+  I started my testing in a completely naive fashion.  I simply
+  considered what application I have run recently that I would
+  not mind speeding up.  The first example that came to mind was
+  a text-manipulation program I use to convert drafts of my
+  forthcoming book (_Text Processing in Python_) to LaTeX format.
+  This application uses some string methods, some regular
+  expressions, and some program logic driven mostly by regular
+  expression and string matches.  It is actually a terrible
+  candidate for Psyco--but I use it, so I tried it.
+
+  First pass, all I did was add 'psyco.jit()' to the top of my
+  script.  Painless enough.  Unfortunately, the results were
+  (expectedly) disappointing.  Where the script initially took
+  about 8.5 seconds to run, after Psyco "speedup" it ran in about
+  12 seconds.  Not so good.  Thought I: the just-in-time
+  compilation probably has some startup overhead that swamps the
+  running time.  So next thing I tried was processing a much
+  larger input file (consisting of multiple copies of the
+  original one).  This gave the very limited success of reducing
+  running time from about 120 seconds to 110 seconds.  The
+  speedup was consistent across several runs, but fairly
+  insignificant either way.
+
+  Second pass with my--still poor--text processing candidate.
+  Instead of adding a blanket 'psyco.jit()' call, I added only
+  the line 'psyco.bind(main)', since the 'main()' function -does-
+  loop a number of times (but only makes minimal use of integer
+  arithmetic).  The results here were nominally better.  This
+  approach shaved a few tenths of a second of the normal running
+  time, and a few seconds off the large-input version.  But still
+  nothing spectacular (but also no harm done).
+
+  For a more relevant test of Psyco, I dug up some neural network
+  code that I had written about in an earlier article (see
+  Resources).  This "code_recognizer" application can be trained
+  to recognize the likely distribution of different ASCII values
+  in different programming languages.  Potentially something like
+  this could be useful in guessing file types (say of lost
+  network packets); but the code is actually completely generic
+  as to what it is trained on--it could learn to recognize faces,
+  or sounds, or tidal patterns just as easily.  In any case,
+  "code_recognizer" is based on the Python library [bpnn] which
+  is also included (in modified form) as a test case with the
+  Psyco 0.4 distribution.  The important thing to know about
+  "code_recognizer" for this article is that it does a lot of
+  looping floating point math, and it takes a long time to run.
+  We have got a good candidate for Psyco to work on here.
+
+  After a little playing around, I established several details
+  about how to use Psyco.  For this application, with just a
+  small number of classes and functions, it does not make too
+  much difference whether you use just-in-time or targetted
+  binding.  But the best result, by a few percentage points,
+  still comes about by selectively binding the best optimizable
+  classes.  More significantly, however, it is important to
+  understand the scope of Psyco binding.
+
+  The 'code_recognizer.py' script contains lines like:
+
+      from bpnn import NN
+      class NN2(NN):
+          # customized output methods, math core inherited
+
+  That is, the interesting stuff from Psyco's point-of-view is in
+  the class 'bpnn.NN'.  Adding either 'psyco.jit()' or
+  'psyco.bind(NN2)' to the 'code_recognizer.py' script has little
+  effect.  To get Psyco to do the desired optimization, you need
+  to either add 'psyco.bind(NN)' to 'code_recognizer.py' or add
+  'psyco.jit()' to 'bpnn.py'.  Contrary to what you might assume,
+  just-in-time does not happen when an instance is created, or
+  methods run, but rather in the scope where the class is
+  defined.  In addition, binding descendent classes does not
+  specialize their methods that are inherited from elsewhere.
+
+  Once the small details of proper Psyco binding are worked out,
+  the resultant speedups are rather impressive.  Using the same
+  test cases and training regime the referenced article presented
+  (500 training patterns, 1000 training iterations), neural net
+  training time was reduced from about 2000 seconds to about 600
+  seconds--better than a 3x speedup.  Reducing the iterations as
+  low as 10 showed proportional speedups (but worthless neural
+  net recognition)--as did intermediate numbers of iterations.
+
+  I find bringing running time down from more than 1/2 hour to
+  about 10 minutes with two lines of new code to be quite
+  interesting.  This speedup is still probably less than the
+  speed of a similar application in C--and it is certainly less
+  than the 100x speedup that a few isolated Psyco test cases
+  exhibit.  But this application is fairly "real life" and the
+  improvements are enough to be significant in many contexts.
+
+
+WHITHER PSYCO
+------------------------------------------------------------------------
+
+  Psyco currently does not perform any sort of internal
+  statistics or profiling, and does only minimal optimization of
+  generated machine code.  Potentially, a later version might
+  know how to target those Python operations that could actually
+  benefit most, and discard cached machine code for
+  non-optimizable sections.  In addition, perhaps a future Psyco
+  could decide to perform more extensive (but more costly)
+  optimizations on heavily run operations. Such runtime analysis
+  would be similar to what Sun's HotSpot technology does for
+  Java; the fact that Java, unlike Python, has type-declarations
+  is actually less significant than many people assume (but prior
+  work in optimization of Self, Smalltalk, Lisp, and Scheme
+  make this point also).
+
+  Although I suspect it will never actually happen, it would be
+  exciting to have Psyco-type technology integrated into some
+  future version of Python itself.  A few lines for imports and
+  bindings is not much to do, but letting Python just inherently
+  run much faster would be even more seamless.  We will see.
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  Further information about Psyco can be found at the below URL.
+  Armin Rigo's essay entitled _Psyco, the Python Specializing
+  Compiler_ is particularly useful in undestanding the theory and
+  guts of Psyco:
+
+    http://homepages.ulb.ac.be/~arigo/psyco/
+
+  The Simplified Wrapper and Interface Generator (SWIG) is a very
+  widely--perhaps predominantly--used tool for writing C/C++
+  modules for Python and other "scripting" languages. Information
+  about SWIG can be found at:
+
+    http://www.swig.org
+
+  Greg Ewing has created the language Pyrex, which is used for
+  writing Python extension modules.  The idea behind Pyrex is to
+  define a language that looks very close to Python itself, and
+  that allows a mixture of Python and C datatypes to be combined,
+  but which is ultimately transformed and compiled into a Python
+  C-extension.  Pyrex information (and the system itself) can be
+  found at:
+
+    http://www.cosc.canterbury.ac.nz/~greg/python/Pyrex/
+
+  John Max Skaller's Vyper language was intended to be an
+  enhanced Python, implemented in OCaml.  One upshot that was
+  hoped for in the project was compilation to the same machine
+  code OCaml generates, which is generally comparable with the
+  speed of C.  Unfortunately, Vyper is a dead project, and a
+  compiling version was never completed.  Back when the project
+  was alive, I interviewed Skaller about the project:
+
+    http://www-106.ibm.com/developerworks/library/l-pyth7.html
+
+  I wrote with Andrew Blais "An Introduction to Neural Networks
+  for IBM developerWorks.  In that article, we provided some code
+  based on Neil Schemenauer's Python module [bpnn].  The current
+  article utilizes that neural network code to demonstrate
+  Psyco's capabilities.  For background on the code example--and
+  on neural networks generally--please see:
+
+    http://www-106.ibm.com/developerworks/library/l-neural/
+
+  The [bpnn] module is included in the current Psyco
+  distribution, in modified form, as a test case.  The original
+  module can be found at:
+
+    http://www.enme.ucalgary.ca/~nascheme/python/bpnn.py
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz' failures as a hunter, fisherman, and shepherd have
+  led him to his life of critical criticism.  Tomorrow he may try
+  something else.  David may be reached at mertz@gnosis.cx; his
+  life pored over at http://gnosis.cx/publish/.  Suggestions and
+  recommendations on this, past, or future, columns are welcomed.
+

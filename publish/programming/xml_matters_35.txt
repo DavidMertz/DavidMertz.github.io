@@ -1,0 +1,381 @@
+XML MATTERS #35: GUIs and XML Configuration Data
+The Mozilla Project and XUL
+
+David Mertz, Ph.D.
+Browser, Gnosis Software, Inc.
+May 2004
+
+    Over time, XML seems to permeate many niches. One area where XML is
+    used increasingly is in the configuration of GUI interfaces. The
+    Mozilla project has, to some degree, revived the Netscape slogan
+    "The browser is the OS"--at least inasmuch as you can write custom
+    applications using Mozilla's XML-based User Interface Language (XUL)
+    that run without any particular dependency on the choice of
+    underlying operating system.
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  Both the entire Mozilla application suite and associated spin-offs
+  such as Firefox and Thunderbird are, at heart, applications
+  written using XUL, and XML language for defining user interfaces.  The
+  Mozilla project as a whole is built in several layers.  At the bottom,
+  is the Gecko Runtime Engine that renders visual elements on
+  screen--especially HTML tags and their associated attributes, children
+  and URL-referenced resources.  Many Mozilla applications use XPToolkit
+  as a next layer, which is where XUL is supported; but some
+  applications like the Camino browswer for MacOSX choose instead to use
+  native widgets as an interface to the Gecko engine.
+
+  Let me back up for a moment, the last paragraph threw out a number of
+  acronyms and funny words that not all readers will be familiar with.
+  To make it simple, what Mozilla does is simply render XML and
+  HTML--really not much more or less than this. All the controls you are
+  use to in a web browser (back button, URL field, bookmarks bar, menus,
+  etc) as well as the content area(s) are, in Mozilla, just renderings
+  of some XUL or HTML data.  The same applies to Mozilla's applications
+  for reading news, mail, chat sessions, or editing HTML--it is all
+  simply some rendered XML.  Mozilla provides collections of "chrome" in
+  its default applications, but the framework lets you create your own
+  applications or extensions to the Mozilla-provided ones by writing a
+  bit of extra XUL XML.
+
+  Applications, of course, need program logic to do much. It is quite
+  possible to write an entire Mozilla application using exclusively
+  Javascript for the program logic, with each XUL control activating
+  some configured Javascript function, perhaps passing arguments based
+  on that control (i.e. controls like text fields, pick lists, or
+  scrollbars are used to select specific values rather than merely
+  trigger single actions).  But for more advanced applications, the
+  XPCOM interface is a way to let XUL configured interfaces call
+  components written in other programming languages--primarily component
+  written in C++, but other programming languages like Python also have
+  XPCOM bindings.  XPCOM, by the way, stands for "Cross Platform
+  Component Object Module" and is analogous to COM on Windows, or to
+  CORBA.
+
+  Having described the overall framework for developing Mozilla
+  interfaces--XUL makes call to Javascript; Javascript might call C++
+  components via XPCOM--the rest of this article will look only at the
+  XUL piece of the puzzle.  This is a column about XML, after all.  In
+  examples, trivial calls to the Javascript 'alert()' function and
+  friend will be used where a more realistic application would call
+  custom functionality.
+
+A TOY APPLICATION
+------------------------------------------------------------------------
+
+  Just to get a feel for XUL code, I wrote the customized Mozilla
+  application 'SimpleApp'.  'SimpleApp' consists of the one XUL file
+  'SimpleApp.xul' and one external Javascript file 'SimpleApp.js'.  All
+  this application does is put a few menus and a few toolbar buttons on
+  the screen, and display an HTML document in the remainder of the
+  screen area.  Most of the actions configured in 'SimpleApp' are merely
+  popping up some alert boxes; but one of the toolbar buttons lets you
+  choose the HTML document URL to display.  Within the HTML area, you
+  can navigate just as you would in a regular browser: follow links,
+  fill in forms, etc.
+
+  Let us take a look first at choosing an HTML URL:
+
+  {Choosing a URL in SimpleApp:
+   http://gnosis.cx/publish/programming/SimpleAppToolbar.png}
+
+  'SimpleApp' uses several different types of menus.  For a real
+  application, this probably is not the best design.  But I wanted to
+  show off the use of both native menus created with '<menubar>' tags
+  and XUL menus created with '<menulist>' tags.  The latter menus can go
+  anywhere within an applications, including in nested regions or as
+  "popup menus" attached to visible content.  However, XUL also lets you
+  create system-style popups using '<menupopup>', which is not
+  demonstrated here (system-style popups are activated with a
+  right-click or shift-click, typically, a '<menulist>' is attached to
+  text that is displayed in frame).
+
+  Here is an example of activating an alert dialog from a native Mac OSX
+  menu:
+
+  {Native Menus in SimpleApp:
+   http://gnosis.cx/publish/programming/SimpleApp.png}
+
+  The items 'Foo' and 'Bar' behave like regular pull-down menus with
+  child items, though this is not shown in the screenshots.
+
+CHECKING OUT THE XUL
+------------------------------------------------------------------------
+
+  Next thing is to take a look at the XUL that makes up 'SimpleApp'.
+  Like most applications, its root element is '<window>'.  However,
+  utilities that are meant simply to enhance the functionality of an
+  existing application such as the Mozilla browser will have a root of
+  '<overlay>'.  One application can contain many overlays.
+
+  I will break the XUL file into several parts, each with a pretty clear
+  function.  You can assemble the pieces back together if you wish.
+
+      #----------- SimpleApp.xul headers and scripts ------------------#
+      <?xml version="1.0"?>
+      <?xml-stylesheet href="chrome://global/skin/xul.css" type="text/css"?>
+      <!DOCTYPE window>
+      <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+              xmlns:html="http://www.w3.org/1999/xhtml"
+              width="600" height="280"
+              title="SimpleApp">
+        <script src="SimpleApp.js" />
+        <script type="application/x-javascript">
+          <![CDATA[ function say(txt) { alert(txt); } ]]>
+        </script>
+        <script type="application/x-javascript">
+          <![CDATA[
+            function newcontent(url) {
+              frames['content'].location.href=url; } ]]>
+        </script>
+
+  The external file 'SimpleApp.js' just defines one trivial Javascript
+  function 'eye()' that is activated by the toolbar icon of an eye. But
+  in a real application, you would be likely to put a library of useful
+  Javascript functions into such an external file.  I also define two
+  simple Javascript functions within the body of the XUL file.
+
+      #----------- SimpleApp.xul system menu configuration ------------#
+        <menubar id="main-menu">
+          <menu label="File">
+            <menupopup>
+              <menuitem label="Hello" oncommand="say('Hello world!');"/>
+            </menupopup>
+          </menu>
+        </menubar>
+
+  Next thing, 'SimpleApp' defines a 'File' menu with the child item
+  'Hello'.  One of the screenshots above showed the result of invoking
+  this menu.  Now lets see how the window contents are placed:
+
+      #-------- SimpleApp.xul placement boxes and menu list -----------#
+        <vbox>
+          <hbox>
+            <menulist><label>Foo</label>
+              <menupopup>
+                <menuitem label="New SimpleApp"
+                          oncommand="window.open('SimpleApp.xul','','chrome');"/>
+                <menuitem label="Something Else"
+                          oncommand="window.open('test3.xul','','chrome');"/>
+              </menupopup>
+            </menulist>
+            <menulist><label>Bar</label>
+              <menupopup oncommand="alert('Menu item invoked.')">
+                <menuitem label="Item One"/>
+                <menuitem label="Item Two"/>
+                <menuitem label="Item Three"/>
+              </menupopup>
+            </menulist>
+          </hbox>
+
+  A useful way to control the geometry of XUL controls is by nesting
+  them inside variations on boxes, '<vbox>' and '<hbox>', or also
+  '<scrollbox>' or '<groupbox>' elements.  Not shown here is the use of
+  '<grid>' elements, that can obtain similar effect.  A '<vbox>' always
+  arranges its content in a common vertical box, the box itself is
+  invisible.  Likewise for horizontal '<hbox>' elements.  If you wish,
+  you can add attributes 'height' and 'width' to explicitly size these
+  containers and/or attributes like 'flex', 'autosize' and 'equalsize'
+  to effect the arrangement of boxes within other elements (e.g. inside
+  other boxes).
+
+  Specifically, the controls for 'SimpleApp' are all put inside a
+  controlling '<vbox>', with one child '<hbox>' for the 'Foo' and 'Bar'
+  menus, and another '<hbox>' to hold the toolbar:
+
+      #-------- SimpleApp.xul placement boxes and toolbar -------------#
+          <hbox>
+            <toolbarbutton type="button"
+                           oncommand="alert('Button invoked.');">
+              <image src="http://gnosis.cx/publish/images/doc.gif" />
+            </toolbarbutton>
+            <toolbarbutton type="menu">
+              <image src="http://gnosis.cx/publish/images/note.gif" />
+              <menupopup>
+                <menuitem label="IBM"
+                          oncommand="newcontent('http://ibm.com/');"/>
+                <menuitem label="Google"
+                          oncommand="newcontent('http://google.com/');"/>
+                <menuitem label="TPiP"
+                          oncommand="newcontent('http://gnosis.cx/TPiP/');"/>
+              </menupopup>
+            </toolbarbutton>
+            <toolbarbutton type="menu-button" onclick="eye();">
+              <image src="http://gnosis.cx/publish/images/eye.gif"/>
+            </toolbarbutton>
+          </hbox>
+        </vbox>
+
+  The toolbar code is interesting to look at. Mozilla XUL allows for
+  modern toolbar styles that include both direct activation and child
+  pulldowns. The button attached to 'note.gif' is of the pulldown sort,
+  and is in one of the above screenshots. Another thing worth noting is
+  that the actual images on the toolbar are pulled off remote URLs. This
+  is a very simple example of a fully networked application--the
+  application as a whole integrates resources from all over the web
+  (albeit quite simple ones in this case).
+
+  The final piece of the puzzle is the HTML content we display.  To do
+  this, we create an '<iframe>' within the 'html' namespace:
+
+      #----------------- SimpleApp.xul HTML content -------------------#
+        <html:iframe id="content-frame" name="content"
+                     src="http://gnosis.cx/TPiP/" flex="100%"/>
+      </window>
+
+  'SimpleApp' has a moderately reasonable layout--almost like a normal
+  browser.  You can also throw resources together in more garish and
+  complex arrangements.  For example, in experimenting with XUL, I
+  created a test case that combines odd sized buttons and various remote
+  HTML pages.  This shows off a few more placement features, try copying
+  it to your local system:
+
+      #---------------- Garish XUL experiment, test.xul ---------------#
+      <?xml version="1.0"?>
+      <grid xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+        <columns>
+          <column/>
+          <column/>
+        </columns>
+        <rows flex="1">
+          <row>
+            <image src="http://www.mozilla.org/images/mozilla-banner.gif"/>
+          </row>
+          <row flex="1">
+            <spacer width="10"/>
+            <vbox align="center">
+              <spacer height="10"/>
+              <description style="border:0px; width: 120px">
+              This text can be <html:b> bold </html:b> and can wrap to
+              several lines.  If I add a few more words, I can get it to
+              fill its column.  This is a weird inteface, eh?
+              </description>
+              <spacer height="10"/>
+              <button accesskey="A" label="A"
+                      image="http://gnosis.cx/TPiP/hugo.gif"
+                      oncommand="alert('Button A pressed!');"/>
+            </vbox>
+            <spacer width="10"/>
+            <iframe flex="1" src="http://google.com"/>
+          </row>
+          <row flex="1">
+            <iframe flex="1" src="http://ibm.com/" />
+            <button accesskey="B" flex="1" label="Button B"
+                    oncommand="alert('Button B pressed!');"/>
+            <button accesskey="C" flex="1" label="Button C"
+                    oncommand="alert('Button C pressed!');"/>
+          </row>
+        </rows>
+      </grid>
+
+OTHER WIDGETS
+------------------------------------------------------------------------
+
+  I have only used a few of the available XUL controls.  The -XUL
+  Programmers Reference Manual- is the place to look for comprehensive
+  documentation of all the XUL elements (see Resources).  The online
+  book _Creating XPCOM Components_ is also an excellent source for
+  details on programming XUL and XPCOM libraries.
+
+  Let me quickly survey some more XUL elements.  Grids, and boxes are
+  what you mostly use for simple layouts, but decks, stacks, and
+  bulletinboard. give you more control.  The last, '<bulletinboard>',
+  gives you exact position placement, rather than automating the flow of
+  controls to fit into containers.
+
+  Basic UI elements include, in addition to the several menus we have
+  seen, radio boxes, checkboxes, and various buttons are included in
+  XUL.  Some more advanced user interface controls are trees, popups,
+  an editor component, and tabs.  Also feedback from progress meters and
+  manipulation of large containers with a number of variations on
+  scrollbars.
+
+  All of these elements are named pretty much just the way you would
+  expect from their purpose.  As well, however, you may include any HTML
+  widgets you wish to inside your XUL applications.  Just put them in
+  the 'html' namespace, and add them as you would in designing an DHTML
+  web page.
+
+  In the "garish" example above, I snuck in another useful navigation
+  element that I have not mentioned yet.  The buttons in there have an
+  attribute for 'accesskey' that lets you activate their action with a
+  keypress as well as a mouse click.  It is easy, in the same, manner,
+  to provide whatever keyboard navigation you feel is appropriate for
+  your application.  Even by default, menus will allow basic
+  tab-and-arrow selection, but shortcut keys make many actions easier.
+
+CONCLUSION
+------------------------------------------------------------------------
+
+  It might seem odd to develop complete applications "within a
+  browser." But Mozilla is now much more than that, it is a whole
+  component and GUI architecture.  At that, Mozilla is more
+  cross-platform and more widely installed on user systems than probably
+  any other GUI library you are likely to consider.  What you might
+  think of as general purpose GUI/widget libraries--Qt, wxWindows, GTK,
+  FOX, MFC, .NET, Carbon, and so on--have various advantages and
+  disadvantages.  But none of them can be assumed to be already
+  installed across user systems; many of them are only available on a
+  subset of the platforms Mozilla supports, and most are relatively
+  difficult to get installed and/or have licensing issues.  Mozilla is
+  worth having installed just because it is such a great browser; once
+  you have it, you have a platform for custom applications, for free.
+
+  Of course, to be completely cross-platform in your Mozilla/XUL
+  applications, you need to restrict yourself to configuring GUIs in XUL
+  and programming their logic in Javascript.  This is not the place to
+  write about the benefits and disadvantages of Javascript, but clearly
+  a lot of programmers would rather develop in other languages like C++,
+  Python, Perl, and others.  You -can- do that, but you need to use
+  XPCOM to bind to external libraries, and doing that reduces
+  portability, or at least makes it more difficult.  For "script"
+  languages like Python and Perl, you can take advantage of
+  general-purpose bindings/wrappers, and write pretty generic code (but
+  you still need, e.g. PyXPCOM for your platform).  For C++, however,
+  you really need to compile a library version for each platform you
+  intend to support--quite a bit more work.  Still, for simple
+  application, Javascript is fine, especially when those applications
+  are largely about piggybacking on the networking capabilities
+  inherent in the Mozilla framework.
+
+RESOURCES
+------------------------------------------------------------------------
+
+  The Mozilla Googlebar is a nice application/overlay of custom XUL to
+  enhance the functionality of the browser. It adds a variety of custom
+  search widgets to an optional toolbar of each browser window, and also
+  enhances the context popup:
+
+    http://googlebar.mozdev.org/
+
+  A useful full-fledged application written in XUL, with some Javascript
+  glue and calls into a C++ library via XPCOM, is Mozilla Calendar.
+  Calendar is a just what the name would suggest: an application for
+  managing appointments, contacts, events, and the like. Mozilla
+  Calander is similar to Outlook on Windows or iCal.app on MacOSX (whose
+  open data format is used), but it will run nearly identically on any
+  Mozilla platform:
+
+    http://www.mozilla.org/projects/calendar/
+
+  XUL Programmer's Reference Manual:
+
+    http://www.mozilla.org/xpfe/xulref/
+
+  The scope of the book _Creating XPCOM Components_ goes beyond XUL
+  itself, but it is an excellent freely available publication that
+  explains the overall XPCOM architecture, including XUL:
+
+    http://www.mozilla.org/projects/xpcom/book/cxc/
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz thinks the WIMP interface will really take off one of
+  these days. David may be reached at mertz@gnosis.cx; his life pored
+  over at http://gnosis.cx/publish/. Suggestions and recommendations on
+  this, past, or future, columns are welcomed. Check out David's book
+  _Text Processing in Python_ at http//gnosis.cx/TPiP/.

@@ -1,0 +1,107 @@
+#----- Example of working with Python [cgi] module -----#
+import cgi
+form = cgi.FieldStorage()   # FieldStorage object to
+                            # hold the form data
+
+# check whether a field called "username" was used...
+# it might be used multiple times (so sep w/ commas)
+if form.has_key('username'):
+    username = form["username"]
+    usernames = ""
+    if type(username) is type([]):
+        # Multiple username fields specified
+        for item in username:
+            if usernames:
+                # Next item -- insert comma
+                usernames = usernames + "," + item.value
+            else:
+                # First item -- don't insert comma
+                usernames = item.value
+    else:
+        # Single username field specified
+        usernames = username.value
+
+# just for the fun of it let's create an HTML list
+# of all the fields on the calling form
+field_list = '<ul>\n'
+for field in form.keys():
+    field_list = field_list + '<li>%s</li>\n' % field
+field_list = field_list + '</ul>\n'
+
+
+#----------- Writing HTTP header in Python -------------#
+print 'Content-type: text/html\n\n'
+
+
+#----------- Writing HTTP header in Python -------------#
+print 'Content-type: image/jpeg\n\n'
+
+
+#------- Step-by-step HTML creation in Python ----------#
+print '<html><head>'
+print '<title>My Page</title>'
+print '</head><body>'
+print '<h1>Powers of two</h1>\n<ol>'
+for n in range(1,11):
+  print '<li>'+str(2**n)+'</li>'
+print '</ol></body></html>'
+
+
+#------- Formatting sprintf()-style in Python ----------#
+print """<html><head>
+<title>%s</title>
+</head><body>
+<h1>Famous irrational numbers</h1>
+<dl><dt>Pi</dt>
+    <dd>%2.3f</dd>
+    <dt>Square-root of 2</dt>
+    <dd>%2.3f</dd></dl>
+</body></html>""" % ("Another Page", 3.1415, 1.4142)
+
+
+#------- Dictionary sprintf()-style in Python ----------#
+mydict = {"title":"Formatted from Dict",
+          "pi": 3.1415, "e": 2.7182,
+          "sqrt3": 1.73205, "sqrt2": 1.4142}
+template = """<html><head>
+<title>%(title)s</title>
+</head><body>
+<h1>Famous irrational numbers</h1>
+<dl><dt>Pi</dt>
+    <dd>%(pi)2.3f</dd>
+    <dt>Square-root of 2</dt>
+    <dd>%(sqrt2)2.3f</dd></dl>
+</body></html>"""
+print template % mydict
+
+#---------- Debugging CGI script in Python -------------#
+import sys
+sys.stderr = sys.stdout
+
+def main():
+    import cgi
+    # ...do the actual work of the CGI...
+    # perhaps ending with:
+    print template % script_dictionary
+
+print "Content-type: text/html\n\n"
+main()
+
+
+#------- Debugging/logging CGI script in Python --------#
+import sys, traceback
+print "Content-type: text/html\n\n"
+try:               # use explicit exception handling
+    import my_cgi  # main CGI functionality in 'my_cgi.py'
+    my_cgi.main()
+except:
+    import time
+    errtime = '--- '+ time.ctime(time.time()) +' ---\n'
+    errlog = open('cgi_errlog', 'a')
+    errlog.write(errtime)
+    traceback.print_exc(None, errlog)
+    print "<html><head><title>CGI Error Encountered!</title></head>"
+    print "<body><p>Sorry, a problem was encountered running MyCGI</p>"
+    print "<p>Please check the error log on the server for details</p>"
+    print "</body></html>"
+

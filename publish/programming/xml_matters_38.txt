@@ -1,0 +1,413 @@
+XML MATTERS #38: OASIS Election Markup Language
+Standardization of XML Formats for Voting and Elections
+
+David Mertz, Ph.D.
+Bean Counter, Gnosis Software, Inc.
+September 2004
+
+    The Organization for the Advancement of Structured Information
+    Standards (OASIS) has developed many XML standards in use within
+    government, law, and business. The Election Markup Language is
+    OASIS' foray into to world of elections--with special attention to
+    voting within governmental jurisdictions. In this installment, David
+    gives readers an introductory look at the structure and purpose of
+    EML, with an eye toward how the largely European EML will shape
+    future data standards used in the United States.
+
+XML AND VOTING SYSTEMS
+------------------------------------------------------------------------
+
+  Readers of my prior _XML Matters_ installment on the use of XML in an
+  open source voting machine will recognize my motivation for
+  investigating the OASIS standard for Election Markup Language (EML).
+  Actually, my direct interest is further piqued by my recent membership
+  in the still-fledgling IEEE Project 1622 (Voting Systems Electronic
+  Data Interchange). OASIS' EML covers quite a bit more ground than Open
+  Voting Consortium's narrow demo system, or even than is anticipated
+  for P-1622.
+
+  Specifically, EML is intended to be rich enough to accommodate
+  governmental elections across many jurisdication levels, and also
+  elections with many different kinds of organizations (community or
+  corporate, for example); to allow voting over many channels, both
+  traditional voting booths (perhaps electronic ones) and remote systems
+  like Web pages, telephone voting, kiosks, and so on; to enable many
+  tabulation and voting rules, such as ranked preference and cummulative
+  voting; to handle security, encryption and authentication
+  requirements; and also to record and convey information about voter
+  registration, organization membership, and other voter metadata. EML
+  has seen significant real world use in European government, and in
+  some non-governmental organizations worldwide.
+
+  EML, in my opinion, suffers somewhat (but not outrageously) from an
+  over-engineering common among XML technologies (think SOAP, W3C XML
+  Schemas, or even XSLT). Committees have a tendency to produce
+  standards with too many details, handling too many corner cases
+  centrally, and with too many levels of indirection. Of course, having
+  joined another standards committee myself, I suppose I will myself
+  soon be guilty of participating in feature creep. Nonetheless, our
+  tentative plan in IEEE P-1622 is to start with a simpler data model
+  provided by a commercial election system vendor (but released on
+  non-proprietary terms), rather than adopt EML whole cloth towards
+  standardization of USAian elections data. Our target in P-1622 is only
+  to accommodate the needs of governmental elections, not every possible
+  voting scenario; moreover, the fifty-some US states and territories
+  have somewhat less procedural variation than do the 45 member nations
+  in the Council of Europe (for example). Nonetheless, the fact that we
+  already have several other contributed data models to reconcile into
+  the final design already makes for a nascent featuritis.
+
+WHAT DOES EML INCLUDE?
+------------------------------------------------------------------------
+
+  To get a sense of the scope of EML version 3.0, let me quote from the
+  Executive Summary to the standard:
+
+    The primary deliverable of the committee \[is] the Election Markup
+    Language (EML). This is a set of data and message definitions
+    described as XML schemas. At present EML includes specifications
+    for:
+
+    * Candidate Nomination, Response to Nomination and Approved
+      Candidate Lists
+
+    * Voter Registration information, including eligible voter lists
+
+    * Various communications between voters and election officials, such
+      polling information, election notices, etc.
+
+    * Logical Ballot information (races, contests, candidates, etc.)
+
+    * Voter Authentication
+
+    * Vote Casting and Vote Confirmation
+
+    * Election counts and results
+
+    * Audit information pertinent to some of the other defined data and
+      interfaces
+
+  There are a good number of distinct data requirements addressed by the
+  various aspects of EML.  The schemas associated with the logical
+  aspects of an election process are given numeric prefixes to indicate
+  general category.  So the 400 series schemas are associated voting as
+  such; the 500 series are associated with tabulation (called
+  -canvassing- in American terminology); the 100 series with an overall
+  election specification; the 200 series with candidates; the 300 series
+  with voters (eligibility, etc).  Within each schema series, one or
+  more W3C XML Schemas are provided to describe documents filling those
+  requirements.
+
+  As well as the numbered schema families, EML contains a collection of
+  supporting schemas, mainly dealing with common datatypes.  For
+  example, most or all include the schema 'emlcore.xsd' (in some cases
+  indirectly via some other include).  Such a schema will have a line
+  like:
+
+      #---------- Include line for EML core datatypes -----------------#
+      <xsd:include schemaLocation="emlcore.xsd"/>
+
+  The EML core, in turn includes 'emlexternals.xsd' and imports
+  'emltimestamp.xsd' and the W3C's 'xmldsig-core-schema.xsd'. I have not
+  listed everything incorporated, but it shows the style. The lines to
+  include or import the mentioned schemas are:
+
+      #------------ External resources used by emlcore.xsd --------------#
+      <xsd:include schemaLocation="emlexternals.xsd"/>
+      <xsd:import namespace="urn:oasis:names:tc:evs:schema:eml:ts"
+                  schemaLocation="emltimestamp.xsd"/>
+      <xsd:import namespace="http://www.w3.org/2000/09/xmldsig#"
+                  schemaLocation="xmldsig-core-schema.xsd"/>
+
+  So far, so good; let us look deeper. The schema 'emlexternals.xsd'
+  only defines formats for addresses and personal details about
+  voting-eligible citizens.  But my feeling is the includes are
+  structured as they are with an eye to expanding the element and type
+  definitions within 'emlexternals.xsd' when or if the need arises.  In
+  the main, 'emlexternals.xsd' does its work with yet more includes:
+
+      #----- Citizen info datatypes imported to emlexternals.xsd ------#
+      <xsd:import
+           namespace="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails"
+           schemaLocation="AddressTypes-v1.xsd"/>
+      <xsd:import
+           namespace="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails"
+           schemaLocation="PersonalDetailsTypes-v1.xsd"/>
+
+  Of course, once you follow the path still further, into
+  'AddressTypes-v1.xsd' you find still more external definitions, not
+  as includes or imports, but via namespaces like those for Dublin Core
+  Metadata Initiative.
+
+Sidebar
+
+  In a prior review of XML editors, I looked at an early version of
+  oXygen. I continue to be more-and-more impressed with this editor,
+  each time a new version comes out, or even when I merely dig around
+  for new features. Specifically, oXygen 4.2 includes a wonderful tool
+  to create a friendly HTML documentation page for an W3C XML Schema.
+  Included with this page is an automatically generated valid XML
+  Instance. Contrast reading a schema directly, such as
+  http://gnosis.cx/download/eml3/410-ballots.xsd with reading oXygen's
+  generated documentation, such as
+  http://gnosis.cx/download/eml3/Ballots.html.
+
+WHAT MAKES UP A BALLOT?
+------------------------------------------------------------------------
+
+  The schema '410-ballots.xsd' specifies the format for an uncast
+  ballot.  The format is relatively unremarkable, but it is worth
+  noticing that it includes a number of features to accommodate ballots
+  in general, not merely governmental elections.  For example, I am not
+  familiar with any governmental elections that provide a "Reason" for
+  Election/Contest qualification.  In this case, however, it may be that
+  such a reason (e.g. "Initiative met signature threshhold") is worth
+  conveying to elections officials, even while not displaying it to
+  voters.
+
+  The schema '440-castvote.xsd' specifies an actual vote made in
+  response to a ballot. In the Open Voting Consortium (OVC) design that
+  I presented in an earlier installment, I called these root elements
+  '<ballot>' and '<cast_ballot>' to emphasize their connection. In
+  contrast to the OVC (preliminary) design, EML does not create any
+  particular relationship between '<Ballots>' and '<CastVote>'. Recall
+  that the OVC design nearly generates a '<cast_ballot>' simply by
+  removing non-supported selections from a '<ballot>'. For example, if a
+  '<ballot>' contains several selections for a '<contest name="Mayor">',
+  a '<cast_ballot>' is just the same XML fragment with all but one
+  selection (candidate) removed.
+
+  The independent design of schemas within EML leads to certain
+  pitfalls, in my opinion--albeit minor ones. For example, in
+  '410-ballots.xsd' '<Options>' may contain -either- a list of
+  '<Candidate>' elements or list of '<Option>' elements. Fair
+  enough--this is helpful in distinguishing political offices from
+  referenda. But over in '440-castvote.xsd' every vote is listed as an
+  '<Option>', never as a '<Candidate>'. To my mind, there is no good
+  reason to distinguish the semantic models of cast and uncast ballots
+  in this way (if you want the information in one XML instance, you want
+  it in the other; if it is superfluous, it is so both places).
+
+  To get a feel for EML, I decided to prepare a '<CastVote>' that
+  matches the '<cast_ballot>' presented in my earlier installment. I
+  have minimized the sample document by leaving out optional security
+  tokens and '<AuditInformation>'. On the latter, I have some initial
+  doubts around including the auditing record within the cast vote
+  itself, since that might potentially compromise anonymity; but I have
+  not looked at this matter closely enough to evaluate if a genuine
+  security issue exists. But within IEEE P-1622--and within OVC--I will
+  probably push to keep audit records as seperate documents (which -may-
+  be a Federal Election Commission requirement, -per se-; I'm not giving
+  legal advice here).  Recall that the OVC-format cast ballot looked
+  like:
+
+      #------ v-20081104-US-CA-Santa_Clara_County-2216-1274.xml -------#
+      <cast_ballot election_date="2008-11-04" country="US" state="CA"
+                   county="Santa Clara County" precinct="2216"
+                   number="1274" serial="213" source="voting_machine">
+        <contest ordered="No" coupled="Yes" name="Presidency">
+          <selection writein="No" name="President">V. I. Lenin</selection>
+          <selection writein="No" name="Vice President">Karl Marx</selection>
+        </contest>
+        <contest ordered="No" coupled="No" name="Senator">
+          <selection writein="No">William Lloyd Garrison</selection>
+        </contest>
+        <contest ordered="No" coupled="No" name="Transportation Initiative">
+          <selection writein="No">Yes</selection>
+        </contest>
+        <contest ordered="Yes" coupled="No" name="County Commissioner">
+          <selection writein="Yes">David Packard</selection>
+          <selection writein="No">Gordon Moore</selection>
+          <selection writein="No">William Hewlett</selection>
+        </contest>
+      </cast_ballot>
+
+  This vote contains the rather odd case of USAian President and
+  Vice-President where you cast a common vote for two different
+  candidates, running for two different offices. Parlimentary
+  party-slate votes are somewhat similar conceptually, but at heart you
+  vote for a single party in those cases, not multiple candidates. Other
+  than that, I find this XML minimal and self-explanatory. EML's version
+  tends to nest data more deeply, and does not directly seem to
+  contemplate the Presidency case. As near as I can tell, you might
+  represent this vote as:
+
+      #----- EML-20081104-US-CA-Santa_Clara_County-2216-1274.xml ------#
+      <?xml version="1.0" encoding="UTF-8"?>
+      <CastVote xmlns="440-castvote.xsd">
+      <ElectionEvent>
+        <Event>
+          <EventName Id="n1274s213">
+            Santa Clara County, CA, USA (2008-11-04)
+          </EventName>
+          <EventQualifier>Precint 2216</EventQualifier>
+        </Event>
+        <Election>
+          <ElectionName>Presidency</ElectionName>
+          <Contest>
+            <ContestName>President</ContestName>
+            <Selection>
+              <Option>
+                <OptionName>V. I. Lenin</OptionName>
+              </Option>
+            </Selection>
+          </Contest>
+        </Election>
+        <Election>
+          <ElectionName>Presidency</ElectionName>
+          <Contest>
+            <ContestName>Vice-President</ContestName>
+            <Selection>
+              <Option>
+                <OptionName>Karl Marx</OptionName>
+              </Option>
+            </Selection>
+          </Contest>
+        </Election>
+        <Election>
+          <ElectionName>Senate</ElectionName>
+          <Contest>
+            <ContestName>Senator</ContestName>
+            <Selection>
+              <Option>
+                <OptionName>William Lloyd Garrison</OptionName>
+              </Option>
+            </Selection>
+          </Contest>
+        </Election>
+        <Election>
+          <ElectionName>Local Initiative</ElectionName>
+          <Contest>
+            <ContestName>Transportation Initiative</ContestName>
+            <Selection>
+              <Option>
+                <OptionName>Yes</OptionName>
+              </Option>
+            </Selection>
+          </Contest>
+        </Election>
+        <Election>
+          <ElectionName>Local Office</ElectionName>
+          <Contest>
+            <ContestName>County Commissioner</ContestName>
+            <Selection>
+              <Option>
+                <WriteinOptionName>David Packard</WriteinOptionName>
+                <Value>1</Value>
+              </Option>
+              <Option>
+                <OptionName>Gordon Moore</OptionName>
+                <Value>2</Value>
+              </Option>
+              <Option>
+                <OptionName>William Hewlett</OptionName>
+                <Value>3</Value>
+              </Option>
+            </Selection>
+          </Contest>
+        </Election>
+      </ElectionEvent>
+      </CastVote>
+
+  I am not entirely certain I have the semantics of '<Election>',
+  '<Contest>', '<Selection>', and '<Option>' right, but given the
+  cardinalities of elements, this seems to be the required arrangement.
+  Exactly how '<ElectionName>' and '<ContestName>' relate is also not
+  wholly clear to me.
+
+FINAL CANVASSING
+------------------------------------------------------------------------
+
+  I have looked at just a few details of EML version 3 in this
+  installment, but I believe enough to give readers a feel for what the
+  system of schemas aims for.  In particular, this installment has only
+  really looked at the subset of EML concerned with ballots and votes,
+  not all the other portions dealing with voter registration, candidate
+  nomination, or vote canvassing (matching the coverage of my prior
+  related installment).
+
+  In a European context, EML is a standard in relatively wide (and
+  growing) usage, and programmers who develop elections systems--or even
+  systems that touch on them only peripherally--need to become familiar
+  with EML. Moreover, as an OASIS standard, EML is certainly a
+  specification organizations should consider in conducting private
+  elections. Bringing a common data format to a large swatch of
+  elections usage will allow for interoperability among tools, including
+  importantly, tools dedicated audit and security analysis of elections.
+
+RESOURCES
+------------------------------------------------------------------------
+
+  A couple installments back, I wrote an _XML Matters_ on "Practical XML
+  Data Design and Manipulation for Voting Systems."  You can find that
+  at:
+
+    http://www-106.ibm.com/developerworks/xml/library/x-matters36.html
+
+  Information on progress of the Open Voting Consortium can be found at:
+
+    http://openvoting.org
+
+  Our (slightly nascent) demo, known as EVM2003, has a Sourceforge page
+  at:
+
+    http://evm2003.sourceforge.net
+
+  The homepage for IEEE P-1622, "Voting Systems Electronic Data
+  Interchange" is at:
+
+    http://grouper.ieee.org/groups/scc38/1622/
+
+  Some of the detailed documentation there has protected access; readers
+  with an interest in following the evolving specification shold contact
+  me or the committee chairs to obtain copies of any protected documents
+  (working drafts can readily be forwarded to anyone who wishes assist
+  the committee or its members).
+
+  A British company called Boynings Consulting, led by Paul Spencer,
+  offers a seminar on EML, and has advised the UK government on its
+  widespread use of EML:
+
+    http://www.boynings.co.uk/
+
+  As of this writing, EML version 3 was published as a standard, since
+  February 24, 2003. Consideration is underway by OASIS, in consultation
+  with the Council of Europe, of an EML version 4. I would anticipate
+  that when/if a version 4 is drafted and adopted, it will maintain
+  general backward compatibility with version 3--obvious, details are
+  subject to change with any new specification.  You may read EML
+  version 3 at:
+
+    http://www.oasis-open.org/committees/document.php?document_id=1839
+
+  The Council of Europe page on Democratic Institutions, subpage on
+  e-voting, can be found at:
+
+    http://www.coe.int/t/e/integrated_projects/democracy/02_Activities/02_e-voting/
+
+  The homepage for the helpful (and multi-platform) XML editor oXygen
+  is:
+
+    http://www.oxygenxml.com/
+
+  Way back in 2002, I did a roundup of XML editors, in two _XML Matters_
+  installments:
+
+    http://www-106.ibm.com/developerworks/xml/library/x-matters21/
+
+    http://www-106.ibm.com/developerworks/xml/library/x-matters22/
+
+  Even after that time, oXygen continues to be my favorite among the
+  tools.  But it has grown from a basic low-end editor to a
+  sophisticated collection of almost every XML tool you could want.
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  To David Mertz, all the world is a stage; and his career is devoted to
+  providing marginal staging instructions. David may be reached at
+  mertz@gnosis.cx; his life pored over at http://gnosis.cx/publish/.
+  Suggestions and recommendations on this, past, or future, columns are
+  welcomed. Check out David's book _Text Processing in Python_ at
+  http//gnosis.cx/TPiP/.

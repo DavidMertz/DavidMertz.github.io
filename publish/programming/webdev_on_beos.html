@@ -1,0 +1,326 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Web Development with BeOS (R5) -- Diamonds in the Rough -- </title>
+<style>
+             {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+em           {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt}
+ul, ol, li   {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+tt           {font-family: mono, courier}
+pre          {font-family: mono; font-size: 9pt}
+th           {font-family: mono, courier; font-size: 8pt}
+
+.code-sample {background-color: #CCCCCC}
+.sidebar     {background-color: #FFFFCC}
+.title       {font-size: medium; color: #3333CC}
+.subtitle    {font-size: 9pt; color: #3333CC}
+.subhead     {font-size: 12pt}
+.input       {background: #FFFFFF; color: #000000; font-weight: normal}
+</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<p><strong class="title">Web Development With Beos (r5)</strong><br>
+<strong class="subtitle">Diamonds in the Rough</strong></p>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Iconoclast, Gnosis Software, Inc.<br>
+ April 2001<br>
+ <br>
+</p>
+<blockquote>    When choosing a platform for web development, too many users
+    overlook BeOS R5 as a choice.  BeOS provides just about
+    everything a web developer could want, all in a friendly,
+    pretty, fast and reliable, environment.  It has everything
+    but market-penetration and mindshare that one could want in
+    an operating system
+</blockquote><p><strong class="subhead">Getting Beos</strong></p>
+ <p>  On its intrinsic merits, BeOS R5 is probably the best desktop
+  operating system you can find nowadays.  Of course, what OS you
+  actually use will depend on many rather extrinsic factors:
+  what your workplace uses; where existing software runs; numbers
+  of available free or commercial applications; and plain old
+  familiarity.  For many users, the possibility of working with
+  operating systems where they can see and change the source code
+  (and share the changes) is an extra benefit in itself.  But if
+  you have the option to just work on the <em>best</em> platform
+  possible--and web development, being largely platform
+  independent is one place the option is likely--BeOS is a great
+  platform to work on.
+</p>
+<p>  BeOS is a closed-source operating system for x86 and (pre-G3)
+  PowerPC computers.  It was designed and built "from the ground
+  up" rather than based on any existing kernels, and thereby was
+  able to use many of the best ideas of OS design while
+  forgetting accumulated cruft.  BeOS is pervasively
+  multi-threaded, extremely snappy in performance,
+  multi-processor enabled, and has a fully integrated GUI.  As
+  well, BeOS uses a modern "database-like" filesystem with
+  extended file attributes.  Almost everything you do on BeOS
+  happens a bit faster than it does on other OS's (on the same
+  hardware).  And R5 is as rock- solid and reliable as any OS I
+  have worked with.  Much of the design focus of BeOS is for
+  multimedia work, where smooth multitasking and high-performance
+  are particularly important.  In many ways, BeOS is what MacOS X
+  should have been (not just metaphorically, Apple was actually
+  in negotiations with Be, Inc. in 1998; but they fell through in
+  the end).
+</p>
+<p>  The interface to BeOS is Mac-like at first brush.  The BeOS
+  Desktop works like an improved MacOS finder, with the
+  accompanying Tracker something like an improved Windows Start
+  bar (or like the WarpCenter in OS/2, or the taskbars in Gnome
+  and KDE).  In most respects, BeOS improves on its various
+  cousins, but I would wish for a bit more keyboard-friendliness
+  than its mouse-oriented interface has (in much the same way as
+  is true of MacOS, with which BeOS shares many keyboard
+  shortcuts).  Like the Mac, BeOS works with a user, rather than
+  fighting a user with arcana the way the free *nixes do.
+</p>
+<p>  However, along side its GUI, BeOS offers a Bash shell, complete
+  with a majority of the command-line utilities Unix users have
+  come to love.  To name just a few:  gcc2.9, less, gawk, du,
+  sed, rm, mount, sort, ls, pwd, gzip, kill, strings, diff (and
+  dozens of others).  Open a terminal, and you can just about
+  convince yourself you are working in a *nix environment (if you
+  ignore the pretty frame elements around the terminal window,
+  and some directory differences).  As well, for application
+  developers, BeOS comes bundled with a version of Metrowerks
+  CodeWarrior for C/C++ (and inline assembly).
+</p>
+<p>  To get everything described, you can either download the Free
+  Personal Edition, or buy the BeOS Pro 5 version for $50.  The
+  free version performs an odd little trick of living inside a
+  virtual partition (actually a big file) that must be launched
+  from a Win32 platform.  For more flexible multi-booting, and
+  just to get the most out of your system, I recommend using the
+  Pro version beyond an initial "just-looking" installation of
+  the free version.
+</p>
+<p><strong class="subhead">Web Development</strong></p>
+ <p>  Assuming you want to use BeOS as a platform for developing web
+  sites, there are a number of tools you will probably want on
+  hand.  Fortunately, a remarkable number of tools have been
+  either written for or ported to BeOS.  On the other hand, most
+  of the tools you are likely to use will be different ones from
+  those you are familiar with on other platforms.  In the rest of
+  this article, I take a look at some of the tools available
+  under BeOS in several categories relevant to web development:
+  web browsers, text editors and HTML editors, scripting
+  languages (for CGI, or batch site processing), web servers, and
+  miscellaneous utilities.  Given the breadth, the depth of
+  discussion of each tool will be shallow.  But my remarks should
+  help readers get a feel for available options.  One category
+  not covered here is one where BeOS is strongest.  Given its
+  multimedia focus, a quite rich range of image editing tools are
+  available for BeOS.
+</p>
+<p>  The tools mentioned come under a number of different pricing
+  and licensing schemes.  As a pattern, there seem to be a a lot
+  more shareware and freeware (i.e. free-of-cost but
+  closed-source) tools for BeOS than there are for free operating
+  systems (e.g.  Linux or FreeBSD).  Unlike most Windows
+  commercial programs, almost all programs for BeOS have
+  downloadable trial versions available.  In some cases, the
+  trial versions are extremely crippled, in others they are
+  fairly usable (but encourage you to register eventually).  The
+  situation is reminiscent of the old days of DOS and Win31, and
+  also similar to the MacOS world today.  A big plus for BeOS
+  tools is that they are uniformly easy to install, and do not
+  cause conflicts once installed (both the pricey and free
+  tools)--none of the "DLL hell" of Windows, and none of the
+  makefile hair-pulling of many Linux/FreeBSD applications.
+</p>
+<p><strong class="subhead">Web Browsers</strong></p>
+ <p>  The first thing you need to do web development is a web browser
+  to check your pages in.  BeOS has a pretty good range of
+  options, but not the ones you are most familiar with on
+  Windows, Mac and Linux platforms.
+</p>
+<p>  Out of the box, BeOS comes with a browser called NetPositive.
+  This is a pretty good browser, with a fairly simple interface.
+  NetPositive does not support some fairly standard bells-and-
+  whistles like JavaScript, however (Java can be enabled,
+  however), so it doesn't work for everything.  But the rendering
+  of HTML itself is good (and quick).
+</p>
+<p>  To get a full featured graphical browser, you basically have
+  two choices.  The commercial Opera browser is an awfully good
+  browser, with quite a few whiz-bang features for a large number
+  of platforms.  Opera does some of the most consistent rendering
+  of any browser with maybe the best CSS support.  Then again, it
+  seems a bit hard to sell a $40 browser when IE, Netscape, and
+  Konqueror are free for their supported platforms.
+</p>
+<p>  The other full-features choice for BeOS is BeZilla, the BeOS
+  port of Mozilla.  While I have had pretty good luck with recent
+  builds of Mozilla on some other platforms (mostly Warpzilla),
+  the binary BeOS port available as of this writing was not the
+  most recent release, and had stability problems.  Most likely,
+  as some newer Mozilla candidates are ported, things will
+  improve (and BeZilla will even become standard).
+</p>
+<p>  Beyond the graphical browsers, BeOS has ports of the full range
+  of text-mode browsers, which appeal to a niche of users
+  (including, at times, this writer):  Lynx, Links, W3M. All of
+  these are good to have on hand, mostly as sanity checks on the
+  accessibility of websites.
+</p>
+<p>  It is worth noting that the Flash and RealPlayer plugins are
+  available for the graphical browsers, and Java support can also
+  be enabled.  Other more specialized plugins are likely to pose
+  a problem (but the native support for media formats is quite
+  good, so you might be in luck).
+</p>
+<p><strong class="subhead">Editors</strong></p>
+ <p>  After being able to view web pages, the next most important
+  thing for a web developer is probably a text/HTML editor in
+  which to create web pages--and also things like CGI scripts or
+  Java programs that will be used in connection with web pages.
+  BeOS does pretty well here also, even pretty well for free.
+</p>
+<p>  Out-of-the-box, BeOS comes with StyledEdit and BeIDE.  The
+  first is a lot like the built-in SimpleEdit under MacOS or
+  WordPad under Windows.  BeIDE is a bit more advanced--it is
+  actually the Metrowerks C/C++ development environment.  But the
+  editor can be used for other file types (without most
+  type-specific aids), and does a bit more than StyledEdit.
+</p>
+<p>  Still, you probably want to download a fancier editor if you
+  are doing web development.  The big monsters of the Unix
+  world--'vi' and <code>emacs</code> both have one or more BeOS ports (<code>vi</code>
+  has both <code>vim</code> and <code>elvis</code>, for example).  You can also get
+  some other Linux-land editors like <code>joe</code> if you want.  But if
+  you want to go in a more BeOS-oriented direction, you have a
+  number of choices also.
+</p>
+<p>  <em>Eddie</em> is a nice freeware programmers editor with most of the
+  enhancements you expect in a programmers editors.  You get
+  syntax highlighting for a lot of languages (including HTML) and
+  regular expression searches.  Some of the enhancements are
+  directed at C/C++ rather than other languages, but a lot are
+  general.  <em>HotEdit</em> is another popular freeware text editor,
+  this one with the most enhancements directed to HTML.
+</p>
+<p>  <em>PE</em> is a genuinely full-featured text editor.  Lots of
+  languages are recognized; and enhancments like code insertion,
+  function jumps, syntax highlighting, multifile regular
+  expression searching, and other powerful editor features are
+  incorporated.  HTML is quite well supported by a template
+  insertion button bar.  Unfortunately, you have to pay $50 for
+  <em>PE</em>, and it is very badly crippled in the demo version.
+</p>
+<p>  <em>InSite Designer</em> is a visual HTML editor, in the style of
+  HomeSite, PageMill, or Netscape Composer.  It has no frame
+  support, unfortunately.  Otherwise, it is a well-arranged
+  editor that lets you edit both WYSIWYG and text versions of a
+  page at the same time (with cross updating).  Insite Designer
+  is also $50 shareware, and the trial version nags you
+  constantly during evaluation.
+</p>
+<p><strong class="subhead">(scripting) Languages</strong></p>
+ <p>  An area where BeOS has almost shockingly broad support (for a
+  niche OS) is in ported programming languages.  Pretty much
+  everything you might imagine using for CGI work--or for general
+  batch and interactive programs has a free/open-source BeOS
+  port.
+</p>
+<p>  Perl 5.005_03 is available, as is Python 1.5.2.  Neither of
+  these is quite the latest language versions, but hopefully
+  those will be done soon also.  For Python, there is a module
+  called "Bethon" that lets you get at the BeOS API for local
+  apps.  Also of interest to web developers is the availability
+  of PHP 4.04.
+</p>
+<p>  BeKaffe is a free and open JVM and development toolkit for
+  BeOS.  Beyond the usual candidates, a <strong>partial</strong> list of
+  available programming languages includes:  BeBRexx;
+  BeProlog/BinProlog; BeScript; betcl; BForth; BeSqueak; guile;
+  Gwydion Dylan; Hugs 98; Lua; NASM; OOC (Oberon-2); OpenScheme;
+  PForth; REBOL/Core; REBOL/View; Regina Rexx; Ruby; SmallEiffel;
+  Squirrel (Logo dialect); Xalan-C (XSLT); Xerces-C (XML parser).
+  Most web developers will probably not have <em>heard</em> of, let
+  alone use, most of these.  But it is nice to know so many
+  options are supported.
+</p>
+<p><strong class="subhead">Web Servers</strong></p>
+ <p>  Depending on your development pattern, you may want to either
+  host websites directly on BeOS, or just develop pages and code
+  for uploading to a different OS webhost.  Either way, you are
+  in good shape.
+</p>
+<p>  Built in to BeOS is basic web server called PoorMan. This is on
+  the order of Windows' Personal Web Server or MacOS's Webshare.
+  It is not necessarily super-high-performance, nor extremely
+  sophisticated.  Then again, for basic sites, turning it on is
+  only a mouse click or two away.  Using PoorMan is extremely
+  easy and straightforward.
+</p>
+<p>  Beyond PoorMan, you have BeOS specific web servers, <code>diner</code> and
+  <code>RobinHood</code>, as well as a variety of servers for NNTP, FTP,
+  POP3, IMAP4, SMTP, DHCP, and other protocols.
+</p>
+<p>  But for serious web hosting on BeOS, go with the world's
+  standard server.  Apache is available in both 1.3.x and 2.0
+  (alpha 7) versions for BeOS.  All the knowledge you might have
+  about Apache administration on other platforms is put to
+  equally good use on BeOS.
+</p>
+<p><strong class="subhead">Other Useful Utilities</strong></p>
+ <p>  There are any number of useful utilities that a web developer
+  on BeOS might want to pick up.  Browsing BeBits (see Resources)
+  is a useful way to spend some time.  But a couple that I find
+  particularly useful are worth mentioning (not web-related per
+  se).
+</p>
+<p>  If you plan on connecting to other machines, two utilities are
+  particularly important.  Secure shell (<code>ssh</code>) is a basic
+  necessity for making connections to remote shell sessions, such
+  as on webhosts.  This should probably be the very first thing
+  you download for BeOS.  I do a lot of my work on remote hosts
+  (of various sorts) this way; <code>ssh</code> gives you a shell window
+  into any machine you have permissions on.
+</p>
+<p>  The second utility that every BeOS user should have is Virtual
+  Network Computing (<code>vnc</code>).  <code>vnc</code> is a wonderful technology for
+  just about every OS platform under the sun (at least those that
+  use GUIs).  The idea in <code>vnc</code> is to allow one computer (running
+  any old OS) to serve as a remote graphic terminal to another
+  <code>vncserver</code> computer.  I can display a Linux desktop, a MacOS
+  desktop, a Windows desktop, or even a remote BeOS desktop
+  <em>inside</em> a BeOS window (or fullscreen in a workspace).  For
+  those times when you need tool native to other platforms, you
+  can turn your BeOS machine into a control console for every
+  other machine in the world that you have permission to use.
+  Getting <code>vnc</code> installed and setup everywhere necessary is a
+  little bit of work, but less than you might think.
+</p>
+<p><strong class="subhead">Resources</strong></p>
+ <p>  The best--and semi-official--source of almost all the BeOS
+  software discussed in this article is:
+</p>
+<blockquote>   <a href="http://www.bebits.com/">http://www.bebits.com/</a>
+</blockquote><p>  To obtain BeOS 5, start at the company's website.  Links to retail
+  sellers of both the Pro version and downloads of the free Personal
+  Edition can be found at:
+</p>
+<blockquote>   <a href="http://www.be.com/products/freebeos/">http://www.be.com/products/freebeos/</a>
+</blockquote><p>  General news and information about BeOS can be found at:
+</p>
+<blockquote>   <a href="http://www.benews.com/">http://www.benews.com/</a>
+</blockquote><p>  Opera Web browser:
+</p>
+<blockquote>   <a href="http://opera.com/">http://opera.com/</a>
+</blockquote><p>  Virtual Network Computing:
+</p>
+<blockquote>   <a href="http://www.uk.research.att.com/vnc/">http://www.uk.research.att.com/vnc/</a>
+</blockquote><p><strong class="subhead">About The Author</strong></p>
+ <p>  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz wishes to let a thousand flowers bloom.  David may
+  be reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+</p>
+</body></html>

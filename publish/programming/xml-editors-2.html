@@ -1,0 +1,319 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>XML MATTERS #22: Roundup of XML Editors -- Revisited Editors (Part II, Windows) -- </title>
+<style>
+             {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+em           {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt}
+ul, ol, li   {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+tt           {font-family: mono, courier}
+pre          {font-family: mono; font-size: 9pt}
+th           {font-family: mono, courier; font-size: 8pt}
+
+.code-sample {background-color: #CCCCCC}
+.sidebar     {background-color: #FFFFCC}
+.title       {font-size: medium; color: #3333CC}
+.subtitle    {font-size: 9pt; color: #3333CC}
+.subhead     {font-size: 12pt}
+.input       {background: #FFFFFF; color: #000000; font-weight: normal}
+</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<p><strong class="title">XML Matters #22: Roundup Of XML Editors</strong><br>
+<strong class="subtitle">Revisited Editors (Part II, Windows)</strong></p>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Eschaton Immanentizer, Gnosis Software, Inc.<br>
+ August 2002<br>
+ <br>
+</p>
+<blockquote>    This review of XML editors (and its followup) looks at the
+    progress commercial tools have made in the year-and-a-half
+    since I last looked at this category of tools.  These tools
+    have progressed from largely cosmetic wrappers around text
+    editors to fleshed-out development enviroments that hugely
+    ease working with XML-oriented technologies.  This
+    installment examines Java and MacOS applications.
+</blockquote><p><strong class="subhead">Introduction</strong></p>
+ <p>  This installment follows up on the last one, and reviews three
+  more XML editors.  All the editors covered here are Win32
+  specific products--it is conceivable they will run under WINE,
+  SoftWindows, or the like, but this was not tested, and is not
+  the developers' focus.  The XML editors I looked at in the last
+  installment were for Java and MacOS; depending on the
+  platform(s) you need to edit XML on, one installment or the
+  other will probably be more relevant.
+</p>
+<p>  Specifically, the last installment looked at Morphon and
+  &lt;oXygen/&gt;, both for Java, and ElfData's XML Editor for MacOS.
+  This installment follows up with evaluations of Altova's
+  XML-Spy, Wattle Software's XMLWriter, and and NetBryx
+  Technologies' EditML Pro.
+</p>
+<p>  One general issue for the last round of reviewed products was
+  their UI responsiveness.  Java can be slow, and REALBasic (used
+  by ElfData) is similar in this respect.  I am happy to report
+  that all the native Win32 products I have tested are quite
+  zippy even on a very moderately configured Win98 laptop, with a
+  PII-366Mhz and 64 megs or RAM.  <em>Stability</em> was sometimes an
+  issue, and transformations and validation is not necessarily
+  immediate--but the mundane interfaces were without noticable
+  pauses.
+</p>
+<p>  I commented in the last installment that I deliberately leave
+  out any discussion of general text editors.  Some of these are
+  quite good, and can include everything from XML syntax
+  highlighting to template completion and menu customization.
+  Moreover, what text editors do, they generally do in a more
+  sophisticated and refined manner than do upstart specialized
+  XML editors.  If you are happy editing XML in your current text
+  editor, that is not necessarily a bad thing.  Then again, some
+  of the XML editors really do make some common tasks a lot
+  easier--if you do these things a lot, it is worth spending a
+  few dollars on a custom tool.
+</p>
+<p><strong class="subhead">What Makes A Good Editor?</strong></p>
+ <p>  There is a distinction that I have drawn in all of these XML
+  editor reviews--even the early one in January 2001.  XML
+  documents come in two broad types:  prose-oriented and
+  data-oriented.  The requirements in editing each type of
+  document are somewhat different.
+</p>
+<p>  Prose-oriented documents borrow from XML's SGML roots.
+  A prose format will typically have a number of rules for when
+  sections, subsections, paragraphs, chapters, graphics, etc. can
+  nest inside one another.  But also, typically, one uses inline,
+  character-oriented markup for individual words and phrases
+  (bold, emphasis, citation, links, etc).  DocBook is a famous
+  and widely used example; IBM developerWorks internal article
+  format is another example (I used both for testing).  In
+  contrast, data-oriented documents have little text <em>as such</em>,
+  but rather contain nested table-like structures of numeric
+  values and simple names.  Data-oriented XML is often similar to
+  RDBMS tables, and sometimes is generated from such databases.
+  An ability to view XML as columns and rows is often important
+  for data-oriented XML.
+</p>
+<p>  Some XML editors have modes and views to accomodate different
+  document types.  Some also have special capabilities to deal
+  with widely used XML dialects, or with other techniques often
+  used in dealing with XML documents.  If you have specialized
+  requirements, consider whether a given product has
+  customizations around that need.  Most XML editors know at the
+  least how to automatically customize themselves to a novel
+  DTD--what the customization consists of, of course, varies.
+</p>
+<h3>Not Covered
+
+</h3> <p>  Softquad's <cite>XMetal</cite> was a Win32-only product that I liked quite
+  a lot in my 2001 roundup--mostly for its sophisticated and
+  useful wordprocessor-like view (with or without embedded
+  graphic tag display).  In fact, of the products reviewed 18
+  months ago, <cite>XMetal</cite> is the only one that I still fire up once
+  in a while for ordinary work.  <cite>XMetal</cite> has advanced from
+  version 2 to version 3 in the last 18 months, and I presume
+  they have added features and/or refined their product.
+  However, both email and telephone calls to SoftQuad's acquiring
+  company, Corel, failed to shake out a review copy, or even a
+  timely response; perhaps the corporate transition has caused
+  some confusions at the company.  I still hope to obtain a
+  review copy of Corel's <cite>XMetal 3</cite>; if I get the chance, I will
+  comment on the product in some later <cite>XML Matters</cite> installment.
+</p>
+<h3>Wattle Software's XMLWriter 1.21.
+
+</h3> <p>  I had looked at XMLWriter in my 2001 roundup, and looking again
+  now (at version 1.21), little has changed since then.  The
+  forthcoming version 2.0 looks like it may add some significant
+  updates; its ETA is already past the time a Wattle
+  representative indicated to me.  I will keep an eye open for
+  developments.
+</p>
+<p>  The basic idea in <cite>XMLWriter</cite> is close to a text editor, with
+  some XML specific extras thrown in.  The only editable view of a
+  document is a textual view, with syntax-highlighting.  There
+  are several preview modes that utilize MSXML/IE DLLs--a
+  collapsible tree, a CSS display, and XSLT transformation view.
+  All of these preview views are simply embedded Internet
+  Explorer panes--warts and all.  In particular, IE still does
+  not render inline CSS elements correctly (Mozilla and Opera do
+  perfectly in this), which makes the usefulness of the view much
+  weaker for prose-oriented documents.  Of course, if you happen to
+  have developed an XSLT sheet that targets (X)HTML, that is
+  displayed well.  There is no support at all for data-oriented
+  editing.
+</p>
+<p>  <img src="http://gnosis.cx/publish/programming/XMLWriter.png" alt="Screenshot of XMLWriter">
+</p>
+<p>  Beyond the text editor features, <cite>XMLWriter</cite> has options for
+  validation and well-formedness checking, for XSLT conversion,
+  for browser preview, and a concept of "projects" (collections
+  of related files:  XML, XSL, CSS, Schema, etc).  But compared
+  to most other products I have looked at, the extras are week.
+  The TagBar is a somewhat clumsy tool for inserting elements;
+  there is no help in entering attributes; validation is strictly
+  post-facto; the search dialog is extremely crude--no regular
+  expressions, XPath, or even element/attribute/value specific
+  searching.  Almost everything that <cite>XMLWriter</cite> does, a general
+  (free) programmers editor like JEdit does better.
+</p>
+<p>  XMLWriter version 1.21 will set you back AU$75 (about US$40)--I
+  do not know how version 2.0 will be priced.
+</p>
+<h3>NetBryx Technologies EditML Pro 2.6
+
+</h3> <p>  EditML Pro is another fairly simple Win32 XML editor, but a bit
+  more sophisticated than XMLWriter.  Like XMLWriter, is a
+  comparatively thin wrapper around the MSXML and IE DLLs, with
+  the various bugs that come with that.  Unfortunately, EditML
+  Pro introduces a few bugs of its own, such as a "DTD Element
+  View" pane that will constantly open itself despite efforts to
+  disable it (perhaps borrowing that behavior from the infamously
+  annoying MS-Office paperclip).
+</p>
+<p>  You get several views in EditML Pro, each arranged in tabbed
+  panes of the window associated with the XML document.  An
+  MDI-style interface is used to manage multiple documents, each
+  window has its own tabs.  As with most tools, there is a basic
+  syntax-highlighted SourceView pane.  There are also PreView
+  (embedded Internet Explorer) and DTDView panes.  But the main
+  view is a "tree-with-table" view.  The structure
+  of the document is displayed in a collapsible tree hierarchy in
+  one pane, while any attributes or element bodies are displayed in
+  a table in another pane.  A third tree-with-table pane is used
+  to edit long attribute values or body texts.
+</p>
+<p>  <img src="http://gnosis.cx/publish/programming/EditMLPro.png" alt="Screenshot of the EditML Pro">
+</p>
+<p>  The tree-with-table view EditML Pro uses is useful for editing
+  data-oriented documents; but it really falls apart for
+  prose-oriented ones.  The problem is that inline markup is
+  treated as a child element--which is technically true, but does
+  not let you determine the relations between PCDATA nodes and
+  child element nodes.  For example, in the screenshot, the
+  &lt;author&gt; element contains some text, and inside that text is an
+  &lt;img&gt; and a &lt;a&gt; child.  You simply cannot determine in this
+  view <em>where</em> the image and anchor occur in relation to the text.
+</p>
+<p>  There are a couple useful tools included in EditML Pro. You can
+  automatically generate a DTD or W3C XML Schema from an XML
+  document (subject to the limits of what is possible
+  automatically).  You can also convert a DTD to a W3C or
+  Microsoft Schema.  As with most tools, you can validate and
+  perform XSLT transformations.  The XPath search facility is pretty
+  good; it even adds an "XPath Query Builder" if you want to
+  compose it from a dialog (I did not find any advantage in doing
+  so though).  In the SourceView the search is a simple text
+  search.
+</p>
+<p>  A single user version of EditML Pro costs $75.
+</p>
+<h3>Altova XML Spy (Suite) 4.3
+
+</h3> <p>  XML Spy is quite simply a very impressive product--or rather, a
+  collection of related products.  I already liked XML Spy pretty
+  well when I reviewed an earlier version in 2001, but Altova has
+  added an almost embarrassing wealth of features since then.  Of
+  course, as with many things, you get what you pay for--XML Spy
+  is a much more expensive product than any of the other tools I
+  review here (XMetal, however, is similarly priced, and has
+  similar features).  For a developer who dabbles in XML
+  occasionally, XML Spy is probably overkill; but for a developer
+  who deals with various XML technologies on a daily basis (on a
+  Windows platform), this is a wonderful tool to have installed.
+  Even the various printed introductions to XML technologies are
+  nicely done (but I am not quite sure which documents were
+  included for reviewers, and which for "normal" users).
+</p>
+<p>  By default, the XML Spy IDE opens a large number of panes,
+  containing information on projects, current attributes,
+  insertable elements, miscellaneous information, and squeezed
+  into the middle, the actual work area.  On a 1024x768 display,
+  there is not enough room to fit all these panes and still
+  display a sufficiently large work area and its various tabbed
+  views--a 21" monitor might accomodate all this, but I shudder
+  at the thought of trying to use XML Spy on a VGA screen.
+  Fortunately, all these panes can be selectively or universally
+  toggled off.
+</p>
+<p>  <img src="http://gnosis.cx/publish/programming/XMLSpy.png" alt="Screenshot of the XML Spy">
+</p>
+<p>  Within the main work area, XML Spy IDE gives you a rich
+  collection of views--very nearly a superset of every other XML
+  editor I have looked at.  You get a standard text view, a
+  "document editor" view, a "browser" view (which is the familiar
+  flawed embedded IE CSS/tree preview-only display), a "schema
+  design" view, and by default an "enhanced grid" view.  The
+  default is what is displayed in the screenshot; it gives you
+  the ability to fold subelements, edit both bodies and
+  attributes, and differentiate node types.
+</p>
+<p>  The enhanced grid view will intelligently decide when subnodes
+  are better displayed as a table than a tree (you can override
+  the choice).  The enhanced grid is possibly not ideal for
+  prose-oriented editing, but in contrast to EditML Pro, it still
+  lets you easily identify and edit inline (character-level)
+  markup.  For prose-oriented XML documents, you probably want to
+  use the document editor view.  This view use XSLT stylesheets
+  to format display in a wordprocessor-like fashion.  Optionally,
+  you can embed graphic icons in the document editor view that
+  indicate where tags start and stop (taking an idea from XMetal
+  here).  I would have preferred use of CSS for this document
+  editor view to XSLT, but if you have the whole XML Spy Suite,
+  you can use the XSLT Designer to create typographic views
+  without needing to manually tune XSLT.
+</p>
+<p>  The utilities in XML Spy are both plentiful and well-organized.
+  You can do XSLT transformations.  You can generate DTDs and
+  Schemas from XML, or convert between them.  You can do searches
+  based on XPaths, and display multiple matches, as with
+  &lt;oXygen/&gt;--you can also extract the XPath of the cursor
+  position.  There is also search on text in bodies, attributes,
+  values, comments, etc., but no regular expressions.  In text
+  view, you get an in-place popup of allowed element (also like
+  &lt;oXygen/&gt;).  Obviously, you can easily check well-formedness
+  and validity; and if you follow the insertion dialogs you can
+  keep a document valid while editing.
+</p>
+<p>  While the features and user interface for XML Spy are
+  wonderful, the product has a few stability problems of note.
+  Every once in a while (on my Win98r2 test machine, with current
+  OS and IE patches installed), both the IDE and the XSLT
+  Designer freeze up, and have to be manually killed (without a
+  save).  I tried to install the extra Apache FOP support so that
+  I could produce PDF/PS output, but had no success.  In fact,
+  attempting to perform this action is one of the things that
+  consistently freezes XML Spy IDE (I have a hunch the problem
+  has something to do with my Java installation, which might
+  justify it not <em>working</em>, but should not lock up the
+  application).
+</p>
+<p>  A single user version of XML Spy Suite costs US$399.  It is
+  also possible to buy the XML Spy IDE by itself, without other
+  components, for $199.  The other components are also available
+  separately.  And there are various (rather moderate) volume
+  discouts.  My hunch is that if you are considering XML Spy for
+  a large site, you could negotiate something with Altova better
+  than what is listed on their website.
+</p>
+<p><strong class="subhead">Resources</strong></p>
+ <p>  Corel's (nee Softquad's) XMetal has a webpage at the below
+  URL.  This is a US$495 product--i.e. a "professional" tool
+  more than a personal one, which puts it in a price and
+  capability league with XML-Spy, but a different niche than the
+  other tools I look at:
+</p>
+<blockquote>   <a href="http://www.xmetal.com/">http://www.xmetal.com/</a>
+</blockquote><p>  Wattle Software's XMLwriter has information at the below URL:
+</p>
+<blockquote>   <a href="http://xmlwriter.net/">http://xmlwriter.net/</a>
+</blockquote><p>  Read about NetBryx Technologies' EditML Pro at:
+</p>
+<blockquote>   <a href="http://www.editml.com/">http://www.editml.com/</a>
+</blockquote><p>  Information on Altova's XML Spy can be found at:
+</p>
+<blockquote>   <a href="http://www.xmlspy.com/">http://www.xmlspy.com/</a>
+</blockquote></body></html>

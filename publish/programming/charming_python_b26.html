@@ -1,0 +1,449 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>CHARMING PYTHON #B26: Python Elegance, Python Warts, Part 2 -- Properties, attributes, methods and custom access -- </title>
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Charming Python #b26: Python Elegance, Python Warts, Part 2</h1>
+<h2>Properties, attributes, methods and custom access</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Frog Prince, Gnosis Software<br>
+ June, 2005<br>
+ <br>
+</p>
+<blockquote>
+    Since the "golden age" of Python 1.5.2--for a long time a stable and
+    solid version--Python has greatly increased its number of syntactic
+    features and built-in functions and types.  One area where features
+    have accumulated to a very large degree is in ways to access methods
+    by using attribute syntax.  A huge variety of "behind the scenes"
+    techniques, each with pluses and minuses, have grown within the
+    latest Python versions.
+</blockquote>
+<h3>Introduction</h3>
+ <p>
+  In this article, David discusses the non-obvious features and
+  misfeatures that have been added to the last several Python versions;
+  and weighs in on which are truly valuable, and which unnecessary
+  complication. David hopes to provide a collection of valuable things
+  to watch out for to all those programmers who use Python less than
+  full time--either programmer in other languages, or people like
+  scientists for whom programming is only a side task.  Where some
+  quandries are raised, solutions are suggested.
+</p>
+<h3>Attributes And Methods</h3>
+ <p>
+  In most object-oriented languages, methods and attributes are
+  almost-but-not-quite the same thing. Both things can be attached to a
+  class and/or to an instance. Whatever the details of implementation
+  though, there seems to be a difference too. Methods are things
+  attached to an object that you can <em>call</em> to initiate actions and
+  calculations; attributes simply have values that can be
+  retrieved (and perhaps modified).
+</p>
+<p>
+  There are langauges--like Java--where what I have described is pretty
+  much the end of the story. Attributes are attributes, and methods are
+  methods. Java, by convention, puts a heavy emphasis on encapsulation
+  and data hiding; the result is an encouragement of the use of
+  "setters" and "getters" to access otherwise private attribute data. To
+  the Java way of thinking, using explicit method calls covers in
+  advance the case where you might want to add computation or
+  side-effects to data access or modification. Of course, the result of
+  the Java attitude is verboseness, and the imposition of a sometimes
+  artificial seeming discipline: you wind up writing <code>foo.getBar()</code>
+  instead of <code>foo.bar</code>, and <code>foo.setBar(value)</code> instead of
+  <code>foo.bar=value</code>.
+</p>
+<p>
+  Ruby is worth mentioning as a somewhat odd creature. It actually
+  insists on data hiding to an even greater degree than Java does: <em>all</em>
+  attributes are <em>always</em> "private", you can <em>never</em> directly access
+  instance data. At the same time, Ruby uses some syntax conventions
+  that make method calls look like attribute access does in other
+  languages.  The first element of this is Ruby's option parentheses in
+  method calls; the second part is its use of semi-special naming of
+  methods with symbols that are operators in most languages.  So in
+  Ruby, <code>foo.bar</code> is just a shorter option for calling <code>foo.bar()</code>; and
+  "setting" <code>foo.bar=value</code> is shorthand for <code>foo.bar=(value)</code>.  Behind
+  the scenes, <em>everything</em> goes through a method call.
+</p>
+<p>
+  Python is much more flexible than either Java or Ruby, but that fact
+  is as much a criticism as it is praise. If you access <code>foo.bar</code>, or
+  set <code>foo.bar=value</code> in Python, you might be using a simple data value,
+  or you might be calling some semi-hidden code. Moreover, in the latter
+  case, there are at least a half-dozen different ways you might reach
+  that block of code, each one having slightly different behavior than
+  the others, with dizzying subtleties and nuances.  This deluge of
+  options harms the regularity of Python, and makes it harder to
+  understand for non-experts (or even for experts).  I know why things
+  have gotten where they are: new capabilities have been added to
+  Python's object-oriented underpinnings in several steps.  But I am not
+  terribly pleased by the chaos.
+</p>
+<h3>The old fashion way
+</h3>
+ <p>
+  Since the old days (before Python 2.1), Python has had a magic method
+  called <code>.__getattr__()</code> that class could define to return computed
+  values rather than simple data accesses. Correspondingly, the magic
+  methods <code>.__setattr__()</code> and <code>.__delattr__()</code> could cause code to run
+  with "attributes" were set or deleted. The problem with this old
+  system was that you never really knew whether or not the code would
+  actually be called, since it depended on whether an attribute with the
+  same name as the one accessed existed in <code>obj.__dict__</code>. You could try
+  to create <code>.__setattr__()</code> and <code>.__delattr__()</code> methods that
+  controlled what wound up there, but even that did not prevent direct
+  manipulation of <code>obj.__dict__</code> by other code. Both changed inheritance
+  trees and passing objects to external functions could often make it
+  non-obvious whether a method would or would not actually run when
+  working with an object.  For example:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; class Foo(object):
+...     def __getattr__(self, name):
+...         return "Value of %s" % name
+&gt;&gt;&gt; foo = Foo()
+&gt;&gt;&gt; foo.just_this = "Some value"
+&gt;&gt;&gt; foo.just_this
+'Some value'
+&gt;&gt;&gt; foo.something_else
+'Value of something_else'
+
+</pre></div><p>
+  Accessing <code>foo.just_this</code> skips the method code, while accessing
+  <code>foo.something_else</code> runs it; other than the fact this shell session
+  is short, nothing makes the difference obvious.  In fact, asking the
+  obvious <code>hasattr()</code> question give you a misleading answer:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; hasattr(foo,'never_mentioned')
+True
+&gt;&gt;&gt; foo2.__dict__.has_key('never_mentioned')  # this works
+False
+&gt;&gt;&gt; foo2.__dict__.has_key('just_this')
+True
+
+</pre></div><h3>The slots hack
+</h3>
+ <p>
+  With Python 2.2, we gained a new mechanism for creating "restricted"
+  classes. Exactly what the new-style class <code><cite>_slots_</cite></code> attribute is
+  supposed to be used for is nowhere made unambiguous. For the most
+  part, the Python documentation advices to use <code>.__slots__</code> only for
+  performance optimization in classes that might have a very large
+  number of instances--but specifically <em>not</em> as a way to declare
+  attributes. Nonetheless, the latter <em>is</em> what slots do: they create a
+  class without a <code>.__dict__</code> attribute that only has the attributes
+  explicitly named (methods, however, are still declared as normal
+  within the class body). It is peculiar, but this gives you a way to
+  ensure that method code is called on attribute access:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; class Foo2(object):
+...     __slots__ = ('just_this')
+...     def __getattr__(self, name):
+...         return "Value of %s" % name
+&gt;&gt;&gt; foo2 = Foo2()
+&gt;&gt;&gt; foo2.just_this = "I'm slotted"
+&gt;&gt;&gt; foo2.just_this
+"I'm slotted"
+&gt;&gt;&gt; foo2.something_else = "I'm not slotted"
+AttributeError: 'Foo' object has no attribute 'something_else'
+&gt;&gt;&gt; foo2.something_else
+'Value of something_else'
+
+</pre></div><p>
+  The declaration of <code>.__slots__</code> guarantees that only those attributes
+  you specify can be accessed directly, everything else will go through
+  the <code>.__getattr__()</code> call.  If you have also created a
+  <code>.__setattr__()</code> method, you can make an assignment do something other
+  than raise an <code>AttributeError</code> (but be sure to let the "slotted" value
+  pass through on assignment).  E.g.:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; class Foo3(object):
+...     __slots__ = ('x')
+...     def __setattr__(self, name, val):
+...         if name in Foo.__slots__:
+...             object.__setattr__(self, name, val)
+...     def __getattr__(self, name):
+...         return "Value of %s" % name
+...
+&gt;&gt;&gt; foo3 = Foo3()
+&gt;&gt;&gt; foo3.x
+'Value of x'
+&gt;&gt;&gt; foo3.x = 'x'
+&gt;&gt;&gt; foo3.x
+'x'
+&gt;&gt;&gt; foo3.y
+'Value of y'
+&gt;&gt;&gt; foo3.y = 'y'   # Doesn't do anything, but doesn't raise exception
+&gt;&gt;&gt; foo3.y
+'Value of y'
+
+</pre></div><h3>The <code>.__getattribute__()</code> method
+</h3>
+ <p>
+  In Python 2.2 and later, you have the option of using the method
+  <code>.__getattribute__()</code> instead of the confusingly similarly named
+  old-style <code>.__getattr__()</code>.  Well, you have the option if you use
+  new-style classes (which generally you should anyway).  The
+  <code>.__getattribute__()</code> method is more powerful than its sibling in that
+  it intercepts <em>all</em> attribute access, whether or not an attribute
+  is defined in <code>obj.__dict__</code> or <code>obj.__slots__</code>.  A drawback of using
+  <code>.__getattribute__()</code> is that since all access goes though the method.
+  If you use this method, a bit of special programming is needed if you
+  want to return (or manipulate) the "real" value of the attribute:
+  usually you do this by calling <code>.__getattribute__()</code> on the superclass
+  (usually <code>object</code>).  For example:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; class Foo4(object):
+...     def __getattribute__(self, name):
+...         try:
+...             return object.__getattribute__(self, name)
+...         except:
+...             return "Value of %s" % name
+...
+&gt;&gt;&gt; foo4 = Foo4()
+&gt;&gt;&gt; foo4.x = 'x'
+&gt;&gt;&gt; foo4.x
+'x'
+&gt;&gt;&gt; foo4.y
+'Value of y'
+
+</pre></div><p>
+  In all versions of Python, <code>.__setattr__()</code> and <code>.__delattr__()</code> also
+  intercept all the write and delete access to attributes, rather than
+  merely those absent from <code>obj.__dict__</code>.
+</p>
+<h3>Descriptors
+</h3>
+ <p>
+  We are moving along nicely in an enumeration of ways to make
+  attributes act like methods.  Within these magic methods, you can
+  examine the specific attribute name being accessed, assigned, or
+  deleted.  In fact, if you like, you can check names by regular
+  expression or by other computation.  In principle you can make all
+  sorts of runtime decisions about how to handle use of some given
+  pseudo-attribute--for example, perhaps you do not simply want to
+  compare the attribute name to a string pattern, but actually look up
+  whether the name is an attribute that has been stored in a persistent
+  database.
+</p>
+<p>
+  Much of the time, however, you would just like for a few "attributes"
+  to act in a special manner, but let other attributes operate as plain
+  attributes.  The plain attributes should neither trigger any special
+  code, nor suffer the time penalty of working through method code.  In
+  these cases you can use <em>descriptors</em> for attributes.  Or closely
+  related to descriptors, you can define <em>properties</em>.  Behind the
+  scenes, properties and descriptors amount to the same thing, but the
+  syntax of defining them is rather different; with the difference
+  in definition styles, you get advantages and disadvantages.
+</p>
+<p>
+  Let us first look at a descriptor. The idea here is to assign an
+  instance of a special kind of class to an attribute within another
+  class. This special "descriptor" class is a new-style class that
+  contains methods called <code>.__get__()</code>, <code>.__set__()</code> and <code>__delete__()</code>,
+  or at least a subset of those. If the descriptor class implements at
+  least the first two, it is called a "data descriptor"; if it
+  implements only the first, it is called a "non-data descriptor".
+</p>
+<p>
+  The latter (non-data descriptor) is likely to be used to return a
+  callable object. A non-data descriptor is, in a sense, often a fancy
+  name for a method--but the particular method returned by descriptor
+  access could be determined at runtime. This starts to get us into the
+  scary realm of things similar to metaclasses and decorators, that I
+  have written about before in this column.  Of course, a regular method
+  can also decide what code to run based on runtime conditions, so there
+  is nothing fundamentally new about this concept of runtime
+  determination of what a "method" does.
+</p>
+<p>
+  In any case, a data descriptor is more general, so let us look at one.
+  Such a descriptor <em>could</em> return something callable--any Python
+  function or method can return anything, after all.  But our example
+  just deals with simple values (and side effects).  We want to make any
+  use of a few attributes log the action to STDERR:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; class ErrWriter(object):
+...     def __get__(self, obj, type=None):
+...         print &gt;&gt; sys.stderr, "get", self, obj, type
+...         return self.data
+...     def __set__(self, obj, value):
+...         print &gt;&gt; sys.stderr, "set", self, obj, value
+...         self.data = value
+...     def __delete__(self, obj):
+...         print &gt;&gt; sys.stderr, "delete", self, obj
+...         del self.data
+&gt;&gt;&gt; class Foo(object):
+...     this = ErrWriter()
+...     that = ErrWriter()
+...     other = 4
+&gt;&gt;&gt; foo = Foo()
+&gt;&gt;&gt; foo.this = 5
+set &lt;__main__.ErrWriter object at 0x5cec90&gt;
+    &lt;__main__.Foo object at 0x5cebf0&gt; 5
+&gt;&gt;&gt; print foo.this
+get &lt;__main__.ErrWriter object at 0x5cec90&gt;
+    &lt;__main__.Foo object at 0x5cebf0&gt; &lt;class '__main__.Foo'&gt;
+5
+&gt;&gt;&gt; print foo.other
+4
+&gt;&gt;&gt; foo.other = 6
+&gt;&gt;&gt; print foo.other
+6
+
+</pre></div><p>
+  The class <code>Foo</code> defines <code>this</code> and <code>that</code> as descriptors of the
+  <code>ErrWriter</code> class. The attribute <code>other</code> is just a plain class
+  attribute. Actually, there is a caveat here. On first access to
+  <code>foo.other</code>, we read the class attribute; after we assign a value, we
+  actually read the instance attribute instead. The class attribute is
+  still there, just hidden, i.e.:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; foo.other
+6
+&gt;&gt;&gt; foo.__class__.other
+4
+
+</pre></div><p>
+  In contrast, the descriptor stays a class-level object, even though
+  you can access it through the instance.  This has the usually
+  undesirable effect of making the descriptor something like a
+  singleton.  E.g.:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; foo2 = Foo()
+&gt;&gt;&gt; foo2.this
+get &lt;__main__.ErrWriter object at 0x5cec90&gt;
+    &lt;__main__.Foo object at 0x5cebf0&gt; &lt;class '__main__.Foo'&gt;
+5
+
+</pre></div><p>
+  To simulate a usual "per instance" behavior, you would need to make
+  use of the <code>obj</code> passed into <code>ErrWriter</code> magic methods.  This <code>obj</code> is
+  the instance that has the descriptor.  So you might define a
+  non-singleton descriptor like:
+</p>
+<div class="code-sample"><h4></h4><pre>class ErrWriter(object):
+    def __init__(self):
+        self.inst = {}
+    def __get__(self, obj, type=None):
+        return self.inst[obj]
+    def __set__(self, obj, value):
+        self.inst[obj] = value
+    def __delete__(self, obj):
+        del self.inst[obj]
+
+</pre></div><h3>Properties
+</h3>
+ <p>
+  Properties work like descriptors, but are generally defined inside a
+  particular class rather than being created as "utility descriptors"
+  that various classes might utilize.   As with "regular" descriptors,
+  the idea is to define "getters", "setters" and "deleters".  After
+  that, you use the special function <code>property()</code> to turn those methods
+  into a descriptor.  For the hyper-technical readers (those whose
+  brains are still more-or-less operational): <code>property</code> is not really a
+  function, but a type--don't worry about it.
+</p>
+<p>
+  Oddly, properties bring us full circle to the brief description I gave
+  at top about how the Ruby programming languge works.  A property is
+  just a thing that looks like an attribute syntactically (as used), but
+  is defined by defining all the getters, setters, and so on.  If you
+  wanted to, you could impose complete "Ruby-discipline" in Python, and
+  never access "real" attributes.  More likely you will want to
+  mix-and-match though.  Let us see how a property works:
+</p>
+<div class="code-sample"><h4></h4><pre>class FooP(object):
+    def getX(self): return self.__x
+    def setX(self, value): self.__x = value
+    def delX(self): del self.__x
+    x = property(getX, setX, delX, "I'm the 'x' property.")
+
+</pre></div><p>
+  The names of the getter, setter, and deleter are nothing reserved.
+  Usually you will want to use sensible names like the above. What they
+  actually do can be anything, but often it is reasonable to use
+  double-underscore versions of names for the attributes. These
+  attributes get attached to the instance, just with the usual Python
+  name mangling for "semi-hidden" attributes.  Moreover, the methods
+  remain perfectly usable too:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; foop = FooP()
+&gt;&gt;&gt; foop.x = 'FooP x'
+&gt;&gt;&gt; foop.getX()
+'FooP x'
+&gt;&gt;&gt; foop._FooP__x
+'FooP x'
+&gt;&gt;&gt; foop.x
+'FooP x'
+
+</pre></div><h3>Let Confusion Reign</h3>
+ <p>
+  We have seen, in this installment, far too many ways to make Python
+  instance attributes act like (or be) method calls. Unlike in some of
+  these installments, I really do not have any clear advice for readers
+  on how to cut through the complexity. I would like to be able to tell
+  you to simply choose one of the described techniques, and ignore the
+  others as inferior or less general.  Unfortunately, each technique
+  described has strengths, and has weaknesses.  Each is pretty
+  reasonable for certain programming contexts, even though the syntax
+  and semantics of each is so radically different from the others.
+</p>
+<p>
+  Moreover, while I have not described it in this article, I have
+  thought (vaguely) of a number of other even more obscure ways that a
+  programmer might use metaclasses, class factories, and decorators to
+  obtain similar effects to the "standard" half-dozen techniques I have
+  outlined.  Those ideas would truly probe into some dark corners of
+  Python metaprogramming.
+</p>
+<p>
+  What would be nice would be if all the things I described were
+  possible, but the variations among them were simply parameterized in
+  some straightforward way rather than using wholly different syntax and
+  organization. The grand goal of Python 3000 is a simplification along
+  these lines; but I have not seen any concrete proposals on how such
+  unification and simplification of attributes-as-methods might work.
+  One idea that occurs to me is that Python might enable decorators for
+  classes (along with the current use in methods and functions), and
+  also provide some standard module of decorators for the most common
+  "magic attribute" behaviors. This is speculation, and I do not know
+  exactly how it might work, but I can just imagine such a thing could
+  hide the complexity from the 95% of Python programmers who really do
+  not wish to worry too much about Python internals and cryptic mojo.
+</p>
+<h3>Resources</h3>
+ <p>
+  Raymond Hettinger's "How-To Guide for Descriptors" is an excellent,
+  albeit fairly dense, description of the low-down on exactly how
+  descriptors work.
+</p>
+<blockquote>
+   <a href="http://users.rcn.com/python/download/Descriptor.htm">http://users.rcn.com/python/download/Descriptor.htm</a>
+</blockquote>
+<p>
+  The Python PEP 3000 describes the goals for Python 3.0 (also called
+  "Python 3000"). The main purpose of this future version is removal of
+  redundancy in programming techniques.  Nothing is currently detailed
+  about reducing the chaos about attributes-as-methods, but a programmer
+  can dream:
+</p>
+<blockquote>
+   <a href="http://www.python.org/dev/peps/pep-3000/">http://www.python.org/dev/peps/pep-3000/</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz almost enjoys problems because of the solutions they
+  enable. David may be reached at mertz@gnosis.cx; his life pored over
+  at<a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a> Check out David's book <cite>Text Processing
+  in Python</cite> (http://gnosis.cx/TPiP/).
+</p>
+</body></html>

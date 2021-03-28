@@ -1,0 +1,578 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>TUTORIAL FOR LPI EXAM 201: part 3 -- Topic 203: Understanding Filesystems -- </title>
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Tutorial For Lpi Exam 201: Part 3</h1>
+<h2>Topic 203: Understanding Filesystems</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Professional Neophyte<br>
+ July, 2005<br>
+ <br>
+</p>
+<blockquote>
+    Welcome to "Understanding Filesystems", the third of eight tutorials
+    designed to prepare you for LPI exam 201. In this tutorial you will
+    learn how to control the mounting and unmounting of filesystems,
+    examine existing filesystems, create filesystems, and perform
+    remedial actions on damaged filesystems.
+</blockquote>
+<h3>Before You Start</h3>
+ <h3>About this series
+</h3>
+ <p>
+  The Linux Professional Institute (LPI) certifies Linux system
+  administrators at junior and intermediate levels. There are two exams
+  at each certification level. This series of eight tutorials helps you
+  prepare for the first of the two LPI intermediate level system
+  administrator exams--LPI exam 201. A companion series of tutorials is
+  available for the other intermediate level exam--LPI exam 202. Both
+  exam 201 and exam 202 are required for intermediate level
+  certification. Intermediate level certification is also known as
+  certification level 2.
+</p>
+<p>
+  Each exam covers several or topics and each topic has a weight. The
+  weight indicate the relative importance of each topic. Very roughly,
+  expect more questions on the exam for topics with higher weight. The
+  topics and their weights for LPI exam 201 are:
+</p>
+<p>
+  <strong> Topic 201: Linux Kernel (5)
+  </strong> Topic 202: System Startup (5)
+  <strong> Topic 203: Filesystems (10)
+  </strong> Topic 204: Hardware (8)
+  <strong> Topic 209: File Sharing Servers (8)
+  </strong> Topic 211: System Maintenance (4)
+  <strong> Topic 213: System Customization and Automation (3)
+  </strong> Topic 214: Troubleshooting (6)
+</p>
+<h3>About this tutorial
+</h3>
+ <p>
+  Welcome to "Understanding Filesystems", the third of eight tutorials
+  designed to prepare you for LPI exam 201. In this tutorial you will
+  learn the steps a Linux system goes through during system
+  initialization, and how to modify and customize those behaviors for
+  you specific needs.
+</p>
+<h3>Prerequisites
+</h3>
+ <p>
+  To get the most from this tutorial, you should already have a basic
+  knowledge of Linux and a working Linux system on which you can
+  practice the commands covered in this tutorial.
+</p>
+<h3>About filesystems
+</h3>
+ <p>
+  This tutorial addresses both elements of Linux strictly speaking and
+  also external tools that are merely useful for working with Linux
+  systems. Support for filesystems, devices and partitions is either
+  compiled into the base kernel or included in kernel modules. So that
+  aspect is a Linux kernel matter, as such. However, various tools that
+  you are likely to use in managing these filesystems recognized by
+  Linux are userland utilities, and hence merely commonly included with
+  Linux distributions rather than part of Linux itself. Nonetheless,
+  filesystem tools are essential for working with pretty much every
+  Linux system, regardless of its intended use (even non-networked or
+  embedded systems).
+</p>
+<h3>Creating Filesystems</h3>
+ <h3>Creating partitions (part one)
+</h3>
+ <p>
+  Before you can work with Linux filesystems, you need to create them.
+  But before you can create a filesystem, you need to create a partition
+  to put it on. As a brief primer, on x86 machines, hard disks may be
+  divided into four primary partitions, but the last of those primary
+  partitions may contain a number of extended partitions inside it. In
+  the past there were a number of restrictions about the highest
+  cylinders where bootable partitions can occur, maximum disk sizes,
+  where primary partitions could be located on large disks, and so on.
+  However, for the last five years or more, pretty much all system
+  bios's flexibly handle disks of essentially unlimited size, and modern
+  bootloaders (at least for Linux), have no important restrictions
+  about paritition sizes or locations.
+</p>
+<p>
+  About the only rule that remains to worry about nowadays concerns
+  operating systems other than Linux.  Sometimes those still insist on
+  living in primary partititions near the front of a hard disk.  Linux
+  parititions are more than happy to reside on extended partitions, and
+  anywhere on any accessible disk drive.
+</p>
+<h3>Creating partitions (part two)
+</h3>
+ <p>
+  There are several widely used tools in the Linux world for creating
+  and manipulating partitions on harddisks.  The oldest such tool is
+  <code>fdisk</code>.  Somewhat later the <code>curses</code>-based <code>cfdisk</code> has become
+  popular.  GNU <code>parted</code> is also used in many distributions.  As well,
+  the installation systems for most Linux distributions and/or their
+  graphical environments come with partititioning front-ends that
+  provide friendlier interfaces to viewing and modifying partititions.
+</p>
+<p>
+  Of these tools, <code>fdisk</code> seems to remain the most flexible and most
+  forgiving tool.  Forgiving, however, is a slightly odd term to use
+  here.  Writing unintended partition table information is a recipe for
+  disaster regardless of what tool you use.  But if your partitions have
+  been created in somewhat non-standard ways, often by non-Linux
+  operating systems and tools, <code>fdisk</code> will generally trudge through
+  where other tools might refuse to try at all.  If it works, however,
+  <code>cfdisk</code> is generally friendlier and more interactive.  And <code>parted</code>
+  provides more powerful options about resizing and moving existing
+  partitions non-destructively than will <code>fdisk</code> or <code>cfdisk</code>.
+</p>
+<h3>Creating partitions (part three)
+</h3>
+ <p>
+  Whatever tool you use to create partitions, the concepts are similar.
+  First thing is that you need to perform these sort of opertions as
+  root, and ideally in single-user mode. And it's hard to make this
+  point too strongly: <strong>be careful</strong> when you modify partitions (ideally,
+  have all important data backed up, as well as paying careful attention
+  to what changes you make).
+</p>
+<p>
+  Before you start modifying a partitition table, it is a good idea to
+  be clear about what partitions currently exist.  The command
+  <code>fdisk -l /dev/hda</code> (or similar for other disks, e.g. <code>/dev/hdb</code> or
+  <code>/dev/sda</code>) gives you information on existing partitions.  <code>mount</code> is
+  also helpful in helping understand how these existing paritions are
+  acutally being used.  If you wish to create new partitions, keep
+  particularly in mind any extra sectors within the fourth primary
+  partition that might be available for additional extended partitions.
+</p>
+<h3>Creating partitions (part four)
+</h3>
+ <p>
+  Let us see an example of a partition table on a Linux system of mine:
+</p>
+<div class="code-sample"><h4></h4><pre>% fdisk -l /dev/sda
+Disk /dev/sda: 80.0 GB, 80026361856 bytes
+255 heads, 63 sectors/track, 9729 cylinders
+
+   Device Boot   Start      End      Blocks     Id  System
+/dev/sda1   *        1     1216     9767488+     7  HPFS/NTFS
+/dev/sda3         1217     4255    24410767+    83  Linux
+/dev/sda4         4256     9729    43969905      5  Extended
+/dev/sda5         4256     4380     1004031     82  Linux swap / Solaris
+/dev/sda6         4381     5597     9775521     83  Linux
+
+</pre></div><p>
+  This tells us several things.  First of all, we can see that partition
+  one is probably used by a foriegn operating system.  And running
+  <code>mount</code> will let us know:
+</p>
+<div class="code-sample"><h4></h4><pre>% mount | head -1
+/dev/sda3 on / type reiserfs (rw,noatime,notail,commit=600)
+
+</pre></div><p>
+  That is, the existing system is rooted on <code>/dev/sda3</code>.  Of most
+  interest, perhaps, is that the <code>/dev/sda4</code> parition extends to
+  cylinder 9729, but the extended paritions within it use only part of
+  that space.
+</p>
+<h3>Creating partitions (part four)
+</h3>
+ <p>
+  In the last panel, we discovered some free space available on a drive.
+  Let us create a partition within it using <code>fdisk</code>:
+</p>
+<div class="code-sample"><h4></h4><pre>% fdisk /dev/sda
+The number of cylinders for this disk is set to 9726
+There is nothing wrong with that, but this is larger than 1024,
+and could in certain setups cuase problems with:
+1) software that runs at boot time (e.g., old versions of LILO)
+2) booting ant partitioning software from other OSs
+   (e.g., DOS FDISK, OS/2 FDISK)
+
+Command (m for help): n
+Command action
+   l   logical (5 or over)
+   p   primary partition (1-4)
+l
+First cylinder (5598-9729), default 5598):
+Using default value 5598
+Last cylinder or +size or +sizeM or +sizeK (5598-9729, default 9729): +10000M
+
+Command (m for help): w
+The partition table has been altered!
+
+</pre></div><p>
+  Everything that follows a colon is typed in by the user (you). At this
+  point, we have created a new 10GB Linux partition, i.e.:
+</p>
+<div class="code-sample"><h4></h4><pre>/dev/sda7         5598     6814     9775521     83  Linux
+
+</pre></div><p>
+  Keep reading to find out how to <strong>use</strong> this partition.  Note that you
+  may need to reboot a system to make new paritions accessible.
+</p>
+<h3>Making a filesystem in a partition (part one)
+</h3>
+ <p>
+  Just having a partition is not quite enough to use a filesystem. In
+  the prior panel we created a new Linux parition at <code>/dev/sda7</code>. But we
+  still have not yet decided which of the many filesystems Linux
+  supports to use within that parition. Do we want the historical
+  default <code>ext2</code>? Or the newer journaling-enhanced extension <code>ext3</code>
+  format? Maybe we want one of the enhanced filesystems contributed to
+  Linux by other parties, ReiserFS, XFS, JFS.  Or maybe we need a
+  filesystem to interoperate with another operating system, such as
+  Minix, MSDOS, of VFAT (some others can be read if created already, but
+  not always created with Linux tools).
+</p>
+<p>
+  All of the tools for making new filesystems are names as <code>mkfs.*</code>.
+  That is, your system might have <code>mkfs.ext2</code>, <code>mkfs.minix</code>, <code>mkfs.xfx</code>,
+  and so on, usually installed in <code>/sbin/</code>.  As well, you may access
+  each of these using the basic <code>mkfs -t &lt;fstype&gt;</code> switch.  Several, but
+  not all, of the filesystems also have compact forms as, e.g. <code>mke3fs</code>.
+  Exactly which filesystems are available depends on your specific Linux
+  distribution and version, as well as what extra tools you might have
+  installed.  <code>mkfs.ext2</code> is almost certainly available on nearly every
+  distribution.
+</p>
+<h3>Making a filesystem in a partition (part two)
+</h3>
+ <p>
+  The basics of creating a filesystem are quite simple.  Just run your
+  desired <code>mkfs.*</code> tool against the partition you want the filesystem to
+  exist on.  For example:
+</p>
+<div class="code-sample"><h4></h4><pre>% mkfs.xfs /dev/sda7
+
+</pre></div><p>
+  The messages you will see will vary somewhat depending on which
+  filesystem type you used.  Generally, the displayed information
+  provides you information on the number of inodes, blocks, journaling
+  type (if any), extents, fragments, as is relevant to that particular
+  filesytem's usage strategy.  Many of the filesystem creation tools
+  will warn you if you try to create a new filesystem on a partition
+  with an existing filesystem; but not all of them will, so proceed with
+  great caution (creating a new filesystem over an old one will probably
+  result in data loss).
+</p>
+<h3>Making an ISO filesystem (mkisofs)
+</h3>
+ <p>
+  A special case of making a filesystem is the creation of an ISO
+  filesystem, that is, a system image that may be written to a writeable
+  CD or DVD device.  An ISO filesystem is special in the sense that it
+  is really just a (large) file that has data layed out in a certain
+  way, rather than an arrangement of a raw device like <code>/dev/cdrom</code> or
+  <code>/dev/hdb3</code>.
+</p>
+<p>
+  The basic idea of creating an ISO filesystem--which really means
+  either an ISO9660 or HFS hybrid volume--is simply to take the files in
+  one or more existing hierarchies and arrange them into an ISO image.
+  ISO9660 itself is limited to simple DOS-style 8.3 names, but the Rock
+  Ridge and Joliet extensions allow storage of longer names and/or
+  additional file attributes.  For example, to create an image of a
+  project, you might use a command like:
+</p>
+<div class="code-sample"><h4></h4><pre>% mkisofs -o ProjectCD.iso -r ~/project-files ~/project-extras
+
+</pre></div><p>
+  In this case, we create an ISO image that uses Rock Ridge attributes
+  (but unlike <code>-R</code> sets more useful values, such as all files readable),
+  and contains a merge of all the files in two directories.  Other
+  options would let us add bootable headers to the image, create an HFS
+  image, attach directories in specified locations other than root, and
+  fine tune file options.
+</p>
+<h3>Making an ISO filesystem (cdrecord)
+</h3>
+ <p>
+  Transferring an ISO image to a recordable CD or DVD is often
+  accomplished nowadays using a frontend tool, often a GUI interface.
+  For example, both Gnome and KDE make CD burning part of their file
+  manager interface. Some commercial tools exist also. But for an system
+  administrator, the older command-line tool <code>cdrecord</code> is a trusted
+  utility that is present on most modern distributions, and is much
+  closer to "standard" than are other front-ends.  Generally, the basic
+  usage just requires specifying the device you want to write to, and
+  the ISO file you want to write.
+</p>
+<p>
+  As usual with Linux utilities, you may also specify a number of
+  options to the record process, such as <code>-overburn</code> for CD's larger
+  than 650 MB, or a specific burn speed for your writer.  See the
+  manpage for <code>cdrecord</code> for current details.
+</p>
+<h3>Making an ISO filesystem (cdrecord, part two)
+</h3>
+ <p>
+  Finding the device may be accomplished with the <code>-scanbus</code> option. The
+  device you want is named as a numeric triple indicating the bus, not a
+  regular block device in the filesystem. For example, you might see
+  something like (abridged):
+</p>
+<div class="code-sample"><h4></h4><pre>% cdrecord -scanbus
+[...]
+scsibus0:
+     0,0,0     0) 'ATA     ' 'WDC WD800UE-00HC' '09.0' Disk
+     0,1,0     1) *
+     [...]
+scsibus1:
+     1,0,0   100) 'Slimtype' 'DVDRW SOSW-852S ' 'PSB2' Removable CD-ROM
+     [...]
+
+</pre></div><p>
+  With bus information in hand, you might burn an image thus:
+</p>
+<div class="code-sample"><h4></h4><pre>% sudo cdrecord -overburn -v speed=16 dev=1,0,0
+   /media/KNOPPIX_V3.6-2004-08-16-EN.iso
+
+</pre></div><p>
+  In this case, my image is oversized, and I know my burner supports
+  16x.  The action command output is rather verbose because of the <code>-v</code>
+  option, but that helps in understanding the whole process.
+</p>
+<h3>Making an ISO filesystem (dd)
+</h3>
+ <p>
+  Of final note (about ISO images), sometimes you want to
+  create a brand new ISO image not out of some directories in your main
+  filesystem, but rather from an already existing CD or DVD.  To make an
+  ISO image from a CD, just use the command <code>dd</code>, but refer to the raw
+  block device for the CD rather than to the mounted location.  For
+  example,
+</p>
+<div class="code-sample"><h4></h4><pre>% dd if=/dev/cdrom of=project-cd.iso
+
+</pre></div><p>
+  An active reader might wonder why not just use <code>cp</code> if the goal is to
+  copy bytes.  Actually, if you ignore a reported I/O error when the raw
+  device runs out of bytes to copy, the <code>cp</code> command is <strong>likely</strong> to
+  work.  However, <code>dd</code> is better style (and doesn't complain at, but
+  instead report a summary of activity).
+</p>
+<h3>Operating The Linux Filesystem</h3>
+ <h3>mount and umount
+</h3>
+ <p>
+  A flexible feature of Linux systems is the fine tuned control you have
+  over mounting and unmounting filesystems. Unlike under Windows and
+  some other operating systems, partitions are not automatically
+  assigned locations by the Linux kernel, but are instead attached to
+  the single <code>/</code> root hierarchy by the <code>mount</code> command. Moreover,
+  different filesystems types (on different drives, even) may be mounted
+  within the same hierarchy. Unmounting a particular partition is done
+  with the <code>umount</code> command, specifying either the mount point (e.g.
+  <code>/home</code>) or the raw device (e.g. <code>/dev/hda7</code>).
+</p>
+<p>
+  For recovery purposes, the ability to control mount points lets you
+  perform forensic analysis on partitions--using <code>fsck</code> or other
+  tools--without risking further damage to a damaged filesystem. You may
+  also custom mount a filesystem using various options; the most
+  important of these is mounting read-only using either of the synonyms
+  <code>-r</code> or <code>-o ro</code>.
+</p>
+<p>
+  As a quick example, you might wish to substitute one user directory
+  location for another, either because of damage to one, or simply to
+  expand disk space or move to a faster disk.  You might perform this
+  switch using something like:
+</p>
+<div class="code-sample"><h4></h4><pre># umount /home      # old /dev/hda7 home dir
+# mount -t xfs /dev/sda1 /home  # new SCSI disk using XFS
+# mount -t ext3 /dev/sda2 /tmp  # also put the /tmp on SCSI
+
+</pre></div><h3>Default mounting
+</h3>
+ <p>
+  For day-to-day operation, you generally want a pretty fixed set of
+  mounts to happen at every system boot. You control the mounts that
+  happen at bootup by putting configuration lines in the file
+  <code>/etc/fstab</code>. A typical configuration might look something like the
+  below example.
+</p>
+<div class="code-sample"><h4></h4><pre># &lt;file system&gt; &lt;mount point&gt;   &lt;type&gt;  &lt;options&gt;       &lt;dump&gt;  &lt;pass&gt;
+proc            /proc           proc    defaults        0       0
+/dev/sda3       /               reiserfs notail         0       1
+/dev/sda5       none            swap    sw              0       0
+/dev/sda6       /home           ext3    rw              0       2
+/dev/scd0       /media/cdrom0   udf,iso9660 ro,user,noauto  0       0
+/media/Ubuntu-5.04-install-i386.iso /media/Ubuntu_5.04 iso9660 rw,loop 0 0
+
+</pre></div><p>
+  Some brief explanation of the fields is helpful.  The first field
+  listed is (normally) the block device to mount.  The second field is
+  the mounted location.  In some special cases, something other than a
+  block device is given first.  For <code>supermount</code> devices, you will see
+  <code>none</code>.  <code>/proc</code> is another odd case.  You might also mount loopback
+  devices, which are usually regular files.
+</p>
+<p>
+  Type and options (3rd and 4th fields) are fairly straightforward
+  (options depend on filesystem type and usage). Dump (5th field) is
+  usually zero. Pass (6th field) should be 1 for the root filesystem,
+  and 2 for other filesystems that should be 'fsck'ed during system
+  boot.
+</p>
+<h3>Automounting (AMD and automount)
+</h3>
+ <p>
+  Linux has quite a few different ways of automatically mounting media
+  that is removable (e.g. floppies, CDs, USB drives) or otherwise not of
+  fixed availability (e.g. such as NFS filesystems). The goal of all
+  these tools is similar, but each works slightly differently.
+</p>
+<p>
+  The tool AMD (automount daemon) is somewhat older, and operates in
+  userland. Basically, AMD runs periodically to see if any new mountable
+  filesystems have become available, generally for NFS filesystems. For
+  the most part, AMD has been replaced in Linux distributions by
+  Autofs, which runs as a kernel process.
+</p>
+<p>
+  You setup Autofs firstly by compiling it into the kernel you use.
+  After that, the behavior of the autofs daemon (usually
+  <code>/etc/init.d/autofs</code>) is controlled by the file <code>/etc/auto.master</code>,
+  which in turn references a map file. For example:
+</p>
+<div class="code-sample"><h4></h4><pre># Sample auto.master file
+# Format of this file: mountpoint map options
+/mnt    /etc/auto.mnt  --timeout=10
+
+</pre></div><p>
+  The referenced <code>/etc/auto.mnt</code> specifies one or more subdirectories
+  of <code>/mnt</code> that will be mounted (if access is requested).  Unmounting
+  will occur automatically, in this case 10 seconds after last access.
+</p>
+<div class="code-sample"><h4></h4><pre># Sample /etc/auto.mnt
+floppy  -fstype=auto,rw,sync,umask=002  :/dev/fd0
+cdrom   -fstype=iso9660,ro,nosuid,nodev :/dev/cdrom
+remote  -fstype=nfs     example.com:/some/dir
+
+</pre></div><h3>Automounting (supermount and submount)
+</h3>
+ <p>
+  The tools <code>supermount</code> and <code>submount</code> are kernel-level tools (either
+  compiled into the base kernel or kernel modules) to automatically
+  mount removable media when accessed. Submount is somewhat newer, but
+  Supermount is still probably used in more distributions. Neither tool
+  is useful for NFS remote mounts, but either is more seamless than
+  Autofs for local media.
+</p>
+<p>
+  In either case, devices requiring automounting are generally listed in
+  the <code>/etc/fstab</code> configuration.  The tools use slightly different
+  syntaxes in <code>/etc/fstab</code> but both are straightforward.  A supermount
+  enabled <code>/etc/fstab</code> might contain, e.g.:
+</p>
+<div class="code-sample"><h4></h4><pre># Example of supermount in /etc/fstab
+none  /mnt/cdrom  supermount  fs=auto,dev=/dev/cdrom  0 0
+none  /mnt/floppy supermount  fs=auto,dev=/dev/fd0,--,user,rw  0 0
+
+</pre></div><p>
+  Submount specifies the block device in the regular location rather
+  than as a mount option.  For example:
+</p>
+<div class="code-sample"><h4></h4><pre>/dev/cdrom  /mnt/cdrom  subfs fs=cdfss,ro,users       0 0
+/dev/fd0    /mnt/floppy subfs fs=floppyfss,rw,users   0 0
+
+</pre></div><h3>What is currently mounted?
+</h3>
+ <p>
+  An Linux user actually has several ways to see a list of current
+  mounts.  The <code>mount</code> command with no options (or with the <code>-l</code> option)
+  lists currently mounted paths.  If you like, you can filter the
+  results with the <code>-t fstype</code> option.
+</p>
+<p>
+  The underlying dynamic information on mounted filesystems lives in
+  <code>/etc/mtab</code>.  The <code>mount</code> and <code>umount</code> commands, and other systems
+  processes, will update this file to reflect current status; you should
+  treat this file as read-only.  A subset of the mount status
+  information is additionally contained in <code>/proc/mounts</code>.
+</p>
+<h3>Maintaining A Linux Filesystem</h3>
+ <h3>fsck
+</h3>
+ <p>
+  Your best friend in repairing a broken filesystem is <code>fsck</code>.
+</p>
+<p>
+  The tool called <code>fsck</code> is actually just a frontend for a number of
+  more narrow <code>fsck.*</code> tools, such as <code>fsck.ext2</code>, <code>fsck.ext3</code> or
+  <code>fsck.reiser</code>.  You may specify the type explicitly using the <code>-t</code>
+  option, but <code>fsck</code> will make an effort to figure it out on its own.
+  Read the manpage for <code>fsck</code> or <code>fsck.*</code> for more details.  The main
+  think you want to know is that the <code>-a</code> option will try to fix
+  everything it can automatically.
+</p>
+<p>
+  You can check an unmounted filesystem by mentioning its raw device.
+  For example: <code>fsck /dev/hda8</code> to check a partition not in use.  You
+  can also check a rooted filesystem, such as <code>fsck /home</code>; but
+  generally you only want to do that if the filesystem is already
+  mounted as read-only, not as read-write.
+</p>
+<h3>badblocks
+</h3>
+ <p>
+  A lower-level test of the quality of a block device (i.e. partition)
+  than <code>fsck</code> is performed by <code>badblocks</code>. This utility
+  may--destructively or non-destructively--examine the reliability of
+  blocks on a device by writing and reading test patterns. The default
+  option is <code>-n</code> for a slower mode that preserves existing data. For a
+  brand new partition with no existing files, you can (and probably
+  should) use the <code>-w</code>.  This tool simply informs you of bad blocks, it
+  does not repair or mark them.
+</p>
+<p>
+  However, in practice, you are usually better off using the badblock
+  checking wrapper in the <code>fsck.*</code> tool for your filesystem.  For
+  example, <code>e2fsck</code> (also called <code>fsck.ext2</code>) has the option <code>-c</code> to
+  find and mark badblocks that the <code>badblocks</code> tool can detect.
+  ReiserFS has similar <code>--check</code> and <code>--badblocks</code> options (but is not
+  quite as automatic).  Read the documentation for your particular
+  filesystem type for details on wrappers to <code>badblocks</code>.
+</p>
+<h3>Other maintenance utilities
+</h3>
+ <p>
+  A number of tool are available for examining and fine-tuning Linux
+  filesystems.  In normal usage, the default settings for file systems
+  are well designed, but occassionally you will want to use filesystem
+  tools for forensic analysis on crashed systems or to tune performance
+  on systems with well-defined usage patterns.  Each filesystem type has
+  its own set of tools; check the documentation for the filesystem you
+  use for more details, but the most have a similar array of tools.
+  Some examples include:
+</p>
+<p>
+  <strong> dumpe2fs: output information about an ext2/3 filesystem.
+  </strong> tune2fs: adjust filesystem parameters on ext2/3 filesystems.
+  <strong> debugfs: interactively fine-tune and examine an ext2/3 filesystem.
+  </strong> reiserfstune: adjust filesystem parameters on Reiser filesystems.
+  <strong> debugreiserfs: output information about a Reiser filesystem.
+  </strong> xfs_admin: adjust filesystem parameters of an XFS filesystem
+</p>
+<h3>Special tools
+</h3>
+ <p>
+  The tool <code>sync</code> forces changed unwritten blocks to disk.  You should
+  not need to use this in normal situations, but you can sometimes check
+  for disk problems by checking for a non-zero exit status.  Modern
+  filesystems, particularly journalling filesystems like ext3, Reiser,
+  or JFS, effectively do syncing on every write.
+</p>
+<p>
+  If you like, you can manually disable or enable the use of a swapping,
+  or enable/disable swapping for particular devices.  Normally, every
+  device marked as type <code>swap</code> in <code>/etc/fstab</code> is used for swapping.
+</p>
+</body></html>

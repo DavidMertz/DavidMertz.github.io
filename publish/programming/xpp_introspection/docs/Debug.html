@@ -1,0 +1,239 @@
+<HTML>
+<HEAD><TITLE>Library - CLASS Debug</TITLE>
+<STYLE type="text/css">
+EM { font-weight: normal; font-style: italic; color: #000066; }
+B { color: #660000; }
+H1 { font-size: large; font-weight: bold; background-color: #DDEEFF; }
+H2 { font-size: medium; font-weight: bold; }
+P.indent { margin-left: 5%; }
+P.code { margin-left: 5%; color: #006600; font-weight: bold; font-family: MONOSPACE; font-size: small; }
+P.synopsis { margin-left: 5%; }
+DL { margin-left: 5%; }
+UL { margin-left: 3%; margin-right: 8%; text-indent: -5%; }
+P.syntax { margin-left: 15%; text-indent: -10%; margin-right: 5%; }
+</STYLE></HEAD>
+
+<BODY>
+
+<H1>CLASS Debug</H1>
+
+   <P class="synopsis">
+   Examine "quick-and-dirty" debugging information
+
+<!----------------------------------------------------------------><HR>
+
+<H2>Return</H2>
+
+   <P class="indent">
+   The function Debug() returns the class object of the
+   Debug class.
+
+<H2>Description</H2>
+
+   <P class="indent">
+   In informally debugging various problems, one often has to resort to
+   all sorts of ad hoc insertions into the code.  Typically this is a
+   "msgbox()" function that echos something like "the program made it to
+   the beginning of function foobar()".  While there *is* an XBase++
+   debugger that allows more complete tracking of runtime states,
+   informal debugging is still useful.
+
+   <P class="indent">
+   The Debug class provides something a little better than completely ad
+   hoc messages.  It avoids the need for continually rewriting the same
+   few lines to check something about the current runtime state.  As
+   well, one sometimes would like to accumulate several bits of runtime
+   status information in one place, and would like to have this
+   information saved for later examination (even--or especially--if the
+   application crashes)
+
+   <P class="indent">
+   It is anticipated that more methods to report on various other state
+   information will be added to the Debug class over time.  But the
+   basic outline will remain consistent, and anything added should be
+   straightforward (and this document should refelct such changes,
+   ideally).
+
+   <P class="indent">
+   In the simplest case, you can use the Debug class to *immediately* and
+   transiently report some runtime state info.  This is done like:
+
+   <P class="code">
+   Debug():new():WorkAreas():View()
+
+   <P class="indent">
+   Doing this will pop up something like:
+
+   <pre>
+    ---------------------------------------
+     WORKAREA SNAPSHOT
+     Invoked at 09/18/1999 03:04:02
+     Called from SUMBYVENTYPE(1174)
+    ----------------------------------------
+       SELECT() = 6
+       Workarea  1: ALIAS() = INVHSTHD
+       Workarea  2: ALIAS() = SNAUDIT
+       Workarea  3: ALIAS() = INVHED
+       Workarea  4: ALIAS() = TENANT
+       Workarea  5: ALIAS() = VENDOR   </pre>
+
+   <P class="indent">
+   ...right where the call is made in the program flow.
+
+   <P class="indent">
+   In a more complex case you can maintain one or more "debug logs"
+   through a complex program flow, and look at them later in the program
+   flow, or even from a diskfile after the whole program ends.  See the
+   Examples section of this document.
+
+   <P class="indent">
+   Whether you look at "debug logs" with the :View() method, or at the
+   saved log files, you will get a list of zero or more entries describing
+   the context and content of a reporting method call.  Each log entry
+   will appear in the sequence it was called within program flow, and
+   show its time and caller.
+
+<H2>Class Data</H2>
+
+   <P class="indent">None
+
+<H2>Class Methods</H2>
+
+   <DL>
+   <DT><b>:new([&lt;filename&gt;])</b>
+   <DD>Creates an instance of the Debug class.  If a parameter is passed
+       in, it will specify the log file to use by the instance upon
+       initialization.
+   </DL>
+
+<H2>Life Cycle</H2>
+
+   <P class="indent">
+   A Debug instance comes into existence immediately upon its
+   assignment with the Debug():new() method.  No seperate :create()
+   method is required to request system resources. A Debug instance is
+   destroyed when its variable falls out of its declaration scope.
+
+   <P class="indent">
+   Although a Debug instance does not really have a "life cycle" in the
+   way "XBase Parts" do, there are still three distinct processes a
+   Debug instance goes through after initialization.  (1) A Debug
+   instance can generate textual content using one of its reporting
+   methods; (2) A Debug instance will automatically log to diskfile a
+   record of all instance textual content; (3) A Debug instance can
+   be displayed within the application context.
+
+   <P class="indent">
+   The logging of textual content to a diskfile is performed wholly
+   within the PROTECTED method :toDisk() (which is called internally
+   within the reporting methods), so this aspect is not under
+   application programmer control.  However, the first and third "life
+   stages" of a Debug instance follow the requirements of the
+   application programmer.  It serves no purpose to display a Debug
+   instance to which nothing has been reported; but during course of
+   running an application, it may make sense to alternate between
+   reporting additional information and displaying it, some indefinite
+   number of times
+
+<H2>Instance Data</H2>
+
+   <DL>
+   <DT><b>:filename</b> <em>[PROTECTED READONLY; Character (...)]</em>
+   <DD>Name of log file to use by this Debug instance.  If not specified
+       in the instance initialization, the diskfile
+       MY_HOMEPATH+"Debug_MY.RPT" will be used.
+
+   <DT><b>:rpt</b> <em>[PROTECTED READONLY; Character ("")]</em>
+   <DD>The :rpt instance variable contains a character string consisting
+       of everything generated by calls to reporting methods.  As an
+       instance is used through a runtime session, :rpt always grows by
+       contatenation of further reported content
+   </DL>
+
+<H2>Instance Methods</H2>
+
+   <DL>
+   <DT><b>:init()</b>
+   <DD>Set default values (see Class method :new())
+
+   <DT><b>:toDisk()</b> <em>[PROTECTED]</em>
+   <DD>Method that writes log files.  Not application accessible.
+
+   <DT><b>:WorkAreas()</b>
+   <DD>Reporting method.  Concatenates summary of workarea usage to
+       ::rpt data member.
+
+   <DT><b>:CallStack([&lt;nLevels&gt;])</b>
+   <DD>Reporting method.  Concatenates summary of current callstack to
+       ::rpt data member.  If no parameter is specified, will search
+       up to 15 levels in the callstack; otherwise, will search the
+       number of levels specified in the parameter.
+
+   <DT><b>:Message([&lt;x&gt;], [&lt;y&gt;])</b>
+   <DD>Reporting method.  Concatenates an ad hoc message consisting of
+       up to two values of any XBase++ types.  The typical usage of the
+       :Message() method will be to call it with a first parameter
+       giving a brief textual description of the value to follow,
+       followed by the value itself.  This capability is especially
+       useful in reporting on complex types.  For example
+
+       <P class="code">
+       oDebug := Debug():new()  <br>
+       <br>
+       // Examine two dimensional array <br>
+       oDebug:Message("Structure of active DBF", DBSTRUCT()) <br>
+       <br>
+       // Examine an object <br>
+       oDebug:Message("Current configuration", Cfg()) <br>
+       <br>
+       // View the debug log <br>
+       oDebug:View()
+
+   <DT><b>:View()</b>
+   <DD>Display an onscreen report of the debug log at current point in
+       the application runtime.
+
+   </DL>
+
+<H2>Examples</H2>
+
+   <P class="code">
+   // Maintain and utilize multiple debug logs
+   <br>PUBLIC oDebug1 := Debug():new("workareas.log")
+   <br>PUBLIC oDebug2 := Debug():new("callstacks.log")
+   <br>[... whatever ...]
+   <br>
+   <br>Function Foo1()
+   <br>oDebug1:WorkAreas()
+   <br>[... open some more DBFs, for example ...]
+   <br>oDebug1:WorkAreas()
+   <br>[... etc...]
+   <br>
+   <br>Function Bar1()
+   <br>oDebug1:WorkAreas()
+   <br>oDebug2:CallStack()
+   <br>[... more stuff ...]
+   <br>
+   <br>Function ByeBye()
+   <br>[... cleanup some stuff ..]
+   <br>oDebug1:View()
+   <br>MsgBox("You might want later to take a look at callstacks.log")
+   <br>[... etc...]
+
+<H2>Files</H2>
+
+   <P class="indent">
+   Source file is <tt>Debug.prg</tt>
+
+<!----------------------------------------------------------------><HR>
+
+<H2>See Also:</H2>
+
+<P><A HREF="stringify.html">Stringify()</A></P>
+
+<!----------------------------------------------------------------><HR>
+
+
+</BODY>
+</HTML>
+

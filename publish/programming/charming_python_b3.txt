@@ -1,0 +1,363 @@
+CHARMING PYTHON #B3:
+Book Roundup, Part 2
+
+David Mertz, Ph.D.
+Color Commentator, Gnosis Software, Inc.
+November, 2001
+
+    Since my last book roundup in Charming Python #12, a number
+    of interesting books on Python have been published.  This
+    installments provides new comparative reviews of recent
+    Python titles (or titles missed in the last roundup).
+
+
+WHAT IS PYTHON?
+------------------------------------------------------------------------
+
+  Python is a freely available, very-high-level, interpreted
+  language developed by Guido van Rossum.  It combines a clear
+  syntax with powerful (but optional) object-oriented semantics.
+  Python is available for almost every computer platform you
+  might find yourself working on, and has strong portability
+  between platforms.
+
+
+PRE-GAME
+------------------------------------------------------------------------
+
+  This installment is intended to round out the book roundup I
+  wrote for this column at the beginning of this year.  Since
+  then, some new books have been published, and some other books
+  have made it to my desk that I had not yet had a chance to look
+  at 11 months ago.  There are still a few ommissions of books I
+  have not quite got my hands on, but between the two
+  installments, almost every book you might consider buying on
+  Python today is discussed.
+
+  By the time next year rolls around, even more books will join
+  the Python bookshelf.  Surely there will be new titles I have
+  not heard of; but some I know about look promising.
+
+  Python stalwart and brilliant Usenet essayist Alex Martelli has
+  apparently contracted to write two separate books for
+  O'Reilly--one titled, _Python in a Nutshell_ (which one waits
+  with anticipation if only to see Martelli's prolific writing
+  inclinations squeezed into a compact size).  Bruce Eckel, whose
+  _Thinking in Java_ has been very well received, has had
+  not-yet-realized plans to write a _Thinking in Python_ for a
+  while; perhaps he will for 2002.  Christopher Jones and Fred
+  Drake have another O'Reilly title _Python & XML_ underway,
+  which looks promising.  And, of course, I cannot let this
+  column go by without mentioning that your humble author is in
+  the process of writing the title _Text Processing in Python_
+  for Addison-Wesley.  2002 looks to be another good year for
+  Python.
+
+  The few currently in print Python books that I have not had the
+  chance to look at should be mentioned briefly.  No slight is
+  intended towards these titles, but neither can I make any
+  particular recommendation.  These are:
+
+    * _Core Python Programming_, Wesley J. Chun, Prentice Hall
+      (December 2000).
+
+    * _Sams Teach Yourself Python in 24 Hours_, Ivan Van
+      Laningham, Sams (May 2000).
+
+    * _Python: Developer's Handbook_, Andre dos Santos Lessa,
+      Sams (December 2000).
+
+  If I have missed anything altogether, I apologize to the
+  appropriate publishers and authors.  Let me know; I'll try to
+  work something in at some future point.
+
+  While books are a wonderful way to get started with most topics
+  (including Python), there is also very good documentation that
+  accompanies Python itself.  Take a look at:
+  http://python.org/doc/ to get yourself started.  The Python
+  team have written a quite excellent introductory tutorial, and
+  the quality of the the module index, library reference,
+  language reference are much better than most programming
+  languages, or free software in general, has (but the
+  distinction between the latter two items is always fuzzy to me
+  when I go to look something up... try both if in doubt).
+
+
+TOUCHING SOME OLD BASES
+------------------------------------------------------------------------
+
+  Six months ago, the one Python book I made sure to keep within
+  arm's reach while programming was David Beazley's _Python
+  Essential Reference_.  Mind you, the rest are all within a few
+  steps of my chair, but Beazley's is the one I didn't have to
+  stand up for.  That's changed a bit in the last few months--now
+  the book in arm's reach is the *second edition* of _Python
+  Essential Reference_.  The main change between editions is
+  simply an update to coverage from Python 1.5.2 to Python 2.1.
+  The organization and most of the content remain the same.
+  Apparently in response to some user complaints, the font size
+  was increased slightly (and the length went from 318 to 396
+  pages); unfortunately, at the same time the 2nd edition is
+  printed on paper with a much lower brightness--readability
+  (from a purely physical perspective) has actually gotten
+  slightly worse.
+
+  Another title that was mentioned but not reviewed in the
+  previous installment is Fredrik Lundh's _Python Standard
+  Library_.  At that time, only an encumbered electronic version
+  was available, but since then O'Reilly has published a printed
+  version.  _Python Standard Library_ is a thin volume--281 pages
+  in physical size, but more lines of the books are taken up with
+  source code and vertical whitespace than with prose
+  description.  The total words do not add up to a large number.
+
+  _Python Standard Library_ has a fairly narrow target, but
+  succeed well in fulfilling its goal.  The target is experienced
+  Python programmers who also have either the standard module
+  documentation and/or one of the thicker books at hand.  Almost
+  all of the modules in Python 2.0's standard library are
+  covered, but the coverage is not aimed at documenting every
+  constant, function and class inside each module.  Instead, each
+  module is introduced with extremely clear and articulate prose
+  descriptions, followed by well chosen -typical- usage examples.
+
+  Many of the other books I have looked at also use extensive
+  source code examples; but in many of those, one has to re-read
+  and ponder for a while to figure out exactly what an example is
+  meant to illustrate, which part of it illustrates the topic at
+  hand, and why it is an illustration.  In contrast, the source
+  code examples in _Python Standard Library_ are only as long as
+  necessary, are clear, have adequate inline documentation, and
+  get right to the point being illustrated.  Likewise, the prose
+  introductions provide exactly the sort of clear guidance one
+  might ask of the more experienced programmer in the cubicle
+  next to yours (if you are lucky enough to have such a
+  co-worker).  The descriptions, however, by intention do not try
+  to teach you basic concepts--they assume you basically know
+  what you are doing, and just need to refine or direct how you
+  do it.
+
+
+WARMING UP
+------------------------------------------------------------------------
+
+  _Learn to Program Using Python:  Learn to Program Using Python:
+  A Tutorial for Hobbyists, Self-Starters, and Those Who Want to
+  Learn the Art of Programming_ is probably *not* a book for
+  most readers of this column.  As the title promises, Alan
+  Gauld's title is for non-programmers who want to become
+  programmers, or at least to understand what it is programmers
+  do.  For the people the book is for, Gauld has written a
+  delightful book.
+
+  I tried to recruit one non-programmer "informant" (as one says
+  in anthropology) to give an opinion on _Learn to Program Using
+  Python_.  My recruitment was only a mixed success, but not
+  because of any failing of the book, merely my choice of
+  informant.  Nonetheless, the testimony I got regarding the
+  first few chapters was very positive--the basic concepts of
+  flow control, branching, variables, and the like seemed pitched
+  right for my semi-voluntary beginner.
+
+  Gauld walks through a reasonable range of topics, and keeps
+  them in a good pedagogical sequence.  The reader of this book
+  should read the book from one cover to the other.  There -is- a
+  good index, but jumping around is not what this type of book is
+  for.  The source code examples do an excellent job of
+  progressively presenting new concepts while remaning clear and
+  to the point.  Even though many books' use of sidebars and
+  boxes is just busy and distracting, Gauld strikes a good
+  balance with his "Things to Ponder" and "Points to Remember"
+  that appear at the end of each chapter.  Overall, this looks
+  like a just plain -fun- book to read.
+
+
+STUDYING THE PLAYBOOK
+------------------------------------------------------------------------
+
+  There is a certain style of programming book that I have
+  trouble seeing the point of.  Sample source code is important
+  to learning a programming language or technique; but a certain
+  type of book consists primarily of source, with the prose
+  existing mostly to explain the source code in a line-by-line
+  way.  It is not merely the quantity of source code that I find
+  ineffective.  _Python Standard Library_ has a high proportion
+  of source code--but the source code exists as a continuation
+  and elaboration of the prose; the source code -explains- rather
+  than merely -being explained-.  In another style of book, the
+  source code just lays there as a dead mass, with the prose
+  vainly trying to vivify it.
+
+  Two of the books in the current roundup are in the described
+  source-code-with-commentary.  One is _Python Annotated
+  Archives_.  This is one of those heavy tomes that its
+  publisher, Osborne, is fond of (720 pages).  I cannot really
+  recommend this book to much anyone.  Experienced programmers
+  will not be able to find reference information easily, and
+  beginners will lack the background to jump into any particular
+  script.  Moreover, it almost seems to be -cheating- to publish
+  a book that just reproduces (albeit also discusses) all the
+  scripts in the 'Demo/' directory of every Python distribution
+  (copyrights are in order, I mean it in a "scruples" way).  What
+  are we really getting by buying this book?
+
+  A lot of concepts inevitably occur in 700+ pages.  But there is
+  no particular order apparent to where they occur.  Here is one
+  arbitrary example: the use of '__doc__' strings is a fairly
+  important convention in Python programming.  A beginner would
+  not know about it from this book unless she happened to turn to
+  page 162 to find an explanation of them--not because that page
+  is where documentation conventions are discussed, but just
+  because the script being discussed happens to have some
+  '__doc__' strings.  A handful of other pages scattered through
+  the book also mention, "by the way, this is a __doc__ string."
+  An experienced programmer is unlikely to need the explanation,
+  a beginner is unlikely to find it.
+
+  Moreover, the explanatory prose is haphazard (and not
+  infrequently wrong or incoherent--e.g. I cannot make heads or
+  tails of the lead-in to the very first example 'prime.py').
+  Martin Brown just sort of throws whatever explanation comes to
+  mind at each block of three or four lines of each script (which
+  are redundantly printed, then printed again with annotation).
+  But if someone doesn't understand what a loop or an numeric
+  operation does, the place to explain it isn't next to each
+  loop, but in an "about loops" or "about operations" section of
+  a book.
+
+  _Programming with Python_ suffers a similar weakness to _Python
+  Annotated Archives_.  This title advertises on its cover
+  "filled with over 40 full-length, annotated scripts."  It lives
+  up to its promise; but the Vaults of Parnassus have many more
+  than 40 full-length scripts, covering a far wider range of
+  purposes.  If you need a Python script to accomplish some
+  particular moderately complex purpose, you are a lot better off
+  finding one to download from a Python internet archive, like
+  Parnassus (and a few dollars the richer for not buying a book).
+
+  There is a little bit of other stuff in _Programming with
+  Python_ than the scripts themselves.  The scripts have a little
+  bit of explanation--but only a little bit.  The beginning bit
+  of the book has brief summary of the statements (with built-in
+  functions mistakenly called statements), modules, and some
+  Python syntax.  But the Python tutorial is better.  The last
+  few pages of the book have a pretty good set of FAQ-type
+  questions about Python.  I haven't seen anything exactly like
+  that on the web, and the questions presented are good ones,
+  with accurate answers.  But that is only 57 pages worth of
+  material, and your particular questions will only be a few of
+  those listed.
+
+
+THE COMPLETE STAT SHEETS
+------------------------------------------------------------------------
+
+  A popular type of computer programming book is the thick tome
+  dedicated to being a complete reference for a language or tool.
+  I've had a chance to look at three such books.
+
+  A first option for the "about everything" Python reference is
+  the second edition of _Programming Python_.  I have already
+  written about the first edition, and most of what I wrote there
+  is still true.  _Programming Python_ has grown to an even
+  larger 1255 pages, and now covers Python 2.0.  A lot of new
+  material is in it, but the same strategy of building up
+  examples is used.  Mark Lutz' writing continues to be clear and
+  informative, and his examples well written.  _Programming
+  Python_ is more of a very thorough -course- in Python than it
+  is a reference one returns to.  There is an adequate index, and
+  it is not unduly difficult to find things.  But the main point
+  is to walk the reader through aspects of programming in Python.
+
+  The second option for a complete reference to Python is called,
+  straightforwardly enough, _Python:  The Complete Reference_, by
+  Martin Brown.  As in _Python Annotated Archives_, Brown has a
+  habit of interspersing short snippets of source code with prose
+  describing the code (this time with a distracting dark gray bar
+  to the left of the code).  I still do not really like that
+  style, but most of the sins of the other book are absent from
+  this one.  _The Complete Reference_ covers pretty much the same
+  ground as _Programming Python_, both are more about learning
+  Python (as a programmer experienced in other languages) than
+  they are about acting as a reference.  But _The Complete
+  Reference_ has its material divided into 27 well chosen
+  chapters, with both a detailed TOC and a good index.  You may
+  not be able to turn to the exact page that answers your
+  question (as you can in _Python Essential Reference_, but at
+  least you can easily find the right chapter to read.  At a bit
+  under 700 pages, reading 1/27th of the book to brush up on a
+  topic is a reasonable task.  The prose is also better organized
+  and better written than Brown's other title.
+
+  In the "complete reference" category, I like the _Python 2.1
+  Bible_ the best.  If nothing else, it is more up-to-date in
+  terms of Python version than the other options.  But even
+  beyond that, it is a nicer book for the particular slant.  In
+  the Hungry Minds tradition, the book is a bit too "loud"
+  typographically--I can hardly focus on the cover without
+  getting dizzy, and the text is littered with a few too many
+  icons, tables, dingbats and the like.  That said, I find the
+  bright sans-serif header font and vertical white spacing to be
+  very attractive; and the clean gothic fixed font makes for much
+  more easily scanned source code samples than does the courier
+  most books use.  And even the judicious use of 10% screens
+  draws the eye helpfully.
+
+  Aside from the (important) physical apprearance of _Python 2.1
+  Bible_, the organization is the most useful for programmers
+  with a bit of experience (the first few chapters develop the
+  necessary basic concepts pretty well).  The book is broken into
+  more chapters (38), and the chapters better focussed on the
+  most important Python concepts than are the other "big" books.
+  Moreover, the TOC and index are both of extremely good detail
+  and quality.  Brueck and Tanner's prose is furthermore the best
+  in this category of books--factual, accurate and to the point
+  (Lutz, and especially Brown, tend a bit towards "chatty").
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  _Python & XML_, Christopher A. Jones & Fred L. Drake, Jr.,
+  O'Reilly 2001 (est). ISBN: 0-596-00128-2
+
+  Bruce Eckel's "Thinking in Python" website:
+    http://www.mindview.net/Books/Python/ThinkingInPython.html
+
+  _Python Essential Reference, Second Edition_, David M. Beazley,
+  New Riders 2001. ISBN: 0-7357-1091-0.
+
+  _Python Standard Library_, Fredrik Lundh, O'Reilly 2001.  ISBN:
+  0-596-00096-0.
+
+  _Learn to Program Using Python:  A Tutorial for Hobbyists,
+  Self-Starters, and Those Who Want to Learn the Art of
+  Programming_, Alan Gauld, Addison-Wesley 2001.  ISBN:
+  0-2017-0938-4
+
+  _Python :  Annotated Archives_, Martin C. Brown, Osborne/
+  McGraw-Hill 2000.  ISBN: 0-07-212104-1.
+
+  _Programming With Python_, Tim Altom, Premier Press 1999.
+  ISBN: 0-7615-2334-0
+
+  _Programming Python, Second Edition_, Mark Lutz, O'Reilly 2001.
+  ISBN: 0-596-00085-5.
+
+  _Python: The Complete Reference_, Martin C. Brown, Osborne/
+  McGraw-Hill 2001. ISBN: 0-07-212718-X.
+
+  _Python 2.1 Bible_, David Brueck, Stephen Tanner, Hungry Minds
+  2001. ISBN: 0-7645-4807-7.
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz' failures as a hunter, fisherman, and shepherd have
+  led him to his life of critical criticism.  Tomorrow he may try
+  something else.  David may be reached at mertz@gnosis.cx; his
+  life pored over at http://gnosis.cx/publish/.  Suggestions and
+  recommendations on this, past, or future, columns are welcomed.
+

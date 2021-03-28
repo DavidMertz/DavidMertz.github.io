@@ -1,0 +1,453 @@
+The Pyrite Project
+Integrating Your Palm Handheld with Your Linux Desktop
+
+Andrew Blais, Ph.D.
+David Mertz, Ph.D.
+Unindicted Co-Conspirators, Gnosis Software, Inc.
+May 2001
+
+    The Pyrite Project has created several related tools to allow
+    Python programmers to access and control PalmOS handheld
+    devices.  Pyrite is used to communicate with and manage the
+    data help on Palm devices; Pyrite Publisher is used to create
+    and distribute Doc format e-books to Palm devices.  This
+    article discusses David's experience in working with Pyrite
+    tools, their underlying architecture, and tips for effective
+    use of the Pyrite tools.
+
+
+WHAT IS THE PYRITE PROJECT?
+------------------------------------------------------------------------
+
+  We suppose our reader is like us in the following three ways.
+  You have a brand new PalmOS handheld that promises to do all
+  sorts of neat things.  Your OS of choice is Linux.  And, you
+  want to transform documents that you can access from within
+  your Linux environment into documents that you can access with
+  your PalmOS handheld, and maybe even programmatically
+  manipulate the record database on your Palm.  The Pyrite
+  Project provides this set of tools; we will focus, in this
+  article, on the portion dubbed Pyrite Publisher that deals with
+  document conversions.
+
+  While the Pyrite Project has some promise, and addresses some
+  important needs, it unfortunately still has a lot of rough
+  edges.  We will try to walk you through the problems you are
+  likely to encounter.
+
+
+WHAT YOU WILL NEED
+------------------------------------------------------------------------
+
+  Pyrite Publisher is written in Python, and depends on some code
+  provided by yet another pair of packages called Pilot-Link and
+  Pyrite.  Consequently, you will need the following five things.
+
+      1. Python 1.5.2, or greater.
+      2. The development headers for Python.
+      3. A C compiler -- gcc worked for us.
+      4. The pilot-link library, 0.8.11 or greater.
+      5. The header files from pilot-link.
+      6. The development headers from pyrite
+
+  We will assume that you don't need help with (1), (2) or (3).
+  There are two ways to get (4) and (5).  Both methods will get
+  you the needed header files and libraries.
+
+  The first method employs RPM.  Goto http://www.rpmfind.net, and
+  download the RPMs for pilot-link and pilot-link-devel.  If
+  you're using RedHat 7.0, these two links should take you to
+  precisely what you need.  The first will get you the headers,
+  and the second will get you the libraries.  See the Resources
+  section below for links to these RPMs.
+
+  The second method is for those of you who don't have access to, or
+  don't want to use RPM. Simply, download pilot-link, and install by
+  hand.  Download the source (see Resources).  Use the standard
+  procedures to install, namely:
+
+      #----- bash session for installing pilot-link source ----#
+      $ tar zxvf pilot-link.0.9.3.tar.gz
+      $ cd pilot-link.0.9.3
+      $ ./configure
+      $ make
+      $ make intsall
+
+  To get the development headers from Pyrite first download the
+  source (see Resources).  Next, do the following:
+
+      #------ bash session for installing Pyrite source -------#
+      $ tar zxvf pyrite-0.9.3.tar.gz
+      $ cd pyrite-0.9.3
+      $ ./configure
+      $ make
+
+  One of the 'Makefile's has an error, so use your favorite
+  editor to open 'i18n/Makefile'. On line 26, change:
+
+      #------------ Required fix for Makefile error -----------#
+      # mkdir -p $(DESTDIR)$(LOCALEDIR) ;
+      mkdir -p $(DESTDIR)$(LOCALEDIR) ; \
+
+  Otherwise, you will get the following error message:
+
+      make[1]: Entering directory
+      `/root/PAPERS/palm-stuff/pyrite-0.9.3/i18n'
+      if [ "yes" = "yes" ]; then \
+      mkdir -p /usr/share/locale ;
+      /bin/sh: -c: line 2: syntax error: unexpected end of file
+      make[1]: *** [install] Error 2
+      make[1]: Leaving directory `/root/PAPERS/palm-stuff/pyrite-0.9.3/i18n'
+      make: *** [install] Error 2
+
+  Finally, run 'make install'.
+
+  You now have all the header files and libraries that you need
+  to install Pyrite Publisher.
+
+
+OTHER INSTALLATION ISSUES (Slackware, Mandrake)
+------------------------------------------------------------------------
+
+  We encountered several problems installing the Pyrite libraries
+  and headers on our Mandrake 7.1 system.  These issues are not
+  directly Pyrite's fault, but you might find you have to install
+  a few dependencies on your system.  First, 'configure'
+  complained that it couldn't find the python config makefile.
+  We downloaded a suitable python-dev RPM, which we downloaded
+  and installed with no trouble (see Resource).
+
+  Next, 'configure' complained that it couldn't find the
+  pilot-link library.  We knew that pilot-link was installed, and
+  that we had /usr/lib/libpisock.so.3 and
+  /usr/lib/libpisock.so.3.0.1.  But, we didn't have a generic
+  'libpisock'.  This was resolved by creating the following link
+  in /usr/lib:
+
+      #------ Creating an non-numbered libpisock.so link ------#
+      $ ln -s libpisock.so.3.0.1 libpisock.so
+
+  Subseqently, 'configure' complained that it couldn't find the
+  pilot-link library.  So, we searched rpmfind for the
+  appropriate pilot-link-devel-*.rpm.  However, we encountered
+  the infamous "only packages with major numbers <= 3 are
+  supported by this version of RPM".  So, we used the force:
+  we got the source (see Resource).  Then, we did the following:
+
+      #---- bash session for installing pilot-link headers ----#
+      $ tar zxvf pilot-link-0.9.3.tar.gz
+      $ pilot-link/include
+      $ cp * /usr/local/include
+
+  Finally, 'configure' was happy.  And 'make' ran fine.  We
+  thought that we were on our way, but 'make install' died
+  because of the already mentioned typographical error in
+  'pyrite-0.9.3/i18n/Makefile'.  We made the change described
+  above, and even 'make install' worked.
+
+  On our Slackware 7.1 system, python-dev was installed by
+  default, but pilot-link was not.  Pilot-link needed to be
+  configured with the '--without-cpp' option.  Our glibc and gcc
+  had been upgraded from the 7.1 default, which may or may not
+  have led to this option being required.
+
+
+ASIDE ON PYRITE
+------------------------------------------------------------------------
+
+  Pyrite-0.9.3 provides a library that can be used to write Python code
+  that will communicate with a PalmOS device. If you are a Palm user who
+  has made it to this document, you will more likely than not
+  also be a user who will eventually want to write such code.  If
+  so, you will be in luck, because you will have the resources to
+  do it.
+
+  One valuable source of information is to be found in
+  'pyrite-0.9.3/doc/prg/html/book1.html', which is the root of
+  the Pyrite Programmers Guide.  Pyrite depends on another
+  library called Sulfur, and there is helpful documentation to be
+  found in 'pyrite-0.9.3/Sulfur/doc/html/book1.html', which is
+  the root of the Sulfur Programmers Guide.  The relation between
+  Pyrite and Sulfur can be better understood by noting that as
+  Rob Tillotson developed Pyrite, he found that he had also been
+  developing code that was useful outside the context of palm
+  applications.  This code became Sulfur.
+
+  In or under pyrite-0.9.3, you will find the following five Python
+  modules with their various classes.
+
+    1. 'Blocks.py':
+       Block, Record, AppBlock, CategoryAppBlock, SortBlock,
+       Resource, and PrefBlock
+
+    2. 'Database.py':
+       Database, Slice, and CategoryIterator
+
+    3. 'Store/Store.py':
+       BaseStore and Store
+
+    4. 'Application/Application.py':
+       Application, PyriteState, and PyriteCLIAppContext
+
+    5. 'Conduit/Conduit.py':
+       Conduit
+
+  Blocks and Database are imported along with Pyrite, but Store,
+  Application and Conduit are not., There are also additional
+  modules, classes and methods, but the listed ones received the
+  vast majority of the attention in the documentation.  In this
+  context, we will only summarize these modules and some of their
+  methods.
+
+  Block objects represent and transform data to and from PalmOS
+  and Python readable states.  For example, Python stores the
+  time in a tuple, and a palm stores the time in the form of two
+  packed bytes.  Suppose we want the time 10 hours, 30 minutes,
+  and 0 seconds.  Then,
+
+      #---------- Python code for creating a Palm date --------#
+      from Pyrite import Blocks
+      time_tuple = (10, 30, 0)
+      palm_time = Blocks.tuple_to_palm_date(time_tuple)
+
+  will put 4032 in 'palm_time', which is the way that a Palm
+  internally represents the time.
+
+  A Database object is an accessable database with an '.append()'
+  method, a '.new_record()' method, a '.delete()' method, and a
+  '.next_record()' method.  This is all quite interesting stuff,
+  but it also goes quite beyond our aim here.  We refer our
+  readers to the above cited resources.
+
+
+INSTALLING PYRITE PUBLISHER
+------------------------------------------------------------------------
+
+  Of course, begin by downloading the source (see Resource).
+  Then, do the following:
+
+      #----- bash session for installing Pyrite Publisher -----#
+      $ tar zxvf pyrite-publisher-1.99.0.tar.gz
+      $ cd pyrite-publisher-1.99.0
+      $ python setup.py install
+
+  One would hope that this is all that you needed to do.
+  Unfortunately, this is not true.  There are several more
+  poblems with Pyrite Publisher.  Here is how we resolved them.
+
+
+SOME MORE FIXES
+------------------------------------------------------------------------
+
+  Again, Pyrite Publisher promises to transform documents into files
+  that can be uploaded to and read on a PalmOS handheld.
+  Unfortunately, Pyrite Publisher doesn't do what it is supposed
+  to do right out of the box.  We found that we needed to make
+  several fixes before we could get it working.  For someone with
+  no knowledge of Python, this is really a big problem.  The
+  following code changes will allow you to fix Pyrite Publisher
+  just enough to transform a document such as an html document
+  into a form that can be uploaded to a PalmOS handheld, and then
+  read them conveniently on a train or in a cafe.
+
+  Several changes are needed to 'PyritePublisher/plugin_HTML.py'.  In
+  'Plugin.eof()', on line 79, change:
+
+      #-------- Required fix for plugin_HTML.py (1) -----------#
+      # self.fmt.add_flowing_data(p.anchorlist[x])
+      self.fmt.add_flowing_data(self.parser.anchorlist[x])
+
+  On line 99 (same class), change:
+
+      #-------- Required fix for plugin_HTML.py (2) -----------#
+      # DocToolkit.entitydefs import entitydefs
+      PyritePublisher.entitydefs import entitydefs
+
+  The next fix is to 'PyritePublisher/plugin_TealDoc.py'.  On
+  line 32, change:
+
+      #--------- Required fix for plugin_TealDoc.py -----------#
+      # DocToolkit import metrics
+      PyritePublisher import metrics
+
+  Apparently, these changes were necessary since the authors of
+  this project failed to remember that they had changed the name
+  of their project -- big time ouch.
+
+  The next fix is to 'PyritePublisher/doc_database.py'. In
+  'DocWriteStream.close()', on line 135, change:
+
+      #---------- Required fix for doc_database.py ------------#
+      # db.setRecord(0x40, uid, 0, bookmark_pack(t,p))
+      db.setRecord(0x40, uid, 0, 'THIS IS A TEST STRING')
+
+  This last fix is undoubtably a really ugly hack, but our goal
+  here is not to beutify code.  Our fix has the strange side
+  effect of inserting odd looking bookmarks into our pdb files,
+  which appear as a series of y's with umlauts.  Apparently, the
+  function 'bookmark_pack()' is intended to create Palm-style
+  bookmarks, but the function is missing, and we are not sure of
+  the exact format.  With this hack you can transform documents
+  on your Linux machine into documents that you can read on your
+  PalmOS handheld.  Hopefully the authors will create or restore
+  the needed function.
+
+
+HOW TO USE PYRITE PUBLISHER
+------------------------------------------------------------------------
+
+  Using Pyrite Publisher is relatively simple.  In
+  'pyrite-publisher-1.99.0/PyritePublisher', you will find
+  'pyrpub'.  Supposing that the document that you want to
+  transform into PalmOS readable form is 'file.html', the command
+  is simply:
+
+      #---------- Converting an HTML file to PalmDoc ----------#
+      $ ./pyrpub file.html
+
+  You will find a file named 'file.pdb', which can be read by a Palm.
+  The next step is how to get 'file.pdb' on your PalmOS handheld.
+  You can use a nifty program that comes with pilot-link called
+  'pilot-xfer'.  Assuming that you have connected your Palm to
+  '/dev/cua1', issue the following command:
+
+      #----- Transfering the PalmDoc file to the Palm ---------#
+      $ pilot-xfer /dev/cua1 -i file.pdb
+
+  Then, press your hot-button on your craddle. Actually, you will be
+  instructed to do this on the command line. Then, you will find
+  'file.pdb' on your Palm.
+
+  A limitation of Pyrite Publisher is that it doesn't directly
+  convert PDF or Postscipt files to pdb files.  Luckily, there is
+  a simple workaround for this.  The utility 'pstotext'
+  can transform a Postscipt file into a text file.  To
+  generate a pdb file, first transform the ps file into a text
+  file, and then use Pyrite Publisher to convert the text file
+  into a pdb file.  If the file that you want to transform into a
+  pdb file is a PDF file, first use 'pdf2pdf' to transform the PDF
+  file into a postscript file, and then proceded as describe
+  above.  Unfortunately, this isn't a foolproof method, since
+  'pstotext' and 'pdf2ps' aren't entirely reliable, but when they
+  work, you be able to generate pdb files.
+
+
+OTHER THINGS
+------------------------------------------------------------------------
+
+  To find packages related to the Pyrite libraries and Pyrite Publisher,
+  try searching Freshmeat.  We think that you might want to look
+  at some of the following packages.
+
+    * There is KVM, the K Vitural machine, and the Connected Limited Device
+      Configuration, CLDC. This is a package that lets you write palm
+      applications that can be run on X11.
+
+    * Kpilot makes it possible for your palm to exchange data with your
+      Linux box. Kpilot uses plugins to exchange data between your Palm and
+      other applications like KOrganizer or POP3/SMTP mail servers. Using
+      Kpilot, you can read and edit documents install new programs on your
+      palm.
+
+    * Jan Schaumann has done some interesting things with the palm within
+      the context of the Linux OS.
+
+    * Plucker also enables the Linux user to read HTML documents
+      offline.  Plucker claims to support clickable images,
+      italics, multiple databases, configurable display
+      parameters and stylus options, compression, and Python
+      conduits and parsers.
+
+    * DataViz' _Documents To Go_ is a sophisticated document conversion
+      package, but only for Win32 and MacOS. If you happen to use these
+      platforms, you can convert document formats such as MS-Word, MS-Excel,
+      Word-Perfect, PDF, and others. You can even edit documents in many of
+      these formats on your Palm. Of course, you have to pay $50 for it.
+
+  For links to information about these packages, see Resources below.
+
+
+SUMMARY
+------------------------------------------------------------------------
+
+  We like the concept behind the Pyrite Project, but we are sorry that
+  the truth is that it doesn't quite live up to its promises. Pyrite
+  Publisher sort of works, but only if you know enough Python and system
+  administration to fix it, and even after it is fixed to the point of
+  doing some work, it still has an overly large collection of weird bugs.
+  There is also the problem that Pyrite Publisher doesn't
+  directly convert Postscript and PDF files.  We are not totally
+  negative, however, since it clearly seems to be on the cusp of
+  fulfilling its aim.  We hope that Rob Tillotson and company
+  will continue with the Pyrite Project.  Linux-using Palm owners
+  can certainly use it.
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  The RPM for the libraries of pilot-link can be found at:
+
+    ftp://rpmfind.net/linux/redhat/7.0/en/os/i386/RedHat/RPMS/pilot-link-0.9.3-10.i386.rpm
+
+  The RPM for the header files of pilot-link can be found at:
+
+    ftp://rpmfind.net/linux/redhat/7.0/en/os/i386/RedHat/RPMS/pilot-link-devel-0.9.3-10.i386.rpm
+
+  The source for pilot-link can be downloaded from
+
+    http://prdownloads.sourceforge.net/pilot-link/pilot-link.0.9.3.tar.gz
+
+  The source for the pyrite libraries and header files can be retrieved
+  from here:
+
+    http://www.pyrite.org/dist/pyrite-0.9.3.tar.gz
+
+  To download a suitable python-devel RPM, search at:
+
+    http://rpmfind.net.
+
+  The source for Pyrite Publisher can be downloaded from:
+
+    http://www.pyrite.org/dist/pyrite-publisher-1.99.0.tar.gz
+
+  There is a RPM of some tools that are similar to those found in Pyrite
+  Publisher. See:
+
+    ftp://ftp.rpmfind.net/linux/contrib/noarch/noarch/palm-doctoolkit-1.1.4-1.noarch.rpm
+
+  The KVM package can be found at:
+
+    http://www.extreme-java.de/kvm/kvm.html
+
+  Information about Kpilot can be found at
+
+    http://www.slac.com/pilone/kpilot_home/
+
+  Jan Schaumann's Palm/Linux site:
+
+    http://www.netmeister.org/palm/
+
+  Plucker can be found at
+
+    http://plucker.gnu-designs.com/
+
+  DataViz _Documents To Go_ information can be found at:
+
+    http://www.dataviz.com/
+
+
+ABOUT THE AUTHORS
+------------------------------------------------------------------------
+
+  Andrew Blais divides his time between homeschooling his son,
+  writing for Gnosis, and teaching philosophy and religion at
+  Anna Maria College. He can be reached at onlymice@gnosis.cx.
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz worries that if the density of transistors doubles
+  every eighteen months, then he may lose his next computer in a
+  haystack. David may be reached at mertz@gnosis.cx; his life pored
+  over at  http://gnosis.cx/publish/.  Suggestions and
+  recommendations on this, past, or future, columns are welcomed.
+

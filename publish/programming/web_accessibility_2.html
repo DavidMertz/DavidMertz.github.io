@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>TECHNICAL TIPS -- Making websites more accessible to persons with disabilities (part II) -- </title>
+<style>
+             {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+em           {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt}
+ul, ol, li   {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+tt           {font-family: mono, courier}
+pre          {font-family: mono; font-size: 9pt}
+th           {font-family: mono, courier; font-size: 8pt}
+
+.code-sample {background-color: #CCCCCC}
+.sidebar     {background-color: #FFFFCC}
+.title       {font-size: medium; color: #3333CC}
+.subtitle    {font-size: 9pt; color: #3333CC}
+.subhead     {font-size: 12pt}
+.input       {background: #FFFFFF; color: #000000; font-weight: normal}
+</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<p><strong class="title">Technical Tips</strong><br>
+<strong class="subtitle">Making websites more accessible to persons with disabilities (part II)</strong></p>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ August 2000<br>
+ <br>
+</p>
+<blockquote>    Tips on making your web pages and web sites disabled-
+    accessible.  Part I gives a general introduction to
+    disability issues, and discusses the structural markup at the
+    heart of HTML.  Part II discusses specific HTML coding
+    "gotchas" that make your pages unnecessarily difficult for
+    vision and mobility limited people to use; part II also
+    provides an overview of free tools to use in evaluating and
+    improving the accessibility of your site.
+</blockquote><p><strong class="subhead">Introduction</strong></p>
+ <p>  In the first part of these tips we made some general remarks on
+  the abilities of disabled web users, and about the special
+  technical means used to present web pages to such users.  Also
+  in the first part, we introduced the idea that focussing on
+  structural rather than visual markup alleviates many
+  accessibility problems.  In this second installment we go on to
+  discuss specific coding "gotchas" and present some tools that
+  help in ensuring accessibility for web pages.
+</p>
+<p><strong class="subhead">Specific Coding Techniques</strong></p>
+ <p>  The top "gotcha" in making inaccessible web pages is probably
+  the failure to use the ALT attribute in &lt;IMG&gt; tags.  The more
+  important the information conveyed by a graphic, the more
+  important it is to have ALT text associated with it.  Even if
+  the graphic is merely decorative or conveys a type of
+  information not reducible to verbal description, it is
+  unnecessarily cumbersome for visually impaired users to wade
+  through "unknown graphic" descriptions.  If the graphic is
+  purely decorative, use an empty string in the ALT attribute,
+  e.g.  <code>&lt;img="pic1.png" alt=""&gt;</code>.  If the visual information is
+  complicated, at least let the user know some context.  A good
+  guideline is to ask yourself "what would I say if I were
+  reading this page over a telephone?"  For example, if it is a
+  map of Cleveland, describe it as "Map of Cleveland"--sure the
+  user won't see the individual streets, but at least the context
+  is there.
+</p>
+<p>  Another "gotcha" is poor link descriptions.  "This" and "Click
+  Here" really do not do much to describe a link.  Be considerate
+  to all your users, not just to the disabled ones.
+</p>
+<p>  In general, you are best off using style sheets as much as
+  possible, as long as they are accompanied by sensible
+  structural markup.  Most tags give a pretty good description of
+  what they are for; if you want to make them <em>look</em> a certain
+  way, go ahead, but just make sure the are the right type of
+  tag.
+</p>
+<p>  Another good guideline is to avoid relying too much on absolute
+  positioning of tables, frames, etc.  If your information
+  requires having a table <em>exactly</em> 420 pixels wide to make
+  sense, it is probably going to fail to make sense to a lot of
+  users, disabled or not.
+</p>
+<p>  And finally (for these tips), <strong>make sure</strong> you can do everything
+  on your page with a keyboard.  Some users have difficulty
+  operating a mouse, and the mouse should really only exist as an
+  optional alternative to a keyboard.  Javascript for validation
+  of forms is great, but don't use special tricks that make forms
+  hard or impossible to operate without a mouse.
+</p>
+<p><strong class="subhead">Testing Your Pages</strong></p>
+ <p>  A good "pre-screen" of a web page is making sure that it
+  contains valid HTML.  In many cases, popular general-purpose
+  browsers will make allowances for improper HTML, and try to
+  render <em>something</em> no matter what.  Although this is probably
+  reasonable behavior for these browsers, special-purpose
+  browsers are likely to be less sophisticated in inferring
+  meaning from bad markup, and erronous inference is likely to
+  create more difficulties for disabled users.  Many HTML
+  authoring tools include syntax checking capabilities, which are
+  usually of good quality.  A free alternative to commercial
+  packages is to use <code>Weblint</code> for batch processing of syntax
+  checking.
+</p>
+<p>  There are a couple good tools to help automate the improvement
+  of HTML syntax problems.  Microsoft Office tools have a habit
+  of producing particularly bad HTML--in terms of both
+  syntax and accessibility.  The tool <code>demoroniser</code> helps correct
+  some of MS' mistakes.  The tool <code>tidy</code> is generally useful in
+  improving the well-formedness of HTML; <code>tidy</code> also includes
+  options for reducing the size of HTML files and for
+  improving them stylistically.
+</p>
+<p>  Once your pages have passed syntax checks, a good first
+  practical test of your web site is to try using it on a browser
+  with good support of HTML, but that lacks (by intention) a lot
+  of GUI accouterments.  The homonymous browsers <code>lynx</code> and
+  <code>links</code> are excellent places to start.  These browsers render
+  almost all "good" HTML (including frames and form entry), but
+  do it in text-mode, and mostly using keyboard input.  If you
+  find your web site hard to work with using one of these
+  browsers, chances are very good that disabled users will have
+  trouble with your site; and the inverse is mostly true also (if
+  nothing else, a screen reader can easily process a <code>lynx</code> or
+  <code>links</code> text screen).
+</p>
+<p>  After you do your own testing using a text-mode browser, try
+  running your pages through CAST's Bobby.  This free tool does a
+  wonderful job of complaining about almost everything that might
+  make your pages disabled-unfriendly.  Their online version will
+  examine a specific URL, but you can download a Java version
+  that will check a whole site.  A lot of the advice Bobby gives
+  is just that:  advice.  It is still necessary to use your
+  common sense in evaluating suggestions, and even a lot of
+  Bobby's suggestions explicitly say as much.
+</p>
+<p><strong class="subhead">Resources</strong></p>
+ <p>  An excellent starting point for many accessibility issues is
+  The Disability Rights Activist.  This site provides links to
+  laws, guidelines, and downloadable software:
+</p>
+<blockquote>   <a href="http://www.disrights.org/dr-web-access.html">http://www.disrights.org/dr-web-access.html</a>
+</blockquote><p>  The W3C Web Accessibility Initiative provides links to a
+  helpful collection of (generally free) tools for evaluating
+  web-sites:
+</p>
+<blockquote>   <a href="http://www.w3.org/WAI/ER/existingtools.html#Evaluation">http://www.w3.org/WAI/ER/existingtools.html#Evaluation</a>
+</blockquote><p>  The Bobby tool is discussed in the main text, and is the
+  premier tool in evaluating accessiblity:
+</p>
+<blockquote>   <a href="http://www.cast.org/bobby/">http://www.cast.org/bobby/</a>
+</blockquote><p>  The <code>Lynx</code> broswer:
+</p>
+<blockquote>   <a href="http://lynx.browser.org/">http://lynx.browser.org/</a>
+</blockquote><p>  The <code>Links</code> browser:
+</p>
+<blockquote>   <a href="http://links.sourceforge.net/">http://links.sourceforge.net/</a>
+</blockquote><p>  The <code>Weblint</code> syntax and style checker:
+</p>
+<blockquote>   <a href="http://www.weblint.org/~neilb/weblint/">http://www.weblint.org/~neilb/weblint/</a>
+</blockquote><p>  "Diversity Compliance in Web Design" is Tom Christiansen's site
+  that contains <code>demoroniser</code> and other tools for web page
+  improvement:
+</p>
+<blockquote>   <a href="http://language.perl.com/misc/div-www.htm">http://language.perl.com/misc/div-www.htm</a>
+</blockquote><p><strong class="subhead">About The Author</strong></p>
+ <p>  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz has been consumed with ressentiment since the
+  introduction of the &lt;blink&gt; tag in Netscape 2.0.  David may be
+  reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+</p>
+</body></html>

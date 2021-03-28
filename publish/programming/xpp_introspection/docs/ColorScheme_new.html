@@ -1,0 +1,48 @@
+<HTML>
+<HEAD><TITLE>Library : ColorScheme:new()</TITLE>
+<STYLE type="text/css">
+EM { font-weight: normal; font-style: italic; color: #000066; }
+B { color: #660000; }
+H1 { font-size: large; font-weight: bold; background-color: #DDEEFF; }
+H2 { font-size: medium; font-weight: bold; }
+P.indent { margin-left: 5%; }
+P.code { margin-left: 5%; color: #006600; font-weight: bold; font-family: MONOSPACE; font-size: small; }
+P.synopsis { margin-left: 5%; }
+DL { margin-left: 5%; }
+UL { margin-left: 3%; margin-right: 8%; text-indent: -5%; }
+P.syntax { margin-left: 15%; text-indent: -10%; margin-right: 5%; }
+</STYLE></HEAD>
+
+<BODY>
+
+<H2>Class</H2>
+   <P class="indent">
+   <A HREF="ColorScheme.html">ColorScheme()</A>
+
+<H2>Syntax</H2>
+
+   <P class="indent">
+   :new() --&gt; <B>oColorScheme</B>
+
+<H2>Parameters</H2>
+
+   <P class="indent">None
+
+<H2>Return</H2>
+
+   <P class="indent">
+   The class method :new() returns a ColorScheme object instance.
+
+<H2>Description</H2>
+
+   <P class="indent">
+   The class method :new() does not itself initialize any data other
+   the the introspection data in :_data and :_methods.  However,
+   within the :init() instance method called upon instance generation,
+   a subcall is made to the :Old() method, which sets values for all
+   exposed data members.
+
+</BODY>
+</HTML>
+
+

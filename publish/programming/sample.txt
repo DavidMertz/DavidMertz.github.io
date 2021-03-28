@@ -1,0 +1,88 @@
+// Sample Test 158, IBM WebSphere Application Server,
+// Advanced Single Server Edition
+// for Multiplatforms, V4.0   WebSphere based
+
+//EXHIBITS
+
+Exhibit_1C "Exh_C"
+//Goes with 7D07C
+
+text{
+  A travel service application includes EJBs representing
+  Customers and Itineraries.  The Customer Home defines the usual
+  finder methods e.g., findCustomersByName() and
+  findCustomersByPhoneNumber().  The Itinerary Home defines a
+  finder supporting the association, namely
+  findItinerariesByCustomer().  For security, three roles are
+  defined:
+
+     o Client
+     o Agent
+     o TravelService }
+
+
+//SAMPLE (Pre-Assessment)
+
+item 1A09
+options
+    exhibit = "  "
+    response_type= multiple alphabetic
+    correct_answer = "ACDE"
+
+question
+text{
+  While testing a CMP Entity bean, a developer discovers that a
+  change to one of the bean's properties is not being reflected
+  in the database that contains the bean data.  What are possible
+  causes?
+
+^^^^A. The ejbStore() method has a bug.
+^^^^B. The ejbCreate() method has a bug.
+^^^^C. The setter for the property has a bug.
+^^^^D. The mapping of container managed fields to database fields has a bug.
+^^^^E. The deployment descriptor has a bug.
+^^^^F. The ejbLoad() method has a bug.
+}
+
+item 1A10
+options
+    exhibit = "  "
+    response_type= alphabetic
+    correct_answer = "D"
+
+question
+text{
+  A IBMBankOnline.com customer with multiple accounts can
+  transfer funds from one account to another.  When transferring
+  funds, source and destination accounts cannot be the same.
+  Assuming the Account object is uniquely identifiable by the
+  customer number and account type, what task should NOT be
+  performed to complete this requirement?
+
+^^^^A. Define a serializable AccountKey class.
+^^^^B. Declare the two fields that uniquely identify an account
+       as public members of the AccountKey class.
+^^^^C. Implement the equals() and hashcode() methods on the AccountKey class.
+^^^^D. Override the EJBObject's isIdentical() method in the
+       Account bean class.
+}
+//-------------------------------------------------------------------
+
+item X.Y/W/Z
+options
+    exhibit = "  "
+    response_type = (multiple) alphabetic
+    correct_answer = "X"
+question
+text{
+
+
+^^^^A.
+^^^^B.
+^^^^C.
+^^^^D.
+^^^^E.
+^^^^F.
+}
+//-------------------------------------------------------------------
+

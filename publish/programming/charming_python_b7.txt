@@ -1,0 +1,459 @@
+CHARMING PYTHON #B7:
+Implementing "weightless threads" with Python generators.
+
+David Mertz, Ph.D.
+Producer, Gnosis Software, Inc.
+February, 2002
+
+    A prior installment introduced a way of simulating
+    full-fledged coroutines with generators and a simple
+    scheduler.  It is possible to extend this scheduler in
+    straightforward ways to allow extremely lightweight threading
+    of multiple processes.  Much as with Stackless Python
+    microthreads, psuedo-coroutine "weightless threads" require
+    almost none of the context switch and memory overhead of
+    OS--or even userland--threads.  But problems that naturally
+    present themselves as large numbers of cooperating processes,
+    weightless threads are an elegant solution.
+
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  The area of microthreads--at least in Python--has been an
+  exotic enhancement reserved for Stackless Python.  The topic of
+  Stackless, and the changes it has been undergoing recently,
+  probably merit a whole column by itself.  But the very short
+  story is that under the "new Stackless" continuations are
+  apparently out-the-window, but microthreads remain the
+  -raison d'etre- of the project.  It's complicated.
+
+  Let us back up a bit though.  Just what is a microthread?
+  Basically, a microthread is a process that can run with
+  miniscule inherent resource requirements--and that run within a
+  single instance of the Python interpreter (in a common memory
+  space, and so on).  With microthreads, it is possible to run
+  tens of thousands of parallel processes on a moderately capable
+  modern PC, and to switch between contexts hundreds of thousands
+  of times every second.  Calls to 'fork()' or standard OS
+  threading calls do not even come close to this! Even so-called
+  "lightweight" threading libraries have threads that are orders
+  of magnitude "heavier" than those presented here.
+
+  The semantics of the weightless threads I introduce in this
+  column are a bit different from that of OS threads.  For that
+  matter, they are also not quite the same as what Stackless
+  provides.  In most respects weightless threads are quite a bit
+  simpler than most variants--most issues about semaphors,
+  locking, and the like disappear.  The price of the simplicity
+  is that I present a form of "cooperative multithreading;"
+  adding preemption within the framework of standard Python does
+  not appear feasible to me (at least with non-Stackless Python
+  2.2--no one knows what the '__future__' might bring).
+
+  In a way, weightless threads recall the cooperative
+  multitasking of older Windows and MacOS versions (but within a
+  single application).  In another sense, however, weightless
+  threads are merely another way of expressing flow in a
+  program--nothing that weightless threads do could not, in
+  principle, be accomplished with the "really big if/elif block"
+  technique (the last resort of the brute force programmer).
+
+
+RECOLLECTING COROUTINES
+------------------------------------------------------------------------
+
+  An earlier installment of this column presented a mechanism for
+  simulating coroutines with simple generators.  At its core, the
+  mechanism is amazingly simple.  A set of generator objects is
+  wrapped in a 'scheduler()' function that controls delegation of
+  control flow to an appropriate branch.  These are not -true-
+  coroutines in the sense that control only branches to and from
+  the 'scheduler()' function, but for practical purposes, one
+  accomplishes the same thing with very little extra code.  This
+  is what 'scheduler()' looked like:
+
+      #---------- Scheduler() for simulated coroutines --------#
+      def scheduler(gendct, start):
+          global cargo
+          coroutine = start
+          while 1:
+              (coroutine, cargo) = gendct[coroutine].next()
+
+  The thing to notice about this wrapper is that each
+  generator/coroutine yield's a tuple that contains its intended
+  branch destination.  Basically, a generator/coroutine exits
+  with a GOTO target.  For convenience, I also let the generators
+  yield a standard 'cargo' container as a way of formalizing the
+  data that is passed between coroutines--but one could also
+  simply use agreed-upon global variables or callback
+  setter/getter functions to pass data.  Raymond Hettinger has
+  written a Python Enhancement Proposal (PEP) that is intended to
+  allow better encapsulation of passed data; perhaps future
+  Pythons will include it.
+
+
+NEW SCHEDULERS
+------------------------------------------------------------------------
+
+  For weightless threads, the requirements are slightly different
+  from those in coroutines.  But we can still use a 'scheduler()'
+  function at its heart.  The difference is that the scheduler
+  itself should decide branch targets rather than receive them
+  from the generator/coroutines.  Let me present a complete test
+  program and sample:
+
+      #------------ 'microthreads.py' example script ----------#
+      from __future__ import generators
+      import sys, time
+
+      threads = []
+      TOTALSWITCHES = 10**6
+      NUMTHREADS    = 10**5
+
+      def null_factory():
+          def empty():
+              while 1: yield None
+          return empty()
+
+      def quitter():
+          for n in xrange(TOTALSWITCHES/NUMTHREADS):
+              yield None
+
+      def scheduler():
+          global threads
+          try:
+              while 1:
+                  for thread in threads: thread.next()
+          except StopIteration:
+              pass
+
+      if __name__ == "__main__":
+          for i in range(NUMTHREADS):
+              threads.append(null_factory())
+          threads.append(quitter())
+          starttime = time.clock()
+          scheduler()
+          print "TOTAL TIME:    ", time.clock()-starttime
+          print "TOTAL SWITCHES:", TOTALSWITCHES
+          print "TOTAL THREADS: ", NUMTHREADS
+
+  This is about the simplest weightless thread scheduler one
+  could choose Every thread is entered in fixed order, and each
+  has an identical priority.  Below I take a look at how to
+  complicate these details.  As with the prior installment's
+  coroutines, weightless threads should be written to obey a few
+  conventions.
+
+  Most of the time, a weightless thread's generator should be
+  bracketted in a 'while 1:' loop.  The way the scheduler is
+  setup here causes the whole scheduler to stop when one thread
+  does so.  This is less "robust" in a sense than OS threads--but
+  it would not be much extra machinery to catch exceptions
+  -inside- 'scheduler()'s loop rather than outside the loop.
+  Moreover, a thread can be removed from the 'threads' list
+  without reaching a termination (either by itself, or by some
+  other thread).  We haven't really provided the bookkeeping to
+  make removal easy; but a natural extension would be to store
+  threads in a dictionary or some other structure, instead of a
+  list.
+
+  The example illustrates one reasonable technique for eventual
+  termination of the scheduler loop.  A special generator/thread
+  'quitter()' monitors some condition--in this case just a count
+  of context switches--and throws a 'StopIteration' when it is
+  satisfied (other exceptions are not caught in the example).
+  Notice that after termination, all the other generators are
+  still intact, and can be resumed later, if desired (either in a
+  microthread scheduler or otherwise).  Obviously, you could
+  'delete' these generator/threads if desired.
+
+  The particular example uses particularly pointless threads.
+  They do nothing, and do so in the absolute minimal possible
+  form.  The example is set up this way to illustrate a
+  point--the inherent overhead of weightless threads is quite
+  low.  Creating 100,000 weightless threads is no problem on an
+  older Windows98 Pentium II laptop with only 64 meg of memory (at one
+  million threads, long disk churning occurs).  Try that with OS
+  threads!  Moreover, on this fairly slow 366Mhz chip, one million
+  context switches can be performed in about 10 seconds (the
+  number of threads involved is not particularly significant to
+  the timing).  Obviously, realistic weightless threads should
+  -do- something, and this will use some greater resources
+  proportionate to the task.  But the threading itself earns the
+  "weightless" name.
+
+
+SWITHCHING OVERHEAD
+------------------------------------------------------------------------
+
+  Switching between weightless threads is cheap, but it is still
+  not quite free.  To test the case, I constructed an example
+  that performs -some- work, but about the least one might
+  reasonably perform in a thread.  Since the thread scheduler
+  -really- amounts to instructions to "do A, then do B, then do
+  C, etc." it was not difficult to create an entirely parallel
+  case in a main function:
+
+       #-------------- 'overhead.py' example script -----------#
+       from __future__ import generators
+       import time
+
+       TIMES = 100000
+
+       def stringops():
+           for n in xrange(TIMES):
+               s = "Mary had a little lamb"
+               s = s.upper()
+               s = "Mary had a little lamb"
+               s = s.lower()
+               s = "Mary had a little lamb"
+               s = s.replace('a','A')
+
+       def scheduler():
+           for n in xrange(TIMES):
+               for thread in threads: thread.next()
+
+       def upper():
+           while 1:
+               s = "Mary had a little lamb"
+               s = s.upper()
+               yield None
+
+       def lower():
+           while 1:
+               s = "Mary had a little lamb"
+               s = s.lower()
+               yield None
+
+       def replace():
+           while 1:
+               s = "Mary had a little lamb"
+               s = s.replace('a','A')
+               yield None
+
+       if __name__=='__main__':
+           start = time.clock()
+           stringops()
+           looptime = time.clock()-start
+           print "LOOP TIME:", looptime
+
+           global threads
+           threads.append(upper())
+           threads.append(lower())
+           threads.append(replace())
+           start = time.clock()
+           scheduler()
+           threadtime = time.clock()-start
+           print "THREAD TIME:", threadtime
+
+  It turns out that the weightless thread version runs in
+  slightly more than twice as long as the straight loop
+  version--a little less than 3 seconds versus just over 6 on the
+  mentioned machine.  Obviously, if each unit of work was two, or
+  ten, or one hundred times as large as a single string method
+  call then the proportion of time spent in thread overhead would
+  be correspondingly small.
+
+
+DESIGNING THREADS
+------------------------------------------------------------------------
+
+  Weightless threads can--and usually should--be larger scale
+  than a single conceptual operation.  A thread, of whatever
+  sort, is used to represent the amount of flow context necesary
+  to describe one particular -task- or -activity-.  But a task
+  can be larger than the time/size one would want to spend inside
+  a single thread context.  Preemption hadles this issue
+  automatically, without any specific intervention by an
+  appliation developer.  Unfortunately, weightless thread users
+  need to pay some more attention to "playing nice" with other
+  threads.
+
+  At a minimum, a weightless thread should be considerate enough
+  to 'yield' whenever it completes a conceptual operation.  The
+  scheduler will come back to it for the next step.  For example:
+
+      #------- Pseudo-Code Friendly Weightless Thread ---------#
+      def nicethread():
+          while 1:
+              ...operation A...
+              yield None
+              ...operation B...
+              yield None
+              ...operation C...
+              yield None
+
+  A lot of times, a good design will 'yield' more often even than
+  at the boundaries between basic operations.  Often something
+  conceptually "basic" nonetheless involves looping over a large
+  collection; when that is the case (depending on just how time
+  consuming the loop body is), it probably makes sense to put a
+  'yield' or two in the loop body (perhaps recurrent after a
+  certain number of loop iterations).  Unlike with preemptive
+  threads, an ill-behaved weightless thread can grab an
+  indefinite amount of exclusive processor attention.
+
+
+THE REST OF THE SCHEDULE
+------------------------------------------------------------------------
+
+  The examples have presented only the most basic styles of
+  thread schedulers.  There is a lot more that one can
+  potentially do (this issue is fairly independent of designing a
+  good generator/thread).  Let me present several likely
+  enhancements in passing.
+
+  *Better thread management*: A simple 'threads' list makes it
+  easy to add generator/threads for the scheduluer to handle.
+  But this data structure does nothing to make it easy to remove
+  or suspend threads that are no longer relevant.  A dictionary
+  or a class is likely to be a better data structure for thread
+  management.  As a quick example, below is a class that can
+  (almost) drop in for the 'threads' list in the examples:
+
+      class ThreadPool:
+          """Enhanced threads list as class
+
+          threads = ThreadPool()
+          threads.append(threadfunc)  # not generator object
+          if threads.query(num) <<has some property>>:
+              threads.remove(num)
+          """
+          def __init__(self):
+              self.threadlist = []
+              self.threaddict = {}
+              self.avail = 1
+          def __getitem__(self, n):
+              return self.threadlist[n]
+          def append(self, threadfunc, docstring=None):
+              # Argument is the generator func, not the gen object
+              # Every threadfunc should contain a docstring
+              docstring = docstring or threadfunc.__doc__
+              self.threaddict[self.avail] = (docstring, threadfunc())
+              self.avail += 1
+              self.threadlist = [p[1] for p in self.threaddict.values()]
+              return self.avail-1       # return the threadID
+          def remove(self, threadID):
+              del self.threaddict[threadID]
+              self.threadlist = [p[1] for p in self.threaddict.values()]
+          def query(self, threadID):
+              "Information on thread, if it exists (otherwise None)
+              return self.threaddict.get(threadID,[None])[0]
+
+  One could do more, but this is a good start.
+
+  *Thread priorities*: In the simple examples, all threads get
+  equal attention from the scheduler.  There are at least two
+  general approaches to a more fine-tuned thread priority system.
+  One priority system could simply devote more attention to "high
+  priority" threads than to low priority ones.  One
+  straightforward way to do this would to create a new class
+  'PriorityThreadPool(ThreadPool)' that returned more important
+  threads more often during the thread iteration.  The simplest
+  such approach might return some threads multiple successive
+  times in its '.__getitem__()' method.  A high priority thread
+  could then receive two, or ten, or a hundred successive
+  "time-slices" rather than just one this way.  A (very weak)
+  "real-time" variant on this might go as far as returning the
+  multiple copies of important threads scattered throughout the
+  thread list.  This would increase the actual frequency of
+  servicing high-priority threads, not only the total attention
+  they receive.
+
+  A perhaps more sophisticated approach to thread priorities is
+  not easily available in pure Python (but it is with some
+  third-party OS/processor-specific libraries).  Rather than
+  simply give high-priority threads an integer number of
+  time-slices, the scheduler could measure the time actually
+  spent in each weightless thread, and dynamically adjust the
+  thread scheduling to be more "fair" to under-serviced threads
+  (fairness perhaps related to thread priority).  Unfortunately,
+  Python's 'time.clock()' and its family are not nearly high
+  enough resolution timers to make this approach effective.  On
+  the other hand, there is nothing that prevents an underfed
+  thread in the "multiple-time-slices" approach from boosting its
+  own priority dynamically.
+
+  *Combining microthreads with coroutines*:  In order to create a
+  scheduler for weightless threads (microthreads), I removed the
+  coroutine logic for "please branch to here." Doing that was not
+  actually necessary.  The weightless threads in the examples
+  have always yielded 'None' rather than a jump target.  But
+  there is no reason the two concepts could not be combined:  If
+  a coroutine/thread yields a jump target, the scheduler can jump
+  where requested (unless overridden by thread priorities,
+  perhaps).  However, if a coroutine/thread merely yields 'None',
+  the scheduler could make its own decision about the appropriate
+  thread for the next attention.  There would be a bit of work
+  involved in deciding (and programming) exactly how an arbitrary
+  jump would interact with a linear thread que; but nothing
+  particularly mysterious about the work.
+
+
+CONCLUSION
+------------------------------------------------------------------------
+
+  The microthread pattern (or "weightless threads") basically
+  boils down to yet another exotic style for flow control in
+  Python.  Earlier installments have already touched on several
+  others.  The beauty of having a good variety of control
+  mechanisms is that it lets a developer isolate code
+  functionality into its logical components and maximize
+  contextual relevance of code.
+
+  It doesn't take much, actually, to enable the -possibility- of
+  doing everything possible (a "loop" and an "if").  For a class
+  of problems easily broken into many small "agents", "servers",
+  or "processes" weightless threads may be the clearest model for
+  expressing the underlying "business logic" of an application.
+  Of course, it does not hurt matters that weightless threads
+  have the potential to be -blazingly fast- in comparison to more
+  well-known flow mechanisms.
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  Early on in this column, I presented an abstract pattern for a
+  broad class of state machines in Python.  The installment is
+  the touchstone from which I explicate the new concepts herein:
+
+    http://www-106.ibm.com/developerworks/library/python-state.html
+
+  My interview with Stackless Python creator Christian Tismer
+  touched on microthreads briefly, along with other exotic flow
+  structures like continuations, coroutines and generators. The
+  installment hints at some of the issues, before Python 2.2
+  introduced generators:
+
+    http://www-106.ibm.com/developerworks/library/l-pyth7.html
+
+  Of most recent and closest connection is my effort to introduce
+  iterators and simple generators during Python 2.2's alpha
+  period:
+
+    http://www-106.ibm.com/developerworks/library/l-pycon.html
+
+  Good reading for anyone interested in microthreads is the
+  Stackless Python website.  Even though my suggestions encroach
+  on the Stackless conceptual space, Stackless continues to do a
+  lot my framework doesn't (at the price of requiring a patched
+  fork of the standard Python).
+
+    http://www.stackless.org
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author:  http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz would like to write, with Nietzsche, that these are
+  the musings of an old philologist, but that untruth would
+  unmask itself.  But perhaps his (right here gratuitously
+  plugged) forthcoming book, _Text Processing in Python_, will
+  someday be mistaken for a cybernetic variant of philology.
+  David may be reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/.  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+

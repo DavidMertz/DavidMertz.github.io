@@ -1,0 +1,461 @@
+XML MATTERS #33: XML for Word Processors
+Open source embraces XML as native document format
+
+David Mertz, Ph.D.
+Bibliophile, Gnosis Software, Inc.
+February 2004
+
+    In their recent versions, the three major Free Software word
+    processing programs have all adopted XML formats as their native
+    document format. The approach to XML taken by AbiWord, KOffice's
+    KWord, and OpenOffice.org Writer differs somewhat between the
+    applications-- largely reflecting the underlying development focus
+    of each project. But all open source word processor developers have
+    realized the advantages of XML as a document format:
+    componentization of parsers and writers; openness and formality of
+    format specification; applicability of XSLT and other transformation
+    APIs.
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  Beyond some abandoned or incomplete efforts, three word processors are
+  available now in actively maintained states.  All do an excellent job
+  as word processors; all provide a variety of useful import/export
+  capabilities--include with the widely used, but proprietary, MS-Word
+  format; and all are available in both source and binary form for Linux
+  along with other platforms (on both Free and proprietary OSs).  And
+  most interstingly for this column, AbiWord, KWord, and OpenOffice.org
+  Writer all use XML for their native document formats.
+
+  For this column, I am not interested in comparing the features,
+  appearance, and user interfaces of the three abovementioned projects.
+  Suffice it to say that all of them have obtained a very nice degree of
+  polish in look-and-feel, and all have a sufficient feature set for
+  creations of most types of business and personal documents. What I am
+  interested in here is the design of XML document formats--the guts
+  inside these projects. An additional Free Software application is
+  worth mentioning in passing here: LyX is a GUI front-end to creation
+  of LaTeX documents. For specialized technical documents--such as those
+  involving many equations or complex cross-referencing--LyX is a good
+  choice, but its learning curve is steep for creating general business
+  correspondences.
+
+  A few words on the three projects are worthwhile for those unfamiliar
+  with them. AbiWord is a standalone word processor with an emphasis on
+  cross-platform compatibility, moderate size, and good execution speed.
+  OpenOffice.org is an outgrowth of Sun Microsystems' StarOffice
+  product, which was released under Free Software license, and taken up
+  by a developer community. OpenOffice.org Writer is just part of a
+  suite of inter-operable applications including a spreadsheet, vector
+  drawing program, presentation application, and some other components.
+  Similarly, KWord is part of KOffice (which is itself part of the
+  overall KDE project); KOffice contains even more components than does
+  OpenOffice.org--adding flowcharting, raster image editing, charting,
+  and other applications. In any case, for now we focus only on the word
+  processor component of KOffice and OpenOffice.org.
+
+TESTING DOCUMENT FORMATS
+------------------------------------------------------------------------
+
+  As you would expect, new versions of these open source word processors
+  usually tweak the document format a bit. Fortunately, XML is well
+  suited to upward changes, which usually can amount to addition of
+  (optional) new attributes and child elements. If done well, earliers
+  versions of applications can even degrade relatively gracefully when
+  they read newer saved documents--usually just by ignoring unfamiliar
+  tags and attributes.
+
+  In the XML formats I looked at, DTDs are provided by the project
+  developers, but they tend to be somewhat out of sync with the actual
+  XML documents created by the same version of the applications.
+  Well-formedness is still respected--as you would hope, but creation
+  and parsing seem to be rather informal matters, the final say is the
+  source code that implements the formats, not a DTD or Schema. In other
+  words, the samples below will -not- validate successfully. To get a
+  look at what documents -really- look like, I created a very simple
+  test document, shown in screenshot:
+
+  {Screenshot of simple document:
+   http://gnosis.cx/publish/programming/simple_doc.gif}
+
+  Interestingly--if perhaps not surprisingly--we will see in the XML
+  versions of this document that the representation on the identical
+  document is not unique.  Of course, being XML, issues like whitespace
+  normalization allow non-identical files to represent the same infoset;
+  but that is not what I mean.  I found that, at least in some details,
+  the exact same formatting can get different markup due to the sequence
+  of user actions that went into the document creation (and perhaps due
+  to other factors too).  While this fact is not necessarily a
+  problem--and probably applies equally to binary document formats like
+  MS-Word's .doc format--it seems mildly unfortunate that
+  cannonicalization is not as straightforward at a semantic level as it
+  is at the XML syntax.
+
+STARTING SIMPLE: [AbiWord]
+------------------------------------------------------------------------
+
+  AbiWord uses a relatively simple and straightforward XML document
+  format in which appearance and layout are specified in CSS-like
+  attributes.  While many such attributes are directly taken from CSS,
+  the AbiWord developers decided that CSS was insufficient for their
+  needs, so took it only as a starting point.
+
+  Although they are a bit long, I would like to present the entire XML
+  source of the word processor documents created. I have prettified
+  these sources, but have verified that my infoset neutral changes do
+  not affect re-import. First the AbiWord version:
+
+      <!--------------- simple.abw AbiWord document -------------------#
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE abiword PUBLIC "-//ABISOURCE//DTD AWML 1.0 Strict//EN"
+                               "http://www.abisource.com/awml.dtd">
+      <abiword
+        fileformat="1.1"
+        props="dom-dir:ltr; lang:en-US"
+        styles="unlocked"
+        template="false"
+        version="2.0.3"
+        xml:space="preserve"
+        xmlns="http://www.abisource.com/awml.dtd"
+        xmlns:awml="http://www.abisource.com/awml.dtd"
+        xmlns:dc="http://purl.org/dc/elements/1.1/"
+        xmlns:fo="http://www.w3.org/1999/XSL/Format"
+        xmlns:math="http://www.w3.org/1998/Math/MathML"
+        xmlns:svg="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <metadata>
+          <m key="dc.format">application/x-abiword</m>
+          <m key="abiword.generator">AbiWord</m>
+          <m key="abiword.date_last_changed">Tue Feb 10 20:04:46 2004</m>
+        </metadata>
+        <styles>
+          <s followedby="Current Settings"
+             name="Normal"
+             props="text-indent:0in; margin-top:0pt; margin-left:0pt;
+                    font-stretch:normal; line-height:1.0; text-align:left;
+                    bgcolor:transparent; lang:en-US; dom-dir:ltr;
+                    margin-bottom:0pt; text-decoration:none;
+                    font-weight:normal; font-variant:normal; color:000000;
+                    text-position:normal; font-size:12pt; margin-right:0pt;
+                    font-style:normal; widows:2; font-family:Times New Roman"
+             type="P"/>
+        </styles>
+        <pagesize height="11.000000"
+                  orientation="portrait"
+                  page-scale="1.000000"
+                  pagetype="Letter"
+                  units="in"
+                  width="8.500000"/>
+        <section props="page-margin-footer:0.5in; page-margin-header:0.5in">
+          <p style="Normal">Minimal document with <c
+             props="font-weight:bold">bold</c><c
+             props="font-weight:normal"> and </c><c
+             props="font-style:italic; font-weight:normal">italics</c><c
+             props="font-style:normal; font-weight:normal">.</c></p>
+          <p style="Normal"><c
+             props="font-style:normal; font-weight:normal"/></p>
+          <p style="Normal"><c
+             props="font-style:normal;
+                    font-weight:normal">New paragraph with </c><c
+             props="font-weight:normal;
+                    text-decoration:underline;
+                    font-style:normal">underline</c><c
+             props="text-decoration:none;
+                    font-weight:normal;
+                    font-style:normal">.</c></p>
+        </section>
+      </abiword>
+
+  A few features stand out. One notable advantage that comes with XML is
+  the use of namespaces to indicate external Schemas developed and
+  refined by other groups. For example, inclusion of equations or
+  figures can be done using MathML or SVG, respectively; the AbiWord
+  developers have no need to re-engineer these capabilities themselves.
+
+  Another thing to notice about AbiWord's format is that it only
+  half-heartedly uses XML attributes in describing the rendering of
+  sections or character spans.  That is, where some XML formats try to
+  list -a priori- all the possible formatting in attributes or child
+  tags (named in the DTD), AbiWord simply throws in a generic 'props'
+  attribute that contains CSS-style formatting.  This pushes the
+  rendering semantics outside of the XML infoset (for better or worse I
+  am not sure).
+
+BECOMING FORMAL: OASIS
+------------------------------------------------------------------------
+
+  The XML format developed by Sun Microsystems for StarOffice (and taken
+  up by OpenOffice.org), has been assumed by an OASIS Technical
+  Committee (see Resources)--in short, it is on its way to becoming a
+  standard, not simply a format. Moreover, the KOffice project, which
+  previously used its own XML format, has recently decided to move
+  towards native use of the OpenOffice.org format--or some future OASIS
+  enhancement to that format. I find it more useful, therefore, to
+  present the OASIS/OpenOffice.org format than to detail the older
+  KOffice format. That said, current stable versions of KOffice have not
+  yet switched formats as of this writing.
+
+  In contrast to the AbiWord format, OpenOffice.org's XML format
+  encompasses all the type of documents supported by OpenOffice.org
+  applications--i.e. not simply word processor documents, but also
+  charts, drawings, and so on.  Data of different types is indicated by
+  namespaces for each type, allowing multiple data formats to be
+  embedded in the same document.  How and whether a particular
+  application handles a given data type is up to the application; but,
+  for example, one application might pass control for rendering a given
+  data type to another component (either in the same suite, or a wholly
+  external application).
+
+  For now we are interested just in the simple word processor document
+  presented above. Let us take a look at it--as with the AbiWord
+  version, I have prettified the XML, but maintained the infoset. Also
+  as with AbiWord's version, the document does not actually validate; in
+  this case the 'dr3d', 'form' and 'math' namespace attributes are
+  missing from the version of the DTD included with my OpenOffice.org
+  installation (the same one that created this document)..  Also, while
+  the below is the content of interest, the complete OpenOffice.org data
+  file is a zip archive containing several ancillary XML documents for
+  settings, metadata, and styles (normally having the extension '.sxw'):
+
+      #----------------- content.xml from simple.sxw ------------------#
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE office:document-content PUBLIC
+        "-//OpenOffice.org//DTD OfficeDocument 1.0//EN"
+        "office.dtd">
+      <office:document-content office:class="text" office:version="1.0"
+        xmlns:chart="http://openoffice.org/2000/chart"
+        xmlns:dr3d="http://openoffice.org/2000/dr3d"
+        xmlns:draw="http://openoffice.org/2000/drawing"
+        xmlns:fo="http://www.w3.org/1999/XSL/Format"
+        xmlns:form="http://openoffice.org/2000/form"
+        xmlns:math="http://www.w3.org/1998/Math/MathML"
+        xmlns:number="http://openoffice.org/2000/datastyle"
+        xmlns:office="http://openoffice.org/2000/office"
+        xmlns:script="http://openoffice.org/2000/script"
+        xmlns:style="http://openoffice.org/2000/style"
+        xmlns:svg="http://www.w3.org/2000/svg"
+        xmlns:table="http://openoffice.org/2000/table"
+        xmlns:text="http://openoffice.org/2000/text"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <office:script/>
+        <office:font-decls>
+          <style:font-decl fo:font-family=""
+                           style:font-pitch="variable" style:name="F"/>
+          <style:font-decl fo:font-family="Mincho"
+                           style:font-pitch="variable" style:name="Mincho"/>
+          <style:font-decl fo:font-family="Times"
+                           style:font-family-generic="roman"
+                           style:font-pitch="variable"
+                           style:name="Times"/>
+        </office:font-decls>
+        <office:automatic-styles>
+          <style:style style:family="paragraph"
+                       style:name="P1" style:parent-style-name="Standard">
+            <style:properties fo:font-style="normal"
+                              fo:font-weight="normal"/>
+          </style:style>
+          <style:style style:family="text" style:name="T1">
+            <style:properties fo:font-weight="bold"/>
+          </style:style>
+          <style:style style:family="text" style:name="T2">
+            <style:properties fo:font-weight="normal"/>
+          </style:style>
+          <style:style style:family="text" style:name="T3">
+            <style:properties fo:font-style="italic" fo:font-weight="normal"/>
+          </style:style>
+          <style:style style:family="text" style:name="T4">
+            <style:properties fo:font-style="normal" fo:font-weight="normal"/>
+          </style:style>
+          <style:style style:family="text" style:name="T5">
+            <style:properties style:text-underline="single"
+                              style:text-underline-color="font-color"/>
+          </style:style>
+        </office:automatic-styles>
+        <office:body>
+          <text:sequence-decls>
+            <text:sequence-decl
+              text:display-outline-level="0" text:name="Illustration"/>
+            <text:sequence-decl
+              text:display-outline-level="0" text:name="Table"/>
+            <text:sequence-decl
+              text:display-outline-level="0" text:name="Text"/>
+            <text:sequence-decl
+              text:display-outline-level="0" text:name="Drawing"/>
+          </text:sequence-decls>
+          <text:p
+            text:style-name="Standard">Minimal document with <text:span
+            text:style-name="T1">bold </text:span><text:span
+            text:style-name="T2">and </text:span><text:span
+            text:style-name="T3">italics</text:span><text:span
+            text:style-name="T4">.</text:span>
+          </text:p>
+          <text:p text:style-name="P1"/>
+          <text:p text:style-name="P1">New paragraph with <text:span
+            text:style-name="T5">underline</text:span>.</text:p>
+        </office:body>
+      </office:document-content>
+
+  The OpenOffice.org format follows a generally similar structure to
+  that of AbiWord.  Instead of AbiWord's '<p>' tag, OpenOffice.org uses
+  '<text:p>'; and instead of AbiWord's '<c>', OpenOffice.org uses
+  '<text:span>'.  A notable difference here is that where AbiWord uses
+  formatting descriptions directly accompanying marked character
+  sequences, OpenOffice.org always uses indirect references to named
+  styles, even where the names of "automatic styles" are generated on
+  the fly by the generating application.
+
+  Our sample document also illustrates a point made above about
+  incidental variations in document infosets.  For example, notice that
+  the period at the end of the first paragraph is marked as style "T4",
+  while the period in the final paragraph is outside any span.
+  Moreover, looking at the "T4" style definition earlier we see that it
+  merely defines "normal"--i.e. default--font style and weight.  In
+  other words, there is no actual reason to mark text with the "T4"
+  style as opposed to leave it as PCDATA of the surrounding paragraph.
+
+PROCESSING AN XML DOCUMENT
+------------------------------------------------------------------------
+
+  One important advantage of using XML formats like those in the word
+  processors we have looked at is the facilitation of access by new
+  tools to those documents.  It is just easier to write new applications
+  that process XML word processor documents than it is to write ones
+  that work with binary formats, especially with proprietary ones.  To
+  some extent, RTF (rich text format) achieves a similar goal: RTF is an
+  textual markup format that is publicly documented.  But as things have
+  unfolded, there are many more commodity XML parsers to choose from
+  than there are RTF parsers.
+
+  One application that obviously comes to mind for working with an XML
+  word processor format is a new word processing application.  The
+  hoped-for transparent interoperability between KOffice (KWord) and
+  OpenOffice.org (Writer) is an example of this.  But somewhat more
+  modest applications are worth keeping in mind to: indexing, analyzing,
+  summarizing, comparing, or otherwise batch processing documents are
+  also tasks that are frequently useful.
+
+  For many of these batch-style applications, XSLT stands out as an
+  obvious processing language--and indeed, existing conversion routines
+  often use XSLT. However, I am much less fond of XSLT than are its
+  proponents. Despite the declarative goal of the language, I usually
+  find its details confusing and difficult to maintain and debug.  In
+  any case, what I present below is a very simple utility that utilizes
+  the [gnosis.xml.objectify] Python XML binding that I have discussed in
+  several previous installments of this column.  The utility I present
+  is similar to the '-dump' option in 'lynx', only it
+  processes OpenOffice.org Writer documents rather than HTML documents.
+  My utility is crude, but is also extremely concise, thereby
+  demonstrating some XML benefits:
+
+      #------------------------ dumpOO.py -----------------------------#
+      #!/usr/bin/env python
+      import sys, zipfile
+      from gnosis.xml.objectify import XML_Objectify, EXPAT, \
+                                       children, tagname, content
+      XML_Objectify.expat_kwargs['nspace_sep'] = None
+      doc_content = zipfile.ZipFile(sys.argv[1]).read('content.xml')
+      doc = XML_Objectify(doc_content).make_instance()
+      write = sys.stdout.write
+      for o in children(doc.office_body):
+          if tagname(o)=="text_p":
+              for s in content(o):
+                  if type(s) is unicode and s.strip():
+                      write(" "+s.encode('utf-8').strip())
+                  elif tagname(s)=='text_span':
+                      write(" "+s.PCDATA.encode('utf-8'))
+              write('\n')
+
+  As well as not necessarily handling every OpenOffice.org construct
+  gracefully (but I think it handles all text content), line wrapping is
+  not peformed for paragraphs.  You could easily add this capability,
+  either by using the Python 2.3+ module [textwrap], or by piping to the
+  external utility 'fmt', e.g.:
+
+      #-------------------- dumpOO.py in action -----------------------#
+      $ ./dumpOO.py simple.sxw | fmt
+       Minimal document with bold and italics .
+      -
+       New paragraph with underline .
+
+CONCLUSION
+------------------------------------------------------------------------
+
+  Free Software and XML document formats are a natural pairing.  The
+  inherent readability of XML just makes interchange and format
+  specification easier, and the wide availability of XML libraries makes
+  creation of new tools simple.  Moreover, from a biographical
+  perspective, looking at these word processor formats really helped me
+  in seeing the modularity benefits of namespaces--done right,
+  namespaces can leverage the work done by many groups of independent
+  developers.
+
+  However, XML itself only goes so far.  For example, Microsoft is also
+  moving towards an XML format for future versions of MS-Word; but in
+  contrast to the openness of the OASIS/OpenOffice.org or AbiWord
+  formats, Microsoft is surrounding its format with patent applications
+  and a veil of secrecy around the format variations (plus the simple
+  fact it uses cryptic tag and attribute names rather than
+  self-documenting ones).  XML by itself does not really mean
+  "open"--but fortunately, the developers of KOffice, AbiWord, and
+  OpenOffice.org have done a generally wonderful job of obtaining
+  openness with XML (albeit, the wild world of community development
+  still leaves occasional impedence mismatches in, e.g. DTDs).
+
+RESOURCES
+------------------------------------------------------------------------
+
+  OpenOffice.org is licensed under a mixture of Free Software licenses
+  (all approved by FSF and OSI). Depending on which components you are
+  interested in, either the PDL, GPL, LGPL, or SISSL may apply;
+  moroever, you have some choices about the license terms you prefer to
+  accept.  Information about the project in general, as well as about
+  the licensing specifics, can be found at:
+
+    http://openoffice.org/
+
+  KWord is part of the GPL'd KOffice project.
+
+    http://koffice.org/
+
+  The set of DTDs used by KOffice components can be found at:
+
+    http://www.koffice.org/DTD/
+
+  The plans of the KOffice project to switch to using the
+  OASIS/OpenOffice.org file format as its native format was announced
+  following the 2003 KOffice Developers' Meeting:
+
+    http://dot.kde.org/1061919133/
+
+  General resources for the GPL'd Abiword (including downloads) can be
+  found at:
+
+    http://abiword.org/
+
+  The (non-definitive) DTD for AbiWord can be found at:
+
+    http://www.abisource.com/awml.dtd
+
+  An OASIS Technical Committee has been organized to create an open,
+  XML-based file format specification for office applications.  The
+  basis of this specification is the StarOffice/OpenOffice.org format
+  specification created by Sun:
+
+    http://www.oasis-open.org/committees/office/charter.php
+
+  The OpenOffice.org project maintains a page related to standardization
+  of document formats between office suites:
+
+    http://xml.openoffice.org/standardisation/
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz once led the desperate life of scholarship. David may be
+  reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/. Suggestions and recommendations on this,
+  past, or future, columns are welcomed. Check out David's new book
+  _Text Processing in Python_ at http//gnosis.cx/TPiP/.
+

@@ -1,0 +1,80 @@
+abulka@netspace.net.au wrote:
+|I love the cleanliness of YAML.  Nice article by David too at
+|http://www-106.ibm.com/developerworks/library/x-matters23.html
+|The python utility to convert between YAML and XML is a bit strange.
+|Regular yaml doesn't convert at all - there seems to be a special format
+|needed.  E.g.
+
+I also feel disappointed with the current state of YAML<-->XML
+converters.  Not just the Python version, the Perl one is crude too (but
+maybe a bit better than the Python).  I confess that I did not try the
+Ruby one (nor Java).
+
+If you want something that will convert -ANY- YAML to XML, here's one
+for free:
+
+    % cat yaml2xml.py
+    #!/usr/bin/python
+    from yaml import load
+    from gnosis.xml.pickle import dumps
+    from sys import stdin
+    print dumps(load(stdin.read()).next())
+
+Of course, you'll need my Gnosis Utils as a support package here (but
+everyone should have it anyway :-)).
+
+This produces XML that is entirely accurate, and can be round tripped.
+Of course, going from XML->YAML is left as an exercise for the reader.
+For a sample, look at
+
+    http://www.gnosis.cx/secret/sweeney.xml
+
+If you take a look at:
+
+|http://www.scottsweeney.com/static/projects/slip/XMLShorthandComparison.htm
+
+The problem is that I think is examples are just wrong.  Look at the
+SLiP example, which I take it is Scott Sweeney's project.  Looking at
+the XML version by itself, I have no idea how many <url>'s can occur in
+a <bookmark>; nor do I know whether the fact that <title> comes *after*
+<url> rather than before is an important piece of information.
+
+Given the contexts, and the meanings I tend to assign to the words in
+the tags, I would *assume* that the stuff inside a bookmark is
+dictionary-like, while the enumeration of several bookmarks is
+list-like.  But there is not enough information in the XML itself to
+transform XML->SLiP without some hints.  One might be able to provide
+enough such hints by adding a DTD, or it might require
+application-specific programming.
+
+If a DTD is involved, that would require a fair amount of programming to
+figure out exactly what the DTD means.  Actually, even then, I'm not
+sure one gets quite enough information.  For example:
+
+    <!ELEMENT bookmark (url,title,description)>
+
+On its face, this an ordered collection of subelements.  Now one MIGHT
+assume that since exactly one occurrence of each element must occur, the
+structure is dict-like.  But is this necessarily so?
+
+Naively writing a Python object back to XML will not preserve the order
+(an obey the DTD), so we'd have to consult the DTD on writing also.
+That matter is just a programming issue, of course, not a theoretical
+one.  But what about:
+
+    <!ELEMENT bookmark (url,title,description+)>
+
+What Python data structure does this indicate?  I can think of at least
+two candidates:
+
+ (1)  [myurl, mytitle, mydesc1, mydesc2]
+ (2)  {'url':myurl, 'title':mytitle, 'description':[mydesc1, mydesc2]}
+
+It is not obvious which one to choose here.  Now generalize this to
+every possible quantification and sequencing in a DTD!
+
+Of course, all the same issues I describe about the SLiP example apply
+to YAML conversion.
+
+Yours, David...
+

@@ -1,0 +1,349 @@
+XML MATTERS #7
+Comparing W3C XML Schemas and Document Type Definitions (DTD's)
+
+David Mertz, Ph.D.
+Idempotentate, Gnosis Software, Inc.
+January 2001
+
+    The "buzz" about XML Schemas is that they are the next big
+    technology to think about within the XML universe.
+    Specifically, a widespread sentiment exists that Schemas will
+    soon replace DTDs as the means of specifying XML document
+    types.  In the author's opinion, much of the praise for XML
+    Schemas is overstated, but XML Schemas are nonetheless an
+    invaluable tool in an XML developer's arsenal.  This article
+    tries to sort out just what is going on in the XML Schema
+    world.
+
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  Much of the point of using XML as a data representation format
+  is the possibility of specifying structural requirements for
+  documents: rules for exactly what types of content and
+  subelements may occur within elements (and in what order,
+  cardinality, etc).  In traditional SGML circles, document rules
+  have been represented as DTD's--and indeed the formal
+  specification of the _W3C XML 1.0 Recommendation_ explicitly
+  provides for DTD's.  However, there are some things that DTD's
+  cannot accomplish that are fairly common constraints; the main
+  limitation of DTD's is the poverty of their expression of data
+  types (you can specify that an element must contain PCDATA, but
+  not that it must contain, e.g., a nonNegativeInteger).  As a
+  side matter, DTD's do not make the speficication of subelement
+  cardinality easy (you can compactly specify "one or more" of a
+  subelement, but specifying "between seven and twelve" is, while
+  possible, excessively verbose, or even outright contorted).
+
+  In answer to some of the limitations of DTD's, some XML users
+  have called for alternative ways of specifying document rules.
+  It has always been possible to programmatically examine
+  conditions in XML documents, but being able to impose the more
+  rigid standard that a document not meeting a set of formal
+  rules is -invalid- per se is often preferable.  W3C XML Schemas
+  are one major answer to these calls (but not the only Schema
+  option out there).  Steven Holzner, in _Inside XML_ has a
+  characterization of XML Schemas that is worth repeating:
+
+    Over time, many people have complained to the W3C about the
+    complexity of DTDs and have asked for something simpler.  W3C
+    listened, assigned a committee to work on the problem, and
+    came up with a solution that is much more complex than DTDs
+    ever were (p.199)
+
+  Holzner continues--and most all XML programmers will agree
+  (myself included)--that despite their complexity, W3C XML
+  Schemas provide a lot of important capabilities, and are worth
+  using for many classes of validation rules.
+
+  At least two wrinkles remain for any "Schemas everywhere" goal.
+  That is, two fundamental and conceptual issues;  at a more
+  pragmatic level, tools for working with XML Schemas are less
+  mature than those for working with DTD's (especially in regard
+  to validation, which is the core issue).  The first issue is
+  that the _W3C XML Schema Candidate Recommendation_ which just
+  ended its review period on December 15, 2000 does not include
+  any provision for entitites; by extension this includes
+  parametric entities.  The second issue is that despite their
+  enhanced expressiveness, there are still many document rules
+  that cannot be expressed in XML Schemas (some proposals have
+  been made to utilize XSLT to enhance validation expressiveness,
+  but other means are possible and utilized also).  In other
+  words, Schemas cannot quite do everything DTD's have long been
+  able to, on the one hand, while on the other hand, Schemas also
+  cannot express a whole set of further rules one might wish to
+  impose on documents.
+
+  The whole state of XML document validation rules remains messy.
+  Unfortunately, I am not able to prognosticate how everything
+  will finally shake out.  But in the meanwhile, let us look at
+  some specifics of what DTD's and XML Schemas are capable of
+  expressing.
+
+
+RICH TYPING
+------------------------------------------------------------------------
+
+  The place where W3C XML Schemas really shine is in expressing
+  type constraints on attribute values and element contents.
+  This is where DTD's are weakest.  Beyond providing an extremely
+  rich set of built-in -simpleType-'s, XML Schemas allow you to
+  derive new -simpleType-'s using a regular-expression-like
+  syntax.  The built-ins include those you would expect if you
+  have worked with programming languages: -string-, -int-,
+  -float-, -unsignedLong-, -byte-, etc; but they also include
+  some types most programming languages lack natively
+  -timeInstant- (i.e. date/time), -recurringDate- (day-of-year),
+  -uriReference-, -language-, -nonNegativeInteger-.  For example,
+  in a DTD one might have a declaration like:
+
+      #----------- DTD "item" Element Definition --------------#
+      <!ELEMENT item (prodName+,USPrice,shipDate?)
+      <!ATTLIST item partNum CDATA>
+      <!ELEMENT prodName (#PCDATA)>
+      <!ELEMENT USPrice (#PCDATA)>
+      <!ELEMENT shipDate (#PCDATA)>
+
+  In W3C XML Schema, one can be more specific (modified slightly
+  from the W3C Schema primer):
+
+      #--------- XML Schema "item" Element Definition ---------#
+      <xsd:element name="item">
+         <xsd:complexType>
+            <xsd:sequence>
+               <xsd:element name="prodName" type="xsd:string" maxOccurs="5"/>
+               <xsd:element name="USPrice"  type="xsd:decimal"/>
+               <xsd:element name="shipDate" type="xsd:date" minOccurs="0"/>
+            </xsd:sequence>
+            <xsd:attribute name="partNum" type="SKU"/>
+         </xsd:complexType>
+      </xsd:element>
+
+      <!-- Stock Keeping Unit, a code for identifying products -->
+      <xsd:simpleType name="SKU">
+         <xsd:restriction base="xsd:string">
+            <xsd:pattern value="\d{3}-[A-Z]{2}"/>
+         </xsd:restriction>
+      </xsd:simpleType>
+
+  Two striking, if superficial, features stand out in these
+  element definitions.  One is that the Schema is itself a
+  well-formed XML instance with its tags using the "xsd"
+  namespace (actually, so is the DTD, but it has only processing
+  instructions, no content as such); the second (and consequence
+  of the first) is that the Schema is far more verbose than the
+  DTD.
+
+  Beyond the syntactic niceties, we can see that the Schema
+  example does several things that are imposible with DTD's.  The
+  type of "prodName" is basically the same between the
+  definitions.  But "USPrice" and "shipDate" are specified in the
+  Schema as types -decimal- and -date-.  Considered as a text
+  file, an XML instance with these elements contains some ASCII
+  (or Unicode) characters inside the elements.  But a validator
+  that is Schema-aware can demand much more specific formatting
+  of the characters inside -decimal- and -date- elements (and
+  likewise other types).  Much more interesting is the attribute
+  "partNum" which is of a derived specialized type.  The type
+  -SKU- is not a built-in type, but rather a sequence of
+  characters following the pattern given in the "SKU"
+  declaration (specifically, it must have three digits, a dash,
+  and two capital letters, in that order).  -SKU- could also be
+  used for an element type, it is just coincidence that it
+  defines an attribute in this case.
+
+  In the DTD version of our element definition, all these
+  interesting (and potentially rather complicated, if
+  specialized) types must simply get called -PCDATA-, with no
+  further say as to what that character data looks like (-CDATA- in
+  the case of attributes).
+
+  In richly typing element/attribute values, Schemas shade subtly
+  from describing the syntax of an XML instance to describing its
+  semantics.  Parsing purists might take issue with my
+  characterization: built-in Schema types are defined
+  syntactically, and patterns built on those built-in are thusly
+  also formally syntactic.  But in practical terms, when we
+  declare that a given element must be a -date-, what we really
+  want is...well...for the element to contain a date.  Expressing
+  semantic information is not a bad thing, of course; but one
+  might argue that that is better confined to an application
+  level as such, rather than a format declaration.  After all,
+  there are semantic features--even simple ones--that elude
+  Schemas but might be just as important in an application as
+  what Schemas express.  For example, sure a "stock keeping
+  unit" must look like "999-AA"; but maybe also widgets are
+  shipped out only in baker's dozens: divisibility on an
+  -integer- by 13 is not expressible in XML Schemas (and
+  therefore -widgetquantity- still cannot be given the needed
+  constraints at that level).  The point here is that even with
+  the extra capabilities of Schemas (over DTD's), one still might
+  need to do "post-validation" at an application level to
+  determine if an XML document is "functionally valid."
+
+
+OCCURENCE CONSTAINTS
+------------------------------------------------------------------------
+
+  As well as powerful type declaration, XML Schemas improve upon
+  the DTD's ability to declare the cardinality of subelement
+  patterns.  However, DTD's always had a clumsier way of
+  expressing every occurence constraint (cardinality) that XML
+  Schemas can.
+
+  In DTD's, cardinality is quanitified by one of the symbols "?",
+  "*" and "+" which specify, respectively, "zero or one," "zero
+  or more," "one or more." That is, except for the question mark
+  being able to say "it is there or it isn't," nothing in the
+  DTD syntax seems to limit the number of occurences of a given
+  pattern (whether a single subtag, or a nested sequence of
+  them).  So expressing the 1-5 occurences of -prodName- in the
+  above example Schema seems to be a problem.  Likewise, without
+  having the XML Schema attribute "minOccurs", we do not seem to
+  be able to express the requirement that something occurs some
+  specific number of times (other than "at least once").  But
+  actually, DTD's minimum quantifiers are good enough, if
+  inelegant at times.  The following constraints are equivalent:
+
+      #---- XML Schema syntax for "seven to twelve" donuts ----#
+      <xsd:element name="donutorder">
+         <xsd:complexType>
+            <xsd:sequence>
+               <xsd:element name="donut" type="xsd:string"
+                            minOccurs="7" maxOccurs="12" />
+            </xsd:sequence>
+         </xsd:complexType>
+      </xsd:element>
+
+      #-------- DTD syntax for "seven to twelve" donuts -------#
+      <!ELEMENT donut (#PCDATA)>
+      <!ELEMENT donutorder
+                (donut,donut,donut,donut,donut,donut,donut,
+                 donut?,donut?,donut?,donut?,donut?)
+
+  Of course, if you get orders by the gross, DTD's start to look
+  -really- inelegant!
+
+
+ENUMERATION
+------------------------------------------------------------------------
+
+  Both DTD's and W3C XML Schemas allow use of enumerated types in
+  attributes.  But Schemas are a great improvement in also
+  allowing enumerated types in element contents.  The lack of
+  those, in my opinion, is a genuine shortcoming of DTD's.
+  Furthermore, Schemas' approach to enumeration is general and
+  elegant.  A specialized -simpleType- can contain an enumeration
+  "facet." And such a -simpleType- is automatically suitable for
+  either an attribute or element value type.
+
+  Let us illustrate each syntax:
+
+      #------ XML Schema syntax for enumerated attribute ------#
+      <xsd:simpleType name="shoe_color">
+         <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="red"/>
+            <xsd:enumeration value="green"/>
+            <xsd:enumeration value="blue"/>
+            <xsd:enumeration value="yellow"/>
+         </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:element name="person" type="person_type">
+         <xsd:attribute name="shoes" type="shoe_color"/>
+      </xsd:element>
+
+      #-------- DTD syntax for enumerated attribute type ------#
+      <!ATTLIST person shoes (red | green | blue | yellow)>
+
+  The DTD attribute declaration appears just as good (maybe
+  better in its conciseness).  But if your model puts shoe_color
+  in an element content instead, the DTD falls flat:
+
+      #------- XML Schema syntax for enumerated element -------#
+      <xsd:element name="shoes" type="shoe_color">
+
+
+WHITHER
+------------------------------------------------------------------------
+
+  W3C XML Schemas let XML programmers express a new set of
+  declarative constraints on documents that DTD's are
+  insufficient for.  For many programmers, the use of XML
+  instance syntax in Schemas also brings a greater measure of
+  consistency to different parts of XML work (other disagree, of
+  course).  Schemas are certainly destined to grow in
+  significance and scope as they become more familiar, and more
+  tools are enhanced to work with XML Schemas.
+
+  One way to get a jump start on Schema work is to automate
+  conversion of existing DTD's to XML Schema format.  Obviously,
+  automated conversions cannot add the new expressive
+  capabilities of XML Schemas themselves; but automation can
+  create good templates from which to specify the specific typing
+  constraints one wishes to impose.  The Resources section
+  provides two links to automated DTD-to-Schema conversion tools.
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+
+  The _W3C Candidate Recommendation 24 October 2000_ is the basic
+  standard for W3C XML Schemas:
+
+    http://www.w3.org/TR/xmlschema-0/
+
+  The _Extensible Markup Language (XML) 1.0 (Second Edition)
+  W3C Recommendation 6 October 2000_ can be found at:
+
+    http://www.w3.org/TR/REC-xml
+
+  To keep matters sufficiently complicated, the W3C's XML Schemas
+  are not the only Schema options out there.  -RELAX- (Regular
+  Expression Language for XML) is now ISO/IEC DIS (Draft
+  International Standard) 22250-1. This standard is most widely
+  used in Japan, but is not language or culture specific.  A good
+  starting place is:
+
+    http://www.xml.gr.jp/relax/
+
+  _The XML Schema Specification in Context_ is a nice compact
+  summary of the comparative capabilities of W3C XML Schemas
+  (compared to a number of other descriptive formats).  Find it
+  at:
+
+    http://www.ascc.net/~ricko/XMLSchemaInContext.html
+
+  Yuichi Koike's conversion tool from DTDs to XML Schemas can be
+  found at the following link.  It requires Perl:
+
+    http://www.w3.org/2000/04/schema_hack/
+
+  The author has created his own Python-based tool for converting
+  DTDs to W3C XML Schemas.  Once stable, this tool should be
+  usable as a module within larger Python programs, as well as
+  standalone.  At the time of writing, consider this alpha level
+  code, however:
+
+    http://gnosis.cx/download/dtd2schema.py
+
+  A nice thick, informative--but perhaps somewhat rambling--
+  introduction to most all matters XML is _Inside XML_, Steven
+  Holzner, New Riders, 2001 (ISBN 0-7357-1020-1).  This column
+  excerpts a particular pithy and humorous sentence.
+
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author:  http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz, in his gnomist aspirations, wishes he had coined
+  the observation that the great thing about standards is that
+  there are so many to choose from.  But then, he is also fuzzy
+  on OS design.  David may be reached at mertz@gnosis.cx; his
+  life pored over at http://gnosis.cx/publish/. Suggestions and
+  recommendations on this, past, or future, columns are welcomed.
+
+

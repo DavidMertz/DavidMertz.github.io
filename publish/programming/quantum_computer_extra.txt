@@ -1,0 +1,45 @@
+I cant figure out how to mention Charles Bennett (of IBM Aladan),
+who was one of the most important figures in this area (and
+is also at IBM).  The problem is that most of his research
+deals with Quantum Information.  For example he came up with
+a very insightfull and amusing way of relating information to
+energy that plays on the solution to the old paradox of
+Maxwells demon:
+
+    Imagine a train of boxes each containing a single molecule.
+    Each box holds one qubit of information; if the molecule
+    is on the right half of the box it represents a 0 if it's
+    on the left half it represents a 1.
+
+    If we know the value of the qubit, we can slide a divider
+    down the middle of the box and let the pressure of the
+    molecule push the divider like a piston over tward the side
+    that's a vaccum.  Doing so extracts energy from the box
+    and erases the qubit.
+
+    In this way Bennett's engine took information as fuel
+    to produce work.
+
+Personally, I think this example is much easier to understand than
+the classical information/entropy connection invented by Shannon
+and Von Neuman.
+
+------------------------------------------------------------------------
+[alternate]
+
+Imagine a race.  The goal is to simulate a particle accelerator:
+n particles go in, what comes out?  To make things fair, we'll
+allow the contestants a reasonable margine of error.  The winner
+will be the contestant who's solution scales best.
+
+As turns out, modern computers can only solve this problem by using
+O(exp(n)) resources.  But Nature is able to perform this "simulation"
+using only O(n) particles.
+
+Untill Richard Feynman made this startling discovery, it was widely
+accepted that the model for modern computation (the Turing machine),
+was the most powerful problem solving device in theory.  But if
+Nature was able to beat the computer O(n) to O(exp(n)), it was
+proof positive that a fundementally more powerful type of computer
+was posible.
+

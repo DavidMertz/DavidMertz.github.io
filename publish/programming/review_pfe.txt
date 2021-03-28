@@ -1,0 +1,149 @@
+PRODUCT REVIEW:
+Programmer's File Editor (PFE)
+
+David Mertz, Ph.D.
+Gnosis Software, Inc.
+July 2000
+
+AT A GLANCE
+------------------------------------------------------------------------
+
+      Creator:       Alan Phillips <A.Phillips@lancaster.uk.ac>
+      Price/License: Free of cost; Minor restrictions on redistribution;
+                     Closed-source.
+      Home Page:     http://www.lancs.ac.uk/people/cpaap/pfe
+      Requirements:  Win32, Win16
+
+
+WHAT IS PFE?
+------------------------------------------------------------------------
+
+  PFE is pretty much what you would expect it to be from its name:  A
+  text editor with a focus on working with source code.  PFE is an MDI
+  Windows application (both 16-bit and 32-bit versions are available)
+  that is easy to install (just unzip the archive), easy to work with,
+  and has high-quality online help.  And maybe best of all, PFE is costs
+  nothing to use or distribute.  In my own experience, PFE is one of the
+  first things a lot of programmers will install on a new Windows
+  computer that they will be working on.  PFE is a great step up from
+  editing your text files with Notepad or edit.com.
+
+
+SPECIAL FEATURES OF PFE
+------------------------------------------------------------------------
+
+  Three of the top-level menus push it a step up from a simple text-
+  editor; and make PFE into a basic integrated development environment.
+  These menus/functions are Template, Execute and Macro.  All of these
+  functions are quite useful, although they each take a little bit of
+  work to optimize for your own purposes.
+
+  TEMPLATES.  A template is boilerplate for your text file.  You might
+  use it for an HTML skeleton document, or for a function or class
+  outline.  Besides just inserting a block of text, you can use the
+  special mark '<???>' to indicate fields you want to fill in within the
+  template.  Pressing F4 (the default key-binding) will jump between
+  mark fields and let you fill in values.  It is a handy way to insert
+  repetitive batches of code or markup.  You can create as many template
+  files--each containing multiple templates--as you want (such as for
+  different programming languages), but PFE doesn't come with any
+  templates "out of the box."
+
+  EXECUTE.  You can launch whatever programs you wish from PFE menus,
+  either dynamically or by specifying new menu items.  By itself, this
+  doesn't amount to much; where execution can be very helpful is when
+  you setup PFE to launch a program using the current data file as input
+  and/or to capture the program output in a PFE window.  For example,
+  you can have a menu compile the current source code file, and display
+  any compiler messages in a new window.  Or you can launch a web-
+  browser to display the currently edited HTML file.
+
+  MACROS.  Much as with templates, PFE can have multiple libraries each
+  with multiple macros.  But as with templates, PFE doesn't come with
+  any predefined macro libraries.  Macros let you play back series of
+  PFE editing actions, including repeating them multiple times and a
+  limited control of branching within macros (but only on errors or on
+  pressing the escape key).  PFE actions are recorded and edited using
+  symbolic names such as 'EditDeleteLine'.  You may capture these
+  actions using a basic keyboard recording mode, then modify the actions
+  later, as needed.  With some planning, some pretty complex repeated
+  actions can be reduced to single-key macros.
+
+
+GENERAL EDITING FACILITIES
+------------------------------------------------------------------------
+
+  PFE has most of the bells and whistles you would expect in a
+  programmer's editor.  You can display line numbers if you want.  You
+  can control tab and indentation settings.  You can use wordwrapping
+  for textual content.  You can use different window and text colors for
+  different file types if you wish.  You can change the key-mappings of
+  the editor.  You have some miscellaneous options about toolbars and
+  appearance.  Pretty much, it does what you want it to do.
+
+  There are a few little things that PFE does that are unusual in a text
+  editor.  PFE can act as a print filter for file types associated with
+  it.  This lets you do drag-and-drop printing of text files.  PFE also
+  gives you a bit of printing control over, for example, line numbers
+  and headers.  Most programmer's editors let you do things with blocks
+  such as change case, indent, unindent, reformat.  PFE does all of
+  these.  One small but helpful trick I have not seen in any other
+  editor is to do both brace-matching and brace-match-selecting.  That
+  is, you can select everything within matching parenthesis with one
+  keystroke.  Moderately handy for changing function arguments or HTML
+  tags/attributes.
+
+
+LIMITATIONS OF PFE
+------------------------------------------------------------------------
+
+  There are a number of things that PFE *does not* do that would
+  discourage me from using it full-time. Unfortunately, although the
+  binary is free of cost, the source code for PFE is still proprietary,
+  and development of PFE has stopped.  So whatever limitations PFE has
+  now, it will probably have forever.
+
+  Probably the sharpest limitation is the absence of syntax
+  highlighting.  Even though I never had this during most of my years
+  of programming, I have for the last few and feel like I am missing
+  something important without syntax highlighting.  I just parse code
+  faster with some coloration or font changes for contrast.
+
+  Two features that I do not necessarily use that often in other
+  editors are nonetheless extremely helpful when I *do* use them:
+  Column selection and bookmarks.  Neither of these exists in PFE.
+
+  The above limitations are the only ones that I would sorely miss
+  using PFE full-time.  But there are a few more exotic features that a
+  more full-featured editor might have:  regular expression searching;
+  spell checking; word count; folding; file-tab interface; tab/detab
+  blocks; calculator; box/line drawing; multiple clipboards; full macro
+  scripting language; multi-platform versions.  I can certainly live
+  without these features, and external programs can do the job of some
+  of them.  But these are worthwhile things a fleshed-out editor might
+  include (I do not know of one that includes every one of these,
+  however).
+
+
+OVERALL
+------------------------------------------------------------------------
+
+  PFE is a nice little programmers editor that is very simple to get
+  started with and easy to use.  If you need an editor for Windows
+  platforms, PFE is quite usable.  However, PFE  is not quite as
+  powerful as some higher-end programmer's editors, even some other
+  free-of-cost ones.  If you need a lot of room to grow with your
+  editor--or if you need something strongly cross-platform--PFE is a
+  bit too much on the "handy and little" side.  Still, it is usually a
+  lot less work to get PFE set up than it is those higher-end editors,
+  and much of the time PFE is more than enough.
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  There is hardly anything David Mertz feels more strongly about
+  than text-editors.  It stands to reason after a tally of the
+  hours and minutes of his days.  You can find out copious
+  biographical details by rooting around at
+  http://gnosis.cx/publish/.

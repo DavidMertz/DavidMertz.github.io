@@ -1,0 +1,232 @@
+XML ZONE TIP: The 'txt2dw' utility
+Writing developerWorks content the easy way
+
+David Mertz, Ph.D.
+Luddist, Gnosis Software, Inc.
+October, 2001
+
+    IBM developerWorks is moving towards a custom XML dialect as
+    the source format for the articles that appear here.  But
+    writing XML is always going to be difficult for people (but
+    easy for machines).  One approach to the "human interface"
+    problem is the public domain 'txt2dw' utility that author
+    David Mertz uses for his own articles.
+
+
+SOURCE FORMATS AND HUMAN INTERFACES
+------------------------------------------------------------------------
+
+  There are lots of good reasons why the organization you work at
+  is likely to adapt XML dialects for many of its documentation
+  needs.  For all these same reasons, IBM developerWorks--
+  starting with the XML Zone--has developed its own XML DTD for
+  articles.  Once you have an XML source, either a shared
+  standard like DocBook or TEI or an in-house disalect, it is
+  easy to transform the source into arbitrary target formats
+  (HTML, PDF, other XML, etc).  Moreover, validation against a
+  DTD provides a nice check that a document contains all the
+  parts it needs to have, with all the right relationships
+  between them.  In addition, XML is a much more platform- and
+  tool-neutral format than those used by proprietary (or even
+  open source) word processors and publishing applications.
+
+  The problem with XML, however, is that it is a really crummy
+  human interface.  Even though XML is just ASCII bytes, typing
+  them in a text editor is a lot of work.  Besides requiring a
+  littering of angle brackets and punctuation to interupt the
+  flow of a touch typist, it is difficult consistently to make
+  sure that every tag gets closed in the right order; and it is
+  especially difficult to know a moderately complex DTD well
+  enough to remember exactly what elements and attributes are
+  allowed at each point in a document.  Worst of all, the cruft
+  of XML tags makes visually scanning a document significantly
+  harder.
+
+
+MAKING IT EASY FOR WRITERS
+------------------------------------------------------------------------
+
+  At least two approaches ease the pain of editing XML documents
+  with a text editor.  One approach is to use a higher level tool
+  for the editing.  An XML-aware editor can automate conformance
+  with a DTD, and some of them can even hide or highlight the XML
+  markup to make visual scanning easier.  Many IBM writers,
+  myself included, are particularly fond of XMetal, but many
+  excellent programs exist.  All these programs, however, run on
+  specific platforms; they each have their own set of quirks
+  (different from those of a favorite text editor); and many of
+  them will set you back a large number of dollars.
+
+  The second approach is the one 'txt2dw' takes.  Let writers
+  write using the tools that don't get in their way.  Then let
+  computers worry about how the documents need to be formatted.
+  Word processors try to take this approach; but the state of
+  tools for getting from a word processor to XML is still crude.
+  To my own mind, a better idea is to use the "smart ASCII"
+  markup format that has informally evolved in email, on the
+  Usenet, and in README's and project documentation for open
+  source software projects.  One can formalize it just a little
+  bit without getting in the way of writers (but simultaneously
+  aiding the converter).
+
+
+USING 'txt2dw'
+------------------------------------------------------------------------
+
+  The use of 'txt2dw' could hardly be any simpler.  Just read
+  some "smart ASCII" input from STDIN, and write some valid XML
+  to STDOUT.  For example:
+
+      % txt2dw.py < MyArticle.txt > MyArticle.xml
+
+  At this point, one has an XML formatted document.  Most likely,
+  the eventual target will be something different from XML.  In
+  my own case--and for many writers--the eventual target format
+  is not really all that interesting (that is for editors and
+  publishers to worry about, and change as needed).  All that
+  really matters if the utility does its job is that the XML
+  version is valid according to 'article.dtd'.
+
+  However, -someone- will want to transform the XML to something
+  else.  XSLT is a common transformation technique, and one for
+  which IBM developerWorks uses the custom stylesheet
+  'article-html.xsl'.  Assuming you want the HTML version
+  developerWorks will use, just run something like:
+
+      % xslt article-html.xsl < MyArticle.xml > MyArticle.html
+
+  The exact details will vary with the XSLT engine one uses, but
+  the idea will be the same.
+
+
+"SMART ASCII" FORMAT
+------------------------------------------------------------------------
+
+  For the most part, "smart ASCII" is what you have been writing
+  for years if you use email and the Usenet.  Most of the details
+  are documented at the top of the script.  Asterisks surround
+  *bold* or *heavily emphasized* phrases; dashes surround
+  -italicized- or -lightly emphasized- phrases; underscores
+  introduce _Book or Series Titles_.  I have adopted the use of
+  single quotes to set apart 'appnames' and 'filenames' (usually
+  rendered in a fixed font), and square brackets to indicate
+  [libraries] and [modules].  Take a look at the ASCII version of
+  this Tip in the Resources for how these features started out.
+  These conventions are not quite universal, but they will also
+  not be unfamiliar to readers.  They are all very quick to type.
+
+  Anything that looks like a URL is turned into a link
+  automatically.  A fairly simple special format with curly
+  braces and the ALT text before a colon is used to insert
+  images, such as charts and graphs.  See the author blurb for an
+  example with the author's photograph.
+
+  At a paragraph level, a few types of paragraphs are allowed,
+  and are indicated by indentation level.  Headers are not
+  indented; in addition, any header line that consists just of a
+  row of dashes is stripped out (this helps prettify the ASCII
+  originals).  Regular text paragraphs are indented two spaces.
+  Block quotes are indented four spaces.  Code samples are
+  indented six spaces (or more).  If a code sample begins with a
+  line the consists of a pound sign, some dashes, a title, some
+  more dashes, then another pound sign, that line is treated as a
+  label for the code sample (in many programming languages, it
+  would be a comment line anyway).  If not, no harm is done.
+
+  There are a few features of 'txt2dw' that are more rigid than I
+  would like.  These were concessions to the fairly rigid format
+  of 'article.dtd'.  On the plus side, the rigid constraints were
+  exactly the conventions I had adopted anyway, so obeying them
+  was not difficult.  Moreover, none of them look odd or unnatural
+  (but one still has to remember to use these features, or create
+  a template that does so).  A few moderately intelligent changes
+  are made when ALLCAPS sections are encountered.  A usable
+  template is below (as a code sample):
+
+      #------ Template for 'txt2dw' "smart ASCII" source ------#
+      SERIES: Main Title
+      Subtitle
+
+      Author Name
+      Title, Affiliation
+      Date
+
+          Abstract of the article (block quote indented)...
+
+      FIRST SECTION
+      ----------------------------------------------------------
+
+        Regular paragraph...
+
+            #----- Title of code sample -----#
+            Sample code line 1
+            [...]
+
+        Regular paragraph...
+
+      MORE SECTIONS...
+      ----------------------------------------------------------
+
+        [...]
+
+        {Picture of Author: http://mysite/mypic.png}
+        Author blurb...
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  The 'txt2dw.py' utility can be downloaded from:
+
+    http://gnosis.cx/download/txt2dw.py
+
+  Users who want to include Python source code examples, might
+  want to pick up the supporting module [dw_colorize] (other
+  languages might be supported later):
+
+        http://gnosis.cx/download/dw_colorize.py
+
+  This article, in its original "smart ASCII" form, can be found
+  at:
+
+    http://gnosis.cx/publish/programming/txt2dw_tip.txt
+
+  Terrence Parr has written a wonderful installment of his
+  _Soapbox_ column, called "Humans should not have to grok XML."
+  I couldn't agree more:
+
+    http://www-106.ibm.com/developerworks/xml/library/x-sbxml.html
+
+  I looked at a number of custom XML editors in my column "XML
+  Matters #6 A roundup of editors."  Find that at:
+
+    http://www-106.ibm.com/developerworks/library/x-matters6.html
+
+  "Smart ASCII" can also be converted directly to HTML using a
+  related utility 'Txt2Html'.  That was discussed in "Charming
+  Python:  Converting text to HTML using Txt2Html":
+
+    http://www-106.ibm.com/developerworks/library/python3.html
+
+  The DocBook dialect of XML, and many of the reasons one would
+  want to use XML for prose-oriented documents was discussed in
+  several of my _XML Matters_ installments:
+
+    Getting started with the DocBook XML dialect:
+    http://www-106.ibm.com/developerworks/library/xml-matters3.html
+
+    Getting comfortable with the DocBook XML dialect:
+    http://www-106.ibm.com/developerworks/library/x-matters4.html
+
+    Transforming DocBook documents using XSLT:
+    http://www-106.ibm.com/developerworks/library/x-matters5.html
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz greatly welcomes feedback on ways to tweak and
+  improve 'txt2dw', or any of his public domain utilities.  David
+  may be reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/.

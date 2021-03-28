@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!ENTITY nbsp "&#160;">
+
+<!ELEMENT a ANY>
+<!ATTLIST a name CDATA #IMPLIED
+          href CDATA #IMPLIED
+          target CDATA #IMPLIED
+          onClick CDATA #IMPLIED
+          trackclick (yes | no) #IMPLIED
+          origin (devdomain | j | co | x) #IMPLIED >
+
+<!ELEMENT abstract ANY>
+<!ATTLIST abstract miniabstract CDATA #IMPLIED >
+
+<!ELEMENT article ANY>
+<!ATTLIST article toc (auto | no) #IMPLIED
+                  ratings (auto | no) #IMPLIED
+                  localsite (worldwide | china | german | india | japan |
+                             korea | taiwan | uk) #IMPLIED >
+
+<!ELEMENT attribution ANY>
+
+<!ELEMENT author ANY>
+<!ATTLIST author name CDATA #REQUIRED
+          email CDATA #REQUIRED
+          jobtitle CDATA #REQUIRED
+          company CDATA #REQUIRED >
+
+<!ELEMENT b ANY>
+<!ATTLIST b class (red | blue | green) #IMPLIED >
+
+<!ELEMENT blockquote ANY>
+
+<!ELEMENT br EMPTY>
+
+<!--to be used for editors commonly used strings:  might be able to
+    replace much of this with common urls in anchor tag-->
+
+<!ELEMENT commonstrings EMPTY>
+<!ATTLIST commonstrings commonurl (devdomain | j | co | x) #IMPLIED >
+
+<!ELEMENT code ANY>
+<!ATTLIST code type (inline | section) #IMPLIED
+               width CDATA #IMPLIED >
+
+<!ELEMENT date EMPTY>
+<!ATTLIST date month (January | February | March | April | May | June |
+                      July | August | September | October | November |
+                      December) #REQUIRED
+               day (1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 |
+                    13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 |
+                    23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31) #IMPLIED
+               year (1996 | 1997 | 1998 | 1999 | 2000 | 2001) #REQUIRED >
+
+<!ELEMENT dd ANY>
+
+<!ELEMENT dl ANY>
+<!ATTLIST dl
+    compact CDATA #IMPLIED
+>
+<!ELEMENT dt ANY>
+
+<!ELEMENT forumurl ANY>
+<!ATTLIST forumurl
+    url CDATA #IMPLIED>
+
+<!ELEMENT figure ANY>
+
+<!ELEMENT heading ANY>
+<!ATTLIST heading
+    refname CDATA #REQUIRED
+    type (major | minor | figure | code | sidebar | resourcelist) #REQUIRED
+    toc (yes | no) #REQUIRED
+    name CDATA #IMPLIED
+    alttoc CDATA #IMPLIED
+>
+<!ELEMENT htmlinsert ANY>
+
+<!ELEMENT i ANY>
+
+<!ELEMENT img EMPTY>
+<!ATTLIST img
+    align CDATA #IMPLIED
+    alt CDATA #REQUIRED
+    border CDATA #IMPLIED
+    height CDATA #IMPLIED
+    hspace CDATA #IMPLIED
+    name CDATA #IMPLIED
+    src CDATA #REQUIRED
+    valign CDATA #IMPLIED
+    vspace CDATA #IMPLIED
+    width CDATA #IMPLIED >
+
+<!ELEMENT li ANY>
+<!ATTLIST li value CDATA #IMPLIED>
+
+<!ELEMENT meta EMPTY>
+<!ATTLIST meta name CDATA #REQUIRED
+          content CDATA #REQUIRED >
+
+<!ELEMENT ol ANY>
+<!ATTLIST ol type CDATA #IMPLIED
+          start CDATA #IMPLIED >
+
+<!ELEMENT p ANY>
+<!ATTLIST p align CDATA #IMPLIED >
+
+<!ELEMENT papertitle ANY>
+
+<!ELEMENT pdf ANY>
+<!ATTLIST pdf url CDATA #IMPLIED
+          size CDATA #IMPLIED >
+
+<!ELEMENT pre ANY>
+
+<!ELEMENT relatedlist ANY>
+
+<!ELEMENT resourcelist ANY>
+
+<!ELEMENT seriestitle ANY>
+
+<!ELEMENT sidebar ANY>
+<!ATTLIST sidebar width CDATA #IMPLIED
+                  align (right | left | center) #IMPLIED >
+
+<!ELEMENT sub ANY>
+
+<!ELEMENT subtitle ANY>
+
+<!ELEMENT sup ANY>
+
+<!ELEMENT ul ANY>
+<!ATTLIST ul type CDATA #IMPLIED >
+
+<!ELEMENT zone EMPTY>
+<!ATTLIST zone name (java | xml | components | linux | opensource |
+                     security | webservices | web | wireless |
+                     usability | ibm | unicode) #REQUIRED >
+
+<!ELEMENT zip ANY>
+<!ATTLIST zip url CDATA #IMPLIED >

@@ -1,0 +1,612 @@
+TUTORIAL FOR LPI EXAM 202: part 2
+Topic 206: Mail and News
+
+David Mertz, Ph.D.
+Professional Neophyte
+October, 2005
+
+    Welcome to "Mail and News", the second of seven tutorials covering
+    intermediate network administration on Linux. In this tutorial, we
+    discuss how to use Linux as a mail server and a news server. Email
+    is probably the main use of the Internet, overall; and Linux perhaps
+    the best platform for running email services on. This tutorial
+    addresses mail transport, local mail filtering , and mailing list
+    maintenance software. Server software for the NNTP protocol is
+    discussed briefly.
+
+BEFORE YOU START
+------------------------------------------------------------------------
+
+About this series
+
+  The Linux Professional Institute (LPI) certifies Linux system
+  administrators at junior and intermediate levels. There are two exams
+  at each certification level. This series of seven tutorials helps you
+  prepare for the second of the two LPI intermediate level system
+  administrator exams--LPI exam 202. A companion series of tutorials is
+  available for the other intermediate level exam--LPI exam 201. Both
+  exam 201 and exam 202 are required for intermediate level
+  certification. Intermediate level certification is also known as
+  certification level 2.
+
+  Each exam covers several or topics and each topic has a weight. The
+  weight indicate the relative importance of each topic. Very roughly,
+  expect more questions on the exam for topics with higher weight. The
+  topics and their weights for LPI exam 202 are:
+
+  * Topic 205: Network Configuration (8)
+  * Topic 206: Mail and News (9)
+  * Topic 207: Domain Name System (DNS) (8)
+  * Topic 208: Web Services (6)
+  * Topic 210: Network Client Management (6)
+  * Topic 212: System Security (10)
+  * Topic 214: Network Troubleshooting (1)
+
+About this tutorial
+
+  Welcome to "Mail and News", the second of seven tutorials covering
+  intermediate network administration on Linux. In this tutorial, we
+  discuss how to use Linux as a mail server and a news server. Email is
+  probably the main use of the Internet, overall; and Linux perhaps the
+  best platform for running email services on. This tutorial addresses
+  mail transport, local mail filtering , and mailing list maintenance
+  software. Server software for the NNTP protocol is discussed briefly.
+
+Prerequisites
+
+  To get the most from this tutorial, you should already have a basic
+  knowledge of Linux and a working Linux system on which you can
+  practice the commands covered in this tutorial.
+
+About Mail and News
+
+  The breadth of use of Linux for mail and news servers has led to the
+  development of improved tools over time. When the LPI certification
+  exams were developed, the most popular tools were 'sendmail' for mail
+  transport, 'procmail' for local mail handling, 'majordomo' for mailing
+  lists, and 'innd' (InterNetNews daemon) for NNTP. The last of these is
+  still probably the default choice; however, despite its technical
+  strengths, the NNTP protocol has been somewhat eclipsed by either
+  email mailing list or web-based discussion forums.
+
+  Of other tools, 'sendmail' and 'procmail' are still widely used,
+  although not as ubiquitous as they might have been in 2001. However,
+  the most popular upgrade/replacement for 'sendmail' is 'postfix' which
+  contains facilities for backwards compatibility with 'sendmail'. The
+  field for local mail handling is well populated, but 'procmail' is
+  largely used. On the other hand, 'majordomo' is a minor anachronism
+  nowadays. Just as 'majordomo' largely replaced the ealier 'listserv'
+  software, more recently 'mailman' has mostly eclipsed 'majordomo'.
+  However, to match current LPI topic areas, this tutorial will still
+  discuss 'majordomo'.
+
+Other resources
+
+  As with most Linux tools, it is always useful to examine the manpages
+  for any utilities discussed. Versions and switches might change
+  between utility or kernel version, or with different Linux
+  distributions. For more in depth information, the Linux Documentation
+  Project has a variety of useful documents, especially its HOWTOs. See
+  http://www.tldp.org/.  A variety of books on Linux networking have
+  been published; I have found O'Reilly's _TCP/IP Network
+  Administration_, by Craig Hunt to be quite helpful (find whatever
+  edition is most current when you read this).
+
+CONFIGURING MAILING LISTS
+------------------------------------------------------------------------
+
+What does Majordomo do?
+
+  A mailing list manager program is basically a local extension for a
+  mail transport program (MTA) such as 'sendmail'.  Basically, the MTA
+  running on a system passes off a set of address to the control of the
+  mailing list manager, and the mailing list manager modifies, processes
+  and perhaps remails the messages it receives.  Some messages received
+  by a mailing list manager are messages meant for distribution to the
+  mailing list itself (perhaps needing to be verified for permission to
+  distribute to the list(s); other messages are control messages that
+  change the status of the mailing list, such as the subscription
+  options of a particular subscriber.  A mailing list manager does not
+  perform mail deliver itself, but passes that function to its
+  supporting MTA.
+
+  As the introduction to this tutorial stated, Majordomo is not
+  currently the state-of-the-art choice for mailing lists.  Rather, the
+  best choice for a new installation of a mailing list is probably
+  'Mailman' (http://www.list.org/).  Majordomo, however, is still
+  perfectly functional, and is installed on many older systems that
+  continue to operate without problem (sometimes supporting lists that
+  have been operational for many years).
+
+  There is a wrinkle with Majordomo versions, however. Some years ago, a
+  rewrite of the Majordomo 1.x series was started, called Majordomo2.
+  Unfortunately, that rewrite fizzled out without ever reaching release
+  status. While Majordomo2 (in a beta version) may be used in a very
+  small number of systems, Majordomo 1.9.5 is the most recent stable
+  version, and the version that will be discussed in this tutorial.
+
+Installing Majordomo
+
+  You can obtain an archive of the Majordomo software at
+  <http://www.greatcircle.com/majordomo/>. The most recent, and probably
+  final, stable version is 1.9.5. After unpacking a file named like
+  'majordomo-1.94.5.tgz', be sure to read the file 'INSTALL' carefully.
+  You will need to follow all the steps it describes to getting a
+  working Majordomo system. Building the system uses the usual 'make;
+  make install' steps of most source installs, but also needs 'make
+  install-wrapper'. The install can and should verify itself with a
+  command like 'cd /usr/local/majordomo-1.94.5; ./wrapper config-test'
+  (the 'make install' will provide you with details as a message).
+
+  Before building, you will need to modify the 'Makefile', and create
+  and/or modify 'majordomo.cf'.  The latter file can be copied from
+  'sample.cf' in the source distribution as a starting point.  In the
+  'Makefile', a number of environment variables are set, but the most
+  critical and subtle of these is probably 'W_GROUP'.  This is the
+  -numeric- gid of the group Majordomo will run under, almost always the
+  group 'daemon'.  The gid for 'daemon' is 1 on most systems, but be
+  sure to check using:
+
+      $ id daemon
+      uid=1(daemon) gid=1(daemon) groups=1(daemon)
+
+  Other variables in 'Makefile' include 'PERL' for the path to the
+  interpreter, and 'W_HOME' for the location where Majordomo will be
+  installed.
+
+  Your new 'majordomo.cf' file also needs to be edited before the 'make
+  isntall'.  Mostly the Perl variables that need to be modified appear
+  near the top of the file.  Definitely adjust '$whereami' and
+  '$homedir', and examine the others to make sure they are sensible.
+
+Telling Sendmail to use Majordomo
+
+  The final step in installation is convincing Sendmail to talk with
+  Majordomo. Within the '/etc/sendmail.cf' file, this will involve a
+  line like:
+
+      OA/path/to/majordomo/majordomo.aliases
+
+  If you use the M4 processor to generate Sendmail configuration files,
+  you can use a line like:
+
+      define(`ALIAS_FILE',`/etc/aliases,/path/to/majordomo/majordomo.aliases')
+
+  The sample 'majordomo.aliases' contains some sample values:
+
+      majordomo:  "|/usr/test/majordomo-1.94.5/wrapper majordomo"
+      majordomo-owner: you
+      owner-majordomo: you
+      test:           "|/usr/test/majordomo-1.94.5/wrapper resend -l test test-list"
+      test-list:      :include:/usr/test/majordomo-1.94.5/lists/test
+      owner-test:     you
+      test-owner:     you
+      test-request:   you
+
+  These, of course, need to be customized for your particular setup.
+  In particular "you" means the name of the list administrator (who is
+  not necessarily the overall system administrator).
+
+Creating a new Majordomo list
+
+  The sample setup given above created a list called 'test', with
+  addresses for 'test-owner', 'test-request', etc. for administering the
+  list.  Presumably, in real use you will want lists with other names.
+  To do that, do the following:
+
+  * Switch to the directory '$listdir', as defined in 'majordomo.cf'.
+
+  * Create a files called 'my-list-name' and 'my-list-name.info' (adjust
+    appropriately); 'chmod' them to 664.  The latter file contains an
+    introduction to the list.
+
+  * Create several aliases in your 'majordomo.aliases' file, following
+    the pattern of the "test" examples.  E.g. 'foo-owner', 'foo',
+    'foo-request' and so on.
+
+  * Send requests to "subscribe", "unsubscribe", "signoff", and so on
+    member of the list.
+
+  * Create an archive directory in the location specified by the
+    '$filedir' and '$filedir_suffix' variables.
+
+  * Create a digest subdirectory under '$digest_work_dir'. Use the same
+    name as the digest list (example: test-digest).
+
+  * Make sure everything is owned by user 'majordomo', group
+    'majordomo', and writable by both owner and group (i.e., mode 664
+    for files and mode 775 for directories).
+
+  * Issue a 'config <listname> <listname>.admin' command to
+    Majordomo.  This will cause it to create a default configuration
+    file for the list, and send it back to you.
+
+
+USING SENDMAIL
+------------------------------------------------------------------------
+
+What does Sendmail do?
+
+  The short answer is that Sendmail is a Mail Transport Agent (MTA); it
+  routes, modifies, and delivers mail message across heterogeneous mail
+  systems. In a history somewhat parallel to that with mailing list
+  software, Sendmail has a "permanent beta" version called Sendmail X
+  that is intended as an upgrade/replacement for the stable Sendmail 8.x
+  series; however, much as Mailman has largely supplanted Majordomo,
+  several MTA have partially eclipsed Sendmail. The chief such new MTA
+  is Postfix (http://www.postfix.org/), but Qmail
+  (http://cr.yp.to/qmail.html) and Exim (http://www.exim.org/) are also
+  relatively widely used.  Nonetheless, Sendmail probably still remains,
+  by a narrow margin, the most widely used MTA on Linux systems.  As of
+  September 16, 2005, the latest stable release of Sendmail was 8.13.5.
+
+  The long answer to what Sendmail is a very long answer indeed. Not
+  just one, but many, books have been written on Sendmail. See
+  http://www.sendmail.org/books.html for a list of available books.  The
+  most comprehensive of these is _Sendmail, Third Edition_ by Bryan
+  Costales with Eric Allman, Third Edition December 2002, ISBN:
+  1-56592-839-3.  At 1232 pages, this book covers quite a lot more than
+  this short tutorial can touch on.
+
+  While Sendmail in principle supports a number of mail transport
+  protocols such as UUCP, by far the most widely used one is Simple Mail
+  Transport Protocol (SMTP), which here includes Extended SMTP (ESMTP)
+  for enhanced MIME encoded message bodies. At heart, mail which is not
+  forward to other SMTP hosts is delivered to the local system, by
+  putting messages in local files. Local Mail User Agents (MUAs) read
+  messages that Sendmail (or another MTA) puts in local files (and often
+  also fetch mail using POP3 or IMAP), but generally call on Sendmail to
+  deliver outgoing messages. Some MUAs, however, themselves directly
+  communicate with SMTP servers (such as Sendmail instances, local or
+  remote) rather than placing messages in in the Sendmail queue for
+  later processing.  Usually the Sendmail queue is in
+  '/var/spool/mqueue/'
+
+Installing Sendmail
+
+  First thing, obtain a copy of the current Sendmail software from
+  <http://www.sendmail.org/>, e.g. 'sendmail.8.13.5.tar.gz'. Unpack it
+  as usual. Unlike many applications that use the 'make;make install'
+  pattern, building Sendmail is peformed with 'sh Build'. After the
+  initial build, 'cd' to the 'cf/cf/' subdirectory; copy a suitable
+  '*.mc' file 'sendmail.mc'; customize 'sendmail.mc'; and run the
+  following to generate a 'sendmail.cf' file:
+
+      $ m4 ../m4/cf.m4 sendmail.mc > sendmail.cf
+
+  You may also use the shortcut 'sh Build sendmail.cf'. This may seem
+  mysterious, but what either of these commands do is generate an actual
+  Sendmail configuration from a more readable format using the M4 macro
+  processor. Actual 'sendmail.cf' files, though editable ASCII, are
+  quite cryptic, and should only be modified by hand minimally.
+
+  Finally, copy the 'sendmail' binary from a location like
+  'obj.Linux.2.6.10-5-386.i686/sendmail/sendmail' to its final location
+  (backup an old one if it exists), typically '/usr/sbin/'; and copy
+  your 'sendmail.cf' file to '/etc/mail/sendmail.cf'. The latter can
+  also be peformed in the 'cf/cf/' subdirectory with 'sh Build
+  install-cf'. You will probably need to 'su' or 'sudo' to obtain file
+  permissions for the relevant directories.
+
+  A number of utilities come with Sendmail: makemap, mailstats, etc.
+  Each corresponding directory has a README, and can be installed with
+  'sh Build install' run from the subdirectory.
+
+The 'sendmail.cf' file
+
+  The main complexity, and the main function, of Sendmail is in its
+  'sendmail.cf' file.  This configuration file contains some settings
+  for the Sendmail environment, but principally it contains patterns for
+  addresses to rewrite and/or deliver by certain mechanisms.
+
+  Two rewrite mechanism that may be configured are the 'genericstable'
+  and 'virtusertable' which let you map local users to and from external
+  addresses.  For either mapping, you first create an aliases file as
+  plain text, e.g.:
+
+      #---------------------- File: outbound --------------------------#
+      david                     david.mertz@gmail.com
+      root                      root@gnosis.cx
+      dqm@gnosis.lan            david.mertz@gmail.com
+
+  Or for incoming mail mapped to local accounts, e.g.:
+
+      #---------------------- File: inbound ---------------------------#
+      david@mail.gnosis.cx      david
+      david@smtp.gnosis.cx      david
+      david@otherdomain.net     david
+      @mail.gnosis.cx           %1@external-host.com
+      owner@list.gnosis.cx      owner%3
+      jax@bar.com	            error:5.7.0:550 Address invalid
+
+  To compile these aliases, use the 'makemap' utility:
+
+      $ makemap dbm /etc/mail/virtusertable < inbound
+      $ makemap hash /etc/mail/genericstable < outbound
+
+  Enabling use of these maps can be configured using M4 macros in
+  'sendmail.cf' (of in whatever configuration file you use).
+
+      DOMAIN(gnosis.cx)dnl
+      FEATURE(`virtusertable', `dbm /etc/mail/virtusertable')dnl
+      FEATURE(`genericstable', `hash /etc/mail/genericstable')dnl
+      GENERICS_DOMAIN_FILE(`/etc/mail/generics-domains')dnl
+
+  A number of things are going on here.  The 'DOMAIN' macro indicates
+  that a file like 'cf/domain/gnosis.cx.m4' is used for additional
+  macros.  The 'FEATURE' macros enable use of the 'virtusertable' and
+  'genericstable'.  The 'GENERICS_DOMAIN_FILE' macro defines the
+  domains that qualify for remapping for names in 'genericstable'.
+
+  Rewriting will follow all the rules indicated.  In test mode
+  ('sendmail -bt') you can examine the rewriting that is performed for
+  specific addresses.  For example, using 'genericstable', mail to the
+  local user 'david' will be delivered to 'david.mertz@gmail.com'
+  externally.  Assuming 'localhost' is defined in
+  '/etc/mail/generics-domains', mail to 'david@localhost' will go to the
+  same place.
+
+  In the other direction, mail coming in for 'david@mail.gnosis.cx' will
+  be rewritten and delivered to local user 'david'.  Multiple domains
+  can be manipulated by Sendmail at the same time, so
+  'david@otherdomain.net' will also be delivered locally.  The full
+  power comes in some of the wildcard symbols.  Any mail send to
+  'mail.gnosis.cx' that is not specifically directed to a local user
+  will be forwarded to the same username at 'external-host.com'.  But
+  that's a simple pattern.  More interestingly, the '%3' can be used to
+  expand multiple extra name information, so
+  'owner-foo@list.gnosis.cx' and 'owner-bar@list.gnosis.cx' will
+  be delivered to local users 'owner-foo' and 'owner-bar', respectively
+  (unless they undergo further rewriting).  Presumably, these local
+  users might be mailing list processing systems or other automated
+  message handlers.  As a special case, you can raise an error for a
+  given address rather than rewrite it further.
+
+  Really what we have looked at just scratches the surface of the
+  rewriting rules you can add to Sendmail, but they give you an initial
+  feel.  Buy one of the large books on the topic to learn more details.
+
+Running Sendmail
+
+  Sendmail can run in a number of modes.  The most common mode is as a
+  daemon that stays in the background and periodically.  For example,
+  running:
+
+      $ /usr/sbin/sendmail -bd -q10m
+
+  Tells Sendmail to run as a daemon, and check its queue every ten
+  minutes.  You can also run Sendmail a single time to process the queue
+  at once, but not daemonize:
+
+      $ /usr/sbin/sendmail -q
+
+   As we mentioned above, Sendmail has a test mode to examine address
+   rewriting rules, e.g. (from the Linux Network Administrators Guide,
+   http://www.faqs.org/docs/linux_network/x15583.html):
+
+      $ /usr/sbin/sendmail -bt
+      ADDRESS TEST MODE (ruleset 3 NOT automatically invoked)
+      Enter <ruleset> <address>
+      > 3,0 isaac@vstout.vbrew.com
+      rewrite: ruleset   3   input: isaac @ vstout . vbrew . com
+      rewrite: ruleset  96   input: isaac < @ vstout . vbrew . com >
+      rewrite: ruleset  96 returns: isaac < @ vstout . vbrew . com . >
+      rewrite: ruleset   3 returns: isaac < @ vstout . vbrew . com . >
+      rewrite: ruleset   0   input: isaac < @ vstout . vbrew . com . >
+      rewrite: ruleset 199   input: isaac < @ vstout . vbrew . com . >
+      rewrite: ruleset 199 returns: isaac < @ vstout . vbrew . com . >
+      rewrite: ruleset  98   input: isaac < @ vstout . vbrew . com . >
+      rewrite: ruleset  98 returns: isaac < @ vstout . vbrew . com . >
+      rewrite: ruleset 198   input: isaac < @ vstout . vbrew . com . >
+      rewrite: ruleset 198 returns: $# local $: isaac
+      rewrite: ruleset   0 returns: $# local $: isaac
+
+MANAGING MAIL TRAFFIC
+------------------------------------------------------------------------
+
+What does Procmail do?
+
+  Procmail is a mail processor.  That term probably means nothing at all
+  to the unitiated, so we need some explanation.  Basically, once
+  Sendmail or another MTA has delivered mail to a local mailbox, you
+  might use a MUA to process the mail in your inbox.  You save some
+  messages to various folders; you delete others; you forward other
+  messages to various interested parties; you repl to others; and so on.
+  Doing these tasks in an MUA is a manual and interactive process, and
+  is potentially time consuming.
+
+  Procmail is a program that can automatically do these tasks for you
+  whenever the required processing can be stated in a rule-driven way.
+  Obviously, when you write back to your mother about her personal
+  email, some personal attention is required; but for a large class of
+  other messages, it is useful to specify in advance exactly what you
+  would like to happen when a given message is received. The rules that
+  can drive automated message handling might involve specific
+  pattern-based header field, certain contents in a message body, or
+  even calls out to more specific and specialized external programs such
+  as statistical spam filters.
+
+Enabling Procmail
+
+  Procmail probably came installed with your Linux distribution.  If not
+  you can obtain the source archive at <http://www.procmail.org/>.  As
+  of this writing, the latest version is 3.22.  You can also probably
+  install Procmail as a binary using the install system of your Linux
+  distribution (e.g. on Debian: 'apt-get install procmail').  Building
+  from source is a straightforward 'make install'.  All Procmail needs
+  to operate is the 'procmail' binary and a '~/.procmailrc'
+  configuration file (or possibly a global '/etc/procmailrc').
+
+  Beyond installing Procmail in the first place, you need to get your
+  local mail system to utilize Procmail.  An older mechanism to process
+  mail through Procmail is to use a '.forward' file; this will still
+  often work on a per-user basis.  Usually a user will create a file
+  '~/.forward' that contains something like:
+
+      |/usr/local/bin/procmail
+
+  This will pipe each incoming message to Procmail. However, a better
+  and more common way to utilize Procmail is to tell your MTA to talk
+  directly to Procmail in the first place. In Sendmail, this involved
+  enabling the 'local_procmail' feature, e.g. put the following in your
+  'sendmail.mc' file:
+
+      FEATURE(`local_procmail', `/usr/bin/procmail', `procmail -Y -a $h -d $u')
+
+  Once Procmail is enabled at all, it needs a file '~/.procmailrc' that
+  contains the set of rules it processes in handling a given message.
+  Procmail is not a daemon, but rather a text processing tool that
+  accepts exactly one email message at a time via STDIN.
+
+Rules in ~/.procmailrc
+
+  At heart, Procmail is just a set of regular expression recipes. You
+  may also define environment variables in the same fashion as in a
+  shell script. Recipes are executed in order, but flags may be used to
+  execute a particular condition only if the prior condition is
+  satisfied ('A'), or is not satisfied ('E'). Some Procmail recipes are
+  delivery recipes, and others are non-delivery recipes; the former
+  terminates processing of a given message, unless the 'c' flag is given
+  to explicitly continue processing. The most common action of a recipe
+  is probably to store a message in a named mailbox, but you may also
+  pipe a message to another program or forward the message to a list of
+  addresses.
+
+  A recipe usually starts with a lock (optionally with a specific lock
+  file, otherwise it is done automatically) and some flags, followed by
+  some rules, and then by exactly one action. I.e.:
+
+       :0 [flags] [ : [locallockfile] ]
+       <zero or more conditions (one per line)>
+       <exactly one action line>
+
+  Of particular note are the implied flag 'H' to match the header, and
+  'B' to match the body. Patterns normally are case-insensitive, but the
+  'D' flag can force case-sensitive matching.
+
+  If a condition begins with '*', everything after that character is an
+  'egrep' expression.  Otherwise, if a line starts with '<' or '>' it
+  checks the size of a message as smaller or larger than a given number
+  of bytes.  The '$' prefix allows shell substitutions in
+
+  An action that is simply a file name saves a message to that mailbox.
+  Use the special pseudo-file '/dev/null' to delete a message. A pipe
+  character ('|') passes the message to another program, such as the
+  digest-splitting utility 'formail' that is distributed with Procmail.
+  The exclamation prefix ('!') forwards a message as an action (but
+  negates a condition in a rule). Some examples:
+
+      #------------------ Sample ~/.procmailrc file -------------------#
+      :0:
+      * ^Subject:.*Digest                 # split digests and save parts
+      * ^From:.*foo-digest
+      |formail +1 -ds cat >>mailing_lists_mailbox
+
+      :0:
+      * !(To|Cc).*mertz@gnosis.cx         # my main account here
+      * !(To|Cc).*david.mertz@gmail.com   # I get mail from here
+      * !From.*gnosis\.cx                 # I trust gnosis not to spam
+      * !From.*list.*@			          # don't trash mailing lists
+      * !From.*good-buddy		          # sometimes Bcc's me mail
+      spam
+
+      :0:
+      * ^Subject.*[MY-LIST]               # redistribute MY-LIST messages
+      ! member@example.com, member2@example.net, member3@example.edu
+
+      :0:
+      * ^Cc.*joe@somewhere.org            # save to both inbox and JOE mbox
+      {
+            :0 c
+            $DEFAULT
+
+            :0
+            JOE
+      }
+
+SERVING NNTP NEWS
+------------------------------------------------------------------------
+
+What does InterNetNews do?
+
+  NNTP is a nice protocol for "pull" distribution of messages to any
+  users who are interested in a given topic. The Usenet is a large
+  collection of "newsgroups", on thousands of different topics, which
+  distribute messages via NNTP. Being a pull protocol, and NNTP server
+  gathers the current message available from a decentralized network of
+  servers, selecting only those newsgroups that the site administrator
+  choooses to include. When a new message is posted to a given
+  newsgroup, it propogates non-hierarchically from the server the user
+  directly connects to all the other servers on the internet interested
+  in subscribing to that particular newsgroup.
+
+  From an end user perspective, a mailing list can appear very similar
+  to a newsgroup.  In either case, the user composes and posts messages,
+  and reads messages written by other people.  In the ancient days of
+  the Usenet and the Internet, mailing lists were not as capable of
+  presenting discussion topics in a "threaded" fashion as newsgroups do
+  automatically.  But for a number of years, mail clients have done a
+  good job of inferring the discussion threads within mailing lists.
+  The main difference between newsgroups and mailing lists is in their
+  underlying network protocol.  A mailing list still relies on one
+  centralized mail server that accepts all the messages destined for a
+  particular list, and distributes that message via email to all users
+  who have indicated and interest (and have been approved, either by
+  automatic or human moderated subscription mechanisms).  In contrast,
+  NNTP connects every node to every other one without relying on a
+  central server; each NNTP server simply talks to the other servers
+  "nearby", and rather rapidly, this reaches the whole world.
+
+  InterNetNews (INN) is an NNTP server that was first written in 1992,
+  and has been actively maintained since then. As of this writing, INN
+  is at version 2.4.1. The home page for INN includes releases and
+  documentation and is at <http://www.isc.org/index.pl?/sw/inn/>.
+
+Setting up INN
+
+  After obtaining and unpacking the current source release, builing INN
+  is a straightforward './configure; make; make install' sequence.  To
+  build INN, you will need to have Perl and yacc (or bison) installed.
+  This will create a number of files, mostly in the '/usr/local/news/'
+  directory (which you probably do not have if INN has not been
+  installed previously).
+
+  Before running the 'innd' daemon (as user 'news'), you will want to
+  modify a number of configuration files. The full details will not fit
+  in this tutorial section, but a longer tutorial on the full set of
+  files needing attention (albeit being older, it is for SCO Unix, not
+  for Linux; but most details remain the same) can be found at
+  <http://www.kozubik.com/published/inn_tutorial.txt>. Many of the
+  permissions and quota issues will be handled by the make system, but
+  you might want to double check these configurations.
+
+  A file to pay particular attention to is the quota setup in
+  '/usr/local/news/etc/storage.conf'.  This controls which newsgroups
+  are subscribed to, and how much history from each newsgroup to
+  maintain.  Once the quota is reached, older messages are purged from a
+  given newsgroup (on the local server, not from Usenet as a whole).
+  For example, it might contain:
+
+      #----------------- Sample storage.conf configuration ------------#
+      method cnfs {
+            newsgroups: alt.binaries.*
+            class: 1
+            size: 0,1000000
+            options: BINARIES
+      }
+
+      method cnfs {
+            newsgroups: *
+            class: 2
+            size: 0,100000
+            options: NOTBINRY
+      }
+
+  The "class" value specifies the order in which different rules are
+  evaluated.
+
+  Once all the various configuration files are tweaked, just running
+  'innd' as a daemon (probably launched for an initialization script)
+  monitors the upstream servers configured by '/usr/local/news/etc/innfeed.conf',
+  '/usr/local/news/etc/incoming.conf' and '/usr/local/news/etc/newsfeeds'.
+

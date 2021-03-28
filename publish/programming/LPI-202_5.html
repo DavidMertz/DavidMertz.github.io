@@ -1,0 +1,871 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>TUTORIAL FOR LPI EXAM 202: part 5 -- Topic 210: Network Client Management -- </title>
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Tutorial For Lpi Exam 202: Part 5</h1>
+<h2>Topic 210: Network Client Management</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Professional Neophyte<br>
+ January, 2006<br>
+ <br>
+</p>
+<blockquote>
+    Welcome to "Network Client Management", the fifth of seven tutorials
+    covering intermediate network administration on Linux. In this
+    tutorial, we examine several protocols centralized configuration of
+    network settings on clients within a network. DHCP is widely used to
+    establish basic handshaking to clients machines, such as assigning
+    IP addresses. At a higher level, NIS and more often LDAP are used
+    arbitrary shared information among machines on a network. This
+    tutorial also discusses PAM which is a flexible, networked, user
+    authentication system.
+</blockquote>
+<h3>Before You Start</h3>
+ <h3>About this series
+</h3>
+ <p>
+  The Linux Professional Institute (LPI) certifies Linux system
+  administrators at junior and intermediate levels. There are two exams
+  at each certification level. This series of seven tutorials helps you
+  prepare for the second of the two LPI intermediate level system
+  administrator exams--LPI exam 202. A companion series of tutorials is
+  available for the other intermediate level exam--LPI exam 201. Both
+  exam 201 and exam 202 are required for intermediate level
+  certification. Intermediate level certification is also known as
+  certification level 2.
+</p>
+<p>
+  Each exam covers several or topics and each topic has a weight. The
+  weight indicate the relative importance of each topic. Very roughly,
+  expect more questions on the exam for topics with higher weight. The
+  topics and their weights for LPI exam 202 are:
+</p>
+<p>
+  <strong> Topic 205: Network Configuration (8)
+  </strong> Topic 206: Mail and News (9)
+  <strong> Topic 207: Domain Name System (DNS) (8)
+  </strong> Topic 208: Web Services (6)
+  <strong> Topic 210: Network Client Management (6)
+  </strong> Topic 212: System Security (10)
+  * Topic 214: Network Troubleshooting (1)
+</p>
+<h3>About this tutorial
+</h3>
+ <p>
+  Welcome to "Network Client Management", the fifth of seven tutorials
+  covering intermediate network administration on Linux. In this
+  tutorial, we examine several protocols centralized configuration of
+  network settings on clients within a network. DHCP is widely used to
+  establish basic handshaking to clients machines, such as assigning IP
+  addresses. At a higher level, NIS and more often LDAP are used
+  arbitrary shared information among machines on a network. This
+  tutorial also discusses PAM which is a flexible, networked, user
+  authentication system.
+</p>
+<h3>Prerequisites
+</h3>
+ <p>
+  To get the most from this tutorial, you should already have a basic
+  knowledge of Linux and a working Linux system on which you can
+  practice the commands covered in this tutorial.
+</p>
+<h3>About  DHCP
+</h3>
+ <p>
+  Dynamic Host Configuration Protocol (DHCP) is a successor to the older
+  BOOTP protocol. The principle role of a DHCP server is to assign IP
+  addresses to client machines that may connect or disconnect from a
+  network. Most IP networks, even those with stable topologies and
+  client lists, use DHCP to prevent conflicts in IP address allocation.
+  Additionally, a DHCP server provides clients with routing and subnet
+  information, DNS addresses, and in some cases other information. DHCP
+  assignments may have varying durations, ranging from short to
+  infinite, depending on server configuration and client request
+  details. In fact, DHCP is consistent with assigning fixed IP addresses
+  to specific machines (via their MAC hardware addresses), but in any
+  case prevents conflicts among machines.
+</p>
+<p>
+  The formal specification of DHCP is RFC 2131, and may be found at
+  &lt<a href="http://www.ietf.org/rfc/rfc2131.txt&gt;.">http://www.ietf.org/rfc/rfc2131.txt&gt;.</a>
+</p>
+<h3>About NIS
+</h3>
+ <p>
+  The Network Information Service (NIS) is Sun Microsystems' "Yellow
+  Pages" (YP) client-server directory service protocol for distributing
+  system configuration data such as user and host names on a computer
+  network.
+</p>
+<p>
+  NIS/YP is used for keeping a central directory of users, hostnames and
+  most other useful things in a computer network. For example, in a
+  common UNIX environment, the list of users (for authentication) is
+  placed in /etc/passwd. Using NIS adds another "global" user list which
+  is used for authenticating users on any host.  For the most part, NIS
+  has been superceded by the more general and more secure LDAP for
+  general use.
+</p>
+<p>
+  A good starting point for further information on NIS is the "The Linux
+  NIS(YP)/NYS/NIS+ HOWTO", found at
+  &lt<a href="http://www.linux-nis.org/nis-howto/HOWTO/index.html&gt;">http://www.linux-nis.org/nis-howto/HOWTO/index.html&gt;</a>
+</p>
+<h3>About LDAP
+</h3>
+ <p>
+  The Lightweight Directory Access Protocol (LDAP) is a client-server
+  protocol for accessing directory services, specifically X.500-based
+  directory services.
+</p>
+<p>
+  An LDAP directory is similar to a database, but tends to contain more
+  descriptive, attribute-based information. As such, LDAP provides
+  enough flexibility for storing any type of network-shared information.
+  The information in a directory is read much more often than it is
+  written, and are tuned to give quick-response to high-volume lookup or
+  search operations. LDAP has the ability to replicate information
+  widely in order to increase availability and reliability, while
+  reducing response time. When directory information is replicated, any
+  temporary inconsistencies between replicas will become synced over
+  time.
+</p>
+<p>
+  The formal specification of LDAP is RFC 2251, and may be found at
+  &lt<a href="ftp://ftp.isi.edu/in-notes/rfc2251.txt&gt;.">ftp://ftp.isi.edu/in-notes/rfc2251.txt&gt;.</a>
+</p>
+<h3>About PAM
+</h3>
+ <p>
+  <code>Linux-PAM</code> (Pluggable Authentication Modules for Linux) is a suite of
+  shared libraries that enable the local system administrator to choose
+  how applications authenticate users.
+</p>
+<p>
+  A PAM-aware application can switch at runtime between authentication
+  mechanism(s). Indeed, you may entirely upgrade the local
+  authentication system without recompiling the applications themselves.
+  This PAM library is configured locally with a system file,
+  <code>/etc/pam.conf</code> (or a series of configuration files located in
+  <code>/etc/pam.d/</code>) to authenticate a user request via the locally
+  available authentication modules. The modules themselves will usually
+  be located in the directory <code>/lib/security</code> and take the form of
+  dynamically loadable object files
+</p>
+<p>
+  The Linux-PAM System Administrators' Guide is a good starting point
+  for further information:
+  &lt<a href="http://www.kernel.org/pub/linux/libs/pam/Linux-PAM-html/pam.html#toc1&gt;.">http://www.kernel.org/pub/linux/libs/pam/Linux-PAM-html/pam.html#toc1&gt;.</a>
+</p>
+<h3>Other resources
+</h3>
+ <p>
+  As with most Linux tools, it is always useful to examine the manpages
+  for any utilities discussed. Versions and switches might change
+  between utility or kernel version, or with different Linux
+  distributions. For more in depth information, the Linux Documentation
+  Project has a variety of useful documents, especially its HOWTOs. See
+ <a href="http://www.tldp.org/.">http://www.tldp.org/.</a>  A variety of books on Linux networking have
+  been published; I have found O'Reilly's <cite>TCP/IP Network
+  Administration</cite>, by Craig Hunt to be quite helpful (find whatever
+  edition is most current when you read this).
+</p>
+<h3>Running Dhcp</h3>
+ <h3>The overall protocol
+</h3>
+ <p>
+  As with many network protocols, Dynamic Host Configuration Protocol
+  (DHCP) is a client/server interface. A DHCP client is a much simpler
+  program, both internally and to configure, than is a DHCP server. The
+  job of a DHCP client, essentially, is to broadcasts a DHCPDISCOVER
+  message on its local physical subnet, then await a response. The
+  DHCPDISCOVER message MAY include options that suggest values for the
+  network address and lease duration.  Servers that receive a
+  DHCPDISCOVER message should respond to the requesting MAC address with
+  a DHCPOFFER message.  The client, in turn, responds with a DHCPREQUEST
+  message to one of the offering servers, usually to the first (and
+  only) responding server.  The actual configuration parameters a client
+  uses are received in a DHCPACK message.  At that point, the client has
+  received an allocated IP address, and its communications will move, so
+  to speak, from the Data Link Layer (e.g. ethernet) to the Network
+  Layer (i.e. IP).
+</p>
+<h3>The client process
+</h3>
+ <p>
+  A DHCP client typically only needs to be configured with the set of
+  information it wishes to obtain.  For example, Debian-based
+  distributions typically use the DHCP client <code>dhclient</code> which is
+  configured with the <code>/etc/dhcp3/dhclient.conf</code> file.  The sample file
+  that is distributed with the <code>dhcp3-client</code> package has all but one
+  configuration option commented out.  The one enabled option might look
+  like:
+</p>
+<div class="code-sample"><h4>dhclient.conf option</h4><pre>
+request subnet-mask, broadcast-address, time-offset, routers,
+  domain-name, domain-name-servers, host-name,
+  netbios-name-servers, netbios-scope;
+
+</pre></div><p>
+  In this example, which is the default configuration, the client
+  essentially just says "ask for everything possible".  In the
+  negotiation messages, the DHCPACK message from the server will contain
+  information for all these requested values, which the client will use
+  once they are receieved.  Client IP address is implied in this list,
+  since that configuration is always negotiated.
+</p>
+<p>
+  As well as specifying timeout and lease time options (and a few
+  others), a client <em>may</em>, but need not in most cases, put some
+  restrictions on the IP addresses it wishes to use.  To exclude a
+  particular one:
+</p>
+<div class="code-sample"><h4></h4><pre>reject 192.33.137.209;
+
+</pre></div><p>
+  To specify the explicit address the client wishes to use:
+</p>
+<div class="code-sample"><h4></h4><pre>fixed-address 192.5.5.213;
+
+</pre></div><p>
+  A client may reject a lease offer with the DHCPDECLINE message, but
+  servers will try to fulfill requests where possible.  A DHCP server
+  may also make a fixed assignment of a particular IP address to a
+  requesting MAC address, and configuring a per-machine IP address is
+  more often done with server configuration than with client
+  configuration.
+</p>
+<p>
+  In order to keep track of acquired leases, <code>dhclient</code> keeps a list of
+  leases it has been assigned in the <code>/var/lib/dhcp3/dhclient.leases</code>
+  file (path may vary across distros); this way a non-expired DHCP
+  lease is not lost if a system disconnects from the physical network
+  and/or reboots.
+</p>
+<h3>The server process
+</h3>
+ <p>
+  A DHCP server needs to know a bit more about its options, since it
+  provides various information to clients in DHCP leases, and also must
+  assure that IP addresses are uniquely assigned per-client.  The DHCP
+  server usually runs as the daemon <code>dhcpd</code>, and takes its configuration
+  information from <code>/etc/dhcpd.conf</code> (path may vary across distros).  A
+  single <code>dhcpd</code> daemon may manage multiple subnets, generally if
+  multiple physical networks connect to a server; most frequently,
+  however, one server manages one subnet.  Below is a fairly complete
+  example of a server configuration:
+</p>
+<div class="code-sample"><h4>dhcpd.conf configuration options</h4><pre>
+# default/max lease in seconds: day/week
+default-lease-time 86400;
+max-lease-time 604800;
+option subnet-mask 255.255.255.0;
+option broadcast-address 192.168.2.255;
+option routers 192.168.2.1;
+# DNS locally, fallback to outside local domain
+option domain-name-servers 192.168.2.1, 151.203.0.84;
+option domain-name "example.com";
+# Set the subnet in which IP address are pooled
+subnet 192.168.2.0 netmask 255.255.255.0 {
+   range 192.168.2.100 192.168.2.199;
+}
+# Assign a fixed IP to a couple machines by MAC address
+group {
+   use-host-decl-names true;
+   host first.example.com {
+      hardware ethernet 00:00:c1:a2:de:10;
+      fixed-address 192.168.2.200;
+   }
+   host second.example.com {
+      hardware ethernet 00:dd:cc:a1:78:34;
+      fixed-address 192.168.2.201;
+   }
+
+</pre></div><p>
+  When a client sends out a broadcast message to a server running with
+  this configuration, it will either receive a lease on 192.168.2.200 or
+  192.168.2.201 if it has the specified MAC address, or it will receive
+  a lease on an available address in the pool 192.168.2.100 through
+  192.168.2.199.
+</p>
+<p>
+  A client may also use the DHCPINFORM message to tell a
+  server that it already has an assigned IP address (e.g. manually
+  configured), but wishes to obtain other configuration information.
+  Notice the informing a server that a client <em>is</em> using a particular IP
+  address is not the same as a requesting a specific IP address; in the
+  latter case, the server may or may not grant the request, depending on
+  existing leases.  In the former case, the server has no decision in
+  the matter, and no lease is granted per se at all (however, servers
+  will try to avoid assigning IP addresses known to be in use to new
+  requesting clients).
+</p>
+<p>
+  When leases expire, clients and servers must negotiate new leases for
+  configuration parameters to remain valid. Shorter leases may be used
+  where configuration information on a server is likely to change (for
+  example, with dynamic DNS via an external WAN). A client may
+  gracefully terminate a lease by sending the DHCPRELEASE message, but
+  this is not required for correct operation (clients sometimes crash,
+  reboot, or become disconnected without the opportunity to send this
+  message, after all).  Absent a release message, a lease is maintained
+  by the server for whatever time terms it was granted on, so a
+  rebooted machine will often continue using its prior lease (which will
+  be stored in <code>dhclient.leases</code> on both server and client).
+</p>
+<h3>Running Nis</h3>
+ <h3>When to use NIS
+</h3>
+ <p>
+  Network Information Service (NIS) was formerly known as "Sun Yellow
+  Pages", but the name was changed due to trademark issues. You will
+  notice, however, that most of the utilities associated with NIS are
+  still named with a "yp" prefix because of the historical service name.
+  NIS is used to let a network of machines share information such as
+  users and groups (e.g. the contents of <code>/etc/passwd</code> and <code>/etc/group</code>,
+  respectively), hence allowing users rights on any machine within a NIS
+  domain.
+</p>
+<p>
+  NIS operates in a manner similar to DNS in defining domains where
+  information is distributed, and also in allowing master and slave
+  servers to hierarchically distribute information within a domain. In
+  fact, in principle NIS could be used in place of DNS by distributing
+  domain name information found in <code>/etc/hosts</code>; but this is rarely done
+  in practice. But NIS has a certain flexibility in that any type of
+  information can, in principle be put into a NIS database (which is in
+  DBM format: though the tool <code>makedbm</code> in the NIS server package
+  converts flat files to this format; generally "behind the scenes").
+</p>
+<p>
+  There also exists a service called NIS+ which was intended to
+  supercede NIS, and includes data encryption and authentication.
+  However, NIS+ is not backwards compatible with NIS, and is not widely
+  used.
+</p>
+<h3>Before you start
+</h3>
+ <p>
+  To run any of the NIS utilities you need to run the daemon
+  <code>/sbin/portmap</code> which converts RPC program numbers into TCP/IP (or
+  UDP/IP) protocol port numbers, since NIS clients make RPC calls.  Most
+  Linux distributions launch <code>/sbin/portmap</code> in their startup scripts,
+  but you should check that this daemon is running with:
+</p>
+<div class="code-sample"><h4></h4><pre>% ps -ax | grep portmap
+
+</pre></div><p>
+  If not already running, install <code>/sbin/portmap</code> and include it in your
+  system startup scripts.
+</p>
+<h3>NIS client utilities (ypbind daemon)
+</h3>
+ <p>
+  A NIS client includes the tools <code>ypbind</code>, <code>ypwhich</code>, <code>ypcat</code>,
+  <code>yppoll</code>, and <code>ypmatch</code>. The daemon <code>ypbind</code> must run as root, and is
+  normally launched as part of system startup scripts (though it is not
+  required to do so). The other tools rely on the services of <code>ypbind</code>,
+  but run at a user level. Old version of <code>ypbind</code> broadcast a binding
+  request on the local network, but this allows a malicious NIS server
+  to answer the request and provide bad user and group information to
+  clients.  It is preferable to configure specific servers for <code>ypbind</code>
+  to connect to using the <code>/etc/yp.conf</code> file.  If multiple servers are
+  configured (or if broadcase is used despite the danger), <code>ypbind</code> may
+  switch bound server each 15 minutes, according to which is able to
+  respond most quickly.  These various servers should be arranged in
+  master/slave configuration, but the client does not need to know or
+  care about that detail.  For example, a <code>ypbind</code> configuration may
+  look like:
+</p>
+<div class="code-sample"><h4>/etc/yp.conf</h4><pre>
+ypserver 192.168.2.1
+ypserver 192.168.2.2
+ypserver 192.168.1.100
+ypserver 192.168.2.200
+
+</pre></div><p>
+  Before <code>/usr/sbin/ypbind</code> runs, you must set the NIS domainname of
+  your network. This may be whatever name the NIS server is configured
+  to use, and should generally be chosen as something different from the
+  DNS domainname. Set the NIS domainname using (substitute the actual
+  name):
+</p>
+<div class="code-sample"><h4></h4><pre>% ypdomainname my.nis.domain
+
+</pre></div><h3>NIS client utilities (other configuration)
+</h3>
+ <p>
+  If you want to use NIS as part of your domain name lookup, you should
+  modify <code>/etc/host.conf</code> to include NIS in the lookup order, e.g. to
+  check a name first in <code>/etc/hosts</code>, then in NIS, then in DNS:
+</p>
+<div class="code-sample"><h4></h4><pre>% cat /etc/host.conf
+order hosts,nis,bind
+
+</pre></div><p>
+  To enable NIS distributed users, you should modify the client
+  <code>/etc/passwd</code> file to include:
+</p>
+<div class="code-sample"><h4>Basic /etc/passwd</h4><pre>
++::::::
+
+</pre></div><p>
+  The NIS database information acts as a template for login attempts
+  with this "unfilled" pattern.  You may fine tune the user information
+  if you like, for example:
+</p>
+<div class="code-sample"><h4>Deatiled /etc/passwd</h4><pre>
++user1:::::::
++user2:::::::
++user3:::::::
++@sysadmins:::::::
+-ftp
++:*::::::/etc/NoShell
+
+</pre></div><p>
+  This allows login-access only to user1, user2 and user3, and all
+  members of the sysadmin netgroup, but provides the account data of all
+  other users in the NIS database.
+</p>
+<p>
+  NIS sources themselves are configured in <code>/etc/nsswitch.conf</code>.  The
+  name might suggest this is strictly for name server lookup, but a
+  variety of information types are described.  Basically, this
+  configuration describes the order in which information sources are
+  serached.  The name <code>nis</code> in an order means information obtained from
+  a NIS server; the name <code>files</code> means to use an appropriate local
+  configuration file.  The name <code>dns</code> is used for the <code>hosts</code> option.
+  As well, you may specify what to do if an initial source does not contain the
+  information desired, <code>return</code> means to give up (unless NIS was simply
+  altogether unresponsive, <code>continue</code> means to try the next source for
+  that datum).  For example:
+</p>
+<div class="code-sample"><h4>/etc/nsswitch.conf</h4><pre>
+passwd:         compat
+group:          compat
+shadow:         compat
+hosts:          dns [!UNAVAIL=return] files
+networks:       nis [NOTFOUND=return] files
+ethers:         nis [NOTFOUND=continue] files
+protocols:      nis [NOTFOUND=return] files
+rpc:            nis [NOTFOUND=return] files
+services:       nis [NOTFOUND=return] files
+
+</pre></div><h3>NIS client user utilities
+</h3>
+ <p>
+  The utilities <code>ypwhich</code>, <code>ypcat</code>, <code>yppoll</code>, and <code>ypmatch</code> are used at
+  a user level to query NIS information.  <code>ypwchich</code> prints the name of
+  a NIS server; <code>ypcat</code> prints the values of all the keys in a NIS
+  database; <code>yppoll</code> prints the version and master server of a NIS map;
+  <code>ypmatch</code> prints the values of one or more keys from a NIS map.  See
+  the corresponding <code>man</code> pages of each utility for more usage
+  information.
+</p>
+<h3>NIS server utilities (ypinit, ypserv)
+</h3>
+ <p>
+  A NIS server uses the <code>ypserv</code> daemon to provide NIS databases to
+  clients, and is configured with the <code>/etc/ypserv.conf</code> file. As
+  mentioned, you may run both master and slave NIS servers within a
+  domain. The set of NIS databases is initialized on a master server
+  using (just the first time you run it; after that use
+  <code>make -C /var/yp</code>):
+</p>
+<div class="code-sample"><h4></h4><pre>% /usr/lib/yp/ypinit -m
+
+</pre></div><p>
+  A slave server is really just a NIS client that gets its databases
+  from the master server (and runs <code>ypserv</code>).  To copy master server
+  information to the locally running slave server, use:
+</p>
+<div class="code-sample"><h4></h4><pre>% /usr/lib/yp/ypinit -s my.nist.domain
+
+</pre></div><p>
+  On the master server, the NIS database are built from information in
+  (some of) the following familiar configuration files: <code>/etc/passwd</code>,
+  <code>/etc/group</code>, <code>/etc/hosts</code>, <code>/etc/networks</code>, <code>/etc/services</code>,
+  <code>/etc/protocols</code>, <code>/etc/netgroup</code>, <code>/etc/rpc</code>. Exactly what databases
+  are exported is configured in <code>/var/yp/Makefile</code>, which also
+  propagates changes when it is rebuilt.
+</p>
+<p>
+  Slave servers will be notified of any change to the NIS maps when they
+  are rebuilt, (via the <code>yppush program</code>), and automatically retrieve
+  the necessary changes in order to synchronize their databases. NIS
+  clients do not need to do this since they continually talk to the NIS
+  server to read the information stored in it's DBM databases.
+</p>
+<h3>Running Ldap</h3>
+ <h3>When to use LDAP
+</h3>
+ <p>
+  In principle, Lightweight Directory Access Protocol is similar in
+  purpose to NIS.  Both distribute some structured information about
+  network configurations from client to server.  However, LDAP goes
+  further in hierarchially structuring which information is distributed
+  to which clients, redirecting requests to other LDAP servers where
+  necessary, and in building in security mechanisms.  Moreover, LDAP
+  provides mechanisms and tools for clients to update information held
+  in LDAP servers, which in turn distribute that information to other
+  clients requesting it (subject to permissions, of course).
+</p>
+<h3>Installation
+</h3>
+ <p>
+  Before you run OpenLDAP (the Free Software implementation generally
+  used on Linux, though some commercial implementations exist), you will
+  need to install or verify the existence of several requisite
+  libraries:
+</p>
+<p>
+  * The OpenSSL Transport Layer Security (TLS) services, which may be
+  obtained from &lt<a href="http://www.openssl.org/&gt;">http://www.openssl.org/&gt;</a> (or via the install mechanisms
+  of your Linux distribution).
+</p>
+<p>
+  * Kerberos Authentication Services are optionally supported, but this
+  is very desirable.  Either MIT Kerberos from
+  &lt<a href="http://web.mit.edu/kerberos/www/&gt;">http://web.mit.edu/kerberos/www/&gt;</a> or Heimdal Kerberos from
+  &lt<a href="http://www.pdc.kth.se/heimdal/&gt;">http://www.pdc.kth.se/heimdal/&gt;</a> will work.
+</p>
+<p>
+  * Simple Authentication and Security Layer.  This may be installed as
+  part of your base distro, but may be obtained as Cyrus SASL from
+  &lt<a href="http://asg.web.cmu.edu/sasl/sasl-library.html&gt;.">http://asg.web.cmu.edu/sasl/sasl-library.html&gt;.</a>
+</p>
+<p>
+  * Sleepycat Software Berkeley DB from
+  &lt<a href="http://www.sleepycat.com/download/&gt;">http://www.sleepycat.com/download/&gt;</a> is recommended though other DBM
+  implementations are probably compatible.
+</p>
+<p>
+  * Posix threads and TCP wrappers are desirable, if not strictly
+  required.
+</p>
+<p>
+  Given that you have satisfied these prerequisites, download the
+  OpenLDAP library from &lt<a href="http://www.openldap.org/software/download/&gt;,">http://www.openldap.org/software/download/&gt;,</a>
+  and perform a more-or-less usual dance:
+</p>
+<div class="code-sample"><h4></h4><pre>% ./configure
+% make depend
+% make
+% make test  # make sure things went OK
+% su root -c 'make install'
+
+</pre></div><p>
+  After basic installation, you need to configure the <code>slapd</code>
+  configuration, usually at <code>/usr/local/etc/openldap/slapd.conf</code>.  Setup
+  should include your domain components, e.g.:
+</p>
+<div class="code-sample"><h4></h4><pre>#--------------------Include with slapd.conf --------------------#
+database bdb
+suffix "dc=eng,dc=uni,dc=edu,dc=eu"
+rootdn "cn=Manager,dc=eng,dc=uni,dc=edu,dc=eu"
+rootpw &lt;secret&gt;
+directory /usr/local/var/openldap-data
+
+</pre></div><p>
+  In order to find a value for "&lt;secret&gt;", use the utility <code>slappasswd</code>,
+  and use this encrypted base64 encoded string for your "&lt;secret&gt;".
+  E.g.:
+</p>
+<div class="code-sample"><h4></h4><pre>% slappasswd
+New password: *******
+Re-enter new password: ********
+{SSHA}YzPqL5Jio2+17NFIy/pAz8pqS5Ko13fH
+
+
+</pre></div><p>
+  To find more on all the permission, replication, and other options you
+  can configure in <code>slapd.conf</code> take a careful look at its detailed
+  <code>manpage</code>.
+</p>
+<p>
+  Launching the <code>slapd</code> daemon is pretty much like staring any daemon;
+  you can test it worked with <code>ldapsearch</code>:
+</p>
+<div class="code-sample"><h4></h4><pre>su root -c /usr/local/libexec/slapd
+ldapsearch -x -b '' -s base '(objectclass=*)' namingContexts
+
+</pre></div><p>
+  If all went well, you should see, e.g.:
+</p>
+<div class="code-sample"><h4></h4><pre>dn:
+namingContexts: dc=eng,dc=uni,dc=edu,dc=eu
+
+</pre></div><h3>Adding data with an LDIF file
+</h3>
+ <p>
+  The data format used in LDAP is a binary format, but a ASCII
+  serialization called LDAP Data Interchange Format (LDIF) for exporting
+  and importing data to an LDAP database. Binary data in LDIF is
+  represented as base64 encoding. OpenLDAP includes tools for exporting
+  data from LDAP servers to LDIF (<code>ldapsearch</code>), importing data from
+  LDIF to LDAP servers (<code>ldapadd</code>), and applying a set of changes,
+  described in LDIF, to LDAP servers (<code>ldapmodify</code> and <code>ldapdelete</code>).
+</p>
+<p>
+  Moreover, LDIF is one of the formats for importing and exporting
+  address book data that the address books in the Mozilla Application
+  Suite and other user application-level tools. Even Microsoft Windows
+  2000 Server and Windows Server 2003 include an LDIF tool <code>LDIFDE</code> for
+  transferring data to/from Active Directory.
+</p>
+<p>
+  To manually add information to an LDAP server, first create an LDIF
+  file such as:
+</p>
+<div class="code-sample"><h4>example.ldif</h4><pre>
+dn: dc=example,dc=com
+objectclass: dcObject
+objectclass: organization
+o: Example Company
+dc: example
+
+dn: cn=Manager,dc=example,dc=com
+objectclass: organizationalRole
+cn: Manager
+
+</pre></div><p>
+  Then add it using, e.g.:
+</p>
+<div class="code-sample"><h4></h4><pre>% ldapadd -x -D "cn=Manager,dc=example,dc=com" -W -f example.ldif
+
+</pre></div><p>
+  Obviously, replace the "example.com" domain with one appropriate to
+  your site.  As a rule, LDAP domain hierarchies and names match those
+  used by familiar DNS names.  You will required to enter the <code>rootpw</code>
+  value you specified in <code>slapd.conf</code>
+</p>
+<h3>Querying LDAP databases
+</h3>
+ <p>
+  There is a tool <code>slurpd</code> (Standalone LDAP Update Replication Daemon)
+  that replicates a complete database of information. But for individual
+  data values, you will either use a tool like <code>ldapsearch</code>, or more
+  likely LDAP support will be built into some application you run. The
+  <code>slapcat</code> tool is also available for dumping an LDAP database into
+  LDIF. For example, many Mail User Agents (MUAs) can use LDAP to locate
+  address and contact information.
+</p>
+<p>
+  Within applications, including ones you might program yourself using
+  application or scripting languages, LDAP resources may be accessed
+  with LDAP URLs.  These have the form:
+</p>
+<div class="code-sample"><h4></h4><pre>ldap://host:port/dn?attributes?scope?filter?extensions
+
+</pre></div><p>
+  Most of these fields are optional. The default hostname is localhost;
+  the default port is 389. The default root distinguished name is the
+  empty string. If you need authentication information, specify it in
+  the extensions portion of the URL.
+</p>
+<p>
+  In addition to LDAP URLs, many LDAP servers and clients also support
+  the non-standard but widely used LDAPS URLs. LDAPS URLs use SSL
+  connections instead of plaintext connections, and use a default port
+  of 636:
+</p>
+<div class="code-sample"><h4></h4><pre>ldaps://host:port/dn?attributes?scope?filter?extensions
+
+</pre></div><h3>Configuring Pam</h3>
+ <h3>When to use PAM
+</h3>
+ <p>
+  The first thing to keep in mind about Pluggable Authentication Modules
+  (PAM) is that it is not an application or protocol itself.  Rather
+  this is a collection of libraries that applications may have been
+  compiled to utilize.  If an application is PAM-enabled, the security
+  policy of that application can be configured by a system administrator
+  without modifying or upgrading the application itself.  Many Linux
+  tools, especially daemons and servers, are PAM-enabled.
+</p>
+<p>
+  A quick way to check if a given tool is <em>probably</em> PAM-enabled is to
+  use <code>ldd</code> to check which libraries it uses.  For example, I might
+  wonder whether my <code>login</code> utility is PAM-enabled:
+</p>
+<div class="code-sample"><h4></h4><pre>% ldd /bin/login | grep libpam
+libpam.so.0 =&gt; /lib/libpam.so.0 (0xb7fa8000)
+libpam_misc.so.0 =&gt; /lib/libpam_misc.so.0 (0xb7fa5000)
+
+</pre></div><p>
+  The use of <code>libpam.so</code> and <code>libpam_misc.so</code> by <code>login</code> does not fully
+  guarantee that the PAM facilities are actually being used, and used
+  correctly, by this tool, but it is a good suggestion.  Likewise,
+  perhaps I wonder similarly about my Apache and FTP servers:
+</p>
+<div class="code-sample"><h4></h4><pre>% ldd /usr/sbin/apache2 | grep libpam
+% ldd /bin/login | grep libpam
+libpam.so.0 =&gt; /lib/libpam.so.0 (0xb7fa8000)
+libpam_misc.so.0 =&gt; /lib/libpam_misc.so.0 (0xb7fa5000)
+
+</pre></div><p>
+  So I know my particular Apache installation is not PAM-enabled (though
+  versions are available that include this).
+</p>
+<p>
+  To check more thoroughly if PAM is fully working with a given tool,
+  you can create a PAM configuration file for the program.  For example,
+  to test <code>login</code>, you might create a file <code>/etc/pam.d/login</code> (but
+  notice that it probably already exists on your system with more
+  meaningful setting, so do not delete the existing copy):
+</p>
+<div class="code-sample"><h4>/etc/pam.d/login</h4><pre>
+auth      required    pam_permit.so
+auth      required    pam_warn.so
+
+</pre></div><p>
+  Now running a properly PAM-enabled <code>login</code> will let anyone login, but
+  log the action to the system log.  If syslog shows an entry, PAM is
+  enabled for this application.  Readers will notice, of course, that
+  this is about the worst configuration you could invent for <code>login</code>,
+  since it gives <em>anyone</em> shell access.  Having noticed that, you will
+  feel warned that PAM should be configured with a certain caution.
+</p>
+<h3>PAM configuration
+</h3>
+ <p>
+  PAM works with two different types of configuration files.  Most
+  <code>libpam.so</code> libraries are compiled in the "use the better one if
+  available, but settle for the worse one" mode.  However, you might
+  also have a PAM library compiled as "use the better one, but also
+  check the worse one".  Let us explain that.
+</p>
+<p>
+  The currently preferred way to configure PAM is with files in the
+  directory <code>/etc/pam.d/</code> that are named the same as the service whose
+  security they describe.  An older and less preferred style used a
+  single file <code>/etc/pam.conf</code> to set security policy for all
+  applications.  From a maintainability point of view, the
+  per-application configuration files are just easier to work with, and
+  may also be symlinked to "duplicate" a security policy from one
+  application in another.  Both configuration styles look basically the
+  same.  The single <code>/etc/pam.conf</code> file contains lines of the form:
+</p>
+<div class="code-sample"><h4></h4><pre>&lt;service&gt;  &lt;module-type&gt;  &lt;control-flag&gt;  &lt;module-path&gt;  &lt;args&gt;
+
+</pre></div><p>
+  In per-application configuration files, the first field is omitted
+  since it is already the same as the filename.  In the older style, the
+  test-only <code>login</code> configuration we saw would look like:
+</p>
+<div class="code-sample"><h4>/etc/pam.conf</h4><pre>
+login     auth      required    pam_permit.so
+login     auth      required    pam_warn.so
+
+</pre></div><p>
+  The &lt;module-type&gt; field may have one of four values: <code>auth</code>
+  (authetication); <code>account</code> (non-authentication permissions based on
+  system of user status); <code>session</code> (perform actions before/after
+  service used); <code>password</code> (update user authentication tokens).
+</p>
+<p>
+  The &lt;control-flag&gt; field is used to "stack" modules, which allows you
+  rather subtle control of when a method is required or performed at
+  all, and when some other fallback is acceptable.  It's options are
+  <code>required</code>, <code>requisite</code>, <code>sufficient</code>, <code>optional</code> and <code>include</code> which
+  we will discuss in the next panel.
+</p>
+<p>
+  The &lt;module-path&gt; we have seen in our examples, it names a shared
+  library, either in the expected module location if no path is given,
+  or at an explicit location if it starts with a "/".  For example, in
+  the above, you might have specified <code>/lib/security/pam_warn.so</code>.  The
+  &lt;args&gt; might be anything, depending on what a particular module needs
+  to configure its operation, though a few generic arguments should be
+  supported by most PAM modules.  Notice that PAM modules are
+  extensible.  If someone writes a new PAM module, you can simply drop
+  it into <code>/lib/security</code>, and all your applications can use it once
+  their configuration file is updated to indicate that.
+</p>
+<h3>A PAM permission example
+</h3>
+ <p>
+  To see how the &lt;control-flag&gt; works, let us develop an example that is
+  moderately complex.  First thing we should do is create a special
+  <code>OTHER</code> service.  If this exists, and no PAM policy is defined for a
+  service, OTHER's policy is used.  A safe default might be:
+</p>
+<div class="code-sample"><h4>/etc/pam.d/other</h4><pre>
+auth      required    pam_warn.so
+auth      required    pam_deny.so
+@include safe-account
+@include safe-password
+@include safe-session
+
+</pre></div><p>
+  In this example, an attempt at authentication is first logged to
+  syslog, and is then denied.  The <code>@include</code> statements just include
+  contents from elsewhere, e.g. <code>/etc/pam.d/safe-account</code> and friends,
+  where these "safe" definition might contain similar warn-then-deny
+  instructions for the other &lt;module-type&gt;'s.
+</p>
+<p>
+  Now let us configure access for our hypothetical <code>classified-db</code>
+  application. Being rather concerned about access, for a user to use
+  this application, she needs to provide either a matched retinal print
+  or a fingerprint, and also enter a password. The password, however,
+  might be stored in either the local <code>/etc/passwd</code> and <code>/etc/shadow</code>
+  configurations, or available via one of two outside database servers.
+  None of the security modules I use in this example actually exist (to
+  my knowledge), except <code>pam_unix.so</code> which is old-fashioned Unix-style
+  password access.
+</p>
+<div class="code-sample"><h4>/etc/pam.d/classified-db</h4><pre>
+auth      optional    pam_unix.so
+auth      optional    pam_database1.so    try_first_pass
+auth      optional    pam_database2.so    use_first_pass
+auth      requisite   pam_somepasswd.so
+auth      sufficient  pam_fingerprint.so  master=file1 7points
+auth      required    pam_retinaprint.so
+
+</pre></div><p>
+  The flow through this configuration is modestly complex.  First we try
+  password authentication by three "optional" module types.  Since these
+  are "optional" failing one does not stop the authentication process,
+  nor satisfy it.  The standard unix authentication password is tried
+  first (user is prompted to enter a password).  After that, we check
+  passwords in a database1, but we first use the generic module argumet
+  <code>try_first_pass</code> to see if the Unix password is the same one in the
+  database; only if it is not do we prompt for an additional password.
+  For database2, however, we only try to authenticate using the Unix
+  password that the user entered (generic argument <code>use_first_pass</code>).
+</p>
+<p>
+  Having checked against some "optional" password systems, we use a
+  hypothetical <code>pam_somepasswd.so</code> that needs to determine whether any
+  of the earlier password checks succeeded (perhaps using a semaphore;
+  but how that is done is left open for hypothetical modules).  The
+  point is that since this check is "requisite", if it fails no further
+  authentication is done, and failure is reported.
+</p>
+<p>
+  The final two authentication checks (if they are reached) are
+  "sufficient". That is satisfying one of them returns an overall
+  success status to the calling application. So first we try a
+  fingerprint check using <code>pam_fingerprint.so</code> (notice some hypothetical
+  arguments are passed to the module). Only if this fails--maybe because
+  of the absence of a fingerprint scanner as well as for a bad
+  fingerprint--is the retinal scan attempted. Likewise, if the retinal
+  scan succeeds, that is "sufficient". However, just to demonstrate all
+  the flags, we acutally use "required" here, which means that even if
+  retinal scanning succeeds, we would continue checking other methods
+  (but no more exist in this example, so "sufficient" would do the same
+  thing).
+</p>
+<p>
+  There is also a way of specifying more fine-tuned compound flags for
+  the &lt;control-flag&gt;, using bracketed "<em><code>value1=action1 ...</code></em>" sets, but
+  the basic keywords usually suffice.
+</p>
+</body></html>

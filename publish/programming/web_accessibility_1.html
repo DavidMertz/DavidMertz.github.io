@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>TECHNICAL TIPS -- Making websites more accessible to persons with disabilities (part I) -- </title>
+<style>
+             {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+em           {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt}
+ul, ol, li   {font-family: helvetica, helv, arial, sans-serif; font-size: 10pt; text-align: left}
+tt           {font-family: mono, courier}
+pre          {font-family: mono; font-size: 9pt}
+th           {font-family: mono, courier; font-size: 8pt}
+
+.code-sample {background-color: #CCCCCC}
+.sidebar     {background-color: #FFFFCC}
+.title       {font-size: medium; color: #3333CC}
+.subtitle    {font-size: 9pt; color: #3333CC}
+.subhead     {font-size: 12pt}
+.input       {background: #FFFFFF; color: #000000; font-weight: normal}
+</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<p><strong class="title">Technical Tips</strong><br>
+<strong class="subtitle">Making websites more accessible to persons with disabilities (part I)</strong></p>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ August 2000<br>
+ <br>
+</p>
+<blockquote>    Tips on making your web pages and web sites disabled-
+    accessible.  Part I gives a general introduction to
+    disability issues, and discusses the structural markup at the
+    heart of HTML.  Part II discusses specific HTML coding
+    "gotchas" that make your pages unnecessarily difficult for
+    vision and mobility limited people to use; part II also
+    provides an overview of free tools to use in evaluating and
+    improving the accessibility of your site.
+</blockquote><p><strong class="subhead">Issues To Start Thinking About</strong></p>
+ <p>  Making your web site friendly to--or at least usable
+  by--persons with disabilities expands yours audience; in some
+  cases doing so might be mandated by law; and in every case, it
+  is the <em>right</em> thing to do.  Moreover, many of the techniques
+  that go into making more disabled-accessible web pages wind up
+  making web pages that are just plain <em>better</em> for everyone.
+</p>
+<p>  People have a variety of differing abilities to operate
+  computers, and corresponding to these abilities (as well as to
+  their ability to pay for technologies) disabled persons employ
+  a variety of tools and techniques to mediate their access to
+  the internet.  Blind or seriously visually impaired people
+  might use screen readers or brail readers to translate pages.
+  People with other visual impairements might use screen
+  magnifiers, or might be unable to make color distinctions.
+  People with neurological and mobility limitations might have
+  difficulty operating a mouse and/or a keyboard; they might use
+  special keyboards or spoken input to replace these.  People
+  with hearing loss or deafness will not be able to use sounds
+  included in pages.  And yet, all of these people are able to
+  comprehend and utilize many types of information and
+  functionality on the web... and probably most of the actual
+  <em>information</em> on your web site if you take the effort to allow
+  them to.
+</p>
+<p>  There should be no reason why persons with disabilities should
+  not be able to read about your organization or company, order
+  products from you, complete forms and launch server processes
+  (of the sort you implement), or participate in discussion areas
+  (if you have them).  If your site closes these options to
+  persons with disabilities, the only reason is bad design on
+  your part.
+</p>
+<p><strong class="subhead">The Very Good Design Of Html</strong></p>
+ <p>  HTML was designed as a means for <strong>structural</strong> markup of
+  hypertextual content.  It was really <em>not</em> designed as a way of
+  doing desktop publishing or graphic design, despite the number
+  of tools that have tried to shoe-horn HTML into those
+  functions.  If you stick to the intention of HTML when you
+  create HTML, you are probably 90% of the way toward making your
+  site accessible.  For example, any technical means of rendering
+  a web page will have some reasonable way of conveying concepts
+  like: "this is a paragraph", "this is a hyperlink", "this is a
+  secondary heading."  The basic semantic of structural elements
+  will be rendered by speech synthesizers, or by brail, or by
+  three-inch tall onscreen fonts.  What might not be rendered in
+  a manner appropriate for a header is something that you try to
+  make <strong>look</strong> like a header by putting it in a certain font size,
+  face, color and style, but without actually marking it with an
+  &lt;h2&gt; tag or the like.  Fortunately, style sheets let you do
+  both things at once:  mark something as an HTML header, but
+  <em>recommend</em> that the browser render the header in a certain
+  way (but only if it make sense for the browser and user).
+</p>
+<p>  On the input side of things, HTML forms are equally well
+  designed.  Every entry field identifies itself by the type of
+  information it enters, and reasonable means can be used to
+  enter these abstract types of information without a mouse, or
+  with special keyboards, or with voice recognition.  The only
+  time that entry is likely to exclude disabled users is when you
+  go a long way out of the way to perform entry in ways that
+  avoid the simple HTML form methods--such as Javascript tricks,
+  Java entry applications where they are not needed, or special
+  plugins (which are also likely to be platform restricted).  For
+  example, I have found an annoying habit of some web-sites to
+  have forms with a graphical "Submit" button that cannot be
+  reached in tab order, but only with a mouse-click (it takes
+  some extra work to program this in the first place!).  This
+  needlessly excludes the blind and those who cannot use a
+  mouse--as well as annoys sighted typists like me who <em>prefer</em>
+  to keep my hands on the keyboard.
+</p>
+<p>  Quite aside from disabled users, a wide variety of new ways of
+  viewing web pages are growing in popularity.  PDA's,
+  cell-phones, pagers, car-dashboard displays, embedded devices,
+  kiosks, and other types of unconventional web-display machines
+  are likely not to support the same display, plugin and input
+  assumptions you might make for conventional PCs. A lot of the
+  issues relevant to new devices are surprisingly similar to
+  disability issues.  And good HTML works everywhere.
+</p>
+<p><strong class="subhead">Resources</strong></p>
+ <p>  An excellent starting point for many accessibility issues is
+  The Disability Rights Activist.  This site provides links to
+  laws, guidelines, and downloadable software:
+</p>
+<blockquote>   <a href="http://www.disrights.org/dr-web-access.html">http://www.disrights.org/dr-web-access.html</a>
+</blockquote><p>  Many high-quality detailed suggestions for accessible web site
+  design can be found at the Web Content Accessibility Guidelines
+  1.0 (W3C Recommendation 5-May-1999):
+</p>
+<blockquote>   <a href="http://www.w3.org/TR/1999/WAI-WEBCONTENT-19990505/">http://www.w3.org/TR/1999/WAI-WEBCONTENT-19990505/</a>
+</blockquote><p>  The law surrounding mandated web site accessibility are complex
+  and differ between countries.  In the United States, the main
+  law governing this is the Americans with Disabilities Act (ADA)
+  of 1990.  Links to many national laws and related pages can be
+  found at:
+</p>
+<blockquote>   <a href="http://www.w3.org/WAI/References/Policy#USA">http://www.w3.org/WAI/References/Policy#USA</a>
+</blockquote><p><strong class="subhead">About The Author</strong></p>
+ <p>  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz has been consumed with ressentiment since the
+  introduction of the &lt;blink&gt; tag in Netscape 2.0.  David may be
+  reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+</p>
+</body></html>

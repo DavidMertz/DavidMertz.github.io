@@ -1,0 +1,466 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>CHARMING PYTHON #B18: The Natural Language Toolkit -- Using Python in Computational Linguistics -- </title>
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Charming Python #b18: The Natural Language Toolkit</h1>
+<h2>Using Python in Computational Linguistics</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Linguistic Hack, Gnosis Software<br>
+ June, 2004<br>
+ <br>
+</p>
+<blockquote>
+    The Natural Language Toolkit is a Python library for analyzing and
+    otherwise processing collections of textual data, particularly in
+    terms of the concepts and techniques developed in academic
+    linguistics. Some of these techniques overlap with what goes by the
+    name "text processing"--or perhaps to lexing/parsing in computer
+    science--but other capabilities for syntactic and even semantic
+    analysis are specialized to the more subtle texts and grammars of
+    natural languages.
+</blockquote>
+<h3>What <em><code>NLTK</code></em> Includes</h3>
+ <p>
+  Your humble writer knows a little bit about a lot of things; but
+  despite writing a fair amount about <em>text processing</em> (a book, for
+  example), <em>linguistic processing</em> is a relatively novel are for me.
+  Forgive me if I stumble through my explanations of the quite
+  remarkable Natural Language Toolkit (NLTK), a wonderful tool for
+  teaching, and working in, computational linguistics using Python.
+</p>
+<p>
+  It is natural to think of NLTK as a stacked series of layers that
+  build on each other. Readers how are familiar with lexing and parsing
+  of artificial languages (like, say, Python) will not have too much of
+  a leap to understand the similar--but deeper--layers involved in
+  natural language modelling. While NLTK comes with a number of corpora
+  that have been pre-processed (often manually) to various degrees,
+  conceptually each layer relies on the processing in the adjacent lower
+  layer. Tokenization comes first; then words are <em>tagged</em>; then groups
+  of words are parsed into grammatical elements, like noun phrases or
+  sentences (according to one of several techniques, each with
+  advantages and drawbacks); finally sentences or other grammatical
+  units can be classified.  Along the way, NLTK gives you the ability to
+  generate statistics about occurences of various elements, and draw
+  graphs that represent either the processing itself, or statistical
+  aggregates in results.
+</p>
+<p>
+  For this first article, I will present some comparatively fleshed out
+  examples from the lower-level capabilities, but simply describe
+  abstractly most of the higher level capabilities.  If I have the
+  opportunity to return to NLTK in a later installment, I will give more
+  detailed descriptions of parsing and graphing; for now, let us take
+  the first steps past text processing, narrowly construed.
+</p>
+<h3>Tokenization</h3>
+ <p>
+  Much of what you can do with NLTK, particularly at its lower levels,
+  is not <em>that</em> much different from what you can do with Python's basic
+  data structures.  But NLTK provides a set of regularized interfaces
+  that are relied on and utilized at higher levels, as well as simply
+  providing convenient classes to hold tokenized and tagged texts.
+</p>
+<p>
+  In particular the class <code>nltk.tokenizer.Token</code> is used very widely to
+  store annotated segments of text; these annotations can mark a number
+  of different features, including: parts-of-speech: subtoken stuctures:
+  offsets of a token within a larger text; morphological stems;
+  grammatical sentence component; and so on.  In fact, a <code>Token</code> is a
+  special kind of dictionary--and is accessed in the fashion of a
+  dictionary--so it can contain whatever keys you like.  A few special
+  keys are used in NLTK, different ones by the various subpackages.
+</p>
+<p>
+  Let us look briefly at creating a token and breaking it into
+  subtokens:
+</p>
+<div class="code-sample"><h4>A first look at the nltk.tokenizer.Token class</h4><pre>
+&gt;&gt;&gt; from nltk.tokenizer import *
+&gt;&gt;&gt; t = Token(TEXT='This is my first test sentence')
+&gt;&gt;&gt; WSTokenizer().tokenize(t, addlocs=True) # break on whitespace
+&gt;&gt;&gt; print t['TEXT']
+This is my first test sentence
+&gt;&gt;&gt; print t['SUBTOKENS']
+[&lt;This&gt;@[0:4c], &lt;is&gt;@[5:7c], &lt;my&gt;@[8:10c], &lt;first&gt;@[11:16c],
+&lt;test&gt;@[17:21c], &lt;sentence&gt;@[22:30c]]
+&gt;&gt;&gt; t['foo'] = 'bar'
+&gt;&gt;&gt; t
+&lt;TEXT='This is my first test sentence', foo='bar',
+SUBTOKENS=[&lt;This&gt;@[0:4c], &lt;is&gt;@[5:7c], &lt;my&gt;@[8:10c], &lt;first&gt;@[11:16c],
+&lt;test&gt;@[17:21c], &lt;sentence&gt;@[22:30c]]&gt;
+&gt;&gt;&gt; print t['SUBTOKENS'][0]
+&lt;This&gt;@[0:4c]
+&gt;&gt;&gt; print type(t['SUBTOKENS'][0])
+&lt;class 'nltk.token.SafeToken'&gt;
+
+</pre></div><h3>Probability</h3>
+ <p>
+  One fairly simple thing you are likely to with linguistic corpora is
+  analyze frequencies of various <em>events</em> within them, and make
+  probability predictions based on these known frequencies.  NLTK
+  supports a variety of techniques for projecting probabilities based on
+  raw frequency data; I will not cover those here (see the Probability
+  Tutorial mentioned in Resources), but suffice it to say that what you
+  are warranted to <em>expect</em> has a slightly fuzzy relationship to what
+  you already <em>know</em> (beyond the obvious scaling/normalization).
+</p>
+<p>
+  In essence, there are two types of frequency supported by NLTK:
+  histograms and conditional frequencies.  The class
+  <code>nltk.probability.FreqDist</code> is used to create histograms, for example,
+  a word histogram can be created with:
+</p>
+<div class="code-sample"><h4>Basic histogram creation with nltk.probability.FreqDist</h4><pre>
+&gt;&gt;&gt; from nltk.probability import *
+&gt;&gt;&gt; article = Token(TEXT=open('cp-b17.txt').read())
+&gt;&gt;&gt; WSTokenizer().tokenize(article)
+&gt;&gt;&gt; freq = FreqDist()
+&gt;&gt;&gt; for word in article['SUBTOKENS']:
+...     freq.inc(word['TEXT'])
+&gt;&gt;&gt; freq.B()
+1194
+&gt;&gt;&gt; freq.count('Python')
+12
+
+</pre></div><p>
+  The tutorial discusses creation of histograms on more complex
+  features, like "the length of words following words ending in vowels."
+  The class <code>nltk.draw.plot.Plot</code> is useful for visualization of
+  histograms.  Of course, you can equally analyze frequencies of higher
+  level grammatical features, or even of data sets unrelated to NLTK.
+</p>
+<p>
+  Conditional frequencies are perhaps more interesting than plain
+  histograms.  A conditional frequency is a kind of two dimensional
+  histogram--it gives you one histogram per initial condition, or
+  "context."  For example, the tutorial suggests the question of what
+  the distribution of word lengths is for each first letter.  We can
+  analyze that with:
+</p>
+<div class="code-sample"><h4>Conditional frequencies: word length per initial letter</h4><pre>
+&gt;&gt;&gt; cf = ConditionalFreqDist()
+&gt;&gt;&gt; for word in article['SUBTOKENS']:
+...     cf[word['TEXT'][0]].inc(len(word['TEXT']))
+...
+&gt;&gt;&gt; init_letters = cf.conditions()
+&gt;&gt;&gt; init_letters.sort()
+&gt;&gt;&gt; for c in init_letters[44:50]:
+...     print "Init %s:" % c,
+...     for length in range(1,6):
+...         print "len %d/%.2f," % (length,cf[c].freq(n)),
+...     print
+...
+Init a: len 1/0.03, len 2/0.03, len 3/0.03, len 4/0.03, len 5/0.03,
+Init b: len 1/0.12, len 2/0.12, len 3/0.12, len 4/0.12, len 5/0.12,
+Init c: len 1/0.06, len 2/0.06, len 3/0.06, len 4/0.06, len 5/0.06,
+Init d: len 1/0.06, len 2/0.06, len 3/0.06, len 4/0.06, len 5/0.06,
+Init e: len 1/0.18, len 2/0.18, len 3/0.18, len 4/0.18, len 5/0.18,
+Init f: len 1/0.25, len 2/0.25, len 3/0.25, len 4/0.25, len 5/0.25,
+
+</pre></div><p>
+  A nice linguistic use of conditional frequencies is to analyze the
+  syntagmatic distributions in corpora--for example, given the
+  occurrence of a particular word, what words are most likely to come
+  next. Grammars provide some constraints here, of course; but the study
+  of selection among syntactic options falls within the fields of
+  semantics, pragmatics, and register.
+</p>
+<h3>Stemming</h3>
+ <p>
+  The class <code>nltk.stemmer.porter.PorterStemmer</code> is a wonderfully handy
+  tool to derive grammatical (prefix) stems from English words. This
+  capability struck a particular chord for me, having previously created
+  a public domain full-text indexed search tool/library in Python
+  (covered in this column, see Resources; and used by a moderately large
+  number of other projects).
+</p>
+<p>
+  While it is quite useful to be able to search a large collection of
+  documents almost instantly for a joint occurrence of a collection of
+  exact words (what <code>gnosis.indexer</code> does), for many searching purposes
+  a little fuzziness would help.  Perhaps you are not quite sure whether
+  the old email you are looking for used the word "complicated,"
+  "complications," "complicating," or "complicates," but you remember
+  that was one of the general concepts involved (probably with a few
+  others to perform a useful search).
+</p>
+<p>
+  NLTK includes an excellent algorithm for word stemming, and lets you
+  customize stemming algorithms further to your liking.  E.g.:
+</p>
+<div class="code-sample"><h4>Stemming words for morpohological roots</h4><pre>
+&gt;&gt;&gt; from nltk.stemmer.porter import PorterStemmer
+&gt;&gt;&gt; PorterStemmer().stem_word('complications')
+'complic'
+
+</pre></div><p>
+  Exactly how you might utilize stemming within <code>gnosis.indexer</code>, a tool
+  derived from it, or a wholly different indexing tool, depends on your
+  usage scenarios. Fortunately, <code>gnosis.indexer</code> has an open interface
+  that is easy to specialize. Do you want an index composed entirely of
+  stems? Or do you want to include both full words and stems in the
+  index? Are matches on exact words to be ranked higher than matches on
+  stems? Do you want to separate stem matches form exact matches in your
+  results? I will include some sort of stemming capability in future
+  versions of <code>gnosis.indexer</code>, but end users might still want to
+  customize differently.
+</p>
+<p>
+  In general, however, adding stemming is very simple: First, derive
+  stems from a document by specializing <code>gnosis.indexer.TextSplitter</code>;
+  second, when you perform a search (optionally) stem the search terms
+  before using them for index lookup, probably by customizing your
+  <code>MyIndexer.find()</code> method.
+</p>
+<p>
+  I made a discovery, while playing with the <code>PorterStemmer</code>: the class
+  <code>nltk.tokenizer.WSTokenizer</code> really is as bad as NLTK's tutorial
+  warns.  It is fine to occupy a conceptual role, but for real-life
+  texts, you can do a lot better at identifying what a "word" is.
+  Fortunately, <code>gnosis.indexer.TextSplitter</code> is one such more robust
+  tokenizer.  For example, :
+</p>
+<div class="code-sample"><h4>Stemming based on poor NLTK tokenization</h4><pre>
+&gt;&gt;&gt; from nltk.tokenizer import *
+&gt;&gt;&gt; article = Token(TEXT=open('cp-b17.txt').read())
+&gt;&gt;&gt; WSTokenizer().tokenize(article)
+&gt;&gt;&gt; from nltk.probability import *
+&gt;&gt;&gt; from nltk.stemmer.porter import *
+&gt;&gt;&gt; stemmer = PorterStemmer()
+&gt;&gt;&gt; stems = FreqDist()
+&gt;&gt;&gt; for word in article['SUBTOKENS']:
+...     stemmer.stem(word)
+...     stems.inc(word['STEM'].lower())
+...
+&gt;&gt;&gt; word_stems = stems.samples()
+&gt;&gt;&gt; word_stems.sort()
+&gt;&gt;&gt; word_stems[20:40]
+['"generator-bas', '"implement', '"lazili', '"magic"', '"partial',
+'"pluggable"', '"primitives"', '"repres', '"secur', '"semi-coroutines."',
+'"state', '"understand', '"weightless', '"whatev', '#', '#-----',
+'#----------', '#-------------', '#---------------', '#b17:']
+
+</pre></div><p>
+  Looking at a few stems, the collection does not look all that useful
+  for indexing.  Many are not really words at all, others are compound
+  phrases with dashes, and extraneous punctuation makes it in with the
+  words.  Let us try it with better tokenization:
+</p>
+<div class="code-sample"><h4>Stemming using clever heuristics in tokenization</h4><pre>
+&gt;&gt;&gt; article = TS().text_splitter(open('cp-b17.txt').read())
+&gt;&gt;&gt; stems = FreqDist()
+&gt;&gt;&gt; for word in article:
+...     stems.inc(stemmer.stem_word(word.lower()))
+...
+&gt;&gt;&gt; word_stems = stems.samples()
+&gt;&gt;&gt; word_stems.sort()
+&gt;&gt;&gt; word_stems[60:80]
+['bool', 'both', 'boundari', 'brain', 'bring', 'built', 'but', 'byte',
+'call', 'can', 'cannot', 'capabl', 'capit', 'carri', 'case', 'cast',
+'certain', 'certainli', 'chang', 'charm']
+
+</pre></div><p>
+  Here you can see several words that have several possible expansions,
+  and all the words look like words, or like morphemes.  Tokenization
+  matters a lot for random text collections; in fairness to NLTK, its
+  bundled corpora have been packaged for easy and accurate tokenization
+  with <code>WSTokenizer()</code>.  For a robust real-world indexer, use robust
+  tokenization.
+</p>
+<h3>Tagging, Chunking And Parsing</h3>
+ <p>
+  The largest part of NLTK consists of various parsers, of varying
+  levels of sophistication.  For the most part, this introduction will
+  not explain their details, but I would like to give a first brush at
+  what they hope to achive.
+</p>
+<p>
+  As background, remember that tokens are special dictionaries--in
+  particular, ones that can contain a key <code>TAG</code> to indicate the
+  grammatical role of a word.  NLTK corpora documents often come
+  pre-tagged for parts-of-speech; but you can certainly add your own
+  tags to untagged documents.
+</p>
+<p>
+  "Chunking" is something like "parsing lite."  That is, chunking is
+  based either on existing markup of grammatical components, or is
+  something you add manually--or semi-automatically using regular
+  expressions and program logic.  But it is not really parsing, properly
+  speaking (no production rules as such).  For example:
+</p>
+<div class="code-sample"><h4>Chunk parsing/tagging: words and and bigger bits</h4><pre>
+&gt;&gt;&gt; from nltk.parser.chunk import ChunkedTaggedTokenizer
+&gt;&gt;&gt; chunked = "[ the/DT little/JJ cat/NN ] sat/VBD on/IN [ the/DT mat/NN ]"
+&gt;&gt;&gt; sentence = Token(TEXT=chunked)
+&gt;&gt;&gt; tokenizer = ChunkedTaggedTokenizer(chunk_node='NP')
+&gt;&gt;&gt; tokenizer.tokenize(sentence)
+&gt;&gt;&gt; sentence['SUBTOKENS'][0]
+(NP: &lt;the/DT&gt; &lt;little/JJ&gt; &lt;cat/NN&gt;)
+&gt;&gt;&gt; sentence['SUBTOKENS'][0]['NODE']
+'NP'
+&gt;&gt;&gt; sentence['SUBTOKENS'][0]['CHILDREN'][0]
+&lt;the/DT&gt;
+&gt;&gt;&gt; sentence['SUBTOKENS'][0]['CHILDREN'][0]['TAG']
+'DT'
+&gt;&gt;&gt; chunk_structure = TreeToken(NODE='S', CHILDREN=sentence['SUBTOKENS'])
+(S:
+  (NP: &lt;the/DT&gt; &lt;little/JJ&gt; &lt;cat/NN&gt;)
+  &lt;sat/VBD&gt;
+  &lt;on/IN&gt;
+  (NP: &lt;the/DT&gt; &lt;mat/NN&gt;))
+
+</pre></div><p>
+  Chunking, as mentioned, can be done with the class
+  <code>nltk.tokenizer.RegexpChunkParser</code> using pseudo-regular-expressions to
+  describe series of tags making up a grammatical element, e.g. (from
+  tutorial):
+</p>
+<div class="code-sample"><h4>Chunking with regular expressions on tags</h4><pre>
+&gt;&gt;&gt; rule1 = ChunkRule('&lt;DT&gt;?&lt;JJ.*&gt;*&lt;NN.*&gt;',
+...               'Chunk optional det, zero or more adj, and a noun')
+&gt;&gt;&gt; chunkparser = RegexpChunkParser([rule1], chunk_node='NP', top_node='S')
+&gt;&gt;&gt; chunkparser.parse(sentence)
+&gt;&gt;&gt; print sent['TREE']
+(S: (NP: &lt;the/DT&gt; &lt;little/JJ&gt; &lt;cat/NN&gt;)
+  &lt;sat/VBD&gt; &lt;on/IN&gt;
+  (NP: &lt;the/DT&gt; &lt;mat/NN&gt;))
+
+</pre></div><p>
+  True parsing gets us into a lot of theoretical areas.  For example,
+  top-down parsers are guaranteed to find every possible production, but
+  can be extremely slow because of frequence (exponention order)
+  backtracking.  Shift-reduce parsing is much more efficient, but can
+  miss some productions.  In either case, a grammar is declared in a
+  manner similar to those created to parse artificial languages.  This
+  column has looked at some of those: <code>SimpleParse</code>, <code>mx.TextTools</code>,
+  <code>Spark</code>, <code>gnosis.xml.validity</code>.
+</p>
+<p>
+  Even past top-down and shift-reduce parser, NLTK also offers "chart
+  parsers" that create partial hypotheses that a given sequence can be
+  continued to fulfill a rule.  This approach can be both efficient and
+  complete.  A quick (toy) example illustrates:
+</p>
+<div class="code-sample"><h4>Defining basic productions for a context-free grammar</h4><pre>
+&gt;&gt;&gt; from nltk.parser.chart import *
+&gt;&gt;&gt; grammar = CFG.parse('''
+...    S -&gt; NP VP
+...    VP -&gt; V NP | VP PP
+...    V -&gt; "saw" | "ate"
+...    NP -&gt; "John" | "Mary" | "Bob" | Det N | NP PP
+...    Det -&gt; "a" | "an" | "the" | "my"
+...    N -&gt; "dog" | "cat" | "cookie"
+...    PP -&gt; P NP
+...    P -&gt; "on" | "by" | "with"
+...    ''')
+&gt;&gt;&gt; sentence = Token(TEXT='John saw a cat with my cookie')
+&gt;&gt;&gt; WSTokenizer().tokenize(sentence)
+&gt;&gt;&gt; parser = ChartParser(grammar, BU_STRATEGY, LEAF='TEXT')
+&gt;&gt;&gt; parser.parse_n(sentence)
+&gt;&gt;&gt; for tree in sentence['TREES']: print tree
+(S:
+  (NP: &lt;John&gt;)
+  (VP:
+    (VP: (V: &lt;saw&gt;) (NP: (Det: &lt;a&gt;) (N: &lt;cat&gt;)))
+    (PP: (P: &lt;with&gt;) (NP: (Det: &lt;my&gt;) (N: &lt;cookie&gt;)))))
+(S:
+  (NP: &lt;John&gt;)
+  (VP:
+    (V: &lt;saw&gt;)
+    (NP:
+      (NP: (Det: &lt;a&gt;) (N: &lt;cat&gt;))
+      (PP: (P: &lt;with&gt;) (NP: (Det: &lt;my&gt;) (N: &lt;cookie&gt;))))))
+
+</pre></div><p>
+  A probabilistic context free grammar (or PCFG) is a context free
+  grammar that associates a probability with each of its productions.
+  Again, parsers for probabilistic parsing are also bundled with NLTK.
+</p>
+<h3>Conclusion</h3>
+ <p>
+  There are important features of NLTK this brief introduction could not
+  get to.  For example, NLTK has a whole framework for text
+  classification using statistical techniques like "naive Bayesian" and
+  "maximum entropy" models.  Heady stuff that I cannot yet explain,
+  even if I had space.  But I think even NLTK's lower layers make it
+  look like a useful framework for both pedagogical and practical
+  applications.
+</p>
+<h3>Resources</h3>
+ <p>
+  The Natural Language Toolking is hosted by Sourceforge, and both its
+  home page and associated documentation, downloads, and various other
+  resources can be found there.  The home page itself is at:
+</p>
+<blockquote>
+   <a href="http://nltk.sourceforge.net/index.html">http://nltk.sourceforge.net/index.html</a>
+</blockquote>
+<p>
+  The documentation for NLTK is rooted at:
+</p>
+<blockquote>
+   <a href="http://nltk.sourceforge.net/index.html">http://nltk.sourceforge.net/index.html</a>
+</blockquote>
+<p>
+  From there you can find API reference guides to several versions of
+  the library.  At the time I wrote this, 1.3 was stable, and 1.4 was in
+  alpha; but when you read it, most likely later versions will exist.
+</p>
+<p>
+  Of particular use to the new user of NLTK--including me, as I wrote
+  this article--are the series of tutorials at:
+</p>
+<blockquote>
+   <a href="http://nltk.sourceforge.net/tutorial/index.html">http://nltk.sourceforge.net/tutorial/index.html</a>
+</blockquote>
+<p>
+  Nine tutorials (as of this writing) generally cover respective
+  subpackages of NLTK; three supplementary tutorials introduce Python
+  more generally for linguistics students who may not already know the
+  language (or for other folks). These tutorials are helpful and well
+  written, but occasional details seem not to match the most current API
+  version.
+</p>
+<p>
+  An earlier Charming Python column was about "Developing a full-text
+  indexer in Python", and presented the tool <code>gnosis.indexer</code>:
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/xml/library/l-pyind.html">http://www-106.ibm.com/developerworks/xml/library/l-pyind.html</a>
+</blockquote>
+<p>
+  Several earlier installments have looked at parsers for artificial
+  languages:
+</p>
+<blockquote>
+    SimpleParse:
+   <a href="http://www-106.ibm.com/developerworks/linux/library/l-simple.html">http://www-106.ibm.com/developerworks/linux/library/l-simple.html</a>
+</blockquote>
+<blockquote>
+    Spark:
+   <a href="http://www-106.ibm.com/developerworks/linux/library/l-spark.html">http://www-106.ibm.com/developerworks/linux/library/l-spark.html</a>
+</blockquote>
+<blockquote>
+    gnosis.xml.validity:
+   <a href="http://www-106.ibm.com/developerworks/linux/library/l-cpdec.html">http://www-106.ibm.com/developerworks/linux/library/l-cpdec.html</a>
+</blockquote>
+<blockquote>
+    mx.TextTools:
+   <a href="http://gnosis.cx/publish/programming/charming_python_14.html">http://gnosis.cx/publish/programming/charming_python_14.html</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz had no idea he was writing <em>prose</em> this whole time. David may
+  be reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a> Check out David's book <cite>Text Processing in
+  Python</cite> (http://gnosis.cx/TPiP/).
+</p>
+</body></html>

@@ -1,0 +1,183 @@
+XML ZONE TIP: Asynchronous SAX:
+Simple API for XML as a Long-Running Event Processor
+
+David Mertz, Ph.D.
+Daemon, Gnosis Software, Inc.
+May, 2003
+
+    Even though every abstract description of SAX prominently
+    mentions that SAX is an event-driven interface, very few SAX
+    applications really -use- SAX for event-driven programming.
+    Instead, mostly SAX is just a way to save memory while
+    extracting data from an XML document. However, over
+    asynchronous channels--such as a socket the produces data
+    over a long duration--SAX is a wonderfully light-weight
+    programming technique for parsing incoming messages.
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  Usually you think of XML as a format for files. Parsing an XML
+  file using SAX means opening the file, sequentially reading
+  through it to find tags and contents, processing each occurrence,
+  then closing the file when the parsing is done. But the XML
+  specification applies just as well to asynchronous streams as it
+  does to disk files. And since SAX is strictly unidirectional, it
+  works great on streams.
+
+  A stream can be a lot of things, in principle, but most of the
+  time in Internet programming, we think of BSD sockets--an
+  interface implemented on all modern operating systems. There is
+  no reason, however, that the techniques in this tip could not
+  also be used for a serial-port instrument connection, to monitor
+  GUI events, or for similar long running and intermittent data
+  streams.
+
+  The basic idea this tip promotes is that XML is often an
+  excellent choice for a wire protocol, and SAX is the most natural
+  technique for coding client applications that utilize this
+  protocol. While XML's verboseness can be a problem for monitoring
+  a large volumes of data, for moderate streams of ongoing data,
+  SAX (and XML itself) is a good choice for a communications API.
+
+AN IMPLEMENTATION
+------------------------------------------------------------------------
+
+  What I wanted as a test case in this article was some sort of
+  non-finite data stream provided by a remote host that is useful
+  to a client. Since I maintain a website, an obvious example was a
+  way of remotely monitoring hits to my site--they continue
+  forever, at an irregular rate, and the total data bandwidth is
+  moderate. It could be useful, or at least interesting, to let a
+  utility on my home system keep track of hits to my web server.
+
+  On my particular web server, log records are appended to a
+  file, one per line, with mostly space-separated fields.  But
+  some quoted fields have internal spaces, so parsing a line is a
+  little bit complicated.  Now certainly, I -could- send these
+  raw log lines directly to the client, as they are written.  But
+  XML has several nice features that readers are familiar with:
+  it is somewhat self-documenting, it allows variations in
+  attribute order and whitespace, within limits a schema can be
+  enhanced over time and maintain backward compatability.  And
+  specifically for my application, I could arrange to monitor
+  several web servers this same way, as long as each one
+  transmitted its log data in a common XML format.
+
+  My XML log server is a pretty basic socket application,
+  written in Python (but a different language would be fine for
+  server and/or client).  An abridged version looks like:
+
+      #-------- Server application: weblog-xml.py --------------#
+      from SocketServer import BaseRequestHandler, TCPServer
+      from time import sleep
+      import sys, socket
+      # ...Define hit_tag template and log_fields() function...
+      class WebLogHandler(BaseRequestHandler):
+          def handle(self):
+              print "Connected from", self.client_address
+              self.request.sendall('<hits>')
+              try:
+                  while True:
+                      for hit in LOG.readlines():
+                          self.request.sendall(hit_tag % log_fields(hit))
+                      sleep(5)
+              except socket.error:
+                  self.request.close()
+              print "Disconnected from", self.client_address
+      if __name__=='__main__':
+          global LOG
+          LOG = open('../access-log')
+          LOG.seek(0, 2)     # Start at end of current access log
+          srv = TCPServer(('',8888), WebLogHandler)
+          srv.serve_forever()
+
+  When a socket is opened, the document root element '<hits>' is
+  sent immediately, followed by new logged hits, as they occur (but
+  batched in 5 second blocks), with elements similar to:
+
+      #--------------- Sample <hit> XML element ----------------#
+      <hit
+        ip="210.8.XX.XXX"
+        timestamp="11/May/2003:01:47:53 -0500"
+        request="GET /publish/programming/code_recognizer.gif HTTP/1.1"
+        status="200"
+        bytes="12718"
+        referrer="http://gnosis.cx/publish/programming/neural_networks.htm"
+        agent="Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)"/>
+
+
+THE SAX CLIENT
+------------------------------------------------------------------------
+
+  In the server, I have not yet used SAX at all.  I just use
+  string formatting to compose XML elements.  In the client
+  application, SAX saves some work.  Here is my entire current
+  client application:
+
+      #---------- SAX-based log monitoring client.py ------------#
+      #!/usr/bin/env python
+      import socket
+      import xml.sax
+      from xml.sax.handler import ContentHandler
+      class AsyncWebLog(ContentHandler):
+          def startDocument(self):
+              print "Connected to gnosis.cx server"
+          def startElement(self, name, attrs):
+              if (name=='hit' and attrs['status']=='200'
+                              and attrs['referrer']!='-'):
+                  print attrs['referrer'],"->",attrs['request'].split()[1]
+      parser = xml.sax.make_parser()
+      parser.setContentHandler(AsyncWebLog())
+      sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+      sock.connect(('gnosis.cx', 8888))
+      try:
+          while 1:
+              xml_data = sock.recv(8192)
+              parser.feed(xml_data)
+      finally:
+          sock.close()
+
+  Since the log records are already nicely formatted as XML,
+  parsing their elements is essentially effortless.  All I need
+  to do is define a content handler that has a '.startElement()'
+  method; and do something desirable inside that method.  Just to
+  be a little friendly, I also have the client acknowledge the
+  connection with a message--the message is triggered by the root
+  '<hits>' element sent by the sever.
+
+  My '.startElement()' method makes a few decisions about what it
+  wants to display.  I decide only to process elements named
+  '<hit>'--perhaps an enhanced server will start sending
+  other sorts of XML elements as messages as well; my client
+  will happily ignore them without choking on the stream.
+  Quite a few attributes are available, but I decided to focus
+  just on the referrers to my pages.  The boolean algebra of
+  checking various such attributes is demonstrated by my test for
+  only successfully delivered pages with known referrers.  After
+  that, I print a description to my client screen.  Obviously, a
+  more elaborate client application could use a GUI to diplay
+  this information, or otherwise manipulate and process the
+  received data.
+
+QUICK FINISH
+------------------------------------------------------------------------
+
+  With my client and server running, every once in a while my
+  local terminal updates with a list of a few surfers who have
+  followed links to get to my website.  As long as I leave these
+  processes running, I will get updates forever--the underlying
+  XML "document" has no size limit.  Any application that is
+  similar in the minimal respect of monitoring a long-lasting
+  data stream can usefully--and easily--utilize the XML and SAX
+  libraries already available with their favorite programming
+  tools to achieve this purpose.
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi} David
+  Mertz uses a wholly unstructured brain to write about structured
+  document formats. David may be reached at mertz@gnosis.cx; his
+  life pored over at http://gnosis.cx/publish/. And buy his book:
+  http://gnosis.cx/TPiP/.

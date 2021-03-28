@@ -1,0 +1,405 @@
+CHARMING PYTHON #11 (20000096)
+What's New in Python 2.0?
+
+David Mertz, Ph.D.
+Auteur, Gnosis Software, Inc.
+January, 2001
+
+    Python programmers have recently gotten a shiny new toy with
+    the release of version 2.0.  Python 2.0 builds on the
+    strengths of previous Python versions, while adding a number
+    of new conveniences and capabilities.  This article contains
+    its author's impressions of Python's newest versions, and
+    some tips on using it effectively.
+
+
+WHAT IS PYTHON 2?
+------------------------------------------------------------------------
+
+  Python is a freely available, very-high-level, interpreted
+  language developed by Guido van Rossum.  It combines a clear
+  syntax with powerful (but optional) object-oriented semantics.
+  Python is available for almost every computer platform you
+  might find yourself working on, and has strong portability
+  between platforms.
+
+  Python 2.0, which was released in October 2000, introduces a
+  number of new language features, and includes some new standard
+  modules.  One of Guido van Rossum's virtues -- probably the one
+  that best earns him the affectionate title "benevolent dictator
+  for life (BDFL)" in the Python community -- is his conservatism
+  in changing Python.  Very little changes between Python
+  versions, and what does change tends to be considered and
+  discussed for months or years in advance.  This makes for great
+  backward and foreward compatibility in Python, and for a
+  consistency in running Python programs across platforms and
+  versions.  Therefore, even with a fairly moderate number of
+  changes, Python 2.0 represents a pretty large jump in the
+  language definition of Python 1.5x.  Fortunately, Python 2.0
+  still maintains great backward compatibility, and the changes
+  that have been made are generally very "pythonic" in character.
+
+  By the way, it is worth noting that a short-lived Python 1.6
+  release was made in September 2000.  This release is a bit of a
+  curiousity -- its existence derives from contractual
+  obligations by the Python core development team, who were
+  finding a new organizational home during the same period as the
+  1.6/2.0 development.  For the most part Python 1.6 resembles
+  Python 2.0, but if you are installing a new version, it is best
+  just to install Python 2.0.
+
+  Let's look at some specifics.  Check the references for a more
+  exhaustive summary of changes.  This article contains a more
+  subjective evaluation of what the author finds most important
+  and interesting, and some changes might not be addressed here.
+
+
+LIST COMPREHENSIONS AND ZIP()
+------------------------------------------------------------------------
+
+  For me, probably the most exciting new feature of Python 2.0 is
+  the addition of -list comprehensions-.  For my oddball readers
+  with a math background, it might be interesting to note that
+  this capability is sometimes called "ZF-comprehension" in other
+  functional languages, after the Axiom of Comprehension in
+  Zermelo-Frankel set theory.  If that note does not mean
+  anything to you, do not worry about it, the feature is just as
+  powerful and intuitive without the mathematical arcana.
+
+  If you have been reading carefully, you probably noticed an odd
+  noun phrase in the previous paragraph:  "other functional
+  languages." Even if you did not realize it, as a Python
+  programmer you have been programming in a (mixed) functional
+  language since Python 1.0.  Of course, if you are not in the
+  habit of using the builtin functions 'lambda()', 'map()',
+  'reduce()' and 'filter()' you have not been using these
+  functional features; but even if you do use these, Python has
+  always made it easy to avoid thinking about functional
+  paradigms (unless you want to think about them, which Python
+  also makes easy).
+
+  In any case, list comprehension is a way of doing much of what
+  Python's functional builtins do, but in a much more compact way
+  that is simultaneously easier to read and understand.  Let's
+  start out with a simple example of list comprehensions in
+  action:
+
+      #--------------- Python Interactive Session -------------#
+      >>> xs = (1,2,3,4,5)
+      >>> ys = (9,8,7,6,5)
+      >>> bigmuls = [(x,y) for x in xs for y in ys if x*y > 25]
+      >>> print bigmuls
+      [(3, 9), (4, 9), (4, 8), (4, 7), (5, 9), (5, 8), (5, 7), (5, 6)]
+
+  What we have done in the example is create a list of tuples
+  where each tuple element is drawn from other lists, and where
+  each list element satisfies some property.  Without the 'if'
+  clause, we would just create a permutation (which is often
+  useful in itself); but with the 'if' clause we can create a
+  'filter()' type pruning of the list.  Multiple 'if' clauses are
+  allowed in one list comprehension, by the way.
+
+  There is nothing fundamentally new in list comprehension
+  capability; certainly the same effect could be achieved in
+  Python 1.5x, but less clearly.  For example, the following
+  more verbose (and less clear) techniques can do the same thing:
+
+      #--------------- Python Interactive Session -------------#
+      >>> # Functional-style spagetti for list comprehension
+      >>> filter(lambda (x,y): x*y > 25,
+      ...        map(None, xs*len(ys),
+      ...                  reduce(lambda s,t: s+t,
+      ...                         map(lambda y: [y]*len(xs), ys))))
+      [(3, 9), (4, 9), (5, 9), (4, 8), (5, 8), (4, 7), (5, 7), (5, 6)]
+
+      >>> # Nested loop procedural style for list comprehension
+      >>> bigmuls = []
+      >>> for x in xs:
+      ...     for y in ys:
+      ...         if x*y > 25:
+      ...             bigmuls.append((x,y))
+      >>> print bigmuls
+      [(3, 9), (4, 9), (4, 8), (4, 7), (5, 9), (5, 8), (5, 7), (5, 6)]
+
+  In the example I have given, the nested procedural loops are
+  clearer than the functional-style calls (perhaps readers will
+  notice a better functional approach).  But both are far less clear
+  than the list comprehension style.
+
+  With some programmer practice, list comprehensions can
+  substitute for both most uses of functional-style builtins and
+  also for many nested loops.
+
+  One new builtin function in Python 2.0 is particularly useful
+  in conjunction with list comprehensions.  You can think of what
+  'zip()' does by imagining the teeth of a zipper: two or more
+  sequences are combined into a list of tuples (with each tuple
+  having one element from each calling sequence.  This is often
+  useful if you do not want a list comprehension that uses a
+  complete permutation of lists, but merely one that utilized
+  corresponding elements of multiple lists.  For example:
+
+      #--------------- Python Interactive Session -------------#
+      >>> zip(xs,ys)
+      [(1, 9), (2, 8), (3, 7), (4, 6), (5, 5)]
+      >>> [(x,y) for (x,y) in zip(xs, ys) if x*y > 20]
+      [(3, 7), (4, 6), (5, 5)]
+
+
+UNICODE
+------------------------------------------------------------------------
+
+  Another big addition for Python 2.0 is Unicode support.  If you
+  need to use multinational character sets in your programs, this
+  capability is absolutely essential.  Of course, if like me you
+  have not had any specific requirement for characters outside
+  ASCII, the Unicode support does not really matter.
+  Fortunately, the implementation of Unicode in Python 2.0 is
+  extremely well designed, and does not get in the way of
+  anything else.
+
+  Unicode strings may be represented in several ways.  For
+  escaped characters, the sequence "\uHHHH" can be used, where
+  -HHHH- is a four digit hexadecimal number.  Longer string can
+  be entered using the new Unicode quoting syntax: u"string".
+  This is very similar in style to the r"string" quoting style
+  which is used for composing regular expressions without
+  resoving escape codes at the Python level (because regular
+  expressions use some of the same escape codes).  Of course, to
+  use the Unicode quoting syntax, you need to have a text editor
+  capable of entering Unicode characters between the quotes.
+
+  Conversions between 8-bit strings and Unicode strings -- and
+  also between different Unicode encodings -- is performed using
+  the new 'codecs' module.
+
+
+FUNCTIONAL/METHOD CALL SYNTAX
+------------------------------------------------------------------------
+
+  Another nice syntax enhancement was made to function calls.  It
+  is now possible to call functions directly with a tuple of
+  arguments and/or a dictionary of keyword arguments.  As with
+  list comprehensions, no fundamentally new capability is added,
+  but the expression of some common chores is more concise and
+  more clear.  Methods in Python, of course, are just functions
+  that are bound to class instances, so everything works the same
+  for functions and methods.
+
+  Python programmers will be familiar with the previous syntax
+  for defining extra positional and keyword arguments within a
+  function definition.  For example, we might have:
+
+      #--------------- Python Interactive Session -------------#
+      >>> def myfunc(this, that, *extras, **keywords):
+      ...     print "Required arguments:", this, that
+      ...     print "Extra arguments:",
+      ...     for arg in extras: print arg,
+      ...     print "\nDictionary arguments:"
+      ...     for key,val in keywords.items(): print "**", key, "=", val
+      ...
+      >>> myfunc(1)
+      Traceback (innermost last):
+        File "<interactive input>", line 1, in ?
+      TypeError: not enough arguments; expected 2, got 1
+      >>> myfunc(1,2)
+      Required arguments: 1 2
+      Extra arguments:
+      Dictionary arguments:
+      >>> myfunc(1,2,3,4,5)
+      Required arguments: 1 2
+      Extra arguments: 3 4 5
+      Dictionary arguments:
+      >>> myfunc(1,2,3, spam=17, eggs=32)
+      Required arguments: 1 2
+      Extra arguments: 3
+      Dictionary arguments:
+      ** spam = 17
+      ** eggs = 32
+
+  Python 2.0 adds the same convention for function -calls- as is
+  used for function definitions.  For example:
+
+      #--------------- Python Interactive Session -------------#
+      >>> argdict = {'spam':'tasty', 'eggs':'over easy'}
+      >>> arglist = [1,2,3,4,5]
+      >>> myfunc(*arglist, **argdict)
+      Required arguments: 1 2
+      Extra arguments: 3 4 5
+      Dictionary arguments:
+      ** spam = tasty
+      ** eggs = over easy
+
+  Achieving the same effect (passing arguments via named lists,
+  perhaps ones created dynamically at runtime) was always
+  possible in Python.  But the new calling syntax is more
+  convenient than the old use of the 'apply()' function was.
+
+
+AUGMENTED ASSIGNMENT
+------------------------------------------------------------------------
+
+  Python now has a shortcut in assignments that will be familiar
+  to programmers of C, Perl, Awk, Java, and a variety of other
+  languages.  It is now possible to stick an operator at the
+  beginning of an equal-sign to change the assigned value of a
+  variable based on its old value.  For example:
+
+      #--------------- Python Interactive Session -------------#
+      >>> i = 1
+      >>> i += 1 ; i
+      2
+      >>> i *= 3 ; i
+      6
+      >>> i /= 2 ; i
+      3
+      >>> str = "Spam and eggs"
+      >>> str += "...and sausage and spam and bacon" ; str
+      'Spam and eggs...and sausage and spam and bacon'
+
+  Semantically, the augmented operators do exactly the same thing
+  as repeating the left-side variable on the left side of a plain
+  assignment, and following it with the corresponding operator
+  and second operand.  So in that sense, this is just syntactic
+  sugar.
+
+  It is worth noticing, however, that the augmented assignments
+  are actually an improvement in terms of performance.  I have
+  not benchmarked it myself, but discussion indicates that using
+  an augmented assignments saves a lookup and some object
+  allocation.  For numbers, this is insignificant; but if you
+  happen to be working with multi-megabyte strings, use of
+  augmented assignment can speed things up and reduce memory
+  usage.
+
+
+GARBAGE COLLECTION
+------------------------------------------------------------------------
+
+  The issue of Python's memory management is probably pretty
+  arcane for most day-to-day Python programmers.  Traditionally,
+  Python has used a reference counting scheme to delete objects
+  when they are no longer accessible from any name.  However, a
+  reference counting methodology is theoretically prone to
+  leaking memory if cyclic references are used in a program.  For
+  example, this code will break the reference counting:
+
+      #------------ Cyclical references in Python -------------#
+      >>> class MyClass: pass
+      ...
+      >>> myobject = MyClass()
+      >>> myobject.me = myobject
+      >>> del myobject
+
+  At this point, it is impossible to access 'myobject', but it
+  will not have been deleted, since the reference count was
+  incremented twice, but only decremented once.
+
+  As bad as this might sound, most programmers will never
+  experience any actual problems due to code like the above.  In
+  most cases, cyclical references will not be used in the first
+  place, and even if they are, most times the memory leakage will
+  be small (you can easily construct artificial cases of
+  dangerous behavior; for example, add a 'myobject.big='#'*10**6
+  to the above example).
+
+  In any case, Python 2.0 adds a compile-time option for
+  mark-and-sweep garbage collection (GC).  Most distributions of
+  Python 2.0 seem to be compiled using this option; but if you
+  need to, you can compile your own Python version that turns off
+  the garbage collection option.  In either case, reference
+  counting is still used, it is just a question of whether leaks
+  like the above are cleaned up.
+
+  On some platforms, like embedded systems, GC may be
+  undesirable.  Garbage collection takes some CPU cycles (not a
+  lot, but some).  Perhaps more importantly, reference counting
+  is determinate in program behavior, while garbage collection is
+  not.  That is, you never know for sure when a garbage
+  collection will eat a few CPU cycles; therefore, using the GC
+  version of Python will cause the identical program to behave
+  differently (in terms of timings) from run to run.
+
+  These issues are fascinating theoretically, but most
+  programmers should just ignore them from here out.  Whatever
+  Python distribution you pick up will almost certainly do the
+  right thing for the platform you are using; unless you know
+  enough to know exactly why you want to enable or disable GC,
+  just do not worry about it.
+
+
+PRINT DIRECTION
+------------------------------------------------------------------------
+
+  As good a job as van Rossum and the rest of the team have done
+  with Python 2.0, they also introduced one wart in Python.  It
+  does something moderately useful, but in my opinion (and also
+  in that of many other Python programmers), it introduces a
+  brand new (and ugly) syntactic feature where none is needed.
+  Most programmers suspect this imperfection is merely a ruse,
+  however, to make the simplicity and beauty of the rest of
+  Python shine even more brightly.
+
+  The 'print' statement performs a bit of magic that the
+  '.write()' method of file objects does not (and sys.stdout is
+  just another file object that 'print' writes to).  'print'
+  allows multiple arguments, each of any Python type.  The
+  trailing comma conveniently allows line continuation between
+  'print' statements, while the default writes each bunch of
+  stuff to its own line.  Overall, 'print' is just a handy way to
+  get some information from a program to the console.
+
+  A lot of Python programmers have wanted that same 'print' mojo
+  to be available for writing to other file objects (such as
+  sys.stderr, regular files, or "file-like" objects that various
+  modules provide).  I think the right way to do this would be to
+  add a '.print()' method to file objects and do the magic there.
+  But Python 2.0 adds this capability by adding the "redirection
+  operator" '>>' to the 'print' statement.  For example:
+
+      #--------------- Python Interactive Session -------------#
+      >>> import sys
+      >>> print >> sys.stderr, "spam", [1,2,3], 45.2
+      spam [1, 2, 3] 45.2
+
+  This works -- and it adds a nice capability -- but it nudges
+  Python just a hair closer to the "executable line-noise" feel
+  of certain other programming languages.
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  The Python 2.0 CHANGELOG can be found at:
+
+    http://python.org/2.0/#news
+
+  A.M. Kuchling and Moshe Zadka have written a good (and closer
+  to official) summary of changes in Python 2, logically called
+  "What's New in Python 2.0:
+
+    http://python.org/2.0/new-python.html
+
+  A very nice distribution of Python 2.0 has been created recently by
+  ActiveState.  The ActiveState distribution bundles a number of
+  useful tools that will not necessarily be found by default in
+  other distributions.  Find it at:
+
+    http://activestate.com/Products/ActivePython/Download.html
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz believes that the real is the rational; and that
+  the avant-garde remains at the cutting-edge.  But he regrets
+  that nostalgia just isn't what it used to be. David may be
+  reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/.  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+
+
+
+
+

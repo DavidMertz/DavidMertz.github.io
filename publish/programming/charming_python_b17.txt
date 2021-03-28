@@ -1,0 +1,429 @@
+CHARMING PYTHON #B17: The Python Enterprise Application Kit.
+A first look at protocols in Python
+
+David Mertz, Ph.D.
+Your Obedient Writer, Gnosis Software, Inc.
+March, 2004
+
+    PEAK is a Python framework for rapidly developing and reusing
+    application components. While Python itself is already a
+    very-high-level language, PEAK provides even higher abstractions,
+    largely through clever use of metaclasses and other advanced Python
+    techniques. In many ways PEAK does for Python what J2EE does for
+    Java.  Part of the formalization in PEAK comes in the explicit
+    specification of protocols, specifically in the separately available
+    package [PyProtocols].
+
+THE PYTHON ENTERPRISE APPLICATION KIT
+------------------------------------------------------------------------
+
+  If you felt like trying to get a handle on metaclasses, or wrestling
+  with asynchronous programming in Twisted, or thinking about object
+  oriented programming with multiple dispatch, made your brain melt,
+  then you ain't seen nothing yet! PEAK combines some elements of all of
+  these into a component programming framework. PEAK is still rough
+  around the edges. Like Twisted, PEAK's documentation, though
+  extensive, is difficult to penetrate. But for all that, there is
+  something enormously interesting about this project, led by Python
+  guru Phillip J. Eby; and, I think, some opportunities for extremely
+  productive and ultra-high-level application development.
+
+  The PEAK package is composed a number of subpackages for different
+  purposes.  Some significant subpackages are [peak.api],
+  [peak.binding], [peak.config], [peak.naming], and [peak.storage].
+  Most of those names are fairly self-explanatory.  The subpackage
+  [peak.binding] is for flexibly connecting components; [peak.config]
+  lets you store "lazily immutable" data, which are involved in
+  declarative application programming; [peak.naming] lets you create
+  globally unique identifiers for (networked) resources; [peak.storage]
+  is pretty much exactly what the name suggests, it lets you manage
+  databases and persistence.
+
+  For this article, however, what we will be interested in is
+  [peak.api]. In particular, the package PyProtocols which is available
+  separately provides an infrastructure for other PEAK subpackages. A
+  version of the PyProtocols package is included within
+  [peak.api.protocols]. For now though, I am interested in looking at
+  the separate [protocols] package.  In later installments, I will
+  return to other parts of PEAK.
+
+WHAT IS A PROTOCOL?
+-----------------------------------------------------------------------
+
+  A protocol, abstractly, is simply a set of behaviors that an object
+  agrees to conform to.  Strongly-typed programming languages--including
+  Python--have a collection of basic types, each of which has such a
+  collection of guaranteed behaviors:  Integers know how to multiply
+  themselves together; lists know how to iterate over their contents;
+  dictionaries know how to find a value by key; files know how to read
+  and write bytes; etc.  The collection of behaviors you can expect out
+  of built-in types constitutes a -protocol- they implement.  An object
+  that codifies an protocol is known as an -interface-.
+
+  For standard types, it is not too difficult to explicitly list all the
+  behaviors implemented (though these change a bit between Python
+  version; or certainly between different programming languages).  But
+  at the boundaries--for objects that belong to custom classes--it is
+  difficult to state definitively what constitutes "dictionary-like" or
+  "file-like" behavior.  Most of the time, a custom object that
+  implements only a subset--even a fairly small subset--of, e.g., the
+  methods of a built-in 'dict' are dictionary-like enough for purposes
+  at hand.  It would be nice, however, to be able to explicitly codify
+  what an object needs to be able to do to be used within a given
+  function, module, class, or framework.  That's (part of) what the
+  PyProtocols package does.
+
+  In programming languages that have static type declarations, you
+  generally need to -cast- or -convert- data from one type to another to
+  use it in a new context. In other languages, conversions are peformed
+  implicitly as a context requires them, and these are called
+  -coercions-. Python contains a mixture of casts and coercions, with a
+  usual preference for the former ("explicit is better than implicit").
+  You can add a float to an integer, and wind up with a more general
+  float as a result; but if you want to convert the string '"3.14"' into
+  a number, you need to use the explicit constructor 'float("3.14")'.
+
+  PyProtocols provides a capability called "adaptation," which is akin
+  to the eccentric CS concept of "partial typing." Adaptation might also
+  be thought of as "coercion on steroids." If an interface defines a set
+  of needed capabilities (i.e. object methods), adaptation--via the
+  function 'protocols.adapt()'--is a request to an object to do
+  "whatever is necessary" to provide the needed capabilities. Obviously,
+  if you have an explicit conversion function to turn an object of type
+  'X' into one of type 'Y' (where 'Y' implements some interface 'IY'),
+  that function suffices to adapt 'X' to protocol 'IY'. However,
+  adaptation in PyProtocols can do quite a bit more than this as well.
+  For example, even if you have never explicitly programmed a conversion
+  from type 'X' to type 'Y', 'adapt()' can often deduce a route to let
+  'X' provide the capabilities mandated by 'IY' (e.g. by finding
+  intermediate conversions to from 'X' to interface 'IZ', from 'IZ' to
+  'IW', and from 'IW' to 'IY').
+
+DECLARING INTERFACES AND ADAPTORS
+------------------------------------------------------------------------
+
+  There are quite a few different way within PyProtocols to create
+  interfaces and adaptors.  The PyProtocols documentation goes into
+  these techniques in quite a bit of detail--much of which cannot be
+  fully covered in this article.  We will get into a bit of the detail
+  below, but I think a useful approach here is to present a minimal
+  realistic example of actual PyProtocols code.
+
+  For the example, I decided to create a Lisp-like serialization of
+  Python objects. The representation is not literally any Lisp dialect,
+  and I am not particularly interested in the precise pros and cons of
+  this format. The idea here is just to create something that performs a
+  job similar to the function 'repr()' or the module [pprint], but with
+  a result that is both obviously different from and more easily
+  extensible/customizable than are aforsaid serializers. One very
+  un-Lisp-like choice was made for illustrative purposes: mappings are a
+  more fundamental data structure than are lists (a Python tuple or list
+  is treated as a mapping whose keys are sequential integers). Here is
+  the code:
+
+      #--------------- lispy.py PyProtocol definitions ----------------#
+      from protocols import *
+      from cStringIO import StringIO
+
+      #----- Define interfaces -----#
+      # Like unicode, & even support objects that don't explicitly support ILisp
+      ILisp = protocolForType(unicode, ['__repr__'], implicit=True)
+      # Class for interface, but no methods specifically required
+      class ISeq(Interface): pass
+      # Class for interface,  extremely simple mapping interface
+      class IMap(Interface):
+          def items():
+              "A requirement for a map is to have an .items() method"
+
+      #----- Define adapters -----#
+      # Define function to create an Lisp like representation of a mapping
+      def map2Lisp(map_, prot):
+          out = StringIO()
+          for k,v in map_.items():
+              out.write("(%s %s) " % (adapt(k,prot), adapt(v,prot)))
+          return "(MAP %s)" % out.getvalue()
+      # Use this func to convert an IMap-supporting obj to ILisp-supporting obj
+      declareAdapter(map2Lisp, provides=[ILisp], forProtocols=[IMap])
+      # Note that a dict implements an IMap interface with no conversion needed
+      declareAdapter(NO_ADAPTER_NEEDED, provides=[IMap], forTypes=[dict])
+
+      # Define and use func to adapt an InstanceType obj to the ILisp interface
+      from types import InstanceType
+      def inst2Lisp(o, p):
+          return "(CLASS '(%s) %s)" % (o.__class__.__name__, adapt(o.__dict__,p))
+      declareAdapter(inst2Lisp, provides=[ILisp], forTypes=[InstanceType])
+
+      # Define a class to adapt an ISeq-supporting obj to an IMap-supporting obj
+      class SeqAsMap(object):
+          advise(instancesProvide=[IMap],
+                 asAdapterForProtocols=[ISeq] )
+          def __init__(self, seq, prot):
+              self.seq = seq
+              self.prot = prot
+          def items(self):    # Implement the IMap required .items() method
+              return enumerate(self.seq)
+      # Note that list, tuple implement an ISeq interface w/o conversion needed
+      declareAdapter(NO_ADAPTER_NEEDED, provides=[ISeq], forTypes=[list, tuple])
+
+      # Define a lambda func to adapt str, unicode to ILisp interface
+      declareAdapter(lambda s,p: "'(%s)" % s,
+                     provides=[ILisp], forTypes=[str,unicode])
+
+      # Define a class to adapt several numeric types to ILisp interface
+      # Return a string (ILisp-supporting) directly from instance constructor
+      class NumberAsLisp(object):
+          advise(instancesProvide=[ILisp],
+                 asAdapterForTypes=[long, float, complex, bool] )
+          def __new__(klass, val, proto):
+              return "(%s %s)" % (val.__class__.__name__.upper(), val)
+
+  In the above code, I have declared a number of adapters in several
+  different ways.  In some cases, the code converts one interface to
+  another interface; in other cases types themselves are directly
+  adapted to an interface.  I would like you to notice a few things
+  about the code: (1) No adapter from a 'list' or 'tuple' to the 'ILisp'
+  interface was created; (2) No adapter is explicitly declared for the
+  'int' numeric type; (3) For that matter, no adapter directly from a
+  'dict' to 'ILisp' is declared.  How will the code 'adapt()' various
+  Python objects:
+
+      #------------- test_lispy.py object serialization ---------------#
+      from lispy import *
+      from sys import stdout, stderr
+      toLisp = lambda o: adapt(o, ILisp)
+      class Foo:
+          def __init__(self):
+              self.a, self.b, self.c = 'a','b','c'
+      tests = [
+        "foo bar",
+        {17:2, 33:4, 'biz':'baz'},
+        ["bar", ('f','o','o')],
+        1.23,
+        (1L, 2, 3, 4+4j),
+        Foo(),
+        True,
+      ]
+      for test in tests:
+          stdout.write(toLisp(test)+'\n')
+
+  When run, we get:
+
+      #------------- test_lispy.py serialization results --------------#
+      $ python2.3 test_lispy.py
+      '(foo bar)
+      (MAP (17 2) ('(biz) '(baz)) (33 4) )
+      (MAP (0 '(bar)) (1 (MAP (0 '(f)) (1 '(o)) (2 '(o)) )) )
+      (FLOAT 1.23)
+      (MAP (0 (LONG 1)) (1 2) (2 3) (3 (COMPLEX (4+4j))) )
+      (CLASS '(Foo) (MAP ('(a) '(a)) ('(c) '(c)) ('(b) '(b)) ))
+      (BOOL True)
+
+  Some explanation of our output would help.  The first line is simple,
+  we defined an adapter directly from a string to 'ILisp', the call to
+  'adapt("foo bar", ILisp)' just returns the results of the lambda
+  function.  The next line is just a smidgeon more complicated.  No
+  adapter takes us directly from a 'dict' to ILisp; but we can adapt
+  'dict' to 'IMap' without any adapter (we declared as much), and we
+  have an adapter from 'IMap' to 'ILisp'.  Likewise, for the later lists
+  and tuples, we can adapt either to 'ISeq', 'ISeq' to 'IMap', and
+  'IMap' to 'ILisp'.  PyProtocols performs all the magic of figuring out
+  what adaptation path to take, behind the scenes.  A old-style instance
+  is the same story as a string or an 'IMap'-supporting object, we have
+  an adaptation directly to 'ILisp'.
+
+  But wait a moment.  What about all the integers used in our 'dict' and
+  'tuple' objects?  Numeric 'long', 'complex', 'float' and 'bool' have
+  an explicit adapter, but 'int' lacks any.  The trick here is that an
+  'int' object already has a '.__repr__()' method; by declaring implicit
+  support as part of the 'ILisp' interface, we are happy to use the
+  existing '.__repr__()' method of objects as support for the 'ILisp'
+  interface.  In particular, as a built-in, integers are represented
+  with bare digits, rather than with a capitalized type intializer (e.g.
+  'LONG').
+
+ADAPTATION PROTOCOL
+------------------------------------------------------------------------
+
+  Let us look a bit more explicitly at what the function
+  'protocol.adapt()' does.  In our example we used the "declaration API"
+  to implicitly setup a collection of "factories" for adaptation.  This
+  API itself has several levels to it.  The "primitives" of the
+  declaration API are the functions: 'declareAdaptorForType()',
+  'declareAdaptorForObject()' and 'declareAdaptorForProtocol()'.  The
+  prior example did not use these, but rather higher level APIs like:
+  'declareImplementation()', 'declareAdaptor()', 'adviceObject()' and
+  'protocolForType()'.  In one case we saw the "magic" declaration
+  'advise()' within a class body.  The function 'advise()' allows a
+  large number of keyword arguments that configure the purpose and role
+  of a class so advised.  You may also 'advise()' a module object.
+
+  You do not need to use the declaration API to create adapatable
+  objects, or interfaces that know how to 'adapt()' objects to them.
+  Let us look at the call signature of 'adapt()', then explain the
+  procedure it follows.  A call to 'adapt()' looks like:
+
+      #--------------- Call signature of adapt() ----------------------#
+      adapt(component, protocol, [, default [, factory]])
+
+  What this says is that you would like to adapt the object 'component'
+  to the interface 'protocol'.  If 'default' is specified, it can be
+  returned as a wrapper object or modification for 'component'.  If
+  'factory' is specified as a keyword argument, a conversion factory can
+  be used to produce the wrapper or modification.  But let us back up a
+  little bit, and look at the complete sequence of actions attempted by
+  'adapt()' (in simplified code):
+
+      #---------- Hypothetical implementation of adapt() --------------#
+      if isinstance(component, protocol):
+          return component
+      elif hasattr(component,'__conform__'):
+          return component.__conform__(protocol)
+      elif hasattr(protocol,'__adapt__'):
+          return protocol.__adapt__(component)
+      elif default is not None:
+          return default
+      elif factory is not None:
+          return factory(component, protocol)
+      else:
+          NotImplementedError
+
+  There are a couple qualities that calls to 'adapt()' -should- maintain
+  (but this is advise to programmers, not generally enforced by the
+  library). Calls to 'adapt()' should be idempotent. That is, for an
+  object 'x' and a protocol 'P', we hope that:
+  'adapt(x,P)==adapt(adapt(x,P),P)'. In style, this intent is similar to
+  that behind iterator classes that return 'self' from the '.__iter__()'
+  method. Basically, you do not want re-adapting to the same thing you
+  already adapted to to produce fluctuating results.
+
+  It is also worth noting that adaptation might be lossy.  In order to
+  bring an object into conformance with an interface, it may be
+  inconvenient or impossible to keep all the information necessary to
+  re-create the initial object.  That is, in the general case, for
+  object 'x' and protocols 'P1' and 'P2':
+  'adapt(x,P1)!=adapt(adapt(adapt(x,P1),P2),P1)'.
+
+  Before concluding, let us look at another test script that takes some
+  advantage of the lower level behavior of 'adapt()':
+
+      #------------- test_lispy2.py object serialization --------------#
+      from lispy import *
+      class Bar(object):
+          pass
+      class Baz(Bar):
+          def __repr__(self):
+              return "Represent a "+self.__class__.__name__+" object!"
+      class Bat(Baz):
+          def __conform__(self, prot):
+              return "Adapt "+self.__class__.__name__+" to "+repr(prot)+"!"
+      print adapt(Bar(), ILisp)
+      print adapt(Baz(), ILisp)
+      print adapt(Bat(), ILisp)
+      print adapt(adapt(Bat(), ILisp), ILisp)
+
+      #------------- test_lispy2.py serialization results -------------#
+      $ python2.3 test_lispy2.py
+      <__main__.Bar object at 0x65250>
+      Represent a Baz object!
+      Adapt Bat to WeakSubset(<type 'unicode'>,('__repr__',))!
+      '(Adapt Bat to WeakSubset(<type 'unicode'>,('__repr__',))!)
+
+  It turns out the design of 'lispy.py' fails the idempotence goal.  A
+  good exercise might be to improve this design.  The representation as
+  'ILisp', however, is certainly lossy of the information in the
+  original object (which is fine).
+
+CONCLUSION
+------------------------------------------------------------------------
+
+  In feel, PyProtocols has some commonalities with other "exotic" topic
+  this column has addressed.  For one thing, the declaration API is,
+  well, declarative (in contrast to imperative).  Rather than giving the
+  steps and switches needed to perform an action, declarative
+  programming states that certain things hold, and lets a library or
+  compiler figure out the details about how to carry it out.  The names
+  "declare*()" and "advice*()" are well chosen from this perspective.
+
+  As well, however, I find that PyProtocols programming has a similarity
+  to programming with multiple dispatch, specifically with the
+  [gnosis.magic.multimethods] module that I have presented in another
+  installment.  My own module performs a relatively simple deduction of
+  relevant ancestor classes to dispatch, in contrast to PyProtocols'
+  determination of adaptation paths.  But both libraries tend to
+  encourage a similar kind of modularity in programming--lots of little
+ functions or classes to perform "pluggable" tasks, without necessarily
+ falling into rigid class hierarchies.  The style has an elegance to it,
+ in my opinion.
+
+RESOURCES
+------------------------------------------------------------------------
+
+  The reference/tutorial document "Component Adaptation + Open Protocols
+  = The PyProtocols Package" is the place to start in exploring the
+  intricacies of PyProtocols.
+
+    http://peak.telecommunity.com/protocol_ref/ref.html
+
+  The home page for PEAK itself is the place to start for an
+  introduction to the library as a whole.
+
+    http://peak.telecommunity.com/
+
+  And earlier _Charming Python_ installment looked at creating
+  declarative mini-languages within Python.
+
+    http://www-106.ibm.com/developerworks/library/l-cpdec.html
+
+  Another prior _Charming Python_ developed and presented a library to
+  enable multiple dispatch.
+
+    http://www-106.ibm.com/developerworks/linux/library/l-pydisp.html
+
+  Michele Simionato and I worte two articles on metaclasses, an
+  introduction.
+
+    http://www-106.ibm.com/developerworks/linux/library/l-pymeta.html
+
+  And a look at some intracacies of metaclasses behavior.
+
+    http://www-106.ibm.com/developerworks/library/l-pymeta2/
+
+  The Twisted library is similar to PEAK, both in containing a concept
+  of protocols and in various capabilities such as asynchronous
+  programming and providing an application configuration framework.
+
+  Part I was "Understanding asynchronous networking."
+
+    http://www-106.ibm.com/developerworks/linux/library/l-twist1.html
+
+  Part II covered "Implementing Web servers."
+
+    http://www-106.ibm.com/developerworks/linux/library/l-twist2.html
+
+  Part III looked at "Stateful Web servers and templating."
+
+    http://www-106.ibm.com/developerworks/linux/library/l-twist3.html
+
+  And finally, Part IV, "Secure clients and servers."
+
+    http://www-106.ibm.com/developerworks/linux/library/l-twist4.html
+
+  Part of what PEAK contains is a capability for something similar to
+  "weightless threads" that I described in two prior _Charming Python_
+  installments, "Generator-based State Machines."
+
+    http://www-106.ibm.com/developerworks/linux/library/l-pygen.html
+
+  And one on "Semi-Coroutines."
+
+    http://www-106.ibm.com/developerworks/linux/library/l-pythrd.html
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz believes in adaptation by selective programming. David may
+  be reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/. Check out David's book _Text Processing in
+  Python_ (http://gnosis.cx/TPiP/).
+

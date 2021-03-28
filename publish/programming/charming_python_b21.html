@@ -1,0 +1,508 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>CHARMING PYTHON #B21: Pyrex. -- Writing C code in Python syntax -- </title>
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Charming Python #b21: Pyrex.</h1>
+<h2>Writing C code in Python syntax</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Your Obedient Writer, Gnosis Software, Inc.<br>
+ October, 2004<br>
+ <br>
+</p>
+<blockquote>
+    Pyrex is a language specially designed for writing Python extension
+    modules. It's designed to bridge the gap between the nice,
+    high-level, easy-to-use world of Python and the messy, low-level
+    world of C. Almost any piece of Python code is also valid Pyrex
+    code; but you can add optional static type declarations to Pyrex
+    code, making the declared objects run at C speed. David contrasts
+    writing code in Pyrex--generally for use with larger Python
+    applications--with speeding up Python applications using the Psyco
+    compiler (that he has written about previously).
+</blockquote>
+<h3>Making Python Fast</h3>
+ <p>
+  In some sense, Pyrex is just part of a growing family of Python-like
+  languages: Jython, IronPython, Prothon, Boo, formerly Vyper, in a way
+  Stackless, or in another way the Parrot runtime.. In language terms,
+  Pyrex is essentially just Python with type declarations added in. The
+  few other variations on the language do not amount to that much
+  (though the extension to the <code>for</code> loop has an elegance to it). The
+  reason you actually want to use Pyrex, however, is to write modules
+  that run faster--maybe a lot faster--than pure Python can possibly
+  run.
+</p>
+<p>
+  What Pyrex does internally is generate a C program out of a Pyrex one.
+  The intermediate <code>module.c</code> file remains available for hand tweaking,
+  in the unlikely event you have reason to do that.  For "normal" Pyrex
+  users, there is no reason to modify the generated C module--Pyrex
+  itself gives you access to all the C-level constructs that are most
+  important for speed, while saving you all the C gotchas of memory
+  allocation and deallocation, pointer arithmetic, prototypes, and so
+  on.  Pyrex also seamlessly handles all the interfacing with
+  Python-level objects; mostly it does this by declaring variables as
+  <code>PyObject</code> structures where necessary, and using Python C-API calls
+  for memory handling and type conversions.
+</p>
+<p>
+  For the most part, Pyrex runs faster than Python by avoiding the need
+  to continuously <em>box</em> and <em>unbox</em> variables of simple data types. An
+  <code>int</code> in Python, for example, is an object with a bunch of methods;
+  with tree of ancestors, itself having a computed "method resolution
+  order" (MRO); with allocators and dellocators for memory handling; and
+  that knows when to promote itself to a long, and how to enter into
+  numeric operations with values of other types. All those extra
+  capabilities mean many levels of indirection and many more conditional
+  checks when you <em>do</em> things with <code>int</code> objects. On the other hand, a C
+  or Pyrex <code>int</code> variable is just a region in memory with some bits set
+  to ones or zeors. Doing something with a C/Pyrex <code>int</code> does not
+  involve <em>any</em> indirection nor any conditional checks. You just, e.g.
+  performs a CPU "add" operation in silicon.
+</p>
+<p>
+  In well-chosen cases, a Pyrex module can run 40-50 times faster than a
+  Python version of the same module. But in contrast to writing the
+  module in C, per se, the Pyrex version will be hardly any longer than
+  the Python version, and the code will look much more like Python than
+  like C.
+</p>
+<p>
+  Of course, when you start talking about making Python(<em>like) modules
+  fast, Pyrex is not the only tool that comes to mind. Psyco also lives
+  at the back of every Python developer's mind. Psyco is--in very short
+  version--a just-in-time (JIT) compiler of Python code into (x86)
+  machine code. Unlike Pyrex, Psyco does not exactly type variables, but
+  rather creates several speculative machine code versions of each
+  Python block, based on each hypothesis about what the data types
+  -might</em> be. If the data turns out to be of a simple type like <code>int</code>
+  for the entire run of a given block, that block (especially if it
+  loops) can run very quickly.  So, for example, <code>x</code> can be an <code>int</code>
+  within a loop that runs a million times, but still be assigned a
+  <code>float</code> value at the end of the loop.  Psyco happily speeds up the
+  million iterations, essentially by exactly the same (speculative)
+  unboxing that you can explicitly specify with Pyrex.
+</p>
+<p>
+  While Pyrex is not difficult, Psyco is childishly simple to use.
+  Using Psyco amounts to nothing more than putting a few lines at the
+  end of your module; in fact if you use the right lines, the module
+  will run identically (except more slowly) even when Psyco is not
+  available:
+</p>
+<div class="code-sample"><h4></h4><pre># Import Psyco if available
+try:
+    import psyco
+    psyco.full()
+except ImportError:
+    pass
+
+</pre></div><p>
+  To use Pyrex, you need to change a bit more in your code (just a bit),
+  and you also need to have a C compiler available and properly
+  configued on the system where you generate the Pyrex module. You <em>can</em>
+  distribute binary Pyrex modules, but you must match the Python
+  version, architecture, and optimization flags that the end user needs
+  for your module to work elsewhere.
+</p>
+<h3>A (naive) First Try For Speed</h3>
+ <p>
+  I recently created a pure-Python implementation of hashcash, in
+  writing a developerWorks article about hashcash.  Read that article
+  for details, but basically, hashcash is a technique for proving CPU
+  work using SHA-1 challenges.  Python has a standard module <em><code>sha</code></em>,
+  which makes coding hashcash relatively simple.
+</p>
+<p>
+  Unlike 95% of the Python programs I write, the slow speed of my
+  <em><code>hashcash</code></em> module bothers me, at least a little bit. By design, the
+  protocol is meant to eat CPU cycles, so runtime efficiency really does
+  matter. The ANSI C binary of <code>hashcash.c</code> runs about 10-times as
+  quickly as my <code>hashcash.py</code> script. Moreover, the brilliantly
+  optimized PPC/Altivec-enabled binary of <code>hashcash.c</code> runs another
+  4-times as fast as the generic ANSI C version (a G4/Altivec at 1 Ghz
+  easy outpaces a Pentium4/MMX at 3 Ghz in hashcash/SHA speed; a G5 is
+  that much faster still). So testing on my TiPowerbook shows my module
+  an embarrassing 40-times slower than the optimized C version.  The
+  gap is far less on x86 though.
+</p>
+<p>
+  The module runs slowly, maybe Pyrex is a good candidate for speeding
+  it up. At least that was my thought. The first thing I did in
+  Pyrx-izing <code>hashcash.py</code> (after installing Pyrex, of course) was
+  simply copy it to <code>hashcash_pyx.pyx</code> and try processing it with:
+</p>
+<div class="code-sample"><h4>Generating a C source from Pyrex source</h4><pre>
+$ pyrexc hashcash_pyx.pyx
+
+</pre></div><h3>Creating a binary module
+</h3>
+ <p>
+  Running this command happily generates a file <code>hashcash.c</code> (once a few
+  minor changes are made to the source file). Unfortunately, getting the
+  <code>gcc</code> switches just right for my platform was a bit tricker, so I
+  decided to take the recommended shortcut of letting <em><code>distutils</code></em> figure
+  it out for me. A standard Python installation knows how to work with
+  the local C compiler during module installations, and using
+  <em><code>distutils</code></em> makes sharing a Pyrex module easier. I created a
+  <code>setup_hashcash.py</code> script as follows:
+</p>
+<div class="code-sample"><h4>hashcash_setup.py</h4><PRE><FONT COLOR=#3333CC><B>from</B></FONT> distutils.core <FONT COLOR=#3333CC><B>import</B></FONT> setup
+<FONT COLOR=#3333CC><B>from</B></FONT> distutils.extension <FONT COLOR=#3333CC><B>import</B></FONT> Extension
+<FONT COLOR=#3333CC><B>from</B></FONT> Pyrex.Distutils <FONT COLOR=#3333CC><B>import</B></FONT> build_ext
+setup(
+  name = <FONT COLOR=#115511>"hashcash_pyx"</FONT>,
+  ext_modules=[
+    Extension(<FONT COLOR=#115511>"hashcash_pyx"</FONT>, [<FONT COLOR=#115511>"hashcash_pyx.pyx"</FONT>], libraries = [])
+    ],
+  cmdclass = {<FONT COLOR=#115511>'build_ext'</FONT>: build_ext}
+)</PRE></div><p>
+  Now running the below line fully builds a C-based extension module
+  <em><code>hashcash</code></em>:
+</p>
+<div class="code-sample"><h4>Generate and compile a module from Pyrex source</h4><pre>
+python2.3 prime_setup.py build_ext --inplace
+
+</pre></div><h3>Code changes
+</h3>
+ <p>
+  I very slightly overstated the ease I experienced in generating a
+  C-based module out of <code>hashcash.pyx</code>.  Actually, I had to make two
+  changes to the source code; I found the locations by looking at where
+  <code>pyrexc</code> complained.  I used one unsupported list comprehension in my
+  code, which I had to unroll into a regular <code>for</code> loop.  Simple enough.
+   I also had to change one augmented assignment from <code>counter+=1</code> to
+   <code>counter=counter+1</code>.
+</p>
+<p>
+   That's it. I had written my first Pyrex module.
+</p>
+<h3>Testing Speeds</h3>
+ <p>
+  In order to easily test the speed of the incrementally improving
+  modules I planned to develop, I wrote a small test harness to run
+  different module version:
+</p>
+<div class="code-sample"><h4>hashcash_test.py</h4><PRE><FONT COLOR=#1111CC>#!/usr/bin/env python2.3</FONT>
+<FONT COLOR=#3333CC><B>import</B></FONT> time, sys, optparse
+hashcash = __import__(sys.argv[1])
+start = time.time()
+<FONT COLOR=#3333CC><B>print</B></FONT> hashcash.mint(<FONT COLOR=#115511>'mertz@gnosis.cx'</FONT>, bits=20)
+timer = time.time()-start
+sys.stderr.write(<FONT COLOR=#115511>"%0.4f seconds (%d hashes per second)\n"</FONT> %
+        (timer, hashcash.tries[0]/timer))</PRE></div><p>
+  Excitedly, I decided to see just how much speed improvement I got just
+  by compiling via Pyrex.  Note in all the below samples that the actual
+  stamp generation time varies widely and randomly.  The figure to look
+  at is the "hashes per second", which pretty reliably measures speed.
+  So comparing native Python with Pyrex:
+</p>
+<div class="code-sample"><h4>Native Python versus "barely Pyrex"</h4><PRE>$ ./hashcash_test.py hashcash
+1:20:041003:mertz@gnosis.cx::I+lyNUpV:167dca
+13.7879 seconds (106904 hashes per second)
+
+$ ./hashcash_test.py hashcash_pyx &gt; /dev/null
+6.0695 seconds (89239 hashes per second)</PRE></div><p>
+  Ooops! We just got almost 20% slower by using Pyrex.  Not really what
+  I was hoping for.  It is time to start analyzing the code for speedup
+  possibilities.  Here is the short function that takes substantially
+  all the time:
+</p>
+<div class="code-sample"><h4>Worker function in 'hashcash.py'</h4><PRE><FONT COLOR=#3333CC><B>def</B></FONT><A NAME="_mint"><FONT COLOR=#CC0000><B> _mint</B></FONT></A>(challenge, bits):
+    <FONT COLOR=#115511>"Answer a 'generalized hashcash' challenge'"</FONT>
+    counter = 0
+    hex_digits = int(ceil(bits/4.))
+    zeros = <FONT COLOR=#115511>'0'</FONT>*hex_digits
+    hash = sha
+    <FONT COLOR=#3333CC><B>while</B></FONT> 1:
+        digest = hash(challenge+hex(counter)[2:]).hexdigest()
+        <FONT COLOR=#3333CC><B>if</B></FONT> digest[:hex_digits] == zeros:
+            tries[0] = counter
+            <FONT COLOR=#3333CC><B>return</B></FONT> hex(counter)[2:]
+        counter += 1</PRE></div><p>
+  We need to take some actual advantage of Pyrex variable declarations
+  to get a speedup.  Some variables in there are obviously integers, and
+  some others obviously strings--let's specify that.  And while we are
+  at it, let's use Pyrex's enhanced <code>for</code> loop:
+</p>
+<div class="code-sample"><h4>Minimally Pyrex-enhanced minter</h4><pre>
+cdef _mint(challenge, int bits):
+    # Answer a 'generalized hashcash' challenge'"
+    cdef int counter, hex_digits, i
+    cdef char *digest
+    hex_digits = int(ceil(bits/4.))
+    hash = sha
+    for counter from 0 &lt;= counter &lt; sys.maxint:
+        py_digest = hash(challenge+hex(counter)[2:]).hexdigest()
+        digest = py_digest
+        for i from 0 &lt;= i &lt; hex_digits:
+            if digest[i] != c'0': break
+        else:
+            tries[0] = counter
+            return hex(counter)[2:]
+
+</pre></div><p>
+  Pretty easy so far.  We have just declared some variable types that we
+  clearly know, and used the cleanest Pyrex counter loop.  A little
+  trick is assigning <code>py_digest</code> (a Python string) to <code>digest</code> (a
+  C/Pyrex string) in order to type it.  Experimentally, I also found
+  that a looping string comparison is faster than taking a slice.  How
+  do we do?
+</p>
+<div class="code-sample"><h4>Pyrex-ized speed results for minting</h4><pre>
+$ ./hashcash_test.py hashcash_pyx2 &gt;/dev/null
+20.3749 seconds (116636 hashes per second)
+
+</pre></div><p>
+  We are doing better.  We have managed a slight improvement from native
+  Python, and a pretty good improvement over our initial Pyrex module.
+  Still nothing very impressive though--a few percent gain.
+</p>
+<h3>Profiling.
+</h3>
+ <p>
+  Something seems wrong here. Gaining a few percent in speed is not much
+  like gaining 40-times like the Pyrex homepage--and many Pyrex
+  users--boast about. I figured out it was time to see <em>where</em> my Python
+  <code>_mint()</code> function was actually spending its time. A quick script (not
+  shown) breaks out just what is going on in the complex compound
+  operation <code>sha(challenge+hex(counter)[2:]).hexdigest()</code>:
+</p>
+<div class="code-sample"><h4>Timing aspects of hashcash minting</h4><pre>
+1000000 empty loops:     0.559
+------------------------------
+1000000 sha()s:          2.332
+1000000 hex()[2:]s:      3.151
+   just hex()s:         &lt;2.471&gt;
+1000000 concatenations:  0.855
+1000000 hexdigest()s:    3.742
+------------------------------
+Total:                  10.079
+
+</pre></div><p>
+  Clearly, we cannot eliminate the loop itself from our <code>_mint()</code>
+  function.  Pyrex's enhanced <code>for</code> probably speeds it up slightly, but
+  the whole function is mainly the loop.  And we cannot get rid of the
+  call to <code>sha()</code>--at least not unless we are willing to reimplement
+  SHA-1 in Pyrex (I am far from confident that I could better than the
+  writers of the Python standard <em><code>sha</code></em> module even if I did this).
+  Moreover, if we hope to get an actual hash out of the <code>sha.SHA</code>
+  object, we have to call <code>.hexdigest()</code> or <code>.digest()</code>--the former is
+  slightly faster too.
+</p>
+<p>
+  All that is really left for us to address is the <code>hex()</code> converstion
+  on the counter variable, and perhaps the slice taken from the result.
+  We might be able to squeeze a little bit out of concatenating Pyrex/C
+  strings, rather than Python string objects, too.  The only way I see
+  to avoid the <code>hex()</code> conversion, however, is to manually build a
+  suffix out of nested loops.  Doing this can avoid any int-&gt;char
+  conversion, but also makes for more code:
+</p>
+<div class="code-sample"><h4>Fully Pyrex-optimized minter</h4><pre>
+cdef _mint(char *challenge, int bits):
+    cdef int hex_digits, i0, i1, i2, i3, i4, i5
+    cdef char *ab, *digest, *trial, *suffix
+    suffix = '******'
+    ab = alphabet
+    hex_digits = int(ceil(bits/4.))
+    hash = sha
+    for i0 from 0 &lt;= i0 &lt; 55:
+        suffix[0] = ab[i0]
+        for i1 from 0 &lt;= i1 &lt; 55:
+            suffix[1] = ab[i1]
+            for i2 from 0 &lt;= i2 &lt; 55:
+                suffix[2] = ab[i2]
+                for i3 from 0 &lt;= i3 &lt; 55:
+                    suffix[3] = ab[i3]
+                    for i4 from 0 &lt;= i4 &lt; 55:
+                        suffix[4] = ab[i4]
+                        for i5 from 0 &lt;= i5 &lt; 55:
+                            suffix[5] = ab[i5]
+                            py_digest = hash(challenge+suffix).hexdigest()
+                            digest = py_digest
+                            for i from 0 &lt;= i &lt; hex_digits:
+                                if digest[i] != c'0': break
+                            else:
+                                return suffix
+
+</pre></div><p>
+  This Pyrex function still looks quite a bit easier to read than the
+  corresponding C function would; but it is certainly more complicated
+  than was my naively elegant pure-Python version.  By the way,
+  unrolling the suffix generation in pure-Python has a slightly negative
+  effect on overall speed versus the initial version.  In Pyrex, as we
+  would expect, these nested loops are pretty much free, and we save the
+  cost of conversion and slicing:
+</p>
+<div class="code-sample"><h4>Optimiez Pyrex-ized speed results for minting</h4><pre>
+$ ./hashcash_test.py hashcash_pyx3 &gt;/dev/null
+13.2270 seconds (166125 hashes per second)
+
+</pre></div><p>
+  Better than we started with, certainly. But still well under a
+  doubling of speed. The problem is that most of the time was, and is,
+  spent in calls to the Python library, and nothing we might code around
+  it prevents or speeds up those calls.
+</p>
+<h3>A disappointing comparison.
+</h3>
+ <p>
+  Getting a speedup of 50-60% still seems worthwhile. And we have not
+  done <em>that</em> much coding to get it. But if you think about adding the
+  <em>two</em> statements <code>import psyco;psyco.bind(_mint)</code> to the initial
+  Python version, this speedup does not seem so impressive:
+</p>
+<div class="code-sample"><h4>Psyco-ized speed results for minting</h4><pre>
+$ ./hashcash_test.py hashcash_psyco &gt;/dev/null
+15.2300 seconds (157550 hashes per second)
+
+</pre></div><p>
+  In other words, Psyco does almost as much with just two generic lines
+  of code. Of course, Psyco only works on x86 platforms, while Pyrex
+  will work anywhere that has a C compiler. But for the particular
+  example at issue, <code>os.popen('hashcash -m '+options)</code> will still be
+  many times faster than either Pyrex or Psyco will get you (assuming
+  the C utility <code>hashcash</code> is available, of course).
+</p>
+<h3>Where Pyrex Shines</h3>
+ <p>
+  In the best case, Pyrex can indeed produce quite fast code.  For
+  example, the Pyrex homepage prominently features a numeric intensive
+  function for calculating a list of initial prime numbers.  All
+  operations involved are performed on integers, so type declarations
+  can speed up the algorithm quite substantially.  This Pyrex function
+  just barely differs from pure Python--just a few declarations added:
+</p>
+<div class="code-sample"><h4>Pyrex function for finding primes</h4><pre>
+def primes(int kmax):
+    # Calculate initial prime numbers
+    cdef int n, k, i
+    cdef int p[100000]
+    result = []
+    k = 0
+    n = 2
+    while k &lt; kmax:
+        i = 0
+        while i &lt; k and n % p[i] &lt;&gt; 0:
+            i = i + 1
+        if i == k:
+            p[k] = n
+            k = k + 1
+            result.append(n)
+        n = n + 1
+    return result
+
+</pre></div><p>
+  I also wrote the same function as actual Python, basically just by
+  taking the declarations back out.  Running the Pyrex and Python
+  versions, and also a Psyco-ized Python version gives these times:
+</p>
+<div class="code-sample"><h4>Times for finding primes in Python, Psyco and Pyrex</h4><PRE>$ ./prime_test.py
+Pure Python version
+First 10000 primes
+60.30 seconds
+
+Psyco-ized Python
+First 10000 primes
+7.62 seconds
+
+Pyrex Version
+First 10000 primes
+1.31 seconds</PRE></div><p>
+  So in the best case, Pyrex does <em>a lot</em> better than Python, and still
+  quite significantly better than the Psyco speedup.  I have a hunch,
+  however, that I might be able to improve Psyco's speed by fiddling
+  with some algorithm details.  Even so, Pyrex almost certainly
+  represents the best you can do for this type of problem.  The
+  generated C code looks almost exactly the same as what you'd write if
+  you simply started with C.
+</p>
+<h3>Conclusion</h3>
+ <p>
+  There are a few things that Pyrex does quite well. For code that works
+  with simple numeric or character data in tight loops, Pyrex can
+  produce significant speedups; maybe 50 times the speed in best cases.
+  If a Python application encounters a significant bottleneck in numeric
+  functions, creating Pyrex versions of those functions is very
+  sensible. But the cases where you find significant gains are
+  relatively constrained. Code that spends most of its time making
+  library calls just is not going to benefit that much from Pyrex
+  speeding up incidental loop overhead. Moreover, in many cases, a
+  generic two lines enabling Psyco can produce a similar improvement to
+  what you get though a moderate degree of rewriting from Python into
+  Pyrex. Pyrex code is easy to write, but you have to <em>write</em> it, unlike
+  with Psyco.
+</p>
+<p>
+  The efforts with hashcash in this article are not the best you might
+  do, I will note. I am confident that (with much more work) it would be
+  possible to modify the Python <em><code>sha</code></em> module a bit to enable direct
+  calls to the C-level interface, thereby avoiding the Python-level
+  calling overheads. Or just to find some other optimized SHA-1
+  implementation in C. Pyrex code is perfectly able to utilize external
+  C code, and calling an <code>sha()</code> function written in C will be faster
+  than boxing and unboxing it in Python objects and namespaces.  But
+  then, it is not clear why this is worthwhile, given a quite good
+  existing C implementation of hashcash.
+</p>
+<p>
+  Another option to think about, however, in writing specialized numeric
+  functions using Pyrex, is whether Numerical Python might be a suitable
+  tool for your work. The <em><code>numeric</code></em> package is fairly general, and quite
+  fast for what it does. Using <em><code>numeric</code></em> does not involve <em>any</em>
+  non-Python code for its end user, just calls to appropriate library
+  functions.  The coverage of <em><code>numeric</code></em> is certainly not identical to
+  those functions that can benefit from Pyrex; but there is certainly
+  <em>some</em> overlap.
+</p>
+<h3>Resources</h3>
+ <p>
+  The Pyrex website includes manuals and a tutorial, as well as the
+  module itself. It is at:
+</p>
+<blockquote>
+   <a href="http://nz.cosc.canterbury.ac.nz/~greg/python/Pyrex/">http://nz.cosc.canterbury.ac.nz/~greg/python/Pyrex/</a>
+</blockquote>
+<p>
+  <cite>Charming Python</cite>  installment "Make Python run as fast as C with
+  Psyco":
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/library/l-psyco.html">http://www-106.ibm.com/developerworks/library/l-psyco.html</a>
+</blockquote>
+<p>
+  My article on hashcash, "Hashcash: Arbitrary CPU Costs as a Mechanism
+  of Access Control" can be found at:
+</p>
+<blockquote>
+    <em><code>IBM URL pending</code></em>
+</blockquote>
+<p>
+  The Python module that I wrote, <code>hashcash.py</code> can be found at:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/download/gnosis/util/hashcash.py">http://gnosis.cx/download/gnosis/util/hashcash.py</a>
+</blockquote>
+<p>
+  I wrote a <cite>Charming Python</cite> installment on Numarray and Numerical
+  Python at:
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/linux/library/l-cpnum.html">http://www-106.ibm.com/developerworks/linux/library/l-cpnum.html</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz has a slow brain, and most of his programs still run
+  slowly. David may be reached at mertz@gnosis.cx; his life pored over
+  at<a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a> Check out David's book <cite>Text Processing
+  in Python</cite> (http://gnosis.cx/TPiP/).
+</p>
+</body></html>

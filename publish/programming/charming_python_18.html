@@ -1,0 +1,510 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>CHARMING PYTHON #18: [PyDoc] and [distutils] -- Improving the Social Infrastructure of Python -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="charming_python_17.html" TITLE="CHARMING PYTHON #17">
+<link REL="next" HREF="charming_python_19.html" TITLE="CHARMING PYTHON #19">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<h1>Charming Python #18: <em><code>pydoc</code></em> And <em><code>distutils</code></em></h1>
+<h2>Improving the Social Infrastructure of Python</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Auteur Provocateur, Gnosis Software, Inc.<br>
+ June, 2001<br>
+ <br>
+</p>
+<blockquote>
+    Several modules and tools introduced in recent versions of
+    Python have improved Python not so much as a language, but as
+    a <em>tool</em>.  The modules discussed in this column make the job
+    of Python developers substantially easier by improving the
+    documentation and distribution of Python modules and
+    packages.
+</blockquote>
+<blockquote>
+    KEYWORDS:  documentation installation distribution pydoc
+    doctest distutils Python modules packages
+</blockquote>
+<h3>What Is Python?</h3>
+ <p>
+  Python is a freely available, very-high-level, interpreted
+  language developed by Guido van Rossum.  It combines a clear
+  syntax with powerful (but optional) object-oriented semantics.
+  Python is available for almost every computer platform you
+  might find yourself working on, and has strong portability
+  between platforms.
+</p>
+<h3>Introduction</h3>
+ <p>
+  One year ago, if you were to ask an honest Python evangelist
+  if Python was missing anything important that Perl, for
+  example, had, she would have to fess up an affirmative answer.
+  It wasn't that Python lacked a breadth of module and package
+  support--both Python native and extension modules.  It
+  certainly wasn't the clarity of expression or clean object
+  orientation in which Python positively excels.  What Python was
+  missing was what Perl developers describe as "social factors."
+  But even here, the missing social factors were not an absence
+  of an active, intelligent and supportive Python
+  community--Python has abounded in that.  What the Python of one
+  year ago sorely lacked was a sufficient programmatic
+  infrastructure for the sharing of Python code.  Code sharing
+  was ad hoc, decentralized, and just plain too much work in the
+  general case.
+</p>
+<p>
+  The first step in improving the social infrastructure of Python
+  was probably Tim Middleton's creation of the Vaults of
+  Parnassus (see Resources).  For the first time, Python
+  developers had a single place to turn for (nearly) all
+  contributed third-party modules, packages and tools.  The
+  Vaults still have their quirks that make them possibly less
+  advanced (but nicer looking) than the Comprehensive Perl
+  Archive Network.  The Vaults merely point to actual resources
+  rather than mirroring them; the Vaults are manually maintained
+  by Middleton, and updates are sometimes slow to happen; and
+  vex.net who generously hosts the Vaults has had intermittent
+  outages.  But overall, the service provided by the Vaults of
+  Parnassus has been an invaluable resource in building the
+  architectural prerequisites of a strong Python community.
+</p>
+<p>
+  With such a common site available, all the Python community
+  needed was consistent and solid ways of installing all these
+  available modules, packages and tools; and equally clear ways
+  of figuring out just what they did.  To the rescue came several
+  new standard modules in the standard Python distribution..
+</p>
+<h3><em><code>pydoc</code></em></h3>
+ <p>
+  Ka-Ping Yee has created a quite remarkable module by the name
+  <em><code>pydoc</code></em> (for the "competition":  <em><code>pydoc</code></em> does everything that
+  <code>perldoc</code> does, but better and prettier :-)).  As of Python
+  2.1, <em><code>pydoc</code></em> (and its supporting <em><code>inspect</code></em>) is part of the
+  standard library.  However, for users of Python 1.5.2, 1.6 or
+  2.0, downloading and installing <em><code>pydoc</code></em> is extremely easy--do
+  so right away (see Resources).
+</p>
+<p>
+  By way of background for any Python beginners reading this,
+  Python has long had some semi-formal documentation standards.
+  These standards have not attempted to contrain developers
+  unduly, but rather simply to seem like the "one obvious way to
+  do it."  Fortunately, Python developers, as a rule, have always
+  been far better documenters than typical developers in other
+  languages.
+</p>
+<p>
+  The main element of good Python documentation is the use of
+  so-called "docstrings."  While a docstring is really just a
+  variable called <code><cite>_doc_</cite></code>, there is a ubiquitous shortcut for
+  creating them:  just put a bare (triple-)quoted string at the
+  very beginning of a module, function <code>def</code>, class definition,
+  or method <code>def</code>.  As well, there are several more-or-less
+  standard module-level "magic" variable names that are often
+  used.  Despite the informality of the documentation rules,
+  almost all 3rd party and standard modules use the same
+  patterns.  Let's look at a simplistic example that has most of
+  the elements used:
+</p>
+<div class="code-sample"><h4>Module mymod.py with typical documentation</h4><PRE><FONT COLOR=#1111CC>#!/usr/bin/python</FONT>
+
+<FONT COLOR=#115511>"""Show off features of [pydoc] module
+
+This is a silly module to
+demonstrate docstrings
+"""</FONT>
+__author__ = <FONT COLOR=#115511>'David Mertz'</FONT>
+__version__= <FONT COLOR=#115511>'1.0'</FONT>
+__nonsense__ = <FONT COLOR=#115511>'jabberwocky'</FONT>
+
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="MyClass"><FONT COLOR=#CC0000><B> MyClass</B></FONT></A>:
+    <FONT COLOR=#115511>"""Demonstrate class docstrings"""</FONT>
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="__init__"><FONT COLOR=#CC0000><B> __init__</B></FONT></A>(self, spam=1, eggs=2):
+        <FONT COLOR=#115511>"""Set default attribute values only
+
+        Keyword arguments:
+        spam -- a processed meat product
+        eggs -- a fine breakfast for lumberjacks
+        """</FONT>
+        self.spam = spam
+        self.eggs = eggs</PRE></div><p>
+  The <em><code>pydoc</code></em> module takes advantage of Python documentation
+  conventions, as well as having some savvy about Python imports,
+  inheritance, and the like.  Moreover, <em><code>pydoc</code></em> has the absolute
+  genius of allowing itself to be used in multiple modes of
+  operation.  More on this shortly; for a few moments I'll look
+  at the <code>manpage</code> style usage at an OS command-line.
+</p>
+<p>
+  Let's say you had the above module <em><code>mymod</code></em> installed on your
+  system, but weren't sure what it was for (not much in the
+  example).  You might read the source, but even easier might be:
+</p>
+<div class="code-sample"><h4>Getting 'manpage' style documentation</h4><pre>
+% pydoc.py mymod
+Python Library Documentation: module mymod
+
+NAME
+    mymod - Show off features of [pydoc] module
+
+FILE
+    /articles/scratch/cp18/mymod.py
+
+DESCRIPTION
+    This is a silly module to
+    demonstrate docstrings
+
+CLASSES
+    MyClass
+
+    class MyClass
+     |  Demonstrate class docstrings
+     |
+     |  __init__(self, spam=1, eggs=2)
+     |      Set default attribute values only
+     |
+     |      Keyword arguments:
+     |      spam -- a processed meat product
+     |      eggs -- a fine breakfast for lumberjacks
+
+DATA
+    __author__ = 'David Mertz'
+    __file__ = './mymod.pyc'
+    __name__ = 'mymod'
+    __nonsense__ = 'jabberwocky'
+    __version__ = '1.0'
+
+VERSION
+    1.0
+
+AUTHOR
+    David Mertz
+
+</pre></div><p>
+  Depending on your specific platform and setup, the above sample
+  will probably be presented in a text viewer that allows
+  scrolling, searching, and so on, and with some highlighting of
+  key words.  For something this simple, what you get is only
+  slightly better than just reading the source, but consider
+  something as as simple as:
+</p>
+<div class="code-sample"><h4>Examining the inheritance structure of a class</h4><pre>
+% cat mymod2.py
+from mymod import MyClass
+
+class MyClass2(MyClass):
+    """Child class"""
+    def foo(self):
+        pass
+
+% pydoc.py mymod2.MyClass2
+Python Library Documentation: class MyClass2 in mymod2
+
+class MyClass2(mymod.MyClass)
+ |  Child class
+ |
+ |  __init__(self, spam=1, eggs=2) from mymod.MyClass
+ |
+ |  foo(self)
+
+</pre></div><p>
+  In this quick report we can tell not only that <code>MyClass2</code> has
+  the methods <code>__init__()</code> and <code>foo()</code> (and the arguments
+  thereto), but also which methods are implemented locally, and
+  which other methods come from ancestors (and where those
+  ancestors live).
+</p>
+<p>
+  Another nice <code>manpage</code> like feature is the <code>-k</code> option for
+  searching modules for keywords.  For example:
+</p>
+<div class="code-sample"><h4>Locating the right module for a task</h4><pre>
+% pydoc.py -k uuencode
+uu - Implementation of the UUencode and UUdecode functions.
+
+% pydoc.py uu
+Python Library Documentation: module uu
+
+NAME
+    uu - Implementation of the UUencode and UUdecode functions.
+[...]
+
+</pre></div><p>
+  Besides its command-line usage, <em><code>pydoc</code></em> has four other "modes"
+  that can present the same generated documentation.
+</p>
+<blockquote>
+    <strong>Shell mode</strong> <em></em> Inside the Python interactive shell, you may
+    import <em><code>pydoc</code></em>'s <code>help()</code> function, and get assistance on any
+    object without leaving the interactive session.  You can also
+    just type <code>help</code> by itself to get into an interactive "help
+    interpreter."  For example:
+</blockquote>
+<blockquote>
+      #------- Interactive shell with help enhancements -------#
+      &gt;&gt;&gt; from pydoc import help
+      &gt;&gt;&gt; import uu
+      &gt;&gt;&gt; help(uu.test)
+      Help on function test in module uu:
+</blockquote>
+<blockquote>
+      test()
+          uuencode/uudecode main program
+</blockquote>
+<blockquote>
+      &gt;&gt;&gt; help
+</blockquote>
+<blockquote>
+      Welcome to Python 2.0!  This is the online help utility.
+      <em><code>...introductory message about help shell...</code></em>
+      help&gt;
+</blockquote>
+<blockquote>
+    <strong>Webserver mode</strong> <em></em> Just use the <code>-p</code> option, and <em><code>pydoc</code></em>
+    will launch itself as a simple webserver on LOCALHOST.  You
+    can use any web browser to browse all the modules installed
+    on the current system.  The homepage for this server is a
+    list of modules, grouped by directory (and with attractive
+    color blocks for browsers supporting that).  Moreover, every
+    module whose documentation you view becomes generously
+    littered with links to any modules, functions and methods it
+    imports.
+</blockquote>
+<blockquote>
+    <strong>HTML generator mode</strong> <em></em> The <code>-w</code> option can generate an HTML
+    documentation page for anything <em><code>pydoc</code></em> can document.  Pretty
+    much, these pages are the same thing you might browse in
+    webserver mode, but the pages are static and available for
+    archiving, transmission, etc.
+</blockquote>
+<blockquote>
+    <strong>TK browser mode</strong> <em></em> The <code>-g</code> option will create a "graphical
+    help browser," much along the lines of <code>xman</code> or <em><code>tkman</code></em>.
+</blockquote>
+<h3><em><code>distutils</code></em></h3>
+ <p>
+  As of Python 1.6, a package called <em><code>distutils</code></em> has become part of
+  the standard Python library.  There are two aspects to what
+  <em><code>distutils</code></em> does.  On the one side, <em><code>distutils</code></em> hopes to make
+  installation of new modules, packages, and tools uniform and
+  easy for end-users.  On the other side, <em><code>distutils</code></em> also hopes
+  to make the creation of these easy-to-install distributions
+  easy on their developers.  Let's look at both aspects briefly.
+</p>
+<p>
+  In the very simplest case, a developer will have chosen to
+  create an installer for your specific platform.  If this is the
+  case, you really don't need to know that anything called
+  <em><code>distutils</code></em> exists at all.  Currently, <em><code>distutils</code></em> is capable
+  of creating RPMs for those Linux systems that support that
+  format, and Windows EXE self-installers for Win32 systems.
+  While these are big players, other platforms exist also and/or
+  the developer might have had access to your platform (or the
+  time or interest in making an installer).
+</p>
+<p>
+  Fortunately, short of the simplest case, the next best case is
+  hardly any more difficult.  Assuming you get a <em><code>distutils</code></em>
+  aware source distribution, you can count on a number of things
+  (if nothing goes wrong, of course).  The distribution archive
+  should be in a standard archive format--usually either <code>.zip</code> or
+  <code>.tgz</code> / <code>.tar.gz</code> (in odd cases you might find <code>.tbz</code> or
+  <code>tar.Z</code>, and hopefully <code>.sit</code> support will be added for MacOS
+  soon).  Most of the time, Windows users use zip's and
+  Linux/Unix users use tarballs.  But it is not hard to unpack
+  most formats on most platforms.  Once you have unpacked the
+  archive, you'll get a collection of files in a directory named
+  in the same fashion as the archive was.  For example:
+</p>
+<div class="code-sample"><h4>Unpacking a [distutils] archive</h4><pre>
+E:\archive\devel&gt;unzip -q Distutils-1_0_2.zip
+E:\archive\devel&gt;cd Distutils-1.0.2
+E:\archive\devel\Distutils-1.0.2&gt;ls
+
+The volume label in drive E is ARCHIVE.
+The Volume Serial Number is E825:C814.
+Directory of E:\archive\devel\Distutils-1.0.2
+
+ 6-14-01   0:38a     &lt;DIR&gt;           0  .
+ 6-14-01   0:38a     &lt;DIR&gt;           0  ..
+ 5-03-01   6:30p     15355           0  CHANGES.txt
+ 5-03-01   6:32p     &lt;DIR&gt;           0  distutils
+ 5-03-01   6:32p     &lt;DIR&gt;           0  doc
+ 5-03-01   6:32p     &lt;DIR&gt;           0  examples
+10-02-00  11:47p       373           0  MANIFEST.in
+ 5-03-01   6:32p     &lt;DIR&gt;           0  misc
+ 5-03-01   6:32p       496           0  PKG-INFO
+ 4-20-01   2:30p     14407           0  README.txt
+ 6-29-00  11:45p      1615           0  setup.cfg
+ 5-03-01   6:17p      1120           0  setup.py
+ 4-20-01   2:29p      9116           0  TODO
+ 4-11-00   9:40p       836           0  USAGE.txt
+
+</pre></div><p>
+  Most module distributions will have fewer files and directories
+  than this one.  The only thing you really need is the file
+  <code>setup.py</code>, which contains instructions for the install.
+  Realistically though, one hopes that there are <em>some</em> other
+  files in the directory so that <code>setup.py</code> has something to
+  install.  From here, all you need to do is:
+</p>
+<blockquote>
+    E:\archive\devel\Distutils-1.0.2&gt; python setup.py install
+</blockquote>
+<p>
+  At least that <em>should</em> be all you need to do.  If something
+  goes wrong, read the <code>README.txt</code> or <code>README</code> file which is
+  likely to be included.  And after that, check out Greg Ward's
+  "Installing Python Modules" (see Resources).
+</p>
+<p>
+  But what is going on "under the hood?"  As you can guess from
+  the name, <code>setup.py</code> is really just a plain Python script, so
+  it can do <em>anything</em> when it runs.  But in almost all cases,
+  <code>setup.py</code> will have a pretty stereotypical form.  It might
+  look something like:
+</p>
+<div class="code-sample"><h4>Minimal setup.py installation script</h4><PRE><FONT COLOR=#1111CC>#!/usr/bin/env python</FONT>
+
+<FONT COLOR=#115511>"""Setup script for the sample #1 module distribution:
+   single top-level pure Python module, named explicitly
+   in 'py_modules'."""</FONT>
+
+<FONT COLOR=#3333CC><B>from</B></FONT> distutils.core <FONT COLOR=#3333CC><B>import</B></FONT> setup
+
+setup (<FONT COLOR=#1111CC># Distribution meta-data</FONT>
+       name = <FONT COLOR=#115511>"sample"</FONT>,
+       version = <FONT COLOR=#115511>"1.0"</FONT>,
+       description = <FONT COLOR=#115511>"Distutils sample distribution #1"</FONT>,
+
+       <FONT COLOR=#1111CC># Description of modules and packages in the distribution</FONT>
+       py_modules = [<FONT COLOR=#115511>'sample'</FONT>],
+      )</PRE></div><p>
+  The real work here is performed by the imported <em><code>distutils</code></em>,
+  specifically by the <code>setup()</code> function.  Basically, <code>setup()</code>
+  takes a bunch of named arguments, including a list of things to
+  install (besides <code>py_modules</code>, there might be <code>packages</code> or
+  <code>ext_modules</code> or some other things).
+</p>
+<p>
+  The magic of <em><code>distutils</code></em> is that <em>creating</em> a module
+  distribution uses the very same <code>setup.py</code> file as installing
+  it does.  Once you--the module developer--have created a
+  <code>setup.py</code> script (and maybe 'setup.cfg or other adjuncts) that
+  specifies what needs to get installed, all you need to do to
+  create the distribution is (one or more of the following):
+</p>
+<div class="code-sample"><h4></h4><pre>% python setup.py sdist
+% python setup.py bdist_wininst
+% python setup.py bdist_rpm
+
+</pre></div><p>
+  Depending on which specific distribution you specify, you will
+  create either a standard archive (tarball or zip file,
+  depending on platform) or a full installer (as discussed above).
+</p>
+<h3>Conclusion</h3>
+ <p>
+  We are not quite there yet, but Python is getting to be not
+  just one of the easiest to use programming <em>languages</em>, but
+  also one of the easiest to use programming <em>communities</em>.  Some
+  of these new tools still have one or two kinks to iron out
+  still, but in a general way, everything one needs to make
+  Python "transparent" to users has been put in place.
+</p>
+<h3>Resources</h3>
+ <p>
+  The Vaults of Parnassus:
+</p>
+<blockquote>
+   <a href="http://www.vex.net/parnassus/">http://www.vex.net/parnassus/</a>
+</blockquote>
+<p>
+  If you are using a version of Python earlier than 2.1, you can
+  still obtain <em><code>pydoc</code></em> from:
+</p>
+<blockquote>
+   <a href="http://web.lfw.org/python/pydoc.py">http://web.lfw.org/python/pydoc.py</a>
+</blockquote>
+<p>
+  You will also need to pick up the supporting <em><code>inspect</code></em> module:
+</p>
+<blockquote>
+   <a href="http://web.lfw.org/python/inspect.py">http://web.lfw.org/python/inspect.py</a>
+</blockquote>
+<p>
+  Python documentation conventions are discussed in Guido van
+  Rossum's <cite>Python Style Guide</cite>:
+</p>
+<blockquote>
+   <a href="http://www.python.org/doc/essays/styleguide.html">http://www.python.org/doc/essays/styleguide.html</a>
+</blockquote>
+<p>
+  Some enhancements to Python documentation conventions have
+  recently been proposed in Python Enhancment Proposals (PEPs) 256,
+  257 and 258.  These may or may not become part of future Python
+  versions, but it might be interesting to look at the ideas at:
+</p>
+<blockquote>
+   <a href="http://python.sf.net/peps/">http://python.sf.net/peps/</a>
+</blockquote>
+<p>
+  Another new module that helps in assuring the quality and
+  correctness of documentation is <em><code>doctest</code></em>.  The basic purpose
+  of this module is to allow automatic evaluation and
+  verification of the interactive session behavior that is often
+  pictured within docstrings.  Read the module documentation at:
+</p>
+<blockquote>
+   <a href="http://python.org/doc/current/lib/module-doctest.html">http://python.org/doc/current/lib/module-doctest.html</a>
+</blockquote>
+<p>
+  The latest <em><code>distutils</code></em> can be found at the below link.  For
+  most user of Python 1.6+, it is easiest to stick with the
+  version of <em><code>distutils</code></em> that came with Python.  But users of
+  Python 1.5.x would do well to download this important package
+  from:
+</p>
+<blockquote>
+   <a href="http://www.python.org/sigs/distutils-sig/download.html">http://www.python.org/sigs/distutils-sig/download.html</a>
+</blockquote>
+<p>
+  Greg Ward's <cite>Installing Python Modules</cite> is a good introduction
+  to the end-user of <em><code>distutils</code></em>.  If you download a current
+  Python documentation set, you get a version of this document.
+  But the current version of the document should probably be at:
+</p>
+<blockquote>
+   <a href="http://www.python.org/sigs/distutils-sig/doc/inst/inst.html">http://www.python.org/sigs/distutils-sig/doc/inst/inst.html</a>
+</blockquote>
+<p>
+  Greg Ward has also written <cite>Distributing Python Modules</cite> which
+  discusses <em><code>distutils</code></em> from the point-of-view a module
+  developer.  It can also be found in the current Python
+  documentation; and also at:
+</p>
+<blockquote>
+   <a href="http://www.python.org/sigs/distutils-sig/doc/dist/dist.html">http://www.python.org/sigs/distutils-sig/doc/dist/dist.html</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David believes that each developer should contribute according
+  to her ability and receive support according to her need.
+  David may be reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+</p>
+</body></html>

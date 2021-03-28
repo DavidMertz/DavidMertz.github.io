@@ -1,0 +1,523 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>LINUX ZONE FEATURE: Ruby on Rails -- Rapid Development of Model/View/Controller Web Applications -- </title>
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Linux Zone Feature: Ruby On Rails</h1>
+<h2>Rapid Development of Model/View/Controller Web Applications</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Writing Template, Gnosis Software<br>
+ March, 2005<br>
+ <br>
+</p>
+<blockquote>
+    Ruby on Rail is recent entry into the world of web application
+    development that is rapidly gaining mindshare, even while in still
+    in beta versions. Rails succeeds by automating creation of the most
+    common types of web applications, while not straightjacketing if you
+    want to add custom or atypical requirements. Moreover, compared to
+    many Free Software libraries that perform individual aspect of a web
+    application, Rails contains a nicely integrated set of tools for
+    <em>all</em> the aspects of a common web application.
+</blockquote>
+<h3>Introduction</h3>
+ <p>
+  The first thing to understand about Rails is its Model/View/Controller
+  (MVC) architecture. While this approach is not unique to Rails--nor
+  even to web applications as opposed to other programs--Rails provides
+  a very clear and focused MVC way of thinking.  If you stray from the
+  MVC approach, Rails becomes far less useful than if you follow its
+  paradigm.
+</p>
+<h3>Model
+</h3>
+ <p>
+  The Model in a rails application is primarily the underlying database
+  it uses.  In fact, in many ways, a Rails application is just a way to
+  perform manipulations on the data in an RDBMS in a directed way.  One
+  central component of Rails is the class <code>ActiveRecord</code>, which maps
+  relational tables to Ruby objects--and thereby to the data manipulated
+  by controllers and shown in views.  Rails applications are
+  particularly likely to use the ubiquitous MySQL database, but bindings
+  exist for a number of other RDBMS's.
+</p>
+<p>
+  If you like, you can add Ruby code to perform extra validation within
+  an application model, enforce data relationships, or trigger other
+  actions. The Ruby files within an application's <code>app/models/</code> directory
+  can call a variety validation methods of <code>ActiveRecord</code>.  However, you
+  can also perfectly well leave the Model code as a stub, and rely only
+  on the constraints of the RDBMS that holds the data.  For example, the
+  application we develop below contains only this skeleton model code
+  (at least initially):
+</p>
+<div class="code-sample"><h4>app/models/contact.rb</h4><pre>
+class Contact &lt; ActiveRecord::Base
+end
+
+</pre></div><h3>Controllers
+</h3>
+ <p>
+  Controllers carry out your application logic in its abstract form.
+  That is, the Ruby scripts in an application's <code>app/controllers/</code>
+  directory will load model data into variables, save it back, massage
+  and manipulate it.  But controllers are not concerned with how the
+  data is concretely presented and entered by users.
+</p>
+<p>
+  In the general MVC paradigm, this can allow the user multiple styles
+  of interaction with the same Controller--e.g. a native GUI, a web
+  interface, and a blind-friendly speech interface might all interact
+  with the same controller.  However, Rails is not quite so general as
+  that, it instead is relatively narrowly focused on providing and
+  collecting data within web pages.  Nonetheless, the layout of those
+  web pages--colors, fonts, tables, style sheets, etc.--can be modified
+  independently of controller code.
+</p>
+<h3>Views
+</h3>
+ <p>
+  Rails Views are where we leave Ruby code as such altogether. Rails
+  contains a very nice template language for <code>.rhtml</code> files, which
+  combines pure HTML with embedded Ruby code. As well, the very surface
+  appearance of a Rails application screen is generally controlled by
+  CSS stylesheets. The <code>.rhtml</code> format is an enhancement of HTML.
+  Actually, a simple HTML file by itself is also a valid RHTML template,
+  but there is not much point in omitting the scripting control that
+  RTHML gives you.
+</p>
+<p>
+  RHTML is a true template format, not simply a way of embedding code in
+  HTML, which is a much more powerful approach.  For those readers
+  familiar with PHP, think of the contrast between PHP itself and Smarty
+  templates.  That is, embedded scripting just intermixes code with
+  uninterpreted HTML: the code portion is still responsible for issuing
+  <code>print</code> statements when it wants to say something to the client.  In
+  contrast, a template engine adds a custom set of tags to HTML that
+  allow you to express conditions, loops, and other logic as part of the
+  enhanced HTML markup.
+</p>
+<h3>Code Generation</h3>
+ <p>
+  The tools Rails gives you are basically a set of code generators.  I
+  like this approach much better than a development environment that
+  forces me to use a rigid workspace and IDE.  Rails does not get in
+  your way, but nonetheless saves most of the work of manual
+  programming--or at least eases you into the parts that require manual
+  coding by providing first-pass scaffolding "for free."
+</p>
+<p>
+  The notion of scaffolding, in fact, is a central notion in Rails.
+  Very simple applications can almost entirely avoid custom coding by
+  letting rails dynamically generate client HTML pages as it runs.  A
+  first pass at code generation creates just the raw scaffoling; you can
+  subsequently generate more specific controllers, views, and models
+  that you wish to customoize.  But you need not generate much to get
+  started.
+</p>
+<p>
+  Rails relies on a fixed, and fairly commonsensical, organization of
+  its files.  But this organization is relatively rigid; you will just
+  fight with the Rails environment if you try to force other file and
+  code organizations.  Then again, I cannot really see any reason not to
+  go along with the organization Rails gives you; for the most part it
+  "fits your brain" (as Ruby fans like to say).
+</p>
+<h3>A Simple Application</h3>
+ <p>
+  Several tutorials are available on the Ruby on Rails website that walk
+  you through creating a simple Rails application (see Resources).  I
+  will not do much differently from any of them; there is a certain
+  right way to get started on a Rails application.  Given the relatively
+  short length of this introduction, I will simply recommend one of
+  those longer tutorials for more thorough examples.
+</p>
+<p>
+  The application I will create is a basic address book.  My goals for
+  the application are low, I just want to show readers the general steps
+  involved in creating an application.
+</p>
+<h3>Generating the AddressBook Model
+</h3>
+ <p>
+  The first thing we need to do for any application is create a database
+  for its data to live in.  Technically, this step need not occur
+  absolutely first; but it needs to occur early, and it feels
+  conceptually clear to me to create the database before any application
+  code (even automatically generated code).  So let us create a database
+  in MySQL, and a first table within this database.  Consult other
+  documentation for how to get MySQL--or another RDBMS--up and running.
+  Here we just assume MySQL is installed and available.
+</p>
+<div class="code-sample"><h4>Creating a MySQL database and table</h4><pre>
+[~/Sites]$ cat AddressBook.sql
+CREATE DATABASE IF NOT EXISTS AddressBook;
+USE AddressBook;
+CREATE TABLE IF NOT EXISTS contacts (
+  id smallint(5) unsigned NOT NULL auto_increment,
+  name varchar(30) NOT NULL default '',
+  created_on timestamp(14) NOT NULL,
+  updated_on timestamp(14) NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY name_key (name)
+) TYPE=MyISAM COMMENT='List of Contacts';
+[~/Sites]$ cat AddressBook.sql | mysql
+
+</pre></div><p>
+  There are a couple things to notice in this first table. Of central
+  importance is that <em>every</em> table must have an <code>id</code> column, with
+  exactly that name. Rails uses the primary key column <code>id</code> for various
+  record keeping and referencing.  The fields <code>created_on</code> and
+  <code>updated_on</code> are not required, but if you do include them, Rails
+  maintains them automatically "behind the scenes"; in most cases there
+  is no harm in using these timestamps.  So the only "real" data we have
+  yet added is a name for our address book contacts.
+</p>
+<p>
+  Another little oddity exists with Rails use of singular and plural
+  names for various things.  Various items are renamed between singular
+  and plural versions, depending on their usage and context.  Table
+  names should use the plural form.  I have not experimented with words
+  having irregular plurals; e.g. <code>datum</code> and <code>data</code> might trip up Rails.
+</p>
+<h3>Generating the AddressBook Application
+</h3>
+ <p>
+  Now that we have a database to interact with, let us create the
+  <code>AddressBook</code> application.  The first step is simply running <code>rails</code>
+  to generate the basic directories and scaffold code:
+</p>
+<div class="code-sample"><h4>Generating basic code and directories</h4><pre>
+[~/Sites]$ rails AddressBook
+create
+create  app/apis
+create  app/controllers
+create  app/helpers
+create  app/models
+create  app/views/layouts
+create  config/environments
+create  components
+[...]
+create  public/images
+create  public/javascripts
+create  public/stylesheets
+create  script
+[...]
+create  README
+create  script/generate
+create  script/server
+[...]
+
+</pre></div><p>
+  I have abridged the output of running <code>rails</code>.  All the omitted lines
+  remind you of various files and directories that were created.  Try it
+  on your system and browse through all the created files.  I display a
+  few of the most important files and directories above.
+</p>
+<h3>Getting Rails Running
+</h3>
+ <p>
+  Having created the <code>AddressBook/</code> directory and needed children, we
+  need to perform just some barest initial configuration.  First let us
+  set the database by modifying a YAML configuration file:
+</p>
+<div class="code-sample"><h4>Configure Database Access</h4><pre>
+[~/Sites]$ cd AddressBook
+[~/Sites/AddressBook]$ head -6 config/database.yml # after editing
+development:
+  adapter: mysql
+  database: AddressBook
+  host: localhost
+  username: some_user
+  password: password_if_needed
+
+</pre></div><p>
+  And finally, we need to serve the data.  Rails comes with its own
+  single-function webserver <code>WEBrick</code>, which is perfectly good.  You may
+  also follow instructions at the Ruby on Rails website to configure
+  Apache or other servers to serve Rails applications via FCGI (or plain
+  CGI, but plain CGI will be slow).
+</p>
+<div class="code-sample"><h4></h4><pre>[~/Sites/AddressBook]$ ruby script/server -d
+=&gt; Rails application started on http://0.0.0.0:3000
+[2005-03-21 17:57:38] INFO  WEBrick 1.3.1
+[2005-03-21 17:57:38] INFO  ruby 1.8.2 (2004-12-25) [powerpc-darwin7.8.0]
+
+</pre></div><h3>Creating a Little Content
+</h3>
+ <p>
+  The prior steps are enough to let you view a welcome splash page on
+  the WEBrick port.  For example, on my local system, I can now view
+  <code>http://gnosis-powerbook.local:3000/</code>.  But we need to generate just a
+  bit more code to manipulate our custom database.  We do this with the
+  script <code>generate</code> that was created within our <code>AddressBook/</code>
+  application directory:
+</p>
+<div class="code-sample"><h4>Code generation of scaffold model and controller</h4><pre>
+[~/Sites/AddressBook]$ ruby script/generate model contact
+      exists  app/models/
+      exists  test/unit/
+      exists  test/fixtures/
+      create  app/models/contact.rb
+      create  test/unit/contact_test.rb
+      create  test/fixtures/contacts.yml
+[~/Sites/AddressBook]$ ruby script/generate controller contact
+      exists  app/controllers/
+      exists  app/helpers/
+      create  app/views/contact
+      exists  test/functional/
+      create  app/controllers/contact_controller.rb
+      create  test/functional/contact_controller_test.rb
+      create  app/helpers/contact_helper.rb
+
+</pre></div><p>
+  Notice here that we have gone back to the signular <code>contact</code> rather
+  than the plural <code>contacts</code> in the corresponding table name. Now we
+  need to edit just one more generated file, just a bit:
+</p>
+<div class="code-sample"><h4>Telling controller to use scaffold</h4><pre>
+[~/Sites/AddressBook]$ cat app/controllers/contact_controller.rb
+class ContactController &lt; ApplicationController
+  model :contact
+  scaffold :contact
+end
+
+</pre></div><p>
+  Now we can view and modify the content of our database at a URL like
+  <code>http://rails.server/contact/</code> (e.g. in my test case
+  <code>http://gnosis-powerbook.local:3000/contact/</code>). After entering a
+  little data, it looks something like:
+</p>
+<p>
+  <img src="http://gnosis.cx/publish/programming/rails-contact1.gif" alt="Pure scaffolding contacts list">
+</p>
+<p>
+  <img src="http://gnosis.cx/publish/programming/rails-edit1.gif" alt="Pure scaffolding edit contact">
+</p>
+<h3>Creating Customizable Content</h3>
+ <p>
+  The prior generated code creates a fully working interface to view and
+  modify our database. But all the formatting, presentation, and
+  business logic (such as there is) is done dynamically by Rails, and
+  without any great sophistication. In order to get something a bit more
+  custom, we need to generate just a bit more code. What we need now is
+  for Rails to explicitly write out all the scaffolding it is implicitly
+  generating on-the-fly, so that we can tinker with it.
+</p>
+<div class="code-sample"><h4>Code generation of explicit Controller and View</h4><pre>
+[~/Sites/AddressBook]$ ruby script/generate scaffold Contact
+  dependency  model
+      [...]
+      create  app/views/contacts
+      exists  test/functional/
+      create  app/controllers/contacts_controller.rb
+      create  test/functional/contacts_controller_test.rb
+      create  app/helpers/contacts_helper.rb
+      create  app/views/layouts/contacts.rhtml
+      create  public/stylesheets/scaffold.css
+      create  app/views/contacts/list.rhtml
+      create  app/views/contacts/show.rhtml
+      create  app/views/contacts/new.rhtml
+      create  app/views/contacts/edit.rhtml
+
+</pre></div><p>
+  We have a bit more to work with. Notice that this code has gone back
+  to the plural form <code>contacts</code> (for reasons not clear to me, but we
+  need to accept it). Let us modify a few things.  Maybe we can change a
+  few colors and fonts in the CSS:
+</p>
+<div class="code-sample"><h4>Configuring Cascading Style Sheets</h4><pre>
+[~/Sites/AddressBook]$ head -8 public/stylesheets/scaffold.css
+body { background-color: #ffe; color: #338; }
+body, p, ol, ul, td {
+  font-family: verdana, arial, helvetica, sans-serif;
+  font-size:   13px;
+}
+td { border: 1px solid; }
+a { color: #eef; background-color: #446; }
+a:hover { color: #fff; background-color:#000; }
+
+</pre></div><p>
+  Now that we have the code, what does <code>contacts_controller.rb</code> do? It
+  is more explicit and configurable in its action that the
+  <code>contact_controller.rb</code> we saw above.  In part, the controller looks
+  like:
+</p>
+<div class="code-sample"><h4>app/controllers/contacts_controller.rb</h4><pre>
+class ContactsController &lt; ApplicationController
+  def list
+    @contacts = Contact.find_all
+  end
+  def show
+    @contact = Contact.find(@params['id'])
+  end
+  def create
+    @contact = Contact.new(@params['contact'])
+    if @contact.save
+      flash['notice'] = 'Contact was successfully created.'
+      redirect_to :action =&gt; 'list'
+    else
+      render_action 'new'
+    end
+  end
+
+</pre></div><p>
+  As promised, a Controller's main job is to load data into variables.
+  The object <code>Contact</code> is the <code>ActiveRecord</code> object-relational mapping
+  the Model provides.  The variables <code>@contacts</code> or <code>@contact</code> are given
+  data in their appropriate methods.  The methods are themselves
+  referred to by URL's such as <code>http://rails.server/contacts/show/2</code>
+  (this one to show the contact with <code>id</code> of 2).
+</p>
+<p>
+  The controller above ultimately connects to views, RHTML files that
+  make use of the data values loaded into variables by the controller.
+  For example, here is part of the <code>list</code> view:
+</p>
+<div class="code-sample"><h4>app/views/contacts/list.rhtml</h4><pre>
+[...]
+&lt;% for contact in @contacts %&gt;
+  &lt;tr&gt;
+  &lt;% for column in Contact.content_columns %&gt;
+    &lt;td&gt;&lt;%=h contact.send(column.name) %&gt;&lt;/td&gt;
+  &lt;% end %&gt;
+    &lt;td&gt;&lt;%= link_to 'Show', :action =&gt; 'show', :id =&gt; contact.id %&gt;&lt;/td&gt;
+    &lt;td&gt;&lt;%= link_to 'Edit', :action =&gt; 'edit', :id =&gt; contact.id %&gt;&lt;/td&gt;
+    &lt;td&gt;&lt;%= link_to 'Destroy', :action =&gt; 'destroy', :id =&gt; contact.id %&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;% end %&gt;
+[...]
+
+</pre></div><p>
+  The method <code>ContactsController.list</code> loads the variable <code>@contacts</code>,
+  and the flow control tags in RHTML pull out the individual records
+  from the array.
+</p>
+<h3>Changing The Model</h3>
+ <p>
+  Our initial model contained only a name for a contact.  Unfortunately,
+  given the length constraint of this article do not have room to expand
+  the model to include actual contact data--phone numbers, addresses,
+  emails, etc.  In general, that data would live in a child table, with
+  a foreign key relation to the table <code>contacts</code>.  The Rails model would
+  indicate the relation with custom code something like:
+</p>
+<div class="code-sample"><h4>app\models\phone.rb</h4><pre>
+class Phone &lt; ActiveRecord::Base
+  belongs_to :contact
+end
+
+</pre></div><p>
+  But to wrap up this article, let us change our data model just
+  slightly, and see how that affects our application.  First let's add a
+  column:
+</p>
+<div class="code-sample"><h4>Adding first_met date to model</h4><pre>
+$ cat add-contact-date.sql
+USE AddressBook;
+ALTER TABLE contacts ADD first_met date;
+$ cat add-contact-date.sql | mysql
+
+</pre></div><p>
+  Now that we have changed the underlying model
+  <code>http://rails.server/contact/</code> (the behind-the-scenes version of the
+  scaffolding) simply adjusts with no effort on our part.  The
+  controller and view are fully automated based on the model.  But the
+  application version at <code>http://rails.server/contacts/</code>, with our hand
+  tweaked files is not quite as automatic.
+</p>
+<p>
+  The <code>list</code> view automatically looks for <em>all</em> the columns, whatever
+  they may be, by including <code>Contact.content_columns</code> as part of the
+  template loop.  But other views like <code>edit</code> have already been
+  generated, and we need to add our new data fields.  For example:
+</p>
+<div class="code-sample"><h4>app/views/contacts/edit.rhtml</h4><pre>
+&lt;h1&gt;Editing contact&lt;/h1&gt;
+&lt;%= error_messages_for 'contact' %&gt;
+&lt;%= start_form_tag :action =&gt; 'update' %&gt;
+&lt;%= hidden_field 'contact', 'id' %&gt;
+&lt;p&gt;&lt;label for="contact_name"&gt;Name&lt;/label&gt;&lt;br/&gt;
+  &lt;%= text_field 'contact', 'name'  %&gt;&lt;/p&gt;
+&lt;p&gt;&lt;label for="first_met"&gt;Known Since&lt;/label&gt;&lt;br/&gt;
+  &lt;%= date_select "contact", "first_met", :use_month_numbers =&gt; false %&gt;&lt;/p&gt;
+&lt;input type="submit" value="Update" /&gt;
+&lt;%= end_form_tag %&gt;
+&lt;%= link_to 'Show', :action =&gt; 'show', :id =&gt; @contact.id %&gt; |
+&lt;%= link_to 'Back', :action =&gt; 'list' %&gt;
+
+</pre></div><p>
+  So what does our hand tweaked application look like.  Not a lot
+  different from the default, but you can see our modifications in
+  action:
+</p>
+<p>
+  <img src="http://gnosis.cx/publish/programming/rails-contact2.gif" alt="Hand tweaked contacts list">
+</p>
+<p>
+  <img src="http://gnosis.cx/publish/programming/rails-edit2.gif" alt="Hand tweaked edit contact">
+</p>
+<h3>Conclusion</h3>
+ <p>
+  Rails is an extremely quick way to develop quite flexible web
+  applications.  This introduction just barely touched on the style of
+  working with Rails; but the full framework contains a considerable
+  collection of useful classes and methods for carrying out the actions
+  most used in web-based applications.
+</p>
+<p>
+  Moreover, the best thing about Rails is perhaps the fact it gives you
+  a whole "Rails way of thinking" with all the supporting code you need
+  to use it.  This is a big plus over other toolkits and frameworks that
+  give you only much more raw materials to work with (perhaps adequate,
+  but not well focused).  Rails development gives you a clear path from
+  a half-formed idea to a fully function web application.
+</p>
+<h3>Resources</h3>
+ <p>
+  The home page for Ruby on Rails is the place to get started:
+</p>
+<blockquote>
+   <a href="http://www.rubyonrails.com/">http://www.rubyonrails.com/</a>
+</blockquote>
+<p>
+  On that site are a number of introductory tutorials and guides, along
+  with downloadable source and documentation.  Unfortunately, while the
+  guides are useful, the raw API and usage documentation is still less
+  polished.  The documentation seems <em>correct</em>, it just does not feel
+  very <em>inviting</em>.  I expect that will improve with time.
+</p>
+<p>
+  One nice resource linked to on the Rails website is a ten minute video
+  that shows real-time development of a working web application. While I
+  am sure the video required quite careful scripting and practice to
+  create, the fact it is <em>possible</em> to go from nothing to a working
+  application in ten minutes is pretty impressive (the screen capture
+  video shows the various code generation and editing in live action):
+</p>
+<blockquote>
+   <a href="http://media.nextangle.com/rails/rails_setup.mov">http://media.nextangle.com/rails/rails_setup.mov</a>
+</blockquote>
+<p>
+  Wikipedia contains an excellent entry on the Model/View/Controller
+  architectural paradigm.
+</p>
+<blockquote>
+   <a href="http://en.wikipedia.org/wiki/Model_view_controller">http://en.wikipedia.org/wiki/Model_view_controller</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  To David Mertz, all the world is a stage; and his career is devoted to
+  providing marginal staging instructions. David may be reached at
+  mertz@gnosis.cx; his life pored over at<a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>
+  Suggestions and recommendations on this, past, or future, columns are
+  welcomed. Check out David's book <cite>Text Processing in Python</cite> at
+  http//gnosis.cx/TPiP/.
+</p>
+</body></html>

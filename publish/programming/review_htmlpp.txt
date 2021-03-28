@@ -1,0 +1,149 @@
+COMPARATIVE PRODUCT REVIEW:
+HTMLPP (vs. PPWizard)
+
+David Mertz, Ph.D.
+Gnosis Software, Inc.
+July 2000
+
+AT A GLANCE
+------------------------------------------------------------------------
+
+      Creators:      Pieter Hintjens <ph@imatix.com> and
+                     Enrique Bengoechea <ebb@eco.uc3m.es>
+      Price/License: Free of cost; source under GPL.
+      Home Page:     http://www.imatix.com/html/htmlpp/index.htm
+      Requirements:  System with Perl interpreter
+
+
+WHAT IS HTMLPP?
+------------------------------------------------------------------------
+
+  HTMLPP is a text "preprocessor" written in Perl.  A
+  preprocessor is a great thing to use when you want to generate
+  a site worth of consistent-looking pages.  Rather than having
+  to copy-and-paste things like navigation bars, site-titles,
+  color and background definitions, with a preprocessor you can
+  give a simple name to a whole batch of HTML; and changing it in
+  one place will change it everywhere.
+
+  What a preprocessor actually does is read a source file that
+  consists of some literal text with some directives, and create
+  output according to the directives.  HTMLPP directives can be
+  variable insertions, or one of the "intrinsic functions", or
+  even Perl program fragments.
+
+
+HTMLPP versus PPWizard
+------------------------------------------------------------------------
+
+  For Webreview readers who happened to see my review of PPWizard
+  (http://webreview.com/pace/print/2000/06/30/feature/index03.html),
+  my description of HTMLPP will sound awfully familiar.  HTMLPP
+  and PPWizard exist to fill nearly the same niche, and in many
+  ways, what they both do is dictated by the niche.  You might be
+  tempted to decide between the two tools based just on you
+  familiarity with Perl (HTMLPP) versus REXX (PPWizard), but I
+  find that there are much more important differences between the
+  tools than this.  In using either tool, you will probably use
+  the high-level macros more than you will the underlying
+  scripting language; and either scripting language allows
+  friendly ways of expressing program constructs.
+
+  In my PPWizard review, I contrasted a preprocessor with
+  server-side includes and with server-side scripting.  Those
+  remarks apply just as well to HTMLPP as they did to PPWizard,
+  so I will not repeat them here.
+
+  What is more interesting to look at is the difference in design
+  philosophy of HTMLPP and PPWizard.  One thing that stands out
+  is that PPWizard is most facile at building up complex HTML
+  documents from multiple templates and data sources.  HTMLPP, on
+  the other hand, is much more focussed on breaking down complex
+  source documents into simpler groups of HTML pages (such as
+  chapters of a document).  Because of this differing focus, if
+  your source is *documents* in a traditional book/journal/manual
+  sense, HTMLPP is likely to serve you better.  For that sort of
+  thing, HTMLPP syntax feels more natural, and less intrusive.
+  In futher support of the document model, HTMLPP offers a basic degree of
+  multilingual support with a language directive (and language
+  template files), along with simple table-of-contents
+  directives.  On the other hand, if you do not have a "source"
+  in this documentary sense, but are building complex HTML "whole
+  cloth", PPWizard is probably a better choice.
+
+
+INTRINSIC FUNCTIONS
+------------------------------------------------------------------------
+
+  HTMLPP can call any Perl code that can be wrapped in an 'eval'
+  call.  But most of the time it is easier to use one of the
+  functions that HTMLPP provides for you.  You don't necessarily
+  have to be a Perl programmer to use HTMLPP intrinsic functions;
+  you are less likely to make a programming error; and the syntax
+  flows a little more naturally.  Intrinsic functions include a
+  number of functions for getting and calculating dates, some
+  simple text transformation functions (like upper()), some
+  functions to check on files, and quite usefully some functions
+  to check image sizes.  The results of these functions will
+  normally be written into resultant HTML pages.
+
+  While HTMLPP has some of the most useful built-in functions you
+  might think of, PPWizard simply has a lot more functions in it.
+  Partially this is probably because PPWizard seems to be more
+  actively maintained, but part is also because of PPWizards
+  greater focus on complex conditional processing.
+
+
+GURU MODE
+------------------------------------------------------------------------
+
+  In keeping with its focus on source documents, HTMLPP has a
+  nice trick that PPWizard lacks (except in very rudimentary
+  form).  In the "guru mode", HTMLPP can process source files
+  with no apparent markup at all.  Guru mode looks for some
+  features of text that look good as plain ASCII, and converts
+  them to what it thinks is proper HTML.  For example, headers
+  (H1, H2, H3, respectively) should look like:
+
+      Chapter Header
+      **************
+
+      Section Header
+      ==============
+
+      Subsection Header
+      -----------------
+
+  Some other formatting conventions allow you to indicate
+  bullets, numbered lists, tables, images, and a few other
+  things.  As an unobtrusize way to prepare documents, these few
+  "invisible" markup conventions are quite easy to learn and use.
+  On this line, you also might find useful a utility I wrote that
+  serves a similar purpose, called Txt2Html; find it at,
+  <http://gnosis.cx/cgi/txt2html.cgi>.  Txt2Html doesn't deal
+  with quite as many formatting features as HTMLPP does, but it
+  does a number of other things HTMLPP does not (and it is also
+  free).
+
+
+OVERALL
+------------------------------------------------------------------------
+
+  HTMLPP is a very quick way to get started with preprocessing,
+  and all the site-development benefits that provides.  Guru mode
+  is good mojo; and even the full markup feels very light and
+  comfortable to work with.  For more powerful processing,
+  PPWizard is a good step up, but either tool can be made to do
+  whatever you want with a little work.  After using tools like
+  these, I can hardly imagine going back to trying to maintain
+  consistent HTML pages through endless cutting-and-pasting.  A
+  preprocessor is a great way to save yourself some work.
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  David Mertz enjoys writing programs to arrange words for him
+  just about as much as he enjoys writing words himself.  You can
+  find out copious biographical details by rooting around at
+  http://gnosis.cx/publish/.

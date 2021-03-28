@@ -1,0 +1,432 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>CHARMING PYTHON #B19: DParser for Python. -- Exploring Another Python Parser -- </title>
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Charming Python #b19: Dparser For Python.</h1>
+<h2>Exploring Another Python Parser</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Grammar Hacker, Gnosis Software, Inc.<br>
+ June, 2004<br>
+ <br>
+</p>
+<blockquote>
+    DParser is a simple but powerful tool for parsing, written by J.
+    Plevyak. "DParser for Python" gives Python programmers a seamless
+    interface to DParser. In a manner similar to Spark or PLY, grammar
+    rules are input to DParser using Python function documentation
+    strings. This article looks at Dparser for Python, and compares it
+    to other parsers covered in previous installments.
+</blockquote>
+<h3>Why Look At Dparser, Too?</h3>
+ <p>
+  There are many Python parser libraries out there. I have written
+  discussions of mx.TextTools, SimpleParse, SPARK, in this column; and
+  of PLY in my book. Offhand, I know to exist PyGgy, Yapps, PLEX, PyLR,
+  PyParsing, TPG, and I have vague recollections of reading
+  announcements of a half dozen others. This is a category where users
+  might be frustrated not by the dearth, but by the glut of high quality
+  libraries.
+</p>
+<p>
+  What distinguishes DParser from all the others? Well, like PLY and
+  Spark, DParser for Python utilizes function documentation strings to
+  indicate its productions.  This style lets you put action code right
+  inside a production, for events that should occur when a particular
+  grammar rule is fulfilled; the production-in-docstring style also lets
+  you manipulate parse trees as parsing occurs.  In contast to PLY or
+  Spark, DParser itself is written in C, and so likely considerably
+  faster than pure-Python parsers.  DParser for Python is a fairly thin
+  wrapper around an underlying C library--callbacks into Python take
+  some extra time, but the basic parsing is a C speeds.  For this
+  article, however, I have not attempted any specific benchmarks, so
+  exactly how fast or slow DParser is compared to other parsers is not
+  something I can directly comment on.
+</p>
+<p>
+  In my own mind, I remain quite fond of SimpleParse's approach.
+  SimpleParse is a wrapper to the fast mx.TextTools library (also
+  written in C) that cleanly separates an EBNF grammar language from
+  Python code. Usually using SimpleParse means generating a parse tree
+  in one function call, then traversing this tree in separate code.  For
+  very large parsed documents, such a two step approach might be
+  inefficient, but I find it easier to understand code written this way.
+</p>
+<p>
+  Still, enough of my readers have recommended Dparser for Python that
+  it warrants a look, even given my preference for an isolated EBNF
+  definition. By the way, as you will see in the examples, DParser uses
+  no separate tokenization pass, just straight parsing. You can control
+  whitespace recognization (that separates parse symbols) by defining
+  the reserved <code>d_whitespace()</code> function; this amounts to being able to
+  tokenize however you like.
+</p>
+<h3>Finding A Longest Production</h3>
+ <p>
+  As a first example of a DParser for Python program, I created a
+  grammar that looks for several patterns that are subproductions of one
+  aonther.  This grammar handles a problem similar to the "dangling
+  else" issue for many parsers.  That is: how do you know when to stop
+  looking for larger productions (e.g. is an "if" followed by an
+  "else"?).  My grammar looks at phrases that might contain words
+  starting with "a", with "b" and with "c", in that order.  All
+  non-included words are just part of the "head" or "tail" of the
+  phrase.  A couple examples illustrate this, first the program itself:
+</p>
+<div class="code-sample"><h4>Parser abc.py</h4><PRE><FONT COLOR=#1111CC>#!/usr/bin/env python2.3</FONT>
+<FONT COLOR=#115511>"Identify sequence of a-, b-, c- words"</FONT>
+<FONT COLOR=#1111CC>#</FONT>
+<FONT COLOR=#1111CC>#-- The grammar</FONT>
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="d_phrase"><FONT COLOR=#CC0000><B> d_phrase</B></FONT></A>(t, s):
+    <FONT COLOR=#115511>'phrase : words ( ABC | AB | A ) words'</FONT>
+    <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"Head:"</FONT>, <FONT COLOR=#115511>''</FONT>.join(s[0])
+    <FONT COLOR=#3333CC><B>print</B></FONT> t[1][0]+<FONT COLOR=#115511>":"</FONT>, <FONT COLOR=#115511>''</FONT>.join(s[1])
+    <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"Tail:"</FONT>, <FONT COLOR=#115511>''</FONT>.join(s[2])
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="d_words"><FONT COLOR=#CC0000><B> d_words</B></FONT></A>(t):
+    <FONT COLOR=#115511>'words : word*'</FONT>
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="d_word"><FONT COLOR=#CC0000><B> d_word</B></FONT></A>(t):
+    <FONT COLOR=#115511>'word : "[a-z]+" '</FONT>
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="d_A"><FONT COLOR=#CC0000><B> d_A</B></FONT></A>(t):
+    <FONT COLOR=#115511>'''A : "a[a-z]*" '''</FONT>
+    <FONT COLOR=#3333CC><B>return</B></FONT> <FONT COLOR=#115511>'A'</FONT>
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="d_AB"><FONT COLOR=#CC0000><B> d_AB</B></FONT></A>(t):
+    <FONT COLOR=#115511>'''AB : A "b[a-z]*" '''</FONT>
+    <FONT COLOR=#3333CC><B>return</B></FONT> <FONT COLOR=#115511>'AB'</FONT>
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="d_ABC"><FONT COLOR=#CC0000><B> d_ABC</B></FONT></A>(t):
+    <FONT COLOR=#115511>'''ABC : AB "c[a-z]*" '''</FONT>
+    <FONT COLOR=#3333CC><B>return</B></FONT> <FONT COLOR=#115511>'ABC'</FONT>
+<FONT COLOR=#1111CC>#</FONT>
+<FONT COLOR=#1111CC>#-- Parse STDIN</FONT>
+<FONT COLOR=#3333CC><B>from</B></FONT> dparser <FONT COLOR=#3333CC><B>import</B></FONT> Parser
+<FONT COLOR=#3333CC><B>from</B></FONT> sys <FONT COLOR=#3333CC><B>import</B></FONT> argv, stdin
+phrase, arg = stdin.read(), argv[-1]
+Parser().parse(phrase,
+               print_debug_info=(arg==<FONT COLOR=#115511>'--debug'</FONT>))</PRE></div><p>
+  Let us run the parser against a few phrases to illustrate:
+</p>
+<div class="code-sample"><h4>Simple to parse phrases</h4><pre>
+$ echo -n "alpha" | ./abc.py
+Head:
+A: alpha
+Tail:
+echo -n "xavier alpha beta charlie will" | ./abc.py
+Head: xavier
+ABC: alpha beta charlie
+Tail: will
+$ echo -n "mable delta xavier bruce" | ./abc.py
+Traceback (most recent call last): [...]
+dparser.SyntaxError:
+syntax error, line:1
+mable delta xavier bruce[syntax error]
+
+</pre></div><p>
+  So far, so good, apparently.  My grammar finds an ABC when it is
+  available, but settles for an A, or AB, when that is all there is to
+  find.
+</p>
+<p>
+  But in truth, my grammar has a lot of problems in it when it
+  encounters ambiguous grammars. In most cases, it appears that DParser
+  will fall into an infinite loop when it cannot decide how to parse a
+  phrase--probably the worst outcome; at least a traceback or reported
+  error would tell you what went wrong.  Sometimes (on my Mac OSX
+  machine, at least), it produces a "Bus error" instead.  I do not like
+  either of those cases.
+</p>
+<h3>Addressing Ambiguity</h3>
+ <p>
+  Since all of the terminal productions have the same priority, the
+  parser cannot decide how to parse something like:
+</p>
+<div class="code-sample"><h4>Trying to parse an ambiguous phrase</h4><pre>
+$ echo -n "alex bruce alice benny carl" | ./abc.py
+
+</pre></div><p>
+  Is this an <code>AB</code> followed by <code>words</code>? Is it <code>words</code> followed by <code>ABC</code>?
+  For that matter, is it all <code>words</code> (made of of five <code>word</code>
+  productions), and should raise a <code>dparser.SyntaxError</code>? I wind up with
+  a "Bus error" or a frozen task rather than a parse. In the prior
+  examples, the ambiguity happened to work out because of the eagerness
+  of each production: once an <code>ABC</code> was found, the leading and trailing
+  <code>words</code> fell into place.
+</p>
+<p>
+  It is quite confusing, actually, to understand exactly why the prior
+  grammar <em>works</em> in those cases it does; more confusing, in a way, that
+  understanding why it sometimes does not work.
+</p>
+<p>
+  Let us say that our desire in parsing a phrase is to find an <code>ABC</code>
+  production whenever one exists, even if some other production (i.e. an
+  <code>AB</code>) is satisfied first in left-to-right traversal.  We can do that
+  by elevating the priority of the <code>ABC</code> terminal production:
+</p>
+<div class="code-sample"><h4>Revised d_ABC() production function for abc2.py</h4><PRE><FONT COLOR=#3333CC><B>def</B></FONT><A NAME="d_ABC"><FONT COLOR=#CC0000><B> d_ABC</B></FONT></A>(t):
+    <FONT COLOR=#115511>'ABC : AB "c[a-z]*" $term 1'</FONT>
+    <FONT COLOR=#3333CC><B>return</B></FONT> <FONT COLOR=#115511>'ABC'</PRE></FONT></div><p>
+  If a priority is not specified, a production is priority 0.
+  Otherwise, any positive or negative integer may be used to rank
+  productions.  Now we can run:
+</p>
+<div class="code-sample"><h4>Successfully finding late ABC</h4><pre>
+$ echo -n "alex bruce alice benny carl" | ./abc2.py
+Head: alex bruce
+ABC: alice benny carl
+Tail:
+
+</pre></div><p>
+  Notice that alternatives within the <code>(ABC|AB|A)</code> alternation are all
+  tried before the parser looks for the trailing <code>words</code>.  So this
+  succeeds without any priority specification:
+</p>
+<div class="code-sample"><h4>No ambiguity issue between A and AB</h4><pre>
+$ echo -n "alex alice benny" | ./abc.py    Head: alex
+AB: alice benny
+Tail:
+
+</pre></div><p>
+  I found some difficult to explain anamolies in the behavior of DParser
+  in the face of ambiguity. For example, adding, a trailing <code>word</code> that
+  is definitely not an <code>A</code> convinces the parser to work--but <em>only</em> if
+  run with debugging information!
+</p>
+<div class="code-sample"><h4>Erratic behavior in face of ambiguity</h4><pre>
+$ echo -n "alex bruce alice benny carl dave" | ./abc.py
+[...process freezes...]
+$ echo -n "alex bruce alice benny carl dave" | ./abc.py --debug
+[...debugging trace of speculative and final productions...]
+Head: alex bruce
+ABC: alice benny carl
+Tail: dave
+
+</pre></div><p>
+  Either way, the priority specification in <code>abc2.py</code> resolves the parse
+  in either case.
+</p>
+<p>
+  It is rather subtle and hard to understand exactly when ambiguities
+  are resolved. Basically, productions are fulfilled as they are seen,
+  left-to-right, and each one tries to grab as many words as it can,
+  left-to-right. Backtracking happens only when something is
+  unambiguously wrong in a lookahead.  Roughly, anyway.
+</p>
+<h3>A Little On Debugging</h3>
+ <p>
+  One thing I like about DParser is its option to display debugging
+  information.  Seeing this does not necessarily make it obvious how to
+  create a correct grammar, but at least it provides nice insight into
+  the actions a parser takes when processing a particular phrase.  For
+  example:
+</p>
+<div class="code-sample"><h4></h4><pre>#------- Showing a trace of speculative productions
+$ echo -n "alex alice benny carl dave" | ./abc2.py --debug
+               d_words ???:
+                   d_A ???:     alex
+                d_word ???:     alex
+               d_words ???:
+              d_phrase ???:     alex
+               d_words ???:     alex
+                   d_A ???:     alice
+                d_word ???:     alice
+               d_words ???:
+               d_words ???:     alice
+              d_phrase ???:     alex alice
+              d_phrase ???:     alex alice
+               d_words ???:     alex alice
+                d_word ???:     benny
+                  d_AB ???:     alice benny
+               d_words ???:     benny
+               d_words ???:     alice benny
+               d_words ???:
+              d_phrase ???:     alex alice benny
+              d_phrase ???:     alex alice benny
+              d_phrase ???:     alex alice benny
+               d_words ???:     alex alice benny
+                d_word    :     alex
+               d_words    :     alex
+                   d_A    :     alice
+                  d_AB    :     alice benny
+                 d_ABC ???:     alice benny carl
+               d_words ???:
+              d_phrase ???:     alex alice benny carl
+                 d_ABC    :     alice benny carl
+                d_word ???:     dave
+               d_words ???:     dave
+              d_phrase ???:     alex alice benny carl dave
+                d_word    :     dave
+               d_words    :     dave
+              d_phrase    :     alex alice benny carl dave
+Head: alex
+ABC: alice benny carl
+Tail: dave
+
+</pre></div><p>
+  The productions followed by question marks are speculative attempts;
+  those without are final productions actually followed.  Related to
+  this, DParser gives you the capability to take actions differentially
+  when a production is entered either speculatively or on a final parse.
+  But default, the actions in a function body are only performed ona
+  final parse.  But you may specify either of two extra arguments to a
+  production to handle speculative parses (there are also a number of
+  other optional arguments not discussed in this article):
+</p>
+<div class="code-sample"><h4>Actions during speculative parsing</h4><pre>
+def d_prod1(t, spec_only):
+    'prod1 : this that+ other?'
+    print "Speculative parse of prod1"
+def d_prod2(t, spec):
+    'prod2: spam* eggs toast'
+    if spec:
+        print "Speculative parse of prod2"
+    else:
+        print "Final parse of prod2"
+
+</pre></div><p>
+  Of course, all the information displayed by my speculative productions
+  is also displayed (in slightly different form) by using the
+  <code>print_debug_info</code> argument to <code>dparser.Parser.parse()</code>.  But you
+  could also decide to take other actions--trigger external events, for
+  example.
+</p>
+<h3>More On Priorities</h3>
+ <p>
+  The earlier use of an assigned priority for the <code>ABC</code> production was a
+  little bit of a hack, I confess.  But in cases of straightforward
+  ambiguity, fine tuning terminal priorities is a great tool.  Let me
+  give another grammar with a straightforward ambiguity:
+</p>
+<div class="code-sample"><h4>Term-for-term ambiguous grammar, ibm.py</h4><PRE><FONT COLOR=#3333CC><B>def</B></FONT><A NAME="d_phrase"><FONT COLOR=#CC0000><B> d_phrase</B></FONT></A>(t, s):
+    <FONT COLOR=#115511>'phrase : word ( vowel | caps | threeletter ) word'</FONT>
+    <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"Head:"</FONT>, <FONT COLOR=#115511>''</FONT>.join(s[0])
+    <FONT COLOR=#3333CC><B>print</B></FONT> t[1][0]+<FONT COLOR=#115511>":"</FONT>, <FONT COLOR=#115511>''</FONT>.join(s[1])
+    <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"Tail:"</FONT>, <FONT COLOR=#115511>''</FONT>.join(s[2])
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="d_word"><FONT COLOR=#CC0000><B> d_word</B></FONT></A>(t): <FONT COLOR=#115511>'word : "[A-Za-z]+" '</FONT>
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="d_vowel"><FONT COLOR=#CC0000><B> d_vowel</B></FONT></A>(t):
+    <FONT COLOR=#115511>'vowel : "[AEIOUaeiou][A-Za-z]*"'</FONT>
+    <FONT COLOR=#3333CC><B>return</B></FONT> <FONT COLOR=#115511>'VOWEL'</FONT>
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="d_caps"><FONT COLOR=#CC0000><B> d_caps</B></FONT></A>(t):
+    <FONT COLOR=#115511>'caps : "[A-Z]+"'</FONT>
+    <FONT COLOR=#3333CC><B>return</B></FONT> <FONT COLOR=#115511>'CAPS'</FONT>
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="d_threeletter"><FONT COLOR=#CC0000><B> d_threeletter</B></FONT></A>(t):
+    <FONT COLOR=#115511>'threeletter : "[A-Za-z][A-Za-z][A-Za-z]"'</FONT>
+    <FONT COLOR=#3333CC><B>return</B></FONT> <FONT COLOR=#115511>'3LETT'</FONT>
+<FONT COLOR=#1111CC>#-- Parse STDIN</FONT>
+<FONT COLOR=#3333CC><B>from</B></FONT> dparser <FONT COLOR=#3333CC><B>import</B></FONT> Parser
+<FONT COLOR=#3333CC><B>from</B></FONT> sys <FONT COLOR=#3333CC><B>import</B></FONT> stdin
+Parser().parse(stdin.read())</PRE></div><p>
+  The productions for <code>vowel</code>, <code>caps</code> and <code>threeletter</code> are not
+  necessarily distinct, they can all grab an overlapping set of words,
+  e.g.:
+</p>
+<div class="code-sample"><h4>When DParser detects ambiguity gracefully</h4><pre>
+$ echo -n "Read IBM developerWorks" | ./ibm.py
+Traceback (most recent call last): [...]
+dparser.AmbiguityException:  [...]
+
+</pre></div><p>
+  Of course, you might get lucky with a particular phrase:
+</p>
+<div class="code-sample"><h4>Fortuitous avoindance of parse ambiguity</h4><pre>
+$ echo -n "Read GNOSIS website" | ./ibm.py
+Head: Read
+CAPS: GNOSIS
+Tail: website
+
+</pre></div><p>
+  Rather than hope for good luck, let us explicitly indicate a priority
+  between productions:
+</p>
+<div class="code-sample"><h4>Resolving ambiguous term, ibm2.py</h4><PRE><FONT COLOR=#3333CC><B>def</B></FONT><A NAME="d_vowel"><FONT COLOR=#CC0000><B> d_vowel</B></FONT></A>(t):
+    <FONT COLOR=#115511>'vowel : "[AEIOUaeiou][A-Za-z]*" $term 3'</FONT>
+    <FONT COLOR=#3333CC><B>return</B></FONT> <FONT COLOR=#115511>'VOWEL'</FONT>
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="d_caps"><FONT COLOR=#CC0000><B> d_caps</B></FONT></A>(t):
+    <FONT COLOR=#115511>'caps : "[A-Z]+" $term 2'</FONT>
+    <FONT COLOR=#3333CC><B>return</B></FONT> <FONT COLOR=#115511>'CAPS'</FONT>
+<FONT COLOR=#3333CC><B>def</B></FONT><A NAME="d_threeletter"><FONT COLOR=#CC0000><B> d_threeletter</B></FONT></A>(t):
+    <FONT COLOR=#115511>'threeletter : "[A-Za-z][A-Za-z][A-Za-z]" $term 1'</FONT>
+    <FONT COLOR=#3333CC><B>return</B></FONT> <FONT COLOR=#115511>'3LETT'</PRE></FONT></div><p>
+  Now every phrase would like to identify middle word types in a
+  specific order (only of ones possible, of course):
+</p>
+<div class="code-sample"><h4>Disambiguated parse results</h4><pre>
+$ echo -n "Read IBM developerWorks" | ./ibm2.py
+Head: Read
+VOWEL: IBM
+Tail: developerWorks
+$ echo -n "Read XYZ journal" | ./ibm2.py
+Head: Read
+CAPS: XYZ
+Tail: journal
+
+</pre></div><h3>Making A Decision</h3>
+ <p>
+  Despite its recommendation by several readers, I am only lukewarm
+  about DParser.  It has quite a few powerful switches and options to
+  productions that I have not gone into--for example, specifying
+  associativity; overall the DParser language is quite robust.  And I
+  strongly suspect DParser for Python will run significantly faster than
+  most pure-Python parsers.
+</p>
+<p>
+  However, I still cannot work up a complete enthusiasm for the function
+  docstring style of parsers; obviously, many excellent Python
+  programmers disagree with me on this.  But I also found some of the
+  parse results a little bit mystifying: Why succeed in debug mode, but
+  not standard mode? Exactly when does ambiguity come up? Developing a
+  grammer with any parsing tool produces similar surprises, but I
+  somehow found DParser's particularly surprising; SimpleParse, for
+  example, surprised me less.  Probably if I knew more about the
+  ins-and-outs of underlying parsing algorithms it would make more
+  sense; in my relative ignorance, I am probably a lot like 95%+ of my
+  readers though.  There are people who know more about parsing than I
+  do; but in truth, most programmers know still less.
+</p>
+<h3>Resources</h3>
+ <p>
+  Several earlier installments have looked at other parsers for Python.
+  Spark and PLY are similar to DParser in using docstrings of functions
+  to describe productions.  mx.TextTools is a lower-level state machine,
+  and SimpleParse makes use of a non-Python EBNF syntax to describe
+  grammars (and translates it to fast mx.TextTools operations, behind
+  the scenes).
+</p>
+<blockquote>
+    SimpleParse:
+   <a href="http://www-106.ibm.com/developerworks/linux/library/l-simple.html">http://www-106.ibm.com/developerworks/linux/library/l-simple.html</a>
+</blockquote>
+<blockquote>
+    Spark:
+   <a href="http://www-106.ibm.com/developerworks/linux/library/l-spark.html">http://www-106.ibm.com/developerworks/linux/library/l-spark.html</a>
+</blockquote>
+<blockquote>
+    gnosis.xml.validity:
+   <a href="http://www-106.ibm.com/developerworks/linux/library/l-cpdec.html">http://www-106.ibm.com/developerworks/linux/library/l-cpdec.html</a>
+</blockquote>
+<blockquote>
+    mx.TextTools:
+   <a href="http://gnosis.cx/publish/programming/charming_python_14.html">http://gnosis.cx/publish/programming/charming_python_14.html</a>
+</blockquote>
+<p>
+  My book, <cite>Text Processing in Python</cite> discusses both SimpleParse
+  and mx.TextTools (borrowing from my corresponding developerWorks
+  articles), but adds a discussion of PLY.  You can read the book
+  online, or buy it at fine bookstores:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/TPiP/">http://gnosis.cx/TPiP/</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz thinks that artificial languages are perfectly natural,
+  but natural languages seem a bit artificial. David may be reached at
+  mertz@gnosis.cx; his life pored over at<a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>
+  Check out David's book <cite>Text Processing in Python</cite>
+  (http://gnosis.cx/TPiP/).
+</p>
+</body></html>

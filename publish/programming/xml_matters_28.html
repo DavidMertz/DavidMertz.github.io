@@ -1,0 +1,443 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>XML MATTERS #28: The ElementTree API -- Another Native Python Approach to XML -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="xml_matters_27.html" TITLE="XML MATTERS #27">
+<link REL="next" HREF="xml_matters_29.html" TITLE="XML MATTERS #29">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Xml Matters #28: The Elementtree Api</h1>
+<h2>Another Native Python Approach to XML</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Comparator, Gnosis Software, Inc.<br>
+ June 2003<br>
+ <br>
+</p>
+<blockquote>
+    Fredrik Lundh's <em><code>ElementTree</code></em> module is an increasingly
+    popular API for light-weight and fast manipulation of XML
+    documents within Python.  In this installment, I contrast
+    <em><code>ElementTree</code></em> with several other libraries devoted to
+    processing XML instances as object trees, especially with my
+    own <em><code>gnosis.xml.objectify</code></em> module.
+</blockquote>
+<h3>Introduction</h3>
+ <p>
+  I have written several installments of this column in the past
+  that have looked at XML libraries whose aim is to emulate the
+  most familiar native operations in a given programming language.
+  The first of these that I covered is my own
+  <em><code>gnosis.xml.objectify</code></em>, for Python. I also dedicated installments
+  to Haskell's <em><code>HaXml</code></em> and Ruby's <em><code>REXML</code></em>. Although I have not
+  discussed them here, Java's <em><code>JDOM</code></em> and Perl's <em><code>XML::Grove</code></em> also
+  have similar goals.
+</p>
+<p>
+  Lately I have noticed a number of posters to the
+  <code>comp.lang.python</code> newsgroup mentioning Fredrik Lundh's
+  <em><code>ElementTree</code></em> as a "native" XML library for Python. Of course,
+  Python already has several XML API's included in its standard
+  distribution--there is a DOM module, a SAX module, an <em><code>expat</code></em>
+  wrapper, and the deprecated <em><code>xmllib</code></em>. Of these, only <em><code>xml.dom</code></em>
+  converts an XML document into an in-memory object that can be
+  manipulated with method calls on nodes. Actually, there are
+  several different Python DOM implementation, each with somewhat
+  different properties: <em><code>xml.minidom</code></em> is a basic one; <em><code>xml.pulldom</code></em>
+  builds accessed subtrees only as needed, 4Suite's <code>cDomlette</code>
+  (<em><code>Ft.Xml.Domlette</code></em>) builds a DOM tree in C, avoiding Python
+  callbacks for speed.
+</p>
+<p>
+  Of course, appealing to my author's vanity, I am most curious to
+  compare <em><code>ElementTree</code></em> to my own <em><code>gnosis.xml.objectify</code></em>, to which
+  it is closest in purpose and behavior. The goal of <em><code>ElementTree</code></em>
+  is to store representations of XML documents in data structures
+  that behave in pretty much the way you think about data in
+  Python. The focus here is on programming in Python, not on
+  adapting your programming style to XML.
+</p>
+<h3>Some Benchmarks</h3>
+ <p>
+  My colleague Uche Ogbuji has previously written a short article
+  on <em><code>ElementTree</code></em> for another publication. One of the tests he ran
+  was comparing the relative speed and memory consumption of
+  <em><code>ElementTree</code></em> versus DOM. Uche chose to use his own <code>cDomlette</code>
+  for the comparison. Unfortunately, I am unable to install 4Suite
+  1.0a1 on the Mac OSX machine I am working on (I have mentioned
+  this issue to Uche before, I am not sure if there is yet a
+  resolution or workaround). However, we can use Uche's estimates
+  to guess likely performance--he indicates that <em><code>ElementTree</code></em> is
+  30% slower, but 30% more memory-friendly, than <em><code>Ft.Xml.Domlette</code></em>.
+</p>
+<p>
+  Mostly I was curious how <em><code>ElementTree</code></em> compares in speed and
+  memory to <em><code>gnosis.xml.objectify</code></em>. I have actually never
+  benchmarked my module very precisely before, since I never had
+  anything concrete to compare it <em>to</em>. I selected two documents
+  that I have used for benchmarking in the base: a 289 kB XML
+  version of <cite>Hamlet</cite> and a 3 mB XML web log. I created scripts
+  that simply parse an XML document into the object models of the
+  various tools, but do not perform any additional manipulation:
+</p>
+<div class="code-sample"><h4>Scripts to time XML object models for Python</h4><PRE>% cat time_xo.py
+<FONT COLOR=#3333CC><B>import</B></FONT> sys
+<FONT COLOR=#3333CC><B>from</B></FONT> gnosis.xml.objectify <FONT COLOR=#3333CC><B>import</B></FONT> XML_Objectify,EXPAT
+doc = XML_Objectify(sys.stdin,EXPAT).make_instance()
+---
+% cat time_et.py
+<FONT COLOR=#3333CC><B>import</B></FONT> sys
+<FONT COLOR=#3333CC><B>from</B></FONT> elementtree <FONT COLOR=#3333CC><B>import</B></FONT> ElementTree
+doc = ElementTree.parse(sys.stdin).getroot()
+---
+% cat time_minidom.py
+<FONT COLOR=#3333CC><B>import</B></FONT> sys
+<FONT COLOR=#3333CC><B>from</B></FONT> xml.dom <FONT COLOR=#3333CC><B>import</B></FONT> minidom
+doc = minidom.parse(sys.stdin)</PRE></div><p>
+  Creating the program object is quite similar in all three
+  cases, and also with <em><code>Ft.Xml.Domlette</code></em>.  I estimated memory
+  usage by watching the output of <code>top</code> in another window; each
+  test was run 3 times to make sure they were consistent, and the
+  median value was used (memory was identical across runs).
+</p>
+<p>
+  <img src="http://gnosis.cx/publish/programming/parser-benchmarks.png" alt="Benchmarks of XMl object models in Python">
+</p>
+<p>
+  One thing that is clear is that <em><code>xml.minidom</code></em> quickly becomes
+  quite impractical for moderately large XML documents.  The rest
+  stay (fairly) reasonable.  <em><code>gnosis.xml.objectify</code></em> is the most
+  memory-friendly, but that is likely because it does not
+  preserve <em>all</em> the information in the original XML instance
+  (data content is kept, but not all structural information).
+</p>
+<p>
+  I also ran the following test of Ruby's <em><code>REXML</code></em>, using the
+  following script:
+</p>
+<div class="code-sample"><h4>Ruby REXML parsing script, time_rexml.rb</h4><pre>
+require "rexml/document"
+include REXML
+doc = (Document.new File.new ARGV.shift).root
+
+</pre></div><p>
+  <em><code>REXML</code></em> proved about as resource intensive as <em><code>xml.minidom</code></em>:
+  parsing <code>Hamlet.xml</code> took 10 seconds and used 14 MB; parsing
+  <code>Weblog.xml</code> took 190 seconds and used 150 MB.  Obviously, the
+  choice of programming language usually comes before the
+  comparison of libraries for them.
+</p>
+<h3>Working With An Xml Document Object</h3>
+ <p>
+  A nice thing about <em><code>ElementTree</code></em> is that it can be
+  round-tripped.  That is, you can read in an XML instance,
+  modify fairly native-feeling data structures, then call the
+  <code>.write()</code> method to re-seralize to well-formed XML.  DOM does
+  this, of course, but <em><code>gnosis.xml.objectify</code></em> does not.  It is
+  not all <em>that</em> difficult to construct a custom output function
+  for <em><code>gnosis.xml.objectify</code></em> that produces XML--but doing so is
+  not automatic.  With <em><code>ElementTree</code></em>, along with the <code>.write()</code>
+  method of <code>ElementTree</code> instances, individual <code>Element</code>
+  instances can be serialized with the convenience function
+  <code>elementtree.ElementTree.dump()</code>.  This lets you write XML
+  fragments from individual object nodes--including from the root
+  node of the XML instance.
+</p>
+<p>
+  I present a simple task that contrasts the <em><code>ElementTree</code></em> and
+  <em><code>gnosis.xml.objectify</code></em> APIs.  The large <code>weblog.xml</code> document
+  used for benchmark tests contains about 8500 <code>&lt;entry&gt;</code>
+  elements, each having the same collection of child fields--a
+  typical arrangement for a data-oriented XML document.  A
+  particular task in processing this file might be to collect a
+  few fields from each entry, but only if some other fields have
+  particular values (or ranges, or match regexen, etc).  Of
+  course, if you really only want to perform this one task, using
+  a streaming API like SAX avoids the need to model the whole
+  document in memory--but let us assume that this task is one of
+  several being performed on the large data structure by an
+  application.  One <code>&lt;entry&gt;</code> element looks something like:
+</p>
+<div class="code-sample"><h4></h4><pre>&lt;entry&gt;
+  &lt;host&gt;64.172.22.154&lt;/host&gt;
+  &lt;referer&gt;-&lt;/referer&gt;
+  &lt;userAgent&gt;-&lt;/userAgent&gt;
+  &lt;dateTime&gt;19/Aug/2001:01:46:01&lt;/dateTime&gt;
+  &lt;reqID&gt;-0500&lt;/reqID&gt;
+  &lt;reqType&gt;GET&lt;/reqType&gt;
+  &lt;resource&gt;/&lt;/resource&gt;
+  &lt;protocol&gt;HTTP/1.1&lt;/protocol&gt;
+  &lt;statusCode&gt;200&lt;/statusCode&gt;
+  &lt;byteCount&gt;2131&lt;/byteCount&gt;
+&lt;/entry&gt;
+
+</pre></div><p>
+  Using <em><code>gnosis.xml.objectify</code></em>, I might write a filter-and-extract
+  application as:
+</p>
+<div class="code-sample"><h4>select_hits_xo.py</h4><PRE><FONT COLOR=#3333CC><B>from</B></FONT> gnosis.xml.objectify <FONT COLOR=#3333CC><B>import</B></FONT> XML_Objectify, EXPAT
+weblog = XML_Objectify(<FONT COLOR=#115511>'weblog.xml'</FONT>,EXPAT).make_instance()
+interesting = [entry <FONT COLOR=#3333CC><B>for</B></FONT> entry <FONT COLOR=#3333CC><B>in</B></FONT> weblog.entry
+               <FONT COLOR=#3333CC><B>if</B></FONT> entry.host.PCDATA==<FONT COLOR=#115511>'209.202.148.31'</FONT>
+               <FONT COLOR=#3333CC><B>and</B></FONT> entry.statusCode.PCDATA==<FONT COLOR=#115511>'200'</FONT>]
+<FONT COLOR=#3333CC><B>for</B></FONT> e <FONT COLOR=#3333CC><B>in</B></FONT> interesting:
+    <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"%s (%s)"</FONT> % (e.resource.PCDATA,
+                       e.byteCount.PCDATA)</PRE></div><p>
+  List comprehensions are quite convenient as data filters.  In
+  essence, <em><code>ElementTree</code></em> works the same way:
+</p>
+<div class="code-sample"><h4>select_hits_et.py</h4><PRE><FONT COLOR=#3333CC><B>from</B></FONT> elementtree <FONT COLOR=#3333CC><B>import</B></FONT> ElementTree
+weblog = ElementTree.parse(<FONT COLOR=#115511>'weblog.xml'</FONT>).getroot()
+interesting = [entry <FONT COLOR=#3333CC><B>for</B></FONT> entry <FONT COLOR=#3333CC><B>in</B></FONT> weblog.findall(<FONT COLOR=#115511>'entry'</FONT>)
+               <FONT COLOR=#3333CC><B>if</B></FONT> entry.find(<FONT COLOR=#115511>'host'</FONT>).text==<FONT COLOR=#115511>'209.202.148.31'</FONT>
+               <FONT COLOR=#3333CC><B>and</B></FONT> entry.find(<FONT COLOR=#115511>'statusCode'</FONT>).text==<FONT COLOR=#115511>'200'</FONT>]
+<FONT COLOR=#3333CC><B>for</B></FONT> e <FONT COLOR=#3333CC><B>in</B></FONT> interesting:
+    <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"%s (%s)"</FONT> % (e.findtext(<FONT COLOR=#115511>'resource'</FONT>),
+                       e.findtext(<FONT COLOR=#115511>'byteCount'</FONT>))</PRE></div><p>
+  There are a few differences to note above. <em><code>gnosis.xml.objectify</code></em>
+  attaches subelement nodes directly as attributes of nodes (every
+  node is of a custom class named after the tag name).
+  <em><code>ElementTree</code></em>, on the other hand, uses methods of the <code>Element</code>
+  class to find child nodes. The method <code>.findall()</code> returns a list
+  of all matching nodes; <code>.find()</code> returns just the first match;
+  <code>.findtext()</code> returns the text content of a node. If you only
+  want the first "match" on a <em><code>gnosis.xml.objectify</code></em> subelement,
+  you just need to index it, e.g.: <code>node.tag[0]</code>. But if there is
+  only one such sublement, you can also refer to it without the
+  explicit indexing.
+</p>
+<p>
+  But in the <em><code>ElementTree</code></em> example, we do not really <em>need</em> to find
+  all the <code>&lt;entry&gt;</code> elements explicitly, <code>Element</code> instances behave
+  in a list-like way when iterated over. A point to note is that
+  iteration is over <em>all</em> child nodes, whatever tag they may have.
+  In contrast, a <em><code>gnosis.xml.objectify</code></em> node has no built-in
+  method to step through all of its subelements.  Still, it is
+  easy to construct a one-line <code>children()</code> function (I will
+  include one in future releases).  Contrast:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; open('simple.xml','w.').write('''&lt;root&gt;
+... &lt;foo&gt;this&lt;/foo&gt;
+... &lt;bar&gt;that&lt;/bar&gt;
+... &lt;foo&gt;more&lt;/foo&gt;&lt;/root&gt;''')
+&gt;&gt;&gt; from elementtree import ElementTree
+&gt;&gt;&gt; root = ElementTree.parse('simple.xml').getroot()
+&gt;&gt;&gt; for node in root:
+...     print node.text,
+...
+this that more
+&gt;&gt;&gt; for node in root.findall('foo'):
+...     print node.text,
+...
+this more
+
+</pre></div><p>
+  With:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; children=lambda o: [x for x in o.__dict__ if x!='__parent__']
+&gt;&gt;&gt; from gnosis.xml.objectify import XML_Objectify
+&gt;&gt;&gt; root = XML_Objectify('simple.xml').make_instance()
+&gt;&gt;&gt; for tag in children(root):
+...     for node in getattr(root,tag):
+...         print node.PCDATA,
+...
+this more that
+&gt;&gt;&gt; for node in root.foo:
+...     print node.PCDATA,
+...
+this more
+
+</pre></div><p>
+  As you can see, <em><code>gnosis.xml.objectify</code></em> currently discards
+  information about the original order of interpersed <code>&lt;foo&gt;</code> and
+  <code>&lt;bar&gt;</code> elements (it <em>could</em> be remembered in another magic
+  attribute, like <code>.__parent__</code> is, but no one has had the need
+  and/or sent a patch to do this).
+</p>
+<p>
+  <em><code>ElementTree</code></em> stores XML  attributes in a node attribute called
+  <code>.attrib</code>.  The attributes are stored in a dictionary.
+  <em><code>gnosis.xml.objectify</code></em> puts the XML attributes directly into
+  node attributes of corresponding name.  The style I use tends
+  to flatten the distinction between XML attributes and element
+  contents--to my mind that is something for XML to worry about,
+  not for my native data structure to worrry about.  For example:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; xml = '&lt;root foo="this"&gt;&lt;bar&gt;that&lt;/bar&gt;&lt;/root&gt;'
+&gt;&gt;&gt; open('attrs.xml','w').write(xml)
+&gt;&gt;&gt; et = ElementTree.parse('attrs.xml').getroot()
+&gt;&gt;&gt; xo = XML_Objectify('attrs.xml').make_instance()
+&gt;&gt;&gt; et.find('bar').text, et.attrib['foo']
+('that', 'this')
+&gt;&gt;&gt; xo.bar.PCDATA, xo.foo
+(u'that', u'this')
+
+</pre></div><p>
+  There is still <em>some</em> distinction in <em><code>gnosis.xml.objectify</code></em>
+  between XML attributes that create node attributes containing
+  text, and XML element contents that create node attributes
+  containing objects (perhaps with subnodes having <code>.PCDATA</code>).
+</p>
+<h3>Xpaths And Tails</h3>
+ <p>
+  <em><code>ElementTree</code></em> implements a subset of XPATH in its <code>.find*()</code>
+  methods.  Using this style can be much more concise than
+  nesting code to look within levels of subnodes, especially for
+  XPATHs containing wildcards.  For example, if I was interested
+  in all the timestamps of hits to my web server, I could examine
+  <code>weblog.xml</code> using:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; from elementtree import ElementTree
+&gt;&gt;&gt; weblog = ElementTree.parse('weblog.xml').getroot()
+&gt;&gt;&gt; timestamps = weblog.findall('entry/dateTime')
+&gt;&gt;&gt; for ts in timestamps:
+...     if ts.text.startswith('19/Aug'):
+...         print ts.text
+
+</pre></div><p>
+  Of course, for a shallow and regular document like
+  <code>weblog.xml</code>, it is easy to do the same thing with list
+  comprehensions:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; for ts in [ts.text for e in weblog
+...            for ts in e.findall('dateTime')
+...            if ts.text.startswith('19/Aug')]:
+...     print ts
+
+</pre></div><p>
+  Prose-oriented XML documents, however, tend to have much more
+  variable document structure, and typically nest tags at least
+  five or six levels deep.  An XML schema like DocBook or TEI,
+  for example,  might have citations in sections, subsections,
+  bibliographies, sometimes within italics tags, or in
+  blockquotes, and so on.  Finding every <code>&lt;citation&gt;</code> element
+  would require a cumbersome (probably recursive) search across
+  levels.  Or using XPATH, you could just write:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; from elementtree import ElementTree
+&gt;&gt;&gt; weblog = ElementTree.parse('weblog.xml').getroot()
+&gt;&gt;&gt; cites = weblog.findall('.//citation')
+
+</pre></div><p>
+  The XPATH support, however, in <em><code>ElementTree</code></em> is limited.  You
+  cannot use the various functions contained in full XPATH, nor
+  can you search on attributes.  In what it does though,
+  the XPATH subset in <em><code>ElementTree</code></em> greatly aids readability and
+  expressiveness.
+</p>
+<p>
+  I want to mention one more quirk of <em><code>ElementTree</code></em> before I wrap
+  up. XML documents can be mixed content. Prose-oriented XML, in
+  particular, tends to intersperse PCDATA and tags rather freely.
+  But where exactly should you <em>store</em> the text that comes
+  between child nodes.  Since an <em><code>ElementTree</code></em> <code>Element</code> instance
+  has a single <code>.text</code> attribute--which contains a string--that
+  does not really leave space for a broken sequence of strings.
+  The solution <em><code>ElementTree</code></em> adopts is to give each node a
+  <code>.tail</code> attribute which contains all the text after a closing
+  tag, but before the next element begins or the parent element
+  is closed.  For example:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; xml = '&lt;a&gt;begin&lt;b&gt;inside&lt;/b&gt;middle&lt;c&gt;inside&lt;/c&gt;end&lt;/a&gt;'
+&gt;&gt;&gt; open('doc.xml','w').write(xml)
+&gt;&gt;&gt; doc = ElementTree.parse('doc.xml').getroot()
+&gt;&gt;&gt; doc.text, doc.tail
+('begin', None)
+&gt;&gt;&gt; doc.find('b').text, doc.find('b').tail
+('inside', 'middle')
+&gt;&gt;&gt; doc.find('c').text, doc.find('c').tail
+('inside', 'end')
+
+</pre></div><h3>Conclusion</h3>
+ <p>
+  <em><code>ElementTree</code></em> is a nice effort to bring a much lighter weight
+  object model to XML processing in Python than that provided by
+  DOM.  Although I have not addressed it in this article, but
+  <em><code>ElementTree</code></em> is equally good at generating XML documents from
+  scratch as it is at manipulating existing XML data.
+</p>
+<p>
+  As author of a similar library, <em><code>gnosis.xml.objectify</code></em>, I cannot
+  be entirely objective in evaluating <em><code>ElementTree</code></em>; but
+  nonetheless, I continue to find my own approach somewhat more
+  natural in Python programs than that provided by <em><code>ElementTree</code></em>.
+  The latter still usually utilizes node methods to manipulate data
+  structures rather than directly accessing node attributes as one
+  usually does with data structures built within an application.
+</p>
+<p>
+  However, in several areas, <em><code>ElementTree</code></em> shines. It is far easier
+  to access deeply nested elements using XPATH than with manual
+  recursive searches.  Obviously, DOM also gives you XPATH, but
+  at the cost of a far heavier and less uniform API.  All the
+  <code>Element</code> nodes of <em><code>ElementTree</code></em> act in a consistent manner,
+  unlike DOMs panoply of node types.
+</p>
+<h3>Resources</h3>
+ <p>
+  The home page for <em><code>ElementTree</code></em> is:
+</p>
+<blockquote>
+   <a href="http://effbot.org/zone/element.htm">http://effbot.org/zone/element.htm</a>
+</blockquote>
+<p>
+  IBM developerWorks columnist Uche Ogbuji discussed
+  <em><code>ElementTree</code></em> for XML.com in a February 2003 article:
+</p>
+<blockquote>
+   <a href="http://www.xml.com/lpt/a/2003/02/12/py-xml.html">http://www.xml.com/lpt/a/2003/02/12/py-xml.html</a>
+</blockquote>
+<p>
+  <cite>XML Matters</cite> #2 introduced <em><code>gnosis.xml.objectify</code></em>, then called
+  simply <em><code>xml_objectify</code></em>.
+</p>
+<p>
+  <cite>XML Matters</cite> #11 updates readers to some early improvements to
+  <em><code>gnosis.xml.objectify</code></em>.  Some newer features have not been
+  covered in this column, but are in the module's HISTORY and
+  other documentation files.
+</p>
+<p>
+  <cite>XML Matters</cite> #14 discussed the <em><code>HaXml</code></em> module for the Haskell
+  lazy pure-functional programming language.
+</p>
+<p>
+  <cite>XML Matters</cite> #18 discussed Ruby's <em><code>REXML</code></em> library.
+</p>
+<p>
+  Dave Kuhlman has developed another Python XML API/library called
+  <em><code>generateDS</code></em>. He has written a very nice essay comparing
+  <em><code>generateDS</code></em> with <em><code>gnosis.xml.objectify</code></em> at:
+</p>
+<blockquote>
+   <a href="http://www.rexx.com/~dkuhlman/gnosis_generateds.html">http://www.rexx.com/~dkuhlman/gnosis_generateds.html</a>
+</blockquote>
+<p>
+  In brief, the idea behind <em><code>generateDS</code></em> is to use an XML Schema as
+  the basis for Python classes that properly handle the elements in
+  an XML instance. Rather than handle XML trees generically,
+  <em><code>generateDS</code></em> is code generator for Python modules to handle
+  specific XML document schemas--autogenerated code can easily be
+  specialized to quickly form a custom application.  Read more
+  about the library at:
+</p>
+<div class="code-sample"><h4></h4><pre>http://www.rexx.com/~dkuhlman/generateDS.html
+
+</pre></div><h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  For David Mertz an atomic object is a combination of facts.
+  David may be reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a> Suggestions and recommendations on
+  this, past, or future, columns are welcomed. Check out David's
+  new book <cite>Text Processing in Python</cite>.
+</p>
+</body></html>

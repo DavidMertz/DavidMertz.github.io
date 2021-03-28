@@ -1,0 +1,405 @@
+XML MATTERS #14: Those awkward limits of DOM, SAX and XSLT
+The HaXml functional programming model for XML
+
+David Mertz, Ph.D.
+Prestidigitator, Gnosis Software, Inc.
+September 2001
+
+    The library 'HaXml' creates native representation of XML
+    documents as native recursive data structures in the
+    functional language Haskell.  HaXml brings with it a set of
+    powerful higher order functions for operating on these
+    "datafied" XML documents.  Many of these HaXml techniques are
+    far more elegant, compact, and powerful than one finds in
+    familiar techniques like DOM, SAX, or XSLT.
+
+
+CONVENTIONAL LIMITATIONS
+------------------------------------------------------------------------
+
+  The most common techniques for manipulating XML documents are
+  DOM, SAX and XSLT.  These techniques have a distressing lack of
+  unifying principles among them.  Everything one might want to
+  do with XML is available in one of the major approaches, but
+  when what you want to do crosses the boundaries of what each
+  technique does best, it is far from clear how to approach a
+  problem.  One is likely to wind up with a hodge-podge
+  application in which various smaller transformations are
+  chained together with heterogeneous techniques and tools.
+
+  DOM melds everything XML into an OOP framework, at a level of
+  abstraction higher than that of any particular programming
+  language.  DOM is language-independent, and its "document
+  object model" is provided by libraries in many general purpose
+  programming languages.  In a sense, DOM is the language--it
+  specifies all the methods and arguments, and the underlying
+  general purpose language is just a little glue.  My utility
+  [xml_objectify], discussed in previous installments, provided a
+  way of transforming XML documents into more native-feeling
+  OOP-ified objects (in Python); largely in response to the
+  somewhat artificial feel of DOM.
+
+  SAX is similar to DOM in its language-neutrality, but it
+  substitutes an event-driven and procedural model for the OOP
+  framework of DOM.  SAX has the very nice feature that it is
+  able to process XML documents as streams, acting upon each
+  element and content as it is encountered.  But with its
+  event-driven philosophy comes SAX' disadvantage of having no
+  real concept of the data structures represented by XML
+  documents.  One can build such structures in a concrete
+  application, but even something so basic as a parent/child
+  relationship must be represented in the vocabulary of the
+  programming language that underlies a SAX library; SAX itself
+  is blind to most of what is interesting about XML.
+
+  Finally, XSLT is the familiar technique that, in a sense, best
+  matches the structure of XML.  Perhaps reflecting this match,
+  XSL documents are themselves XML document instances.  XSLT is a
+  special-purpose -functional- programming language that allows
+  one to specify transformations of XML documents into other
+  things (especially, but not only, into other XML documents).
+  Aside from the somewhat annoying verboseness of XSLT, it is
+  limited in its expressiveness--the things you can say are
+  expressed rather clearly (and functionally, not procedurally),
+  but one quickly bumps up against all the things that one simply
+  cannot say in XSLT.
+
+
+A SIMPLE AND TYPICAL TASK
+------------------------------------------------------------------------
+
+  Let me describe a quite realistic scenario, that shows
+  weaknesses in the common techniques.  XSLT is typically the
+  most direct way to describe a transformation of an XML document
+  into an output.  For example, we might want to create an HTML
+  representation of an XML document.  Let us say we have an XML
+  version of the _I Ching_ that looks something like:
+
+      #-------------- XML Version of the I Ching --------------#
+      <?xml version="1.0"?>
+      <IChing>
+          <title>Some Hexagrams from the I Ching</title>
+          <hexagram>
+              <number>1</number>
+              <name>Ch'ien / The Creative</name>
+              <judgement>
+                  The Creative works sublime success,
+                  Furthering through perseverance.
+              </judgement>
+          </hexagram>
+          <hexagram>
+              <number>2</number>
+              <name>K'un / The Receptive</name>
+              <judgement>
+                  The Receptive brings about sublime success,
+                  Furthering through the perseverance of a mare.
+              </judgement>
+          </hexagram>
+          <hexagram>
+              <number>3</number>
+              <name>Chun / Difficulty at the Beginning</name>
+              <judgement>
+                  Difficulty at the Beginning works supreme success,
+                  Furthering through perseverance.
+              </judgement>
+          </hexagram>
+      </IChing>
+
+  To present this information in an HTML table, we might use
+  something like the below XSLT instructions:
+
+      #------ XSLT Instructions for an I Ching HTML Table -----#
+      <xsl:stylesheet version="1.0"
+                      xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                      xmlns="http://www.w3.org/TR/xhtml1/strict">
+          <xsl:output method="html" indent="yes" encoding="UTF-8"/>
+          <xsl:template match="IChing">
+            <html>
+              <head><title><xsl:value-of select="title"/></title></head>
+              <body><table border="1"><xsl:apply-templates/></table></body>
+            </html>
+          </xsl:template>
+          <xsl:template match="hexagram">
+              <tr><xsl:apply-templates/></tr>
+          </xsl:template>
+          <xsl:template match="number">
+              <td><xsl:apply-templates/></td>
+          </xsl:template>
+          <xsl:template match="name">
+              <td><xsl:apply-templates/></td>
+          </xsl:template>
+          <xsl:template match="judgement">
+              <td><xsl:apply-templates/></td>
+          </xsl:template>
+          <xsl:template match="*"></xsl:template>
+      </xsl:stylesheet>
+
+  This XSLT seems simple and direct:  we just create a template to
+  describe how we would like each element formatted.  What could
+  be easier? The problem comes as soon as we want to filter or
+  compute something for the output--something that is not
+  included in the few comparisons available to XSLT.  For
+  example, maybe we want (in a numerological spirit) to display
+  only the even numbered hexagrams, or only the prime ones.  With
+  XSLT, we are out of luck for something this simple.
+
+  At this point, we might turn to DOM or SAX for the task.  This
+  will work, but we first have to simply throw away the work that
+  went into earlier XSLT transformations.  DOM or SAX are
+  completely different models, and share no significant code or
+  concepts with XSLT.  For something as simple as my toy
+  stylesheet, it hardly matters; but for large production-quality
+  transformations, we might lose a lot.
+
+  Moreover, neither SAX nor DOM have particularly elegant or
+  maintainable models for output.  In order to output the simple
+  (filtered) HTML table described, we just have to litter our
+  application code with 'print' statements or 'printf()'
+  functions (or whatever our general language uses).  These
+  output statements are themselves buried in conditional blocks
+  that test for element types and other conditions.  In such
+  code, there is no way to tell at a glance how the output flows
+  or make sure that a 'print "</tr>" ' is reached to correspond
+  with every 'print "<tr>" ' that occurred earlier.  There is
+  certainly no guarantee given by imperative or OOP code that our
+  output HTML or XML will be well-formed (let alone valid).
+
+
+A UNIFORM SOLUTION
+------------------------------------------------------------------------
+
+  What would be ideal for XML transformations would be a system
+  that both let us express output declaratively (as XSLT does)
+  and lets us include arbitrary filters and computations (as the
+  implementation languages underlying DOM and SAX do).  While we
+  are at it, it couldn't hurt to be guaranteed the
+  well-formedness, or even validity, of our output.  And a
+  compact and direct syntax would be nice too.
+
+  HaXml gives us everything requested in the previous paragraph.
+  Actually, the power of HaXml is more general than was even
+  asked for.  Taking advantage of the higher order combinatorial
+  functions that a functional programming language like Haskell
+  allows, we can arbitrarily combine multiple filters in
+  specifying output.  In XSLT, each '<xsl:template>' acts as a
+  sort of filter between the input and output.  But the only real
+  combination of filters created by an XSL file is a union on all
+  the filters.  In contrast, HaXml lets us specify much more fine
+  grained chains of filters for each element of the output.
+  Actually, much of the same can be achieved using XPATH with
+  XSLT, but HaXml is much more concise, and strictly more
+  powerful.
+
+  As well providing numerous combinators, HaXml allows the
+  inclusion of arbitrary computations in the Haskell language as
+  part of the filtering.  An extra bonus is that output can be
+  specified in a much more coherent block that allows readable
+  intermixing of output terms with filtering conditions.  The
+  result is much more concise than XSLT, and has fewer
+  punctuation symbols to make visual scanning difficult:
+
+      #---- HaXml program to output an I Ching HTML Table -----#
+      module Main where
+      import XmlLib
+      -- Concise XSLT-like specification of output
+      main = processXmlWith (hexagrams `o` tag "IChing")
+      hexagrams =
+          html [
+            hhead [htitle [keep /> tag "title" /> txt] ],
+            hbody [htableBorder [rows `o` children `with` tag "hexagram"] ]
+          ]
+      htableBorder = mkElemAttr "TABLE" [("BORDER",("1"!))]
+      rows f =
+          let
+            num = keep /> tag "number" /> txt
+            nam = keep /> tag "name" /> txt
+            jdg = keep /> tag "judgement" /> txt
+          in
+            if (condition (num f) (nam f) (jdg f))
+            then hrow [hcol [num], hcol [nam], hcol [jdg]] f
+            else []
+      condition num nam jdg = isPrime (makeInt num)
+
+      -- Supporting computations for rows condition
+      makeInt = stringToInt . unwrap      -- Turn [Content] into an Integer
+      unwrap [(CString b c)] = c          -- Turn [Content] into a String
+      stringToInt = revToInteger.reverse  -- Turn a String into an Integer
+          where
+          revToInteger = toInteger . revToInt
+          revToInt []  = 0
+          revToInt (d:ds) = digitToInt d + (10*(revToInt ds))
+      isPrime = ordSearch (sieve [2..])   -- ordered search of Sieve of Eratosthenes
+          where
+          ordSearch (x:xs) n
+              | x < n     = ordSearch xs n
+              | x == n    = True
+              | otherwise = False
+          sieve (x:xs) = x : sieve [y | y <- xs, y `mod` x > 0]
+
+  As with XSLT, definitions may occur in any order.  The first
+  twenty lines of the code specify the output format, with
+  some definitions broken out into supporting functions, simply
+  for readability.  In Haskell syntax, a function is whatever
+  thing occurs to the left of an equal sign, and the definition
+  is to the right of the equal sign.  The 'where' and 'let'
+  clauses specify what we might call "inner functions" in other
+  languages.  The first lines are conceptually very much like the
+  XSLT approach.  But as an improvement, the HaXml version lets
+  us define ad hoc filters at each point where we need it.  For
+  example, one filter is:
+
+      rows `o` children `with` tag "hexagram"
+
+  The '`o`' is somewhat fancifully called "Irish Composition",
+  and can also be pronounced "of".  'rows' is our very own filter
+  that we have defined out of convenience; we are just as free to
+  reuse 'rows' as to use any of the standard filters, and in
+  unlimited combination.
+
+  The latter half of the program contains a few computational
+  functions.  One nice example is a six line primality test that
+  does a lot to illustrate the power and elegance of Haskell as a
+  language.  But as the program is structured, the function
+  'condition' could equally well perform any tests it wanted on
+  the Content of the '<number>', '<name>' or '<judgement>'
+  elements.  "Content" is a special data type, so the first thing
+  we need to do is 'unwrap' the String contained in a Content.
+  After that, we can convert it to an Integer, and test it (or do
+  whatever else we want with it).
+
+  There are a lot more details to the HaXml library--and learning
+  Haskell itself requires a learning curve for programmers
+  accustomed to imperative and OOP styles of programming.  But if
+  one limits one's interest to just the capabilities one would
+  find in XSLT, the top half of the example program is quite easy
+  to expand upon (I would argue, with less of a learning curve
+  than XSLT, while using a similar functional style).  Not only
+  is the syntax more readable than XSLT, but one holds in reserve
+  learning how to do the sort of thing in the bottom half of the
+  program (and much more).
+
+
+ENFORCING VALIDITY
+------------------------------------------------------------------------
+
+  In the above example, an XML document was treated as a generic
+  tree structure.  For most purposes, doing this is the easiest
+  and quickest approach.  But HaXml provides something else that
+  is totally unique.  If one has a DTD for a document type one
+  plans to work with, a set of native Haskell data structures can
+  be generated from a DTD.  From that point forward, applications
+  can be written that utilize the native DTD in their
+  manipulations.  The generation mentioned involves several
+  steps.  The first thing is to -create- the data structure as a
+  module, something like:
+
+      #------- Create a HaXml data structure from a DTD -------#
+      % DtdToHaskell MyFile.DTD MyFileDTD.hs
+
+  Once that is available, one can write an application that
+  handles XML documents that must conform to the DTD.  Such
+  applications will generally contain at least the following
+  lines:
+
+      #---- Custom HaXml app for MyFile.DTD XML documents -----#
+      import Xml2Haskell (readXml)
+      import MyFileDTD
+      [...]
+
+  From there, one can use all the higher order techniques Haskell
+  provides for dealing with recursive data structures.  The first
+  thing, naturally, will probably be to 'readXml' in order to
+  work with a particular input XML document.
+
+  A reader can be forgiven for thinking at this point, "so what?"
+  It would appear that this is no different from a DOM
+  approach--or even SAX--where one can perfectly well work with
+  structured data, or even validate against a DTD.
+
+  There is much more here than meets the eye.  Haskell, unlike
+  almost all other programming languages, is -thoroughly- type
+  safe about data structures.  It is quite simply -impossible- in
+  Haskell to perform any computation on the generated data
+  structure that would result in an invalid XML document.  In
+  contrast, the best one can do in languages like C/C++, Java,
+  Perl, Smalltalk, Python is do a sanity check (validation) on
+  the way in, and another one on the way out, and hope everything
+  goes well.  It might be possible in something like Eiffel to
+  add enough contractual constraints on every "adder" and
+  "deleter" to make sure DTD validity is maintained (or, with
+  enough work, in all the mentioned languages), but doing so
+  involves custom programming within every '.addSpamTag()'
+  method.  Moreover, all the DTD can do in the mentioned
+  languages is provide a "cheat sheet" for an application
+  programmer to look at.
+
+  With HaXml, the data structure generated programmatically from
+  a DTD automatically includes every validity constraint.  Mind
+  you, just enforcing the constraints doesn't make an application
+  programmer write correct code; but at least any bad code that
+  would result in invalid documents is caught at compile time.
+  The other caveat, of course, is that programming a custom
+  application that enforces validity is just plain going to be
+  more work than programming one that does not need to do this.
+  But for "mission critical" requirements, HaXml could well
+  provide the quickest and safest path to the rigorous goal.
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  Bijan Parsia has a very interesting related essay called,
+  _Functional Programming and XML_ at XML.com.  Parsia makes the
+  argument that functional programming styles are generally
+  better suited to XML manipulation than are more familiar OOP
+  techniques.  He discusses HaXml and several other tools:
+
+    http://www.xml.com/lpt/a/2001/02/14/functional.html
+
+  A detailed discussion of HaXml was written by its original
+  authors, Malcolm Wallace and Colin Runciman.  _Haskell and XML:
+  Generic Combinators or Type-Based Translation_ may be found at
+  the below URL.  Its tone and level presume a greater
+  familiarity with Haskell and functional programming than is
+  requisite for this column, but Wallace and Runciman's paper
+  thereby contains many details not addressed herein:
+
+    http://www.cs.york.ac.uk/fp/HaXml/icfp99.html
+
+  Information about Haskell, including several tutorials,
+  numerous papers, and various compilers and interpreters can be
+  found at the Haskell language website:
+
+    http://www.haskell.org/
+
+  I have myself written an introductory tutorial to Haskell,
+  which is aimed at beginners:
+
+    http://gnosis.cx/publish/programming/Haskell.pdf
+
+  The files mentioned in this article may be found in the below
+  archive:
+
+    http://gnosis.cx/download/xml_matters_14.zip
+
+  Some sample outputs of this transformations discussed in the
+  article can be found at:
+
+    http://gnosis.cx/download/iching.html
+
+  The HaXml version at (whitespace and layout are not identical):
+
+    http://gnosis.cx/download/iching_hs.html
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author:  http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz' tattoos provide a surprisingly deep insight into
+  his programming and theoretical interests.  One could take a
+  look at http://gnosis.cx/photos/tattoos.html for (strictly
+  PG-13) insight. David may be reached at mertz@gnosis.cx; his
+  life pored over at http://gnosis.cx/publish/.  Suggestions and
+  recommendations on this, past, or future, columns are welcomed.
+

@@ -1,0 +1,1240 @@
+<?xml version="1.0"?>
+<!DOCTYPE tutorial SYSTEM "dwtut.dtd">
+
+<tutorial filename="cryptology3.xml" img="crypto.gif">
+<title>Intermediate Cryptology: Specialized Protocols</title>
+
+<!--***************************************************************-->
+<section><title>Introduction to the Tutorial</title>
+
+    <!--============================================================-->
+    <panel><title>Navigation</title>
+    <body>
+    <text-column>
+    <p>Navigating through the tutorial is easy:</p>
+    <ul><li>Use the Next and Previous buttons to move forward and
+            backward through the tutorial. </li>
+        <li>Use the Menu button to return to the tutorial menu.</li>
+        <li>If you'd like to tell us what you think, use the Feedback
+            button. </li>
+        <li>If you need help with the tutorial, use the Help button.</li>
+    </ul>
+    </text-column>
+    </body>
+    </panel>
+
+    <!--============================================================-->
+    <panel><title>Is this tutorial right for you?</title>
+    <body>
+    <text-column>
+
+    <p>The tutorial in front of you (Part III) builds on the foundation provided
+    by the IBM developerWorks' series of two introductory tutorials on
+    general cryptology concepts.  Users of this tutorial do not
+    necessarily need to undertake the introductory tutorials, but
+    should, however, be familiar with general concepts in cryptology, such
+    as: What is a symmetric encryption algorithm? An asymmetric
+    encryption algorithm? What is cryptanalysis? What is an attack? Who
+    are Alice and Bob? What is a message? A hash? A ciphertext?  What is
+    keylength, and why is it important?</p>
+
+    <p>If you feel comfortable with
+    these questions, you should not have difficulty understanding this
+    tutorial.  If answers to those questions are unclear, take a
+    quick look at our introductory cryptology tutorials by this same
+    author.  (The section below, "Background and Reminders,"
+    includes a brief overview of important concepts.)</p>
+
+    <p>In general, this tutorial is aimed at programmers wanting
+    to become familiar with cryptology, its techniques, its
+    mathematical and conceptual basis, and its lingo.  Most users
+    will have encountered various descriptions of cryptographic
+    systems and general claims about the security or insecurity
+    of particular software and systems, but without entirely
+    understanding the background of these descriptions and
+    claims.  Additionally, many users of this tutorial will be
+    programmers and systems analysts whose employers have plans
+    to develop or implement cryptographic systems and protocols
+    (perhaps assigning such obligations to the very people who
+    will benefit from this tutorial).  </p>
+
+    </text-column>
+    </body>
+    </panel>
+
+    <!--============================================================-->
+    <panel><title>What does this tutorial cover?</title>
+    <body>
+    <text-column>
+
+    <p>This intermediate tutorial introduces users to a variety of
+    protocols useful for accomplishing specific and specialized
+    tasks.  Algorithms as such are not covered here, but treated
+    as building blocks for larger protocols.  For example, a
+    protocol discussed might, as a general assumption, state
+    something like:  "Assume E() is a strong symmetric encryption
+    algorithm with keylength of 256-bits."  It is up to tutorial
+    users to know what it means to be such an algorithm; and it
+    is up to protocol implementers to actually choose an
+    appropriate algorithmic building block.  However, the
+    "Resources" section provides information on a number of
+    common building blocks (so that might prove a good place to
+    start).  </p>
+
+    <p>The number of things one can accomplish in cryptographic
+    protocols is quite astonishing! We expect users of this tutorial to
+    be surprised that some of the matters we discuss are possible at all.
+    The author certainly was when he first encountered many of them.
+    Moreover, this fairly brief tutorial is unable to address
+    every protocol and goal cryptologists have developed.  If something
+    is not covered here, please do not assume that means its goal cannot be
+    accomplished cryptographically.  It likely means the tutorial
+    author simply did not include it (either because of limits of space or
+    limits of his knowledge).  Then again, there <i>are</i> certain
+    goals that are easy to state--and that one might find discussed and
+    requested repeatedly in discussion forums--that simply bang up
+    against mathematical impossibility.  The difference is not always
+    obvious.  You might need to think about the issues at some length,
+    and ask questions of folks with some experience.</p>
+
+    </text-column>
+    </body>
+    </panel>
+
+    <!--============================================================-->
+    <panel><title>Contact</title>
+    <body><text-column>
+    <p>David Mertz is a writer, a programmer, and a teacher who
+    always endeavors to improve his communication to readers (and
+    tutorial takers).  He welcomes any comments; please direct
+    them to &lt;mertz@gnosis.cx&gt;.  </p>
+
+    </text-column>
+    </body>
+    </panel>
+
+</section>
+
+<!--***************************************************************-->
+<section><title>Background and Reminders</title>
+
+    <!--============================================================-->
+    <panel><title>Protocols and Algorithms</title>
+    <body>
+    <text-column>
+
+    <p>One particular introductory notion introduced in the earlier
+    tutorials is worth emphasizing again before we get underway.  It is
+    important to make the distinction between protocols and algorithms.
+    </p>
+
+    <p>A protocol is a specification of the complete set of steps
+    involved in carrying out a cryptographic activity, including
+    explicit specification of how to proceed in every contingency.  An
+    algorithm is the much narrower procedure involved in transforming
+    some digital data into some other digital data.  Cryptographic
+    protocols inevitably involve using one or more cryptographic
+    algorithms, but security (and other cryptographic goals) is a
+    product of a total protocol.  </p>
+
+    <p>Clearly, using a strong and appropriate algorithm is an
+    important element of creating a strong protocol, but it is not
+    sufficient by itself.  The first sections of this tutorial
+    mostly address how cryptographic algorithms work; the later sections
+    take a look at the use of some algorithms in actual protocols,
+    particularly protocols combining multiple algorithms to accomplish
+    complex goals.  </p>
+
+    </text-column>
+    </body>
+    </panel>
+
+
+    <!--============================================================-->
+    <panel><title>Block Ciphers and Stream Ciphers</title>
+    <body>
+    <text-column>
+
+    <p>Encryption algorithms can be divided into block ciphers and
+    stream ciphers.  Stream ciphers are able to take plaintext input one
+    bit (or one byte) at a time and output a corresponding ciphertext
+    bit (byte) right away.  The manner in which a bit (byte) is
+    encrypted will depend both upon the key used and the previous
+    plaintext stream encrypted leading up to this bit (byte).  </p>
+
+    <p>In contrast to stream ciphers, block ciphers require an entire
+    block of input plaintext before they can perform any encryption
+    (typically blocks are 64-bits or more).  In addition, given an
+    identical input plaintext block, and an identical key, a block
+    cipher will produce the same ciphertext no matter where in an input
+    stream it is encountered. </p>
+
+    <p>Although stream ciphers have some advantages where immediate
+    responses are required, for example on a socket, the large majority
+    of widely used modern encryption algorithms are block ciphers.  In
+    this tutorial, whenever symmetric encryption algorithms are
+    discussed generically, the user should assume the tutorial is
+    referring to block ciphers.  </p>
+
+    </text-column>
+    </body>
+    </panel>
+
+    <!--============================================================-->
+    <panel><title>Some Impossible Things</title>
+    <body>
+    <text-column>
+
+    <p>Many of the things cryptography cannot accomplish are quite
+    simple to understand, but nonetheless they repeatedly prompt wishful
+    thinking by people getting started in cryptology.  In some cases,
+    vendors and "inventors" promise algorithms and protocols that
+    exhibit various impossible properties.  A good starting point for
+    cultivating suspicion about impossible claims is the <a
+    href="http://www.interhack.net/people/cmcurtin/snake-oil-faq.html">
+    Snake Oil FAQ</a>.  It is worth remembering a few impossible (or at
+    least suspicious) things before proceeding with this tutorial.</p>
+
+    </text-column>
+    </body>
+    </panel>
+
+    <!--============================================================-->
+    <panel><title>Impossible Things with Random Numbers I</title>
+    <body>
+    <text-column>
+
+    <p><b>Random numbers</b> are important to a variety of cryptographic
+    protocols, such as randomly generated keys and seeds.  A problem one
+    runs up against when seeking random numbers is that it is
+    <i>impossible</i> to generate <i>true</i> random numbers from
+    deterministic algorithms.  Instead, what algorithms get us are
+    "pseudo-random numbers"--such algorithms are called
+    "pseudo-random generators" (often abbreviated as 'PRGs').</p>
+
+    <p>The difference between pseudo-random numbers and genuine random
+    numbers is a basic fact of information theory.  A genuine random
+    number contains as much <i>entropy</i>, or <i>information</i>, as
+    its bit length.  Any algorithm that can be written in a computer
+    language cannot contain more entropy than is contained in its actual
+    source code (including any contained in language libraries and the
+    like).  So there is a limit to the number and length of random
+    numbers that can be generated by any given algorithm.  After a
+    while, patterns start occurring in pseudo-random streams.  By
+    gathering some real-world random seed information (e.g., the
+    microsecond timing of a user typing a phrase, or a bit of
+    information about external changes in the Internet), the entropy of
+    a PRG can be improved, but only by the amount of the entropy content
+    of the real-world seed data.</p>
+
+    </text-column>
+    </body>
+    </panel>
+
+    <!--============================================================-->
+    <panel><title>Impossible Things with Random Numbers II</title>
+    <body>
+    <text-column>
+
+    <p>A way of making <b>one-time pads (OTP's) from PRG's</b> is
+    something like a philosopher's stone of beginning cryptologists.
+    One-time pads, tutorial users will recall, have the wonderful
+    property of being provably and unconditionally secure.  As long as
+    genuinely random data (of the same length as the message to encode)
+    is used only once, an attacker has absolutely no way of deciphering
+    which message (of the given length) was encoded.  Further, an
+    attacker's failure here is not just a computational matter of
+    exceeding the MIPS of all the computers that exist (or might be
+    built), but rather the mathematical fact that nothing distinguishes
+    an actual crack from a false decipherment.</p>
+
+    <p>Of course, OTP's have the inconvenient quality of requiring
+    out-of-channel exchange of a great deal of key material.  And the
+    key material gets "used up" automatically as messages are sent
+    (unlike the keys in other algorithms which can be reused over many
+    messages without being consumed, <i>per se</i>).  As a consequence,
+    a lot of beginners develop an understandable wish to combine the
+    provable security of OTP's with the finite key distribution
+    requirements of other systems.  The result is, frequently, a system
+    that will generate "keys" for a purported OTP system by using
+    pseudo-random generators.  PRG's can keep generating new "key"
+    material indefinitely; and at a first pass, these keys appear to
+    have the same statistical and stochastic properties as true random
+    key material.</p>
+
+    <p>The catch is that pseudo-random key generators <i>really</i> do
+    not have the same deep properties as true random keys.  Many PRG's
+    are quite good, but in the end, their entropy is as finite as their
+    algorithms and seeds; they always exhibit cyclic patterns.  Mind
+    you, finding these patterns might require the work of serious
+    cryptanalysis.  And in the best case (such as many good stream
+    ciphers), the security provided by PRG's is quite adequate--even
+    comparable with other strong systems.  But there is no free lunch:
+    a PRG is <i>not</i> really an OTP.</p>
+
+    </text-column>
+    </body>
+    </panel>
+
+    <!--============================================================-->
+    <panel><title>Provable Security</title>
+    <body>
+    <text-column>
+
+    <p><b>Provable security</b> is another feature that is wished
+    for--and even claimed--fairly frequently.  It turns out that there
+    actually <i>are</i> some very interesting proofs for security
+    properties of some algorithms; however, these proofs must be taken in
+    the precise mathematical context they come out of, and what they
+    prove is contingent upon all sorts of assumptions and limitations.
+    Further, most algorithms that have provable properties like this are
+    ones developed for academic research purposes.  In general, none of
+    the algorithms in widespread use (whether public-key or symmetric)
+    have rigorously proven mathematical properties.  Instead, what we
+    settle for is that algorithms have stood up well to years of attack efforts
+    by the best cryptanalysts.  This is not the certainty of a
+    mathematical proof, but it is pretty good.</p>
+
+    <p>The point of the observations in this panel is that you should
+    look with suspicion upon vendors or amateurs who claim to have
+    proven the security of their algorithms.  Most likely they have not,
+    except perhaps in highly constrained and circumscribed ways.  Unless
+    you are the type of expert cryptanalyst who is able to evaluate such
+    alleged proofs (and if you are, this tutorial is way too basic for
+    you), take claims about provable security with a grain of
+    salt.</p>
+
+    </text-column>
+    </body>
+    </panel>
+
+    <!--============================================================-->
+    <panel><title>Distributing "Secret" Software</title>
+    <body>
+    <text-column>
+
+    <p>From a practical standpoint, a cryptographic goal that comes up a
+    lot is to make and distribute software that performs some action,
+    but that prevents users from carrying out that same action without
+    having access to the software.  Usually, this type of goal relates
+    to wishes for controlling distribution and use of mass-produced
+    commercial software; but sometimes it pertains to other security
+    features of the software.</p>
+
+    <p>In a general way, this goal is impossible to accomplish.  If a
+    determined attacker has access to your software, she inherently has
+    the potential of determining what the software <i>does</i>.  If
+    there is a key, or an encryption algorithm, buried within the
+    software (perhaps in obfuscated form), reverse engineering can
+    always reveal that "secret" key/algorithm.  It may well be that it
+    is not worth an attacker's <i>effort</i> to find your software's
+    secret; but cryptography is not going to ever give software the
+    capability of performing non-replicatable magic.</p>
+
+    </text-column>
+    </body>
+    </panel>
+
+    <!--============================================================-->
+    <panel><title>Entropy and Compression</title>
+    <body>
+    <text-column>
+
+    <p>Another matter worth mentioning, that relates only
+    partially to cryptology itself, is that one will sometimes
+    find claims (less in the last few years) that new lossless
+    compression methods have been discovered that have
+    fundamentally new properties.  In the most stark case,
+    sometimes a compression algorithm is purported to compress
+    <i>any</i> data sequence by some amount.  There is a one-line
+    <i>reductio ad absurdum</i> for the stark case:  Iterate
+    compression of each "compressed" result; if everything is
+    compressible, you wind up with a one-bit (or zero-bit)
+    representation for every original data sequence.  But weaker
+    claims often have similar absurdities contained therein.</p>
+
+    <p>A basic understanding of compression is important to
+    cryptology because both largely come down to the same concept of
+    entropy and information content.  The reason that not all data is
+    compressible is, at heart, the exact same reason that PRG's cannot
+    generate OTP's.  The redundancy, entropy, and information content of
+    data is a fundamental property of that data, and these constrain
+    fundamentally what transformations are possible upon data.</p>
+
+    </text-column>
+    </body>
+    </panel>
+
+</section>
+
+<!--***************************************************************-->
+<section><title>Steganography and Watermarking</title>
+
+    <!--============================================================-->
+    <panel><title>What is Steganography?</title>
+    <body>
+    <text-column>
+
+    <p>Steganography (in Greek, "secret"+"writing") is hiding secret
+    information inside non-secret, or less secret, information.  Various
+    methods of steganography predate electronic/computer cryptography by
+    centuries:  invisible inks, conventions for altering public texts,
+    code words, etc.  What distinguishes steganography from plain old
+    encryption is that an attacker does not know with certainty that
+    there is <i>any</i> secret message inside another message.  In some
+    circumstances this can be important for plausible deniability; in
+    others as a diversion of an attacker; in still others as a way of
+    subverting a channel that an attacker has reasons to leave open.</p>
+
+    <p>It is worth giving a couple of hypothetical examples of
+    steganography to "get" the concept.  In order to pass a secret
+    message, a typed letter includes a number of deliberate "typos," the
+    position of the words with "typos" encodes a subset of the numbers
+    between one and the number of words in the letter.  An attacker does
+    not know whether an intercepted letter contains a "sub-text" or
+    "sub-channel"--or whether it simply has typos (as do many letters
+    with no hidden message).  Obviously, the recipient must be aware of
+    the protocol used to encode the sub-channel.  Or again similarly, a
+    sound recording (for example, one played on the radio) has a number
+    of clicks and pops added to it that are indistinguishable from
+    scratches on a vinyl record (in fact, they could be produced by
+    making scratches in such a vinyl record before playing it).  The
+    exact timing of the pops encodes a message (e.g., the millisecond
+    gaps between successive pops encodes a series of numbers).  Since
+    regular phono recordings also contain pops, an attacker does not
+    (immediately) know whether a given song played on the radio actually
+    contains a sub-textual message.  </p>
+
+    </text-column>
+    </body>
+    </panel>
+
+    <!--============================================================-->
+    <panel><title>What is Watermarking?</title>
+    <body>
+    <text-column>
+
+    <p>(Digital) watermarking is similar to steganography, but is not
+    really quite the same thing (but you might see them discussed
+    together).  In the old-fashioned case, both invisible ink and an
+    authenticating watermark are features that appear on a sheet of
+    paper that take special procedures to reveal.  In digital data,
+    almost exactly the same similarity exists.  But the purpose of a
+    watermark is always to be implicitly available for revelation in
+    appropriate circumstances; the purpose of steganography is to hide
+    its existence from those unaware of its method of revelation.  In
+    digital terms, a digital watermark might be something a copyright
+    holder puts inside a digital image to prove she is the owner.  A
+    steganographic message might be something a political dissident puts
+    inside a digital image to communicate with other dissidents (a
+    repressive government cannot prove the message was sent at all,
+    rather than just a family photo).  The techniques for concealing the
+    sub-text might be similar, but the concealer's relation to an
+    attacker is almost exactly opposite.</p>
+
+    <p>It is worth contrasting (digital) watermarks with another
+    technique that serves a partially similar purpose:  (digital)
+    signatures.  In both physical and digital forms, the basic
+    difference is that a watermark is harder to remove than is a
+    signature.  A digital file with a specified format can have a
+    digital signature <i>appended</i> to the end of it; this is a way
+    for the signer to purport: "I (signer) agree to/authorize the
+    content/meaning of this digital file."  But it is simple to utilize
+    the digital file and discard the signature.  Doing so removes the
+    claim made by the signature (scissors can do the same thing for a
+    signed sheet of paper).  A watermark is much more closely tied in
+    with the file; ideally one would not be able to remove the watermark
+    without altering the content in an evident way (scissors cannot do
+    this in the paper case, and some watermarks are designed to
+    photocopy in a way that makes copying evident).  Of course, if you
+    have the option of defining what constitutes a valid digital file
+    format, you can explicitly specify that it includes a digital
+    signature (from a certain party, if needed); a file without a
+    signature can be considered an automatically invalid file by an
+    application (or operating system).</p>
+
+    </text-column>
+    </body>
+    </panel>
+
+    <!--============================================================-->
+    <panel><title>Problems with Watermarking</title>
+    <body>
+    <text-column>
+
+    <p>Digital watermarking is an increasingly desired, but (in this
+    author's opinion) deeply conceptually flawed cryptographic demand.
+    Overwhelmingly, digital watermarking is proposed as a way to prevent
+    (or at least identify) unauthorized reproduction of digital
+    information.  A prominent and recent example is the Recording
+    Industry Association of America's (RIAA) Secure Digital Music
+    Initiative (SDMI).  The idea in a digital watermark is to scatter
+    some bits in a digital file in such a way that the scattered bits
+    cannot be identified by an attacker, and therefore cannot be removed
+    or altered without making the changes evident (in the case of analog
+    source media, such as sound, video and images, this amounts to
+    assuring unacceptable degradation of the quality of the source).</p>
+
+    <p>The problem with digital watermarking is that it wants to break
+    mathematics and information theory.  The trick is to keep in mind
+    perceptual content and compressibility.  The real <i>meaningful
+    information</i> in a digital file that <i>represents</i> an analog
+    source is whatever features can be detected by a human perceiver (or
+    maybe in certain cases by a machine perceiver, but the issue is the
+    same).  Anything that cannot be perceived is <i>noise</i>, not
+    meaningful content; not every bit in a digital representation of
+    analog data is necessarily <i>information</i> in the right sense.
+    An ideal (lossy) compression algorithm for analog data (MP3, Ogg
+    Vorbis come close for sound; JPeg comes close for images; video
+    compression techniques are still subject to large improvements)
+    keeps every perceptible feature of the representation while
+    discarding every non-perceptible feature.  While one cannot know for
+    certain the "ideality" of a single digital representation, as a
+    comparative matter a smaller representation producing the same
+    perceptible features is closer to this "ideal."  A digital watermark
+    is, by definition, a non-perceptible feature (otherwise the
+    perceiver could simply remove it).  In other words, the watermark
+    adds entropy to the digital encoding, while doing nothing to add
+    <i>meaningful information</i> to the representation.  </p>
+
+    <p>SDMI is a good illustration.  In developing a music format that
+    includes copyright identification (digital) information, the RIAA
+    has <i>exactly</i> two choices at a conceptual level.  (1) They can
+    increase the size of music files over the size of an "ideally"
+    compressed format in order to include the copyright identification;
+    (2) They can replace some of the analog <i>information</i> in the
+    digital representation with copyright information (in other words,
+    make the format <i>sound worse</i> (to a discerning ear).  The exact
+    same tradeoff exists for watermarks in images and other analog
+    sources.  In practice, no digital watermarking format has ever stood
+    up to any serious scrutiny, and watermarks have always proved
+    relatively easy to remove once analyzed.  In theory, there is an
+    inherent conflict between goals of maximum compression in a format
+    and the goal of a format containing a watermark.</p>
+
+    </text-column>
+    </body>
+    </panel>
+
+    <!--============================================================-->
+    <panel><title>Digital Steganography Using Images</title>
+    <body>
+    <text-column>
+
+    <p>In order for steganography to find a handle in digital data
+    files, the format of those files must contain a degree of
+    non-predictable variation.  Steganography operates by substituting
+    desired bit values in unpatterned bit-positions.  Fortunately, many
+    file formats contain quite a bit of non-predictable variation.  The
+    most commonly used file formats for steganography are those that
+    encode real-world (analog) data, such as image and sound formats.
+    Typically, a sub-channel in an image is encoded in the "least
+    significant bits" of the image.  That is, if each image's pixel
+    color is encoded with a number of bits, often 24, some of those bits
+    cause the less color variation of the pixel than others do.
+    Specifically, 24-bit images usually have 8-bit values devoted to
+    each primary color (red, green, blue).  If the image is generated
+    through a real-world process (such as taking a photograph), the
+    sequence of lowest order red-bits will be largely random to start
+    with (because of finite resolution of cameras and also because of
+    "random" variations in the pictured object).  A steganographic
+    encoding might substitute sub-channel values into that sequence of
+    lowest order red-bits (red variation is the least perceptible of the
+    primary colors).  The receiver reads the sub-channel back out of a
+    received image by stripping out everything other than the sequence
+    of lowest order red-bits (which are identified purely positionally
+    by the file-format structure).</p>
+
+    </text-column>
+    </body>
+    </panel>
+
+    <!--============================================================-->
+    <panel><title>Digital Steganography Using Other Formats I</title>
+    <body>
+    <text-column>
+
+    <p>Images (and sounds) are often used for digital steganography
+    simply because it is very easy to identify the areas of variability
+    in a purely structural way.  It might be as simple as knowing that
+    every 24th bit in the file (after some initial offset) is a lowest
+    order red-bit.  Other file formats can be used, but often require
+    more semantic consideration of the file contents.  Let us look at a
+    few examples.</p>
+
+    <p><b>Source code.</b> Programming languages have fairly strict
+    structural constraints.  That is the point of grammar, after all.
+    Even within grammatical constraints, most changes to a source code
+    file will result in programs that will not compile or run (e.g., you
+    might be able to change a character in a variable name in a
+    sub-textual way, but most likely doing so will break the program
+    logic in some manner).  Even so, there are a number of areas of
+    non-predictable variation even in source code files; the trick is
+    that encoding them involves "understanding" the code in a richer way
+    than changing recurrent bit positions.  Many programming languages
+    offer several equivalent constructs for the same operation: for
+    example, both "!=" and "&lt;&gt;" to express inequality.  Or at a
+    higher level, one might even automate transformations between
+    different (equivalent) loop structures (e.g.,
+    <code>for(;;){...}</code> and <code>while(1){...}</code>).  The
+    pattern of choices between constructs could contain one-bit of
+    sub-channel for each loop occurrence.  Still, the best place to hide
+    a sub-channel in source code is likely to be in the comment fields
+    (but with some subtlety to make it look like real source code
+    comments; you do comment source code, right?)  </p>
+
+    </text-column>
+    </body>
+    </panel>
+
+    <!--============================================================-->
+    <panel><title>Digital Steganography Using Other Formats II</title>
+    <body>
+    <text-column>
+
+    <p><b>Delimited data.</b> Data file formats are even more rigidly
+    structured than source code, in most cases.  Delimited data is a
+    good example, but the same line of thought applies to many other
+    data formats (XML, however, has a lot of optional whitespace, which
+    could make for a good sub-channel).  At the level of
+    <i>content</i>, however, data file formats have non-predictable
+    variation <i>by definition</i>.  After all, the point of actually
+    <i>sending</i> a data file is to convey the information in it that
+    the recipient does not know.  For example, a row record for a
+    person might have a first name, last name and SSN, each of which must
+    look a fairly specific way.  But the actual SSN a person has is not
+    predictable from the other information.  A possible sub-channel
+    exists in subtly varying this data content.  However, a danger of
+    revelation exists if an attacker has independent ways of
+    correlating data (if no one in your data file has the true match
+    between name and SSN, that looks suspicious to an attacker).
+    Finding this kind of sub-channel requires a quite specific
+    knowledge of the data format and content being used.</p>
+
+    <p><b>Compressed archives</b> are probably about the very worst
+    format for trying to insert a sub-channel.  The problem is that
+    almost every bit change in an archive has an effect on many bits in
+    the unpacked contents, and in a way that depends on the whole
+    archive contents.  Changing a bit or two at random is extremely
+    likely to produce unpacked files that have invalid file formats (or
+    just corrupt archives).  This is easy for an attacker to notice.
+    About the only place a few bits of sub-text might be located is by
+    taking advantage of the error-correcting codes (ECC) some archive
+    formats use.  One could introduce an occasional "error" in
+    archives of the type the ECC's would correct upon unpacking.  One
+    trick would be to make sure that archives with sub-texts did not
+    have too many more errors than archives without sub-texts (which
+    means introducing random "errors" to all transmitted archives an
+    attacker might intercept).</p>
+
+    <p><b>Natural language text.</b> Natural language is extremely
+    free-form, and apparently an excellent format in which to embed a
+    sub-channel.  Normal texts contain all sorts of spacing
+    variations, word-choices, types, and other "random" features.  But
+    then, a too-obvious sub-channel encoding strategy is easy to
+    detect.  Sure people make typos, but not in uniformity in every
+    third word.  Too much pattern in the "random" variations is easy
+    for a machine scan, or a human reader, to identify as a probable
+    sub-text.</p>
+
+    </text-column>
+    </body>
+    </panel>
+
+    <!--============================================================-->
+    <panel><title>Cryptanalysis of Digital Steganography I</title>
+    <body>
+    <text-column>
+
+    <p>The efficacy of a sub-channel encoding strategy is simply a matter of
+    how well it prevents an attacker from proving the existence of the
+    sub-channel.  Of course, another desirable feature of a sub-channel
+    is the ability to embed more, rather than less, bandwidth in it.
+    Sometimes a couple of bits of sub-text are sufficient for a purpose;
+    but most of the time you would like the ability to send more
+    extensive messages.  Unfortunately, the goals of bandwidth and
+    invisibility tend to pull in opposite directions; more fiddling with
+    bits makes detection more likely and easier.</p>
+
+    <p>Your first assumption in designing sub-channel encoding should
+    be that an attacker is at least as able to identify non-predictable
+    variation as you are.  Do not try to hide the message simply by
+    assuming an attacker will not know where to look.  The key in
+    maintaining the invisibility of a sub-channel is making sure
+    that the <i>distribution</i> and <i>pattern</i> of sub-channel bits
+    closely match those in a typical file of the same format.</p>
+
+    <p>In many cases, the expected distribution of pre-encoded
+    sub-channels will be uniform and stochastic, but not always.  You
+    have to look at whether there is a bias toward 1 (or 0) in the
+    pre-encoded sub-channel slot (the bits or variations you have
+    identified as encoding sites); but you also have to look at whether
+    there is a frequency shift between the start and end of a file
+    and/or whether cyclicalities exist in bit frequencies of pre-encoded
+    sub-channels.  A good first step is to extract a large number of
+    pre-encoded sub-channels, and see if this data is compressible (if
+    so, it is not purely stochastic and uniform, and you need to look
+    more closely at the patterns).</p>
+
+    </text-column>
+    </body>
+    </panel>
+
+    <!--============================================================-->
+    <panel><title>Cryptanalysis of Digital Steganography II</title>
+    <body>
+    <text-column>
+
+    <p>Pure plaintext messages are absolutely <i>terrible</i> candidates
+    for sub-channel encoding.  A bit pattern that works out to the ASCII
+    sequence "Secret meeting at 6 p.m." is a dead giveaway (maybe
+    literally!).  Assuming you are aiming for stochastic-looking bit
+    patterns, compression removes much redundancy.  But watch out for
+    compression headers:  a sub-text that begins with "PK" does not look
+    like random data (e.g., PKZip header bytes).  The best choice is
+    usually to compress a plaintext first (mostly just to save on a
+    limited sub-channel bandwidth), then to encrypt the compressed text
+    second.  Of course, you also have to watch out for encryption format
+    headers (i.e., choose a format that is headerless).  The use of a
+    symmetric key requires a separate key-negotiation
+    out-of-channel; but use of public-key systems can avoid this
+    need.</p>
+
+    <p>The absolutely most important design issue in creating
+    steganographic sub-channels is:  <i>Don't use stock files!</i> If
+    you use files to which an attacker has access to the original
+    copy, a simple binary comparison of the original with the new overt
+    message reveals that the file has been tampered with.  This applies
+    especially to image or sound files that exist in the public-domain
+    (or generally, in public, even if copyrighted).  If you downloaded
+    an image from the web, so can an attacker.  What you really need are
+    entirely original files, and ones which you have a plausible reason
+    for sending other than to hide sub-channel.  Home videos, for
+    example, are bulky files with lots of sub-channel bandwidth that
+    are unique.  Of course, if you leak these originals to an attacker,
+    you have destroyed your system; and the same applies if you encode
+    different messages to different parties based on the same original.
+    Treat a steganographic overt message much like you would a one-time
+    pad:  use once and destroy!  However, multiple digitizations of the
+    same analog original are a possibility; they will differ in much
+    more than just the sub-channel, so a binary comparison just shows
+    them as wholly different files.</p>
+
+    <p>Two smaller issues are raised in the above.  One is that the
+    files you send need to be plausible.  Do you generally send pictures
+    of your family to your business associates?  Maybe yes, but if not,
+    sending them just announces the likelihood of a sub-channel.  The
+    prior discussion of techniques for other file types might be useful
+    in strategizing plausible files for normal transmission.  The second
+    issue was mentioned in an earlier panel.  If your sub-channel
+    encoding involves altering non-predictable data, can an attacker
+    gain access to the same <i>data</i> in other non-identical files?
+    For example, suppose you have a strategy for altering information in
+    transmitted flat-file records.  Good enough, so far.  But can an
+    attacker gain access to individual records by other means, or at
+    other times?  Maybe you want to send an intersecting record set
+    (either with or without a sub-channel) later on, or already have.
+    If the alterations are inconsistent in individual records, that
+    provides a clue to a sub-channel (obviously, production data changes
+    occasionally, but within some bounds).</p>
+
+    </text-column>
+    </body>
+    </panel>
+
+
+</section>
+
+<!--***************************************************************-->
+<section><title>"Exotic" Protocols</title>
+
+    <!--============================================================-->
+    <panel><title>Shared Secrets I</title>
+    <body>
+    <text-column>
+
+    <p>The general idea behind <b>secret sharing</b> is that you might
+    want to require multiple parties to cooperate in order to decrypt a
+    certain ciphertext.  It is not enough for one person to have her
+    key, she needs some help to get at the plaintext.  It turns out that
+    you can design schemes of arbitrary complexity that specify exactly
+    who has to cooperate to decrypt a particular message. For example,
+    you could specify a "Chinese menu" approach, where you need two from
+    column A, three from column B, and one from column C, to decrypt a
+    message.  Even more complex dependencies are possible also: for example, if
+    Alice uses her key, she needs Bob's help; if Carol uses her key,
+    she needs Dave's help; other combos will not work.</p>
+
+    <p>The simplest case of secret sharing is <b>secret splitting</b>.
+    Under this protocol, it requires cooperation of all parties (two or
+    more) to decrypt a message.  The protocol is quite simple: </p>
+
+    <code-listing>
+    Given a secret M, of length n.
+    Given N persons who will share the secret (named P1, P2, ..., PN).
+    Generates random bit strings R{1}, R{2}, ..., R{N-1}, or length n.
+    Calculate S = M XOR R{1} XOR R{2} ... XOR R{N-1}.
+    Destroy or hide M.
+    Give S to P1
+    Give R{1} to P2
+    [...]
+    Give R{N-1} to PN
+    </code-listing>
+
+    <p>The secret splitters need not even know which one receives S, and
+    which ones receive R's.  Either way, M can only be constructed by
+    XOR'ing back together the information given to every person.  This
+    works exactly the same way as a one-time pad, and has the same
+    degree of absolute security (it is subject to bad random numbers
+    and human weaknesses, but those contravene the explicit protocol).
+    </p>
+
+    </text-column>
+    </body>
+    </panel>
+
+    <!--============================================================-->
+    <panel><title>Shared Secrets II</title>
+    <body>
+    <text-column>
+
+    <p>Secret splitting is simple and provably secure.  It also has some
+    limitations.  If any one party loses her portion, or becomes
+    unwilling or unable to share it, no sharer can get at the secret
+    message.  The secret splitting protocol also puts total power in the
+    hands of the person who originally generates the split secret (but
+    then, M belonged to that person also).  Furthermore, there are a
+    number of ways by which a malicious party, who either genuinely knows
+    a secret share or pretends to, can find other persons' portions
+    without revealing her own and/or the message.  All of these
+    limitations can be avoided in other (more complex) protocols.  The
+    "Resources" section can lead tutorial users to many of these
+    specifics; here we will only discuss <b>(m,n)-threshold
+    schemes</b>.</p>
+
+    <p>Before we look at one (m,n)-threshold scheme, it is worth making
+    a general observation.  The secret shared in secret sharing schemes
+    need not be the ultimate interesting content.  In practical terms,
+    the size of calculations and distributed portions can be limited by
+    letting <code>C = E{K}(M)</code> for a strong symmetric-key
+    algorithm.  C can be revealed to everyone (even those not involved
+    in the secret sharing), while K rather than M becomes the secret to
+    use in a sharing scheme.  Good encryption algorithms use keys of
+    less than 256-bits, while messages themselves might well be multiple
+    megabytes in size.  The math in most protocols is computationally
+    intractable for the numbers represented by huge files, but
+    reasonable sized keys can act as good proxies to the actual secret
+    message.</p>
+
+    </text-column>
+    </body>
+    </panel>
+
+    <!--============================================================-->
+    <panel><title>Shared Secrets III</title>
+    <body>
+    <text-column>
+
+    <p>The <b>LaGrange Interpolation Polynomial Scheme</b> is an easy to
+    understand (m,n)-threshold scheme for secret sharing.  The "Resources"
+    section can lead a user to others.</p>
+
+    <p>Suppose you want to share a secret, M, among n people, such that
+    any m of them will be able to reveal the secret by cooperating.</p>
+
+    <ol>
+      <li>Generate a random prime, <b>p</b>, larger than M.</li>
+      <li>Generate n-1 random integers, R{1}, R{2}, ..., R{n-1},
+          each less than p.</li>
+      <li>Let <b>F(x)</b> be a polynomial in a finite field, defined
+          by:<br/>
+          <code>F(x) = (R{1}*x^n + R{2}*x^(n-1) + ... + R{n-1}*x + M) mod p
+          </code></li>
+      <li>Generate m "shadows" of F, defined by:<br/>
+          <code>k{i} = F(x{i})</code><br/>
+          where each x{i} is distinct (using successive integer values
+          [1,2,3,...] is a fine choice for x's).</li>
+      <li>Give [p, x{i}, k{i}] to each of the m secret sharers, for i
+          corresponding to the number of each sharer (the enumeration is
+          arbitrary).</li>
+      <li>Destroy R{1}, R{2}, ..., R{n-1}.</li>
+      <li>Destroy or hide M.</li>
+    </ol>
+
+    <p>Given the information provided to her, each secret sharer is able
+    to write out a linear equation.  For example, Linda, who was
+    enumerated as sharer number l, can construct the equation:</p>
+
+    <code-listing>
+    k{l} = (C{1}*x{l}^n + C{2}*x{l}^(n-1) + ... + C{n-1}*x{l} + M) mod p
+    </code-listing>
+
+    <p>Since these linear equations have n unknowns, C{1}...C{n-1} and
+    M, it requires the n equations with these same unknowns to solve the
+    system of equations, and thereby reveal M (and also the C{i}'s, but
+    these are not interesting once we have M).</p>
+
+    <p>Because the coefficients of F were chosen randomly, having less
+    than n secret sharers cooperate, even combined with <i>infinite</i>
+    computing power, does not allow revelation of M. Without the n'th
+    sharer participating, any possible M (of length less than p) is just
+    as consistent with the (less than n) equations as any other!</p>
+
+    </text-column>
+    </body>
+    </panel>
+
+    <!--============================================================-->
+    <panel><title>Key Escrow I</title>
+    <body>
+    <text-column>
+
+    <p>There may be times when it is desirable to give a secret key, or
+    indirect access to a secret key, to parties other than those
+    directly involved in a secured communication.  Unfortunately, most
+    of the times that the issue comes up is in contexts the author finds
+    undesirable and quite disturbing:  providing a (maybe circumscribed)
+    back-door to "secure" communications to a government/police agency
+    and/or to corporate employers.  Cryptography is a technology that
+    cannot be fully considered apart from its political implications.
+    </p>
+
+    <p>However, legitimate reasons for <b>key escrow</b> can be imagined
+    also.  It may happen that you would like certain people (maybe
+    cooperating in certain ways) to have the ability to access your secured
+    communications in the event you are no longer able to divulge them
+    yourself (or do not wish to require your effort, given certain
+    circumstances).  Two techniques are useful for key escrow
+    goals (either singly or jointly):  multiple recipient lists and
+    secret sharing of keys.</p>
+
+    </text-column>
+    </body>
+    </panel>
+
+    <!--============================================================-->
+    <panel><title>Key Escrow II</title>
+    <body>
+    <text-column>
+
+    <p>Tutorial users will probably be aware that most concrete
+    public-key encryption systems actually use symmetric "session keys"
+    to encrypt messages, and the public keys only to encrypt these
+    session keys.  Computational speed considerations are the main
+    motivation behind such split systems, but they also have desirable
+    side effects.  In fact, even when using entirely symmetric-key
+    systems, the same sort of split systems can be useful.  It is
+    possible to encrypt a session key for multiple recipients, not
+    merely for one.  While one could send the same entire encrypted
+    message to multiple parties, it might be easier simply to attach
+    multiple versions of the encrypted session key, and allow general
+    distribution.  In the concrete, this might look like:</p>
+
+    <code-listing>
+    Let E{k} be a symmetric-key encryption algorithm.
+    Let S be a random session key.
+    Let M be a message.
+    Let Ka be Alice's public or symmetric key.
+    Let Kb be Bob's public or symmetric key.
+    Generate C = [E{S}(M), E{Ka}(S), E{Ka}(S))]
+    Make C available to both Alice and Bob.
+    Destroy S.
+    </code-listing>
+
+    <p>Either Alice or Bob can determine S from C. And once they have S,
+    they can decrypt M. Other parties besides Alice and Bob have no access
+    to S or M (C <i>does</i> use E with three keys over two
+    messages, so this provides a bit of extra ciphertext for
+    attack).  A nice property of C is that it is not much bigger than
+    E{Ka}(M), which would be a direct way of encrypting for Alice only.
+    Certainly, for megabyte messages and 128-bit keys, the extra session
+    key encryption is insignificant.</p>
+
+    <p>If Alice is the directly intended recipient, but Bob should be
+    able to get access to M if he needs to (and at his own discretion),
+    then this scheme would give Bob an "escrow key."  For that matter, we could
+    just send E{Ka}(S) to Bob, and forgo sending E{S}(M) to him at all
+    immediately; this would make sense if he has access to Alice's
+    stored encrypted files, but not to her key.  One can imagine these
+    arrangements might make sense if you wish for an employer
+    to have access to employees' messages should an employee quit (or die, or
+    forget passwords).  Of course, it leaves decryption at the
+    employer's discretion (but that might be appropriate for
+    company-related correspondences). </p>
+
+    </text-column>
+    </body>
+    </panel>
+
+    <!--============================================================-->
+    <panel><title>Key Escrow III</title>
+    <body>
+    <text-column>
+
+    <p>The second technique likely to be involved in key escrow is
+    secret sharing of key material (either session keys or private
+    keys).  Suppose that Alice does not wish to disclose her secret key
+    to anyone directly, but does feel that if at least five of her ten
+    friends think it appropriate to decrypt her messages, that would be
+    OK (perhaps she is worried about disposition of her secret
+    inventions after her death; or maybe just about the danger she will
+    lose her original private key).  In government proposals the same
+    structure is suggested, wherein in the presence of a warrant
+    multiple non-government agencies would disclose shared-secret keys
+    of citizens.  The latter case is politically worrying, but the
+    cryptographic issue is the same for both cases.</p>
+
+    <p>Alice can use a (5,10)-threshold scheme to divide her key among
+    her ten friends.  No one except Alice has access to the whole
+    private key, but five friends can recover it by working together
+    (and thereafter decrypt any messages Alice has encrypted using the
+    key).  More complex threshold schemes can also be used if the
+    requirements for key revelation are more structured than this.  As
+    was mentioned earlier, using a threshold scheme for key escrow is
+    consistent with using session keys; depending on the requirement, it
+    might be a message session key rather than Alice's long-term private
+    key that gets distributed in such a scheme.</p>
+
+    </text-column>
+    </body>
+    </panel>
+
+    <!--============================================================-->
+    <panel><title>Zero-Knowledge Proofs I</title>
+    <body>
+    <text-column>
+
+    <p>For this author, probably the most surprising thing cryptography
+    can accomplish is <b>zero-knowledge proofs</b>.  The idea in a
+    zero-knowledge proof is to prove that you have a certain piece of
+    knowledge without revealing the content of that knowledge to an
+    interlocutor.  The purpose of a zero-knowledge proof is to demonstrate
+    access to some secret information without <i>giving</i> that access
+    to someone else.  For example, imagine a conversation between Alice
+    and Bob:</p>
+
+    <ul>
+      <li>Alice:  "I can decrypt the confidential message encrypted
+          as C."</li>
+      <li>Bob: "I do not believe you; prove it!"</li>
+      <li>Alice (bad response):  "The key is K, and therefore, as you
+          can see the message decrypts to M."</li>
+      <li>Bob: "Ah hah! Now I know the key and the message also."</li>
+      <li>Alice: "Ooops."</li>
+    </ul>
+
+    <p>Alice really took a bad approach here, since she failed to keep
+    the confidential message confidential.  And she even gave away the key
+    while she was at it (she could have done slightly better if, for
+    example, the cryptographic hash of M could be verified instead of
+    revealing the key; but the idea is the same).  A much better
+    conversation for Alice to engage in is:</p>
+
+    <ul>
+      <li>Alice:  "I can decrypt the confidential message encrypted
+          as C."</li>
+      <li>Bob: "I do not believe you; prove it!"</li>
+      <li>Alice (good response):  "Let us engage in a zero-knowledge
+          protocol, and I will demonstrate my knowledge with an
+          arbitrarily high probability (but not reveal anything about
+          the message to you)."</li>
+      <li>Bob: "OK."</li>
+      <li>Alice and Bob go through the protocol...</li>
+    </ul>
+
+    </text-column>
+    </body>
+    </panel>
+
+    <!--============================================================-->
+    <panel><title>Zero-Knowledge Proofs II</title>
+    <body>
+    <text-column>
+
+    <p>Zero-knowledge proofs are generalizable to a wide range of
+    information.  In fact, it turns out that <i>any</i> mathematical
+    theorem with a proof can have a zero-knowledge "proof of the proof."
+    That is, Alice can claim to have a proof of theorem T, but not wish
+    to state it (she wants to wait for publication).  Nonetheless, Alice
+    can prove that she <i>has</i> proved T without revealing the proof.
+    This very general fact is broad enough to cover specific cases like
+    factoring large numbers and the like, which are involved in many
+    cryptographic algorithms.  The broadest scope exceeds this
+    tutorial; we will just look at one case (others are similar in
+    form).</p>
+
+    <p><b>Graph isomorphism</b> is a <i>hard</i> problem; that is to
+    say, it is NP-complete.  Or in other words still, it is one of those
+    problems that can take millions of computers millions of years to
+    solve, even though <i>constructing</i> a problem takes only a
+    moderate amount of time and space.  A graph is a collection of vertices
+    connected by a collection of edges.  Every edge connects exactly two
+    vertices, but not all pairs of vertices are (necessarily) connected
+    by an edge.  Some graphs are <i>isomorphic</i> to other graphs.
+    What isomorphism means is the following: </p>
+
+    <ul>
+      <li>For isomorphic graphs G and H,</li>
+      <li>There exists a one-to-one function F such that:</li>
+      <ol>
+        <li>The domain of F is the set of vertices of G.</li>
+        <li>The range of F is the set of vertices of H.</li>
+        <li>If and only if [g1,g2] is an edge in G,
+            [F(g1),F(g2)] is an edge in H.</li>
+      </ol>
+    </ul>
+
+    <p>Obviously enough, if G and H do not have the same number of
+    vertices and edges as each other, they are not isomorphic.  But
+    assuming G and H meet this minimum condition of "plausible"
+    isomorphism, determining whether they really are isomorphic
+    basically means attempting every mapping from G onto H, and checking
+    whether it creates an isomorphism.</p>
+
+    <p>In short-and-sweet form, what this boils down to is that if
+    someone tells you she has two isomorphic graphs with enough
+    thousands of vertices and edges, it is because she constructed the
+    graphs to be isomorphic . . . not because she discovered the
+    isomorphism.  On the other hand, it is trivial to construct
+    isomorphic graphs with thousands of vertices and edges:  you could
+    do it on paper without using a computer if you spent a bit of time
+    on it! Next, let us see why all this is important.</p>
+
+    </text-column>
+    </body>
+    </panel>
+
+    <!--============================================================-->
+    <panel><title>Zero-Knowledge Proofs III</title>
+    <body>
+    <text-column>
+
+    <p>Suppose that Peggy claims to know an isomorphism between graphs G
+    and H. In practice this means that she constructed the graphs
+    herself (for large graphs), or at least was provided the isomorphism
+    by someone who did.  Knowing this isomorphism might be Peggy's way
+    of proving her identity if it has been published previously that:
+    "Peggy is the person who knows the isomorphism of G and H."
+    Obviously, just showing the isomorphism directly allows any observer
+    to thereafter pretend he is Peggy, so that is no good.</p>
+
+    <p>Here is what Peggy does to prove she knows the isomorphism:</p>
+
+    <ol>
+      <li>Peggy randomly permutes G to produce another isomorphic graph
+          I. Since Peggy knows the isomorphism between G and H, it is
+          easy for her to simultaneously find the isomorphism between H
+          and I.</li>
+      <li>Peggy gives I to Victor.</li>
+      <li>Victor may ask Peggy to prove <i>either</i> (a) that I and G
+          are isomorphic; <i>or</i> (b) that I and H are isomorphic.
+          But Victor may not ask for both proofs (if he got both, he
+          would have the isomorphism proof of G and H himself).  </li>
+      <li>Peggy provides the proof requested by Victor.</li>
+    </ol>
+
+    <p>So far so good.  What has this shown.  If a Peggy imposter <i>did
+    not</i> know the isomorphism of G and H, the best she can do is to
+    try to pass off an I that is isomorphic with G (she knows G and H,
+    as does Victor), and just hope Victor doesn't ask for the
+    isomorphism of H and I. Or alternately, a Peggy imposter could try
+    to pass off an I she constructed from H, and hope the opposite.  But
+    either way, a Peggy imposter has a 50% chance of getting "caught" by
+    the protocol above.</p>
+
+    <p>Victor probably does not find 1/2 confidence sufficient for Peggy
+    to prove she knows the isomorphism, however.  Fortunately, Victor
+    can simply demand that Peggy now generate an I', and undergo the
+    protocol again.  If she passes now, Victor can be 3/4 confident
+    about Peggy.  If that's not good enough, do a third pass of the
+    protocol with I'', and obtain a 7/8 confidence; or a 15/16
+    confidence, a 31/32 confidence, and so on.  By iterating the
+    protocol, Peggy can prove that she knows the isomorphism for an
+    arbitrary confidence requirement by Victor (but always less than
+    100% by some tiny amount).  As many times as the protocol is
+    iterated, Victor gains no knowledge that helps him in constructing
+    his own G/H isomorphism, so "zero-knowledge" is leaked to Victor.
+    </p>
+
+    </text-column>
+    </body>
+    </panel>
+
+
+</section>
+
+
+<!--***************************************************************-->
+<section><title>Resources</title>
+
+    <!--============================================================-->
+    <panel><title>Further Reading</title>
+    <body>
+    <text-column>
+    <p>The nearly definitive beginning book for cryptological
+    topics is Bruce Schneier's <i>Applied Cryptography</i>
+    (Wiley).  I could not have written this tutorial without my
+    copy of Schneier on my lap to make sure I got everything just
+    right.</p>
+
+    <p>Online, a good place to start in cryptology is the <a
+    href="http://www.landfield.com/faqs/cryptography-faq/">
+    Cryptography FAQ</a>.</p>
+
+    <p>To keep up on current issues and discussions, I recommend
+    subscribing to the Usenet group <b>sci.crypt</b>.</p>
+
+    <p>A nice <a href="http://home.ecn.ab.ca/~jsavard/crypto.htm">web
+    page with both good explanations and links to a variety of
+    cryptological topics</a> is provided by John Savard.</p>
+
+    <p>For topics related to compression, the author is particularly
+    fond of his own <a
+href="http://gnosis.cx/cgi/txt2html.cgi?source=http://gnosis.cx/publish/prog
+ramming/compression_primer.txt">
+    "A Data Compression Primer"</a>.  For background on the several topics
+    in this tutorial that touch on compression, this is a good starting
+    point.</p>
+
+    </text-column>
+    </body>
+    </panel>
+
+    <!--============================================================-->
+    <panel><title>Popular Symmetrical Algorithms</title>
+    <body>
+    <text-column>
+
+    <p>The <a href="http://www.nist.gov/">National Institute of
+    Standards and Technology</a> has recently completed selection of an
+    algorithm for its Advanced Encryption Standard (AES).  The winner
+    was <a href="http://csrc.nist.gov/encryption/aes/rijndael/">Rijndael
+    </a> which is thereby guaranteed to become a widely used algorithm.
+    Rijndael is both powerful and versatile, and makes a good choice for
+    the AES selection, and for general use.</p>
+
+    <p>Counterpane's <a href="http://www.counterpane.com/blowfish.html">
+    Blowfish</a> has been popular for a number of years.  Its successor,
+    <a href="http://www.counterpane.com/twofish.html">Twofish</a> was
+    another AES finalist that is likely to continue in widespread use
+    (despite the selection of Rijndael as the winner).</p>
+
+    <p>The most widely used symmetrical encryption algorithm has almost
+    certainly been NIST's (formerly called National Bureau of Standards)
+    <a href="http://www.itl.nist.gov/fipspubs/fip46-2.htm">Data
+    Encryption Standard (DES)</a>.  Although DES has developed
+    keylength problems with the advancement of computer capabilities,
+    triple-DES is still viable, and even single-DES is an algorithm you
+    are likely to come across in existing products.</p>
+
+    </text-column>
+    </body>
+    </panel>
+
+</section>
+
+</tutorial>
+
+
+
+

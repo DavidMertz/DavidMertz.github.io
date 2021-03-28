@@ -1,0 +1,476 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>XML MATTERS #13: XML and Compression -- Exploring the entropy of documents -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="xml_matters_12.html" TITLE="XML MATTERS #12">
+<link REL="next" HREF="xml_matters_14.html" TITLE="XML MATTERS #14">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<h1>Xml Matters #13: Xml And Compression</h1>
+<h2>Exploring the entropy of documents</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Interior Designer, Gnosis Software, Inc.<br>
+ August 2001<br>
+ <br>
+</p>
+<blockquote>
+    This article looks at a number of approaches to wrapping
+    compression around XML documents.  The special structures in
+    XML tend to allow certain improvements over the most naive
+    compression techniques.  Code exploring several techniques is
+    provided in the article.
+</blockquote>
+<h3>Introduction</h3>
+ <p>
+  XML as a format has a lot of nice properties--it is a perfectly
+  general way of representing arbitrary data structures, and it
+  is human readable (more of less).  But XML has one very notable
+  unpleasant property.  XML documents are VERBOSE; not just a
+  <em>little</em> on the wordy side, but grotesquely, morbidly obese,
+  almost unbelievably huge.  Much of the time, this drawback of
+  XML really makes no difference--DASD is cheap, and the time on
+  the wire might be only a small part of the total time in the
+  process.  But at other times, bandwidth and storage space can
+  be important.
+</p>
+<p>
+  To quantify things, it is not at all unusual for XML documents
+  that represent table-oriented data to be three times as large
+  as a CSV or database representation, or even than a flat file.
+  A similar increase is typical in representing EDI data (such as
+  for ebXML projects).  In many of these context, one starts out
+  with multi-megabyte data sources, and making them multiples
+  larger can be inconvenient, especially for transmission
+  purposes.  For example, for purposes of this article, I created
+  an XML representation of an approximately 1 megabyte Apache
+  access logfile.  This created an XML document 3.18 times the
+  size of the underlying line-oriented log.  The only
+  <em>information</em> added in the process was some descriptive names
+  for fields, but that could have also been specified in a single
+  header line of less than a hundred bytes.  Moreover, my
+  specific XML representation did not include any namespaces in
+  the tags, which would have increased the size further.
+</p>
+<p>
+  When one thinks about compressing documents, one normally
+  thinks first of general compression algorithms like Lempel-Ziv
+  and Huffman, and of the common utilities that implement
+  variations on them.  Specifically, on Unix-like platforms, what
+  comes first to mind is usually the utility <code>gzip</code>; on other
+  platforms, <code>zip</code> is more common (using utilities such as
+  <code>pkzip</code>, <code>info-zip</code> and <code>WinZip</code>).  <code>gzip</code> turns out to be
+  quite consistently better than <code>zip</code>, but only by small
+  margins.  These utilities indeed tend substantially to reduce
+  the size of XML files.  But it also turns out that one can
+  obtain considerably better compression rates by two means,
+  either individually or in combination.
+</p>
+<p>
+  The first technique is to use the Burrows-Wheeler compression
+  algorithm rather than Lempel-Ziv sequential algorithms.  In
+  particular, the somewhat less common utility <code>bzip2</code> (or its
+  associated libraries and APIs) is an implementation of
+  Burrows-Wheeler for many system platforms (and is accompanied
+  by full source and a BSD-style license).  Burrows-Wheeler
+  operates by grouping related strings in a uncompressed source,
+  rather than in the Lempel-Ziv style of building up a dictionary
+  of string occurences.  <code>bzip2</code> consistently obtains better
+  compression than <code>gzip</code> across many file types, but the effect
+  is especially dramatic for XML documents.  On the down side,
+  <code>bzip2</code> is generally slower than <code>gzip</code>.  Then again the
+  slowness of bandwidth will very often swamp speed differences
+  in CPU or memory-bound algorithms.
+</p>
+<p>
+  The second technique is to take advantage of the very specific
+  structure of XML documents to produce more <em>compressible</em>
+  representations.  The XMill utility is one implementation of
+  this technique, and it is available (with C++ source) under a
+  liberal license from AT&amp;T. XMill, however, seems to require
+  certain click-through style limitations on its licensing, and
+  cannot be distributed by other parties directly (at least as I
+  understand it).  I have created my own implementation of the
+  same general technique, and the implementation is presented in
+  this article.  The code herein is released to the public
+  domain, and the technique as implemented was developed
+  independently and has only a "bird-eye view" similarity to
+  XMill--sometimes XMill does better, and sometimes I do (but
+  XMill is probably always faster than my initial implementation,
+  which only pays attention to compression results).
+</p>
+<h3>Comparing Basic Algorithms</h3>
+ <p>
+  For purposes of comparison in this article I obtained or
+  created four base documents.  The first was Shakespeare's play
+  <cite>Hamlet</cite> as an XML document (see resources).  The markup
+  includes tags such as <code>&lt;PERSONA&gt;</code>, <code>&lt;SPEAKER&gt;</code> and <code>&lt;LINE&gt;</code>
+  which map fairly naturally to the typographic forms one might
+  encounter in a printed copy.  In order to make comparisons of
+  just how the XML markup contributes to document size and
+  compressibility, I derived from <code>hamlet.xml</code> a document
+  <code>hamlet.txt</code> that simply removed all the XML tags, but left the
+  content.  This derivation is <strong>not</strong> reversible, and is a strict
+  loss of information.  A person reading <code>hamlet.txt</code> would not
+  have a great deal of difficulty determining semantically which
+  content is a "speaker" name and which a "line", for example,
+  but there is no easy way a computer could regenerate the source
+  XML document.
+</p>
+<p>
+  The next two documents are an Apache Weblog file (a compact set
+  of line-oriented records) and an XML document created from
+  this.  Since the source document is the log file, no
+  information is lost in the transformation, and it is trivial to
+  recreate exactly the original format from the XML.  Of course,
+  it is not possible to use an XML parser, or DOM, or a
+  validator, or a DTD, with the logfile format.  Let's take a
+  look at the sizes of the base documents:
+</p>
+<div class="code-sample"><h4>Directory listing of base documents</h4><pre>
+ 288754  hamlet.xml
+ 188830  hamlet.txt
+ 949474  weblog.txt
+3021921  weblog.xml
+
+</pre></div><p>
+  In both cases, the XML is much larger.  In the <cite>Hamlet</cite>
+  example, the comparison is not entirely fair since the actual
+  information content of the text version is also less.  But for
+  the Weblog file, the XML starts to look fairly bad.  However,
+  not everything is quite as it appears.  Compression programs do
+  a fairly good job of boiling documents down to their actual
+  information content, and meaningless padding tends towards zero
+  size in the compressed version (asymptotically with compression
+  effort, and if all is happy).  Let's try <code>gzip</code>, <code>zip</code> and
+  <code>bzip2</code>:
+</p>
+<div class="code-sample"><h4>Directory listing of compressed Shakespeare</h4><pre>
+  78581  hamlet.xml.gz
+  72505  hamlet.txt.gz
+  78696  hamlet.xml.zip
+  72620  hamlet.txt.zip
+  57522  hamlet.xml.bz2
+  56743  hamlet.txt.bz2
+</pre></div><p>
+  -
+</p>
+<div class="code-sample"><h4>Directory listing of compressed Weblog</h4><pre>
+  91029  weblog.txt.gz
+ 115524  weblog.xml.gz
+  91144  weblog.txt.zip
+ 115639  weblog.xml.zip
+  56156  weblog.txt.bz2
+  66994  weblog.xml.bz2
+
+</pre></div><p>
+  There are a number of interesting things in the above sizes.
+  For both styles of documents--for every compression
+  technique--the size differences in compressed files is much
+  smaller than between the XML versus text originals.  It is also
+  noteworthy that <code>gzip</code> and <code>zip</code> cluster very closely together
+  for corresponding cases, while <code>bzip2</code> does much better all the
+  time.  Moreover, when using <code>bzip2</code> on the Shakespeare
+  document, the compressed size difference between the text and
+  XML formats is nearly negligible, despite the 53% larger size
+  of the XML base document.
+</p>
+<p>
+  However, the Weblog stands out as as a problem case.  While
+  compression narrows the bloat of the XML conversion quite a
+  bit, even the <code>bzip2</code> version still lets the XML markup
+  increase the size by about 20%.  Not necessarily a disaster,
+  but it feels like we should ideally be able to compress down to
+  the true information content
+</p>
+<h3>Reversible Transformations</h3>
+ <p>
+  An XML document has a rather inefficient form when it comes to
+  compression, actually.  As we will see <code>bzip2</code> somewhat
+  alleviates this inefficency by regrouping strings.  But at
+  heart, XML documents are a jumble of fairly dissimilar
+  parts--tags, attributes, elements bodies of different types.
+  If we could take each relatively homogeneous set of things, and
+  group them close to each other in a transformed file, standard
+  compressors would have more to work with.  For example, if
+  every <code>&lt;host&gt;</code> tag-body in our Weblog occurs near the others,
+  the block of stuff which contains the IP address of hosts will
+  be easy to compress.  The trick here is to come up with a way
+  of transforming an XML document into something that contains
+  <strong>all</strong> the same information, but structures the layout in such a
+  compressor-friendly style.
+</p>
+<p>
+  The utilities <code>xml2struct.py</code> and <code>struct2xml.py</code> do exactly
+  what is desired.  The versions below have a few limitations,
+  but demonstrate the principles involved.  Some limitations are
+  that each document is limited to 253 distinct tags, and that
+  attributes and processing instructions are not handled.  Fixing
+  those limits should not change the jist of the results,
+  however.  XMill performs a similar transformation, but with
+  some extra options and with fewer limitations.
+</p>
+<p>
+  The general format of a "struct" document is as follows:
+</p>
+<div class="code-sample"><h4>Struct document format</h4><pre>
+1.  A list of tags that occur in the original XML document,
+    separated by newline characters.
+2.  A section delimeter: 0x00 (the null byte)
+3.  A compact representation of the overall document
+    structure, where each start tag is represented by a
+    single byte, and the occurence of content is marked by
+    a 0x02 byte.
+4.  Another section delimeter: 0x00 (the null byte)
+5.  The contents of all the elements indicated in the
+    document structure schematic, grouped by element type.
+    Each individual content item is delimited by a 0x02
+    byte, while the start of elements of a new type is
+    delimited by a 0x01 byte (the last not strictly needed,
+    but it makes reversing the transformation easier).
+
+</pre></div><p>
+  Below is complete Python code to perform and reverse the
+  described transformation.  It would be simple to implement this
+  transformation in another programming language also:
+</p>
+<div class="code-sample"><h4>xml2struct.py</h4><PRE><FONT COLOR=#3333CC><B>import</B></FONT> sys
+<FONT COLOR=#3333CC><B>import</B></FONT> xml.sax
+<FONT COLOR=#3333CC><B>from</B></FONT> xml.sax.handler <FONT COLOR=#3333CC><B>import</B></FONT> *
+
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="StructExtractor"><FONT COLOR=#CC0000><B> StructExtractor</B></FONT></A>(ContentHandler):
+    <FONT COLOR=#115511>"""Create a special structure/content form of an XML document"""</FONT>
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="startDocument"><FONT COLOR=#CC0000><B> startDocument</B></FONT></A>(self):
+        self.taglist = []
+        self.contentdct = {}
+        self.state = []             <FONT COLOR=#1111CC># stack for tag state</FONT>
+        self.newstate = 0           <FONT COLOR=#1111CC># flag for continuing chars in same elem</FONT>
+        self.struct = []            <FONT COLOR=#1111CC># compact document structure</FONT>
+
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="endDocument"><FONT COLOR=#CC0000><B> endDocument</B></FONT></A>(self):
+        sys.stdout.write(<FONT COLOR=#115511>'\n'</FONT>.join(self.taglist))
+                                    <FONT COLOR=#1111CC># Write out the taglist first</FONT>
+        sys.stdout.write(chr(0))    <FONT COLOR=#1111CC># section delimiter \0x00</FONT>
+        sys.stdout.write(<FONT COLOR=#115511>''</FONT>.join(self.struct))
+                                    <FONT COLOR=#1111CC># Write out the structure list</FONT>
+        sys.stdout.write(chr(0))    <FONT COLOR=#1111CC># section delimiter \0x00</FONT>
+        <FONT COLOR=#3333CC><B>for</B></FONT> tag <FONT COLOR=#3333CC><B>in</B></FONT> self.taglist:    <FONT COLOR=#1111CC># Write all content lists</FONT>
+            sys.stdout.write(chr(2).join(self.contentdct[tag]))
+            sys.stdout.write(chr(1)) <FONT COLOR=#1111CC># delimiter between content types</FONT>
+
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="startElement"><FONT COLOR=#CC0000><B> startElement</B></FONT></A>(self, name, attrs):
+        <FONT COLOR=#3333CC><B>if</B></FONT> <FONT COLOR=#3333CC><B>not</B></FONT> name <FONT COLOR=#3333CC><B>in</B></FONT> self.taglist:
+            self.taglist.append(name)
+            self.contentdct[name] = []
+            <FONT COLOR=#3333CC><B>if</B></FONT> len(self.taglist) &gt; 253:
+                <FONT COLOR=#3333CC><B>raise</B></FONT> ValueError, <FONT COLOR=#115511>"More than 253 tags encountered"</FONT>
+        self.state.append(name)     <FONT COLOR=#1111CC># push current tag</FONT>
+        self.newstate = 1           <FONT COLOR=#1111CC># chars go to new item</FONT>
+                                    <FONT COLOR=#1111CC># single char to indicate tag</FONT>
+        self.struct.append(chr(self.taglist.index(name)+3))
+
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="endElement"><FONT COLOR=#CC0000><B> endElement</B></FONT></A>(self, name):
+        self.state.pop()            <FONT COLOR=#1111CC># pop current tag off stack</FONT>
+        self.newstate = 1           <FONT COLOR=#1111CC># chars go to new item</FONT>
+        self.struct.append(chr(1))  <FONT COLOR=#1111CC># \0x01 is endtag in struct</FONT>
+
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="characters"><FONT COLOR=#CC0000><B> characters</B></FONT></A>(self, ch):
+        currstate = self.state[-1]
+        <FONT COLOR=#3333CC><B>if</B></FONT> self.newstate:           <FONT COLOR=#1111CC># either add new chars to state item</FONT>
+            self.contentdct[currstate].append(ch)
+            self.newstate = 0
+            self.struct.append(chr(2))
+                                    <FONT COLOR=#1111CC># \0x02 content placeholder in struct</FONT>
+        <FONT COLOR=#3333CC><B>else</B></FONT>:                       <FONT COLOR=#1111CC># or append the chars to current item</FONT>
+            self.contentdct[currstate][-1] += ch
+
+<FONT COLOR=#3333CC><B>if</B></FONT> __name__ == <FONT COLOR=#115511>'__main__'</FONT>:
+    parser = xml.sax.make_parser()
+    handler = StructExtractor()
+    parser.setContentHandler(handler)
+    parser.parse(sys.stdin)</PRE></div><p>
+  Using SAX rather than DOM, makes this tranformation fairly time
+  efficient, even though time was not a large consideration in
+  developing it.  To reverse the transformation:
+</p>
+<div class="code-sample"><h4>struct2xml.py</h4><PRE><FONT COLOR=#3333CC><B>def</B></FONT><A NAME="struct2xml"><FONT COLOR=#CC0000><B> struct2xml</B></FONT></A>(s):
+    tags, struct, content = s.split(chr(0))
+    taglist = tags.split(<FONT COLOR=#115511>'\n'</FONT>)      <FONT COLOR=#1111CC># all the tags</FONT>
+    contentlist = []                <FONT COLOR=#1111CC># list-of-lists of content items</FONT>
+    <FONT COLOR=#3333CC><B>for</B></FONT> block <FONT COLOR=#3333CC><B>in</B></FONT> content.split(chr(1)):
+        contents = block.split(chr(2))
+        contents.reverse()          <FONT COLOR=#1111CC># pop off content items from end</FONT>
+        contentlist.append(contents)
+    state =  []                     <FONT COLOR=#1111CC># stack for tag state</FONT>
+    skeleton = []                   <FONT COLOR=#1111CC># templatized version of XML</FONT>
+    <FONT COLOR=#3333CC><B>for</B></FONT> c <FONT COLOR=#3333CC><B>in</B></FONT> struct:
+        i = ord(c)
+        <FONT COLOR=#3333CC><B>if</B></FONT> i &gt;= 3:                  <FONT COLOR=#1111CC># start of element</FONT>
+            i -= 3                  <FONT COLOR=#1111CC># adjust for struct tag index offset</FONT>
+            tag = taglist[i]        <FONT COLOR=#1111CC># spell out the tag from taglist</FONT>
+            state.append(tag)       <FONT COLOR=#1111CC># push current tag</FONT>
+            skeleton.append(<FONT COLOR=#115511>'&lt;%s&gt;'</FONT> % tag)
+                                    <FONT COLOR=#1111CC># insert the element start tag</FONT>
+        <FONT COLOR=#3333CC><B>elif</B></FONT> i == 1:                <FONT COLOR=#1111CC># end of element</FONT>
+            tag = state.pop()       <FONT COLOR=#1111CC># pop current tag off stack</FONT>
+            skeleton.append(<FONT COLOR=#115511>'&lt;/%s&gt;'</FONT> % tag)
+                                    <FONT COLOR=#1111CC># insert the element end tag</FONT>
+        <FONT COLOR=#3333CC><B>elif</B></FONT> i == 2:                <FONT COLOR=#1111CC># insert element content</FONT>
+            tag = state[-1]
+            item = contentlist[taglist.index(tag)].pop()
+            item = item.replace(<FONT COLOR=#115511>'&amp;'</FONT>,<FONT COLOR=#115511>'&amp;amp;'</FONT>)
+            skeleton.append(item)   <FONT COLOR=#1111CC># add bare tag to indicate content</FONT>
+        <FONT COLOR=#3333CC><B>else</B></FONT>:
+            <FONT COLOR=#3333CC><B>raise</B></FONT> ValueError, <FONT COLOR=#115511>"Unexpected structure tag: ord(%d)"</FONT> % i
+
+    <FONT COLOR=#3333CC><B>return</B></FONT> <FONT COLOR=#115511>''</FONT>.join(skeleton)
+
+<FONT COLOR=#3333CC><B>if</B></FONT> __name__ == <FONT COLOR=#115511>'__main__'</FONT>:
+    <FONT COLOR=#3333CC><B>import</B></FONT> sys
+    <FONT COLOR=#3333CC><B>print</B></FONT> struct2xml(sys.stdin.read()),</PRE></div><h3>Compressing The Transforms</h3>
+ <p>
+  The real meat of the discussed tranformation comes when we try
+  to compress the results.  If all is as desired, <code>foo.struct</code>
+  will be significantly more compressible than <code>foo.xml</code>, even
+  though the two contain identical information (which is provable
+  since they are symmetrically derivable).  In a sense,
+  <code>xml2struct.py</code> is already a sort of compression algorithm (it
+  produces somewhat smaller files), but the real point is not to
+  use it directly but to aid further compression.
+</p>
+<p>
+  Let's look at some sizes, including a few repeated from above.
+  Some results from XMill are thrown in for comparison, these
+  include the name <code><strong>.xmi.</strong></code> (XMill is available in versions
+  using <code>gzip</code> and <code>bzip2</code> algorithms):
+</p>
+<div class="code-sample"><h4>Directory listing of "structured XML"</h4><pre>
+ 228610  hamlet.struct
+  57533  hamlet.struct.bz2
+  57522  hamlet.xml.bz2
+  71060  hamlet.struct.gz
+  78581  hamlet.xml.gz
+  61823  hamlet.xmi.bz2
+  75247  hamlet.xmi.gz
+
+</pre></div><p>
+  The results on this prose document are somewhat mixed.
+  "Restructuring" the XML document assists <code>gzip</code> quite a bit.
+  But it turns out that plain old <code>bzip2</code> on the original XML
+  file does 11 bytes better at generating a compressible
+  structure than do my attempts.  Of course, I am comforted that
+  XMill behaves similarly--but worse--than my tranformation.
+</p>
+<p>
+  We do a quite a bit better with Weblog files.  Here it actually
+  pays off.
+</p>
+<div class="code-sample"><h4>Directory listing 2 of "structured XML"</h4><pre>
+1764816  weblog.struct
+  59955  weblog.struct.bz2
+  66994  weblog.xml.bz2
+  56156  weblog.txt.bz2
+  76183  weblog.struct.gz
+ 115524  weblog.xml.gz
+  59409  weblog.xmi.bz2
+  74439  weblog.xmi.gz
+
+</pre></div><p>
+  As before, restructuring the XML Weblog aids <code>gzip</code>
+  compression extremely significantly.  But since <code>gzip</code> is not
+  our preferred technique anymore, this is only moderately
+  interesting.  What is of genuine interest is that we have also
+  improved the compression rate of the--already
+  wonderful--'bzip2' by 11%.  While maybe not earth-shattering,
+  this is enough to matter when worrying about megabytes.  For
+  what it's worth, XMill does a bit better than <code>xml2struct.py</code>
+  in this case.  What is further interesting is that our
+  compression of this restructured XML is within 7% of the best
+  obtained compression of the original textual Weblog.
+</p>
+<h3>Conclusion</h3>
+ <p>
+  The utility presented here is a preliminary attempt, but even
+  in early form it does surprisingly well--at least in some
+  cases--of squeezing those last bytes out of compressed XML
+  files.  With a little refinement and experimentation, I expect
+  that a few percent more reduction could be obtained.  Part of
+  what makes writing this utility hard is that <code>bzip2</code> does
+  <em>such</em> a good job to start with.  I was honestly surprised by
+  just how effective the Burrows-Wheeler algorithm was when I
+  started empirical testing.
+</p>
+<p>
+  There are some commercial utilities that attempt to perform XML
+  compression in a manner that utilizes knowledge of the specific
+  DTDs of compressed documents.  It is quite likely that these
+  techniques obtain additional compression.  However,
+  <code>xml2struct.py</code> and XMill have the nice advantage of being
+  simple command line tools that one can transparently apply to
+  XML files.  Custom programming of every compression is not
+  always desirable or possible--but where it is, squeezing out
+  even more bytes might be an obtainable goal.
+</p>
+<h3>Resources</h3>
+ <p>
+  Much of the inspiration for this article comes from the work of
+  the XMill XML compressor.  Information and a downloadable
+  version can be found at the below link.  The license requires a
+  click-through, and the download page unfortunately seems to
+  have a buggy script that does not allows downloads from all
+  sites.
+</p>
+<blockquote>
+   <a href="http://www.research.att.com/sw/tools/xmill/">http://www.research.att.com/sw/tools/xmill/</a>
+</blockquote>
+<p>
+  The complete plays of Shakespeare can be found in XML form at
+  the below resource.  The document <code>hamlet.xml</code> used for testing
+  purposes was obtained there:
+</p>
+<blockquote>
+   <a href="http://www.ibiblio.org/xml/examples/shakespeare/">http://www.ibiblio.org/xml/examples/shakespeare/</a>
+</blockquote>
+<p>
+  The 1994 paper <cite>A Block-sorting Lossless Data Compression
+  Algorithm</cite>, by M. Burrows and D.J. Wheeler, introduced the
+  algorithm known now as Burrows-Wheeler.  This technique is
+  implemented in the fairly popular <code>bzip2</code> utility:
+</p>
+<blockquote>
+   <a href="http://gatekeeper.dec.com/pub/DEC/SRC/research-reports/abstracts/src-rr-124.html">http://gatekeeper.dec.com/pub/DEC/SRC/research-reports/abstracts/src-rr-124.html</a>
+</blockquote>
+<p>
+  Many Unix-like systems include <code>bzip2</code> as part of their
+  standard distribution.  For other platforms--or for newer
+  versions--'bzip2' can be found at:
+</p>
+<blockquote>
+   <a href="http://sources.redhat.com/bzip2/">http://sources.redhat.com/bzip2/</a>
+</blockquote>
+<p>
+  I wrote what I believe is a good general introduction to data
+  compression.  It can be found at:
+</p>
+<blockquote>
+   <a href="http://www.gnosis.cx/publish/programming/compression_primer.html">http://www.gnosis.cx/publish/programming/compression_primer.html</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz believes that less is more David may be reached at
+  mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+</p>
+</body></html>

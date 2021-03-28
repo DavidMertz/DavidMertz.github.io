@@ -1,0 +1,525 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>CHARMING PYTHON #B6: -- Parsing in Python with [Spark]. -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="charming_python_b5.html" TITLE="CHARMING PYTHON #b5">
+<link REL="next" HREF="charming_python_b7.html" TITLE="CHARMING PYTHON #b7">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<h1>Charming Python #b6:</h1>
+<h2>Parsing in Python with <em><code>Spark</code></em>.</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Analyzer, Gnosis Software, Inc.<br>
+ December, 2001<br>
+ <br>
+</p>
+<blockquote>
+    <em><code>Spark</code></em> is a powerful and general parser/compiler framework
+    written in Python.  In some respects, <em><code>Spark</code></em> offers more
+    than <em><code>SimpleParse</code></em> or other Python parsers.  Being pure
+    Python, however, it is also slower.  This article discusses
+    the Spark module, with code samples, and explanation of
+    usage, and suggestions for its areas of applicability.
+</blockquote>
+<h3>Preface</h3>
+ <p>
+  In this article, which follows on an earlier installment of
+  <cite>Charming Python</cite> devoted to <em><code>SimpleParse</code></em>, I introduce some
+  basic concepts in parsing, and discuss the <em><code>Spark</code></em> module.
+  Parsing frameworks are a rich topic that warrant quite a bit of
+  study to get a full sense of--these two articles make a good
+  start, for both readers and myself.
+</p>
+<p>
+  In my programming life, I have frequently needed to identify
+  parts and structures that exist inside textual documents:  log
+  files, configuration files, delimited data, and more free-form
+  (but still semi-structured) report formats.  All of these
+  documents have their own "little languages" for what can occur
+  within them.  The way I have programmed these informal parsing
+  tasks has always been somewhat of a hodgepodge of custom
+  state-machines, regular expressions, and context driven string
+  tests.  The pattern in these programs was always, roughly,
+  "read a bit of text, figure out if we can make something of it,
+  maybe read a bit more text afterwards, keep trying."
+</p>
+<p>
+  Parsers of the formal sort distill descriptions the parts and
+  structures in documents into concise, clear, and <strong>declarative</strong>
+  rules for how to identify what makes up a document.  Most
+  formal parsers use variants on Extended Backus-Naur Form (EBNF)
+  to describe the "grammars" of the languages they describe.
+  Basically, an EBNF grammar gives names to the <em>parts</em> one might
+  find in a document; additionally, larger parts are frequently
+  composed of smaller parts.  The frequency and order in which
+  small parts may occur in larger parts is specified by
+  operators.  For example, this is the EBNF grammar
+  <code>typographify.def</code> that we saw in the <em><code>SimpleParse</code></em>
+  installment.  (other tools spell things slightly differently):
+</p>
+<div class="code-sample"><h4>typographify.def</h4><pre>
+para        := (plain / markup)+
+plain       := (word / whitespace / punctuation)+
+whitespace  := [ \t\r\n]+
+alphanums   := [a-zA-Z0-9]+
+word        := alphanums, (wordpunct, alphanums)*, contraction?
+wordpunct   := [-_]
+contraction := "'", ('am'/'clock'/'d'/'ll'/'m'/'re'/'s'/'t'/'ve')
+markup      := emph / strong / module / code / title
+emph        := '-', plain, '-'
+strong      := '*', plain, '*'
+module      := '[', plain, ']'
+code        := "'", plain, "'"
+title       := '_', plain, '_'
+punctuation := (safepunct / mdash)
+mdash       := '--'
+safepunct   := [!@#$%^&amp;()+=|\{}:;&lt;&gt;,.?/"]
+
+
+</pre></div><h3>Introduction To <em><code>Spark</code></em></h3>
+ <p>
+  The <em><code>Spark</code></em> parser has a bit in common with EBNF grammars, but
+  breaks the parsing/processing process into smaller components
+  than a traditional EBNF grammar allows.  The advantage <em><code>Spark</code></em>
+  has is fine-tuned control of the operations at each step along
+  the way, along with the capability of inserting custom code
+  into the process.  Readers of the <em><code>SimpleParse</code></em> installment
+  will recall that our process was a rough scale one:  (1)
+  Generate and entire taglist from the grammar (and from a source
+  document); (2) Use the taglist as data for custom-programmed
+  actions.
+</p>
+<p>
+  The disadvantages <em><code>Spark</code></em> has over a standard EBNF-based tool
+  is that it is more verbose, and that it lacks direct occurrence
+  quantifiers (i.e., existential "+", possible "*", limited "?").
+  Quantifiers can be used within the regular expressions of the
+  <em><code>Spark</code></em> tokenizer, and can be simulated by recursion in parse
+  expression grammars.  But it would be nice if <em><code>Spark</code></em> allowed
+  quantification in its grammar expressions.  Another
+  disadvantage worth mentioning is that <em><code>Spark</code></em>'s speed suffers
+  compared to the underlying C-based <em><code>mxTextTools</code></em> engine
+  <em><code>SimpleParse</code></em> uses.
+</p>
+<p>
+  In <cite>Compiling Little Languages in Python</cite>, <em><code>Spark</code></em> creator John
+  Aycock breaks a compiler into four stages.  The problem this
+  article presents will only use the first two-and-a-half stages,
+  both out of length limits and because we will take on the same
+  comparatively simple "text markup" problem that previous
+  installments looked at.  <em><code>Spark</code></em> can potentially be used for
+  full-cycle code compilers/interpreters, not only for the "parse
+  and process" job I look at.  Let us look at Aycock's four
+  stages (quoted in abridged form):
+</p>
+<blockquote>
+    1.  Scanning, or lexical analysis.  Breaks the input stream
+    into a list of tokens.
+</blockquote>
+<blockquote>
+    2.  Parsing, or syntax analysis.  Ensures that a list of
+    tokens has valid syntax according to a grammar.
+</blockquote>
+<blockquote>
+    3.  Semantic analysis.  Traverses the abstract syntax tree
+    (AST) on or more times, collecting information and checking
+    that the input program <em><code>makes sense</code></em>.
+</blockquote>
+<blockquote>
+    4.  Code generation.  Again traversing the AST, this phase
+    may directly interpret the program, our output code in C or
+    assembly.
+</blockquote>
+<p>
+  For each stage, <em><code>Spark</code></em> provides one or more abstract classes
+  for performing the step, and a rather unusual protocol for
+  specializing these classes.  Rather than merely redefine or add
+  specific methods as in most inheritance patterns, <em><code>Spark</code></em>
+  concrete classes have two features (the general pattern is
+  common to the stages and various parents).  The first unusual
+  protocol is that much of the work done by a concrete class is
+  specified in the docstrings of methods.  The second special
+  protocol is that sets of methods describing patterns are given
+  distinct names indicating their role.  The parent classes in
+  turn contain introspective methods that look for features of
+  the instance to operate.  This is more clear once we look at
+  examples.
+</p>
+<h3>Recognizing Text Markup</h3>
+ <p>
+  The problem this installment looks at is one we have solved in
+  several other ways already.  I use a format I call "smart
+  ASCII" for various purposes.  This format looks a lot like the
+  conventions that have developed for email and newsgroup
+  communications.  For various purposes, I automatically convert
+  this format to other formats like HTML, XML, LaTeX. That is
+  what we will do again.  To see informally what I mean, here is
+  a short sample that will be used in this article:
+</p>
+<div class="code-sample"><h4>Smart ASCII sample text ('p.txt')</h4><pre>
+Text with *bold*, and -itals phrase-, and [module]--this
+should be a good 'practice run'.
+
+</pre></div><p>
+  There is a little more to the format than in the sample, but
+  not too much (but there <strong>are</strong> some subtleties to how markup and
+  punctuation interact).
+</p>
+<h3>Generating Tokens</h3>
+ <p>
+  The first thing our <em><code>Spark</code></em> "smart ASCII" parser needs to do is
+  to break an input text into its relevant parts.  At the level
+  of tokenizing, we are not yet interested in how the tokens are
+  structured, just what they are.  Later on will combine token
+  sequences into parse trees.
+</p>
+<p>
+  The grammar shown above in <code>typographify.def</code> provides guidance
+  for the design of a <em><code>Spark</code></em> lexer/scanner.  The trick is that
+  we can only use those names that are "primitive" at the scanner
+  stage.  That is, those (compound) patterns that include other
+  named patterns must be postponed for the parsing stage.  Other
+  than that, we can really just copy our old grammar:
+</p>
+<div class="code-sample"><h4>Abridged 'wordscanner.py' [Spark] script</h4><PRE><FONT COLOR=#3333CC><B>class</B></FONT><A NAME="WordScanner"><FONT COLOR=#CC0000><B> WordScanner</B></FONT></A>(GenericScanner):
+    <FONT COLOR=#115511>"Tokenize words, punctuation and markup"</FONT>
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="tokenize"><FONT COLOR=#CC0000><B> tokenize</B></FONT></A>(self, input):
+        self.rv = []
+        GenericScanner.tokenize(self, input)
+        <FONT COLOR=#3333CC><B>return</B></FONT> self.rv
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="t_whitespace"><FONT COLOR=#CC0000><B> t_whitespace</B></FONT></A>(self, s):
+        r<FONT COLOR=#115511>" [ \t\r\n]+ "</FONT>
+        self.rv.append(Token(<FONT COLOR=#115511>'whitespace'</FONT>, <FONT COLOR=#115511>' '</FONT>))
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="t_alphanums"><FONT COLOR=#CC0000><B> t_alphanums</B></FONT></A>(self, s):
+        r<FONT COLOR=#115511>" [a-zA-Z0-9]+ "</FONT>
+        <FONT COLOR=#3333CC><B>print</B></FONT> <FONT COLOR=#115511>"{word}"</FONT>,
+        self.rv.append(Token(<FONT COLOR=#115511>'alphanums'</FONT>, s))
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="t_safepunct"><FONT COLOR=#CC0000><B> t_safepunct</B></FONT></A>(self, s): ...
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="t_bracket"><FONT COLOR=#CC0000><B> t_bracket</B></FONT></A>(self, s): ...
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="t_asterisk"><FONT COLOR=#CC0000><B> t_asterisk</B></FONT></A>(self, s): ...
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="t_underscore"><FONT COLOR=#CC0000><B> t_underscore</B></FONT></A>(self, s): ...
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="t_apostrophe"><FONT COLOR=#CC0000><B> t_apostrophe</B></FONT></A>(self, s): ...
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="t_dash"><FONT COLOR=#CC0000><B> t_dash</B></FONT></A>(self, s): ...
+
+<FONT COLOR=#3333CC><B>class</B></FONT><A NAME="WordPlusScanner"><FONT COLOR=#CC0000><B> WordPlusScanner</B></FONT></A>(WordScanner):
+    <FONT COLOR=#115511>"Enhance word/markup tokenization"</FONT>
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="t_contraction"><FONT COLOR=#CC0000><B> t_contraction</B></FONT></A>(self, s):
+        r<FONT COLOR=#115511>" (?&lt;=[a-zA-Z])'(am|clock|d|ll|m|re|s|t|ve) "</FONT>
+        self.rv.append(Token(<FONT COLOR=#115511>'contraction'</FONT>, s))
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="t_mdash"><FONT COLOR=#CC0000><B> t_mdash</B></FONT></A>(self, s):
+        r<FONT COLOR=#115511>' -- '</FONT>
+        self.rv.append(Token(<FONT COLOR=#115511>'mdash'</FONT>, s))
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="t_wordpunct"><FONT COLOR=#CC0000><B> t_wordpunct</B></FONT></A>(self, s): ...</PRE></div><p>
+  There is an interesting trick here.  <code>WordScanner</code> is a
+  perfectly good scanner class by itself.  But a <em><code>Spark</code></em> scanner
+  class can itself be further specialized by inheritance--child
+  regular expression patterns are matched before parents, and
+  child methods/regex's may overrid parents if desired.  So the
+  specializations in <code>WordPlusScanner</code> are matched before those
+  in <code>WordScanner</code> are attempted (possibly thereby grabbing some
+  bytes first).  Any regular expressions are allowed in pattern
+  docstrings--the method <code>.t_contraction()</code>, for example,
+  contains a "lookbehind assertion" in the pattern.
+</p>
+<p>
+  The scanner inheritance logic is somewhat broken by Python 2.2,
+  unfortunately.  In Python 2.2, all of the defined patterns are
+  matched in alphabetical order (by their name), regardless of
+  where they are defined in the inheritance chain.  The fix for
+  this problem is a one line change in in the <em><code>Spark</code></em> function
+  <code>_namelist()</code>:
+</p>
+<div class="code-sample"><h4>Corrected reflective function for 'spark.py'</h4><PRE><FONT COLOR=#3333CC><B>def</B></FONT><A NAME="_namelist"><FONT COLOR=#CC0000><B> _namelist</B></FONT></A>(instance):
+    namelist, namedict, classlist = [], {}, [instance.__class__]
+    <FONT COLOR=#3333CC><B>for</B></FONT> c <FONT COLOR=#3333CC><B>in</B></FONT> classlist:
+        <FONT COLOR=#3333CC><B>for</B></FONT> b <FONT COLOR=#3333CC><B>in</B></FONT> c.__bases__:
+            classlist.append(b)
+        <FONT COLOR=#1111CC># for name in dir(c):   # dir() behavior changed in 2.2</FONT>
+        <FONT COLOR=#3333CC><B>for</B></FONT> name <FONT COLOR=#3333CC><B>in</B></FONT> c.__dict__.keys():  <FONT COLOR=#1111CC># &lt;-- USE THIS</FONT>
+            <FONT COLOR=#3333CC><B>if</B></FONT> <FONT COLOR=#3333CC><B>not</B></FONT> namedict.has_key(name):
+                namelist.append(name)
+                namedict[name] = 1
+    <FONT COLOR=#3333CC><B>return</B></FONT> namelist</PRE></div><p>
+  I have informed <em><code>Spark</code></em> creator John Aycock of the problem, and
+  future versions will fix this.  In the meanwhile, make this
+  change in your own copy.
+</p>
+<p>
+  Let us take a look at what the <code>WordPlusScanner</code> does when
+  applied to the above smart ASCII sample.  The created list is
+  actually a list of <code>Token</code> instances, but they contain a
+  <code>.__repr__</code> method that makes them display nicely:
+</p>
+<div class="code-sample"><h4>Tokenizing smart ASCII with 'WordPlusScanner'</h4><pre>
+&gt;&gt;&gt; from wordscanner import WordPlusScanner
+&gt;&gt;&gt; tokens = WordPlusScanner().tokenize(open('p.txt').read())
+&gt;&gt;&gt; filter(lambda s: s&lt;&gt;'whitespace', tokens)
+[Text, with, *, bold, *, ,, and, -, itals, phrase, -, ,, and, [,
+module, ], --, this, should, be, a, good, ', practice, run, ', .]
+
+</pre></div><p>
+  It is worth noting that although methods <code>.t_alphanums()</code> are
+  recognized by <em><code>Spark</code></em> introspection based on their "t_" prefix,
+  they are also regular methods.  Any extra code put into a
+  method will execute whenever the corresponding token is
+  encountered--the method <code>.t_alphanums()</code> contains a trivial
+  example of this with a <code>print</code> statement.
+</p>
+<h3>Generating Abstract Syntax Trees</h3>
+ <p>
+  Finding tokens is a bit interesting, but the real work comes
+  with applying grammars to the token lists.  The parsing stage
+  creates arbitrary tree structures on the bases of token lists.
+  It is just a matter of specifying the expression grammar.
+</p>
+<p>
+  <em><code>Spark</code></em> has several ways to create AST's.  The "manual" way is
+  to specialize the <code>GenericParser</code> class.  In this case, the
+  concrete child parser should provide a number of methods with
+  names in the form <code>p_foobar(self, args)</code>.  The docstring of
+  each such method contains one or several assigments of patterns
+  to names.  Each method can contain arbitrary code to execute
+  whenever its grammar expression(s) are matched.
+</p>
+<p>
+  However, <em><code>Spark</code></em> also offers an "automatic" way of generating
+  AST's.  This style inherits from the <code>GenericASTBuilder</code> class.
+  All the grammar expression are listed in a single top-level
+  method, and the <code>.terminal()</code> and <code>.nonterminal()</code> methods may
+  be specialized to manipulate subtrees during generation (or to
+  perform any other arbitrary actions, if desired).  The result
+  is still an AST, but the parent class does most of the work for
+  you.  My grammar class looks like this:
+</p>
+<div class="code-sample"><h4>Abridged 'markupbuilder.py' [Spark] script</h4><PRE><FONT COLOR=#3333CC><B>class</B></FONT><A NAME="MarkupBuilder"><FONT COLOR=#CC0000><B> MarkupBuilder</B></FONT></A>(GenericASTBuilder):
+    <FONT COLOR=#115511>"Write out HTML markup based on matched markup"</FONT>
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="p_para"><FONT COLOR=#CC0000><B> p_para</B></FONT></A>(self, args):
+        <FONT COLOR=#115511>'''
+        para   ::= plain
+        para   ::= markup
+        para   ::= para plain
+        para   ::= para emph
+        para   ::= para strong
+        para   ::= para module
+        para   ::= para code
+        para   ::= para title
+        plain  ::= whitespace
+        plain  ::= alphanums
+        plain  ::= contraction
+        plain  ::= safepunct
+        plain  ::= mdash
+        plain  ::= wordpunct
+        plain  ::= plain plain
+        emph   ::= dash plain dash
+        strong ::= asterisk plain asterisk
+        module ::= bracket plain bracket
+        code   ::= apostrophe plain apostrophe
+        title  ::= underscore plain underscore
+        '''</FONT>
+    <FONT COLOR=#3333CC><B>def</B></FONT><A NAME="nonterminal"><FONT COLOR=#CC0000><B> nonterminal</B></FONT></A>(self, type_, args):
+        <FONT COLOR=#1111CC>#  Flatten AST a bit by not making nodes if only one child.</FONT>
+        <FONT COLOR=#3333CC><B>if</B></FONT> len(args)==1:  <FONT COLOR=#3333CC><B>return</B></FONT> args[0]
+        <FONT COLOR=#3333CC><B>if</B></FONT> type_==<FONT COLOR=#115511>'para'</FONT>: <FONT COLOR=#3333CC><B>return</B></FONT> nonterminal(self, type_, args)
+        <FONT COLOR=#3333CC><B>if</B></FONT> type_==<FONT COLOR=#115511>'plain'</FONT>:
+            args[0].attr = foldtree(args[0])+foldtree(args[1])
+            args[0].type = type_
+            <FONT COLOR=#3333CC><B>return</B></FONT> nonterminal(self, type_, args[:1])
+        phrase_node = AST(type_)
+        phrase_node.attr = foldtree(args[1])
+        <FONT COLOR=#3333CC><B>return</B></FONT> phrase_node</PRE></div><p>
+  My <code>.p_para()</code> should contain only a set of grammar rules in
+  its docstring (no code).  I decided to specialize the
+  .nonterminal()' method to flatten my AST a bit.  "plain" nodes
+  that consist of a family of "plain" subtrees compact the
+  subtrees into one longer string.  Likewise, markup subtrees
+  (i.e.  "emph", "strong", "module", "code", "title") are
+  collapsed to a single node of the right type, and containing a
+  compound string.
+</p>
+<p>
+  One thing that is less than ideal in the <em><code>Spark</code></em> grammar has
+  been mentioned:  no quantifiers.  By having one rule be:
+</p>
+<div class="code-sample"><h4></h4><pre>plain ::= plain plain
+
+</pre></div><p>
+  We can aggregate subtrees of the "plain" type pairwise.  But I
+  would prefer if <em><code>Spark</code></em> allowed a more EBNF-style grammar
+  expression like:
+</p>
+<div class="code-sample"><h4></h4><pre>plain ::= plain+
+
+</pre></div><p>
+  We might then more simply create n-ary subtrees of "as many
+  plain's as possible."  In this case, our tree would start out
+  much flatter, even without the massaging in <code>.nonterminal()</code>.
+</p>
+<h3>Working With Trees</h3>
+ <p>
+  The <em><code>Spark</code></em> module provides several classes for working with
+  AST's.  For my purposes, these are heavier weight than I need.
+  If you want them, <code>GenericASTTraversal</code> and <code>GenericASTMatcher</code>
+  provide ways of walking trees, using similar inheritance
+  protocols to those presented for the scanner and parser.
+</p>
+<p>
+  But walking a tree is not all that difficult just using
+  recursive functions.  I have created a few such examples in the
+  article archive file <code>prettyprint.py</code>.  One of these is
+  <code>showtree()</code>.  This function displays an AST with a couple
+  conventions:  Each line shows the descent depth; Nodes with
+  only children (no content) have leading dashes; Node types are
+  double angle-bracketed.  Let us take a look at the AST
+  generated in the above examples:
+</p>
+<div class="code-sample"><h4>Tokenizing smart ASCII with 'WordPlusScanner'</h4><pre>
+&gt;&gt;&gt; from wordscanner import tokensFromFname
+&gt;&gt;&gt; from markupbuilder import treeFromTokens
+&gt;&gt;&gt; from prettyprint import showtree
+&gt;&gt;&gt; showtree(treeFromTokens(tokensFromFname('p.txt')))
+ 0  &lt;&lt;para&gt;&gt;
+ 1 - &lt;&lt;para&gt;&gt;
+ 2 -- &lt;&lt;para&gt;&gt;
+ 3 --- &lt;&lt;para&gt;&gt;
+ 4 ---- &lt;&lt;para&gt;&gt;
+ 5 ----- &lt;&lt;para&gt;&gt;
+ 6 ------ &lt;&lt;para&gt;&gt;
+ 7 ------- &lt;&lt;para&gt;&gt;
+ 8 -------- &lt;&lt;plain&gt;&gt;
+ 9           &lt;&lt;plain&gt;&gt;  Text with
+ 8          &lt;&lt;strong&gt;&gt; bold
+ 7 ------- &lt;&lt;plain&gt;&gt;
+ 8          &lt;&lt;plain&gt;&gt; , and
+ 6        &lt;&lt;emph&gt;&gt; itals phrase
+ 5 ----- &lt;&lt;plain&gt;&gt;
+ 6        &lt;&lt;plain&gt;&gt; , and
+ 4      &lt;&lt;module&gt;&gt; module
+ 3 --- &lt;&lt;plain&gt;&gt;
+ 4      &lt;&lt;plain&gt;&gt; --this should be a good
+ 2    &lt;&lt;code&gt;&gt; practice run
+ 1 - &lt;&lt;plain&gt;&gt;
+ 2    &lt;&lt;plain&gt;&gt; .
+
+</pre></div><p>
+  Understanding the tree structure is illustrative, but what
+  about the actual modified markup we are aiming for?
+  Fortunately, it takes just a few lines to traverse the tree and
+  produce it:
+</p>
+<div class="code-sample"><h4>Outputting markup from AST (prettyprint.py)</h4><PRE><FONT COLOR=#3333CC><B>def</B></FONT><A NAME="emitHTML"><FONT COLOR=#CC0000><B> emitHTML</B></FONT></A>(node):
+    <FONT COLOR=#3333CC><B>from</B></FONT> typo_html <FONT COLOR=#3333CC><B>import</B></FONT> codes
+    <FONT COLOR=#3333CC><B>if</B></FONT> hasattr(node, <FONT COLOR=#115511>'attr'</FONT>):
+        beg, end = codes[node.type]
+        sys.stdout.write(beg+node.attr+end)
+    <FONT COLOR=#3333CC><B>else</B></FONT>: map(emitHTML, node._kids)</PRE></div><p>
+  The file <code>typo_html.py</code> is the same file from the <em><code>SimpleParse</code></em>
+  installment--it just contains a dictionary mapping names to
+  begintag/endtag pairs.  Obviously, we could use the same
+  approach for markup other than HTML.  For the curious, here is
+  what it produces for our example:
+</p>
+<div class="code-sample"><h4>The HTML output of the whole process</h4><pre>
+Text with &lt;strong&gt;bold&lt;/strong&gt;, and &lt;em&gt;itals phrase&lt;/em&gt;,
+and &lt;em&gt;&lt;code&gt;module&lt;/code&gt;&lt;/em&gt;--this should be a good
+&lt;code&gt;practice run&lt;/code&gt;.
+
+
+</pre></div><h3>Conclusion</h3>
+ <p>
+  Quite a number of Python programmers have recommended <em><code>Spark</code></em>
+  to me.  While the unusual conventions <em><code>Spark</code></em> uses take a
+  little bit of getting used to--and while the documentation
+  could probably be a little more explicit on certain points--the
+  power of <em><code>Spark</code></em> is really quite amazing.  The style of
+  programming <em><code>Spark</code></em> implements allows an end-programmer to
+  insert code blocks everywhere within a scanning/parsing
+  process--something that is usually a "black box" to end users.
+</p>
+<p>
+  For all its strengths, the real drawback I found with <em><code>Spark</code></em>
+  is its speed.  <em><code>Spark</code></em> is the first Python program I've used
+  where I really found the speed penalty of an interpreted
+  language to be an major issue.  But <em><code>Spark</code></em> is <strong>slow</strong>; not
+  "wish it were a second faster" slow, but "take a long lunch and
+  hope it finishes" slow.  In my experiments, the tokenizer is
+  plenty fast; but the parsing bogs down, even with quite small
+  test cases.  It is possible that in my inexperience I have
+  designed inefficient grammars; but if so, most users would do
+  likewise.
+</p>
+<h3>Resources</h3>
+ <p>
+  This article builds on the earlier discussion in my <cite>Charming
+  Python</cite> installment "Parsing in Python with <em><code>SimpleParse</code></em>".
+  Consult that article at:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/publish/programming/charming_python_b4.html">http://gnosis.cx/publish/programming/charming_python_b4.html</a>
+</blockquote>
+<p>
+  John Aycock's <em><code>Spark</code></em> has a homepage at:
+</p>
+<blockquote>
+   <a href="http://pages.cpsc.ucalgary.ca/~aycock/spark/">http://pages.cpsc.ucalgary.ca/~aycock/spark/</a>
+</blockquote>
+<p>
+  On the <em><code>Spark</code></em> homepage, the most important document to read is
+  the original presentation of the <em><code>Spark</code></em> framework, <cite>Compiling
+  Little Languages in Python</cite>, by John Aycock.  You can download
+  it from:
+</p>
+<blockquote>
+   <a href="http://www.foretec.com/python/workshops/1998-11/proceedings/papers/aycock-little/aycock-little.ps">http://www.foretec.com/python/workshops/1998-11/proceedings/papers/aycock-little/aycock-little.ps</a>
+</blockquote>
+<p>
+  Mike Fletcher's <em><code>SimpleParse</code></em> can be found, along with a brief
+  introduction to its usage, at:
+</p>
+<blockquote>
+   <a href="http://members.rogers.com/mcfletch/programming/simpleparse/simpleparse.html">http://members.rogers.com/mcfletch/programming/simpleparse/simpleparse.html</a>
+</blockquote>
+<p>
+  <em><code>mxTextTools</code></em> is now part of the larger eGenix package of
+  extensions.  Information can be found at:
+</p>
+<blockquote>
+   <a href="http://www.lemburg.com/files/python/mxTextTools.html">http://www.lemburg.com/files/python/mxTextTools.html</a>
+</blockquote>
+<p>
+  Information on the ISO 14977 standard for EBNF syntax can be
+  found at:
+</p>
+<blockquote>
+   <a href="http://www.cl.cam.ac.uk/~mgk25/iso-ebnf.html">http://www.cl.cam.ac.uk/~mgk25/iso-ebnf.html</a>
+</blockquote>
+<p>
+  The files mentioned in this article can be found in an archive
+  at:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/download/charming_python_b6.zip">http://gnosis.cx/download/charming_python_b6.zip</a>
+</blockquote>
+<h3></h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz would like to write, with Nietzsche, that these are
+  the musings of an old philologist, but that untruth would
+  unmask itself.  But perhaps his (right here gratuitously
+  plugged) forthcoming book, <cite>Text Processing in Python</cite>, will
+  someday be mistaken for a cybernetic variant of philology.
+  David may be reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+</p>
+</body></html>

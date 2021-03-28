@@ -1,0 +1,125 @@
+------------------------------------------------------------------------
+One thing that occurs to me would be to look at "metaprogramming in
+Python".  There are a number of rather fancy things that you can do with
+Python at the "wizard" level (that an average Python programmer need not
+know exist).  A lot of these appeared in recent Python versions, and
+were not available earlier.
+
+Certainly, metaclasses fall into this "magic" area.  So do __slots__ in
+new-style classes (a way of storing preallocated attributes more
+efficiently).  And properties (setters and getters, basically).
+Something like function factories and closures hint of magic.  At the
+lowest level, all the magic methods are... well, a little bit magic.
+That is, you can define things like .__getattr__() and .__setslice__()
+to control what happens when you retrieve an attribute or assign a slice
+(to a list-like thing).  Maybe a bit of stuff with functional
+programming and higher-order functions (which I've written about some,
+and generates some of my nicest fanmail).  Maybe something else goes in
+here too.
+------------------------------------------------------------------------
+There seems to be a lot of discussion of the "metaprogramming/python
+magic" on the newsgroup.  A lot of confusion about the details of these
+things (I'd have to run a *whole lot* of test cases myself to make sure I
+got the details right, if I wrote it).  The standard documentation is
+really solid on the basics, but in some of the exotic areas it becomes
+very sketchy... and one often hears that the best documentation is some
+thread, last year, on the developers discussion group, or the like.
+
+I think a book like this could potentially be one that -every- Python
+programmer would want on their shelf, "just in case"...  "Python
+programmer" is opposed here to a programmer who just happens to use
+Python on some project.  But it still might be a decent audience.
+------------------------------------------------------------------------
+Yes to the "professionals" thing.  But I'm not sure where that cuts,
+since I think of programmers as professionals.  I would say confidently
+that a much larger proportion of Python programmers do "metaprogramming"
+than do programmers of Perl, or Java, or C, or C++ (but -every- Lisp
+programmer does it :-)).  Partially that is because Python makes it so
+easy (comparatively); but part is also because of the relative
+sophistication of Python programmers.
+
+Let me say a couple words on what metaprogramming is.  Most broadly,
+metaprogramming is just programming that controls the behavior of
+programs.  That is, rather than just make an application -do- something,
+you can write some code that affects the meaning and behavior of other
+code.  Let me give a few examples.  They are fairly language-neutral,
+but example will by per Python:
+
+* Overloading operators:
+
+    A "regular" program might use variables in ways like:
+
+    >>> x = y + z
+    >>> item = lst[i]
+
+    A "meta" program (which is most likely just part of the same program)
+    might change the meaning that the addition or indexing operators
+    have.  So adding 'y' to 'z' might not perform a simple addition, but
+    instead log the operation to a database, then send a message over
+    email if certain properties hold, then perform an addition modulo a
+    base, and finally assign the result to 'x'.  Same story with
+    indexing the 'i'th item of 'lst'.
+
+    You could, of course, take all these actions in a "regular" program.
+    But sometimes it is preferable to leave the same simple '+' operator
+    in some function/module, and change the meaning "from the outside"
+    (maybe reusing the simple code with different meanings, or switching
+    meaning because of other context).
+
+* Function and class factories:
+
+    A "regular" program defines some functions and classes to implement
+    various behaviors.  A "meta" program can produce these functions in
+    a parameterized way:
+
+    >>> DynamicClass = ClassFactory(some, params, passed, to, factory)
+    >>> instance = DynamicClass(regular, initialization, arguments)
+    >>> instance.do_this(method, arguments)
+    >>> instance.do_that(more, method, arguments)
+
+* Metaclasses:
+
+    What happens when a class is defined usually follows a simple and
+    stereotypic pattern.  This is a different matter than creating an
+    instance, which can be initialized in all kinds of complex ways.
+    Metaclasses affect the creation of the classes themselves (and only
+    derivatively the instances).
+
+    Here's a real example.  I wrote a Python package that will
+    serialize/deserialize any Python object as XML.  It's not hard to
+    use this package:
+
+    >>> class MyObject:
+        [...]
+    >>> my_object = MyObject(init, arguments)
+    >>> import gnosis.xml.pickle
+    >>> xml_str = gnosis.xml.pickle.dumps(my_object)
+
+    But by using metaclasses, you can make the objects know how to
+    serialize themselves:
+
+    >>> import gnosis.magic
+    >>> __metaclass__ = gnosis.magic.MetaPickler
+    >>> class MyObject:
+        [...]
+    >>> my_object = MyObject(init, arguments)
+    >>> xml_str = my_object.dumps()
+
+    Defining the metaclass causes EVERY class defined thereafter to add
+    a '.dumps()' method to itself (with the right behavior).  This works
+    without having to change the (existing) definitions of 'MyObject'
+    classes (which are perhaps part of a library you don't want to
+    change).
+
+* Code generators:
+
+    Programs can actually write source code just like people can.  Based
+    on whatever facts need to be evaluated, different source files can
+    be generated, then compiled, then run; the last steps might be
+    either within the execution of the first program, or at a later time
+    and context.
+
+    Python has enough flexibility at runtime that there is less need to
+    do actual code generation than there is in, say, C.
+
+There are more possible examples, but I think those are representative.

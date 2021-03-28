@@ -1,0 +1,727 @@
+David Mertz covers the 2006 O'Reilly Open Source Convention:
+A Foray into Journalism
+
+David Mertz
+Roving reporter, developerWorks
+July, 2006
+
+    OSCON presenter and author of developerWorks columns _Charming
+    Python_ and _XML matters_, David Mertz is perfectly positioned--both
+    on the podium and off--to bring OSCON to us. That's how IBM
+    described me, these are my reports, originally published at:
+    http://www-03.ibm.com/developerworks/blogs/page/davidmertz
+
+SUNDAY JULY 30, 2006: INTERVIEW WITH JOSH BERKUS
+
+  Josh Berkus is another interesting fellow I had a chance to talk with
+  at some length. Sun really made an effort, it seems, to get folks in
+  the public eye. A lot of the vendors sent me solicitations to check
+  out their booths, usually with blurbs about their products in the
+  press releases. But Sun made the extra effort to schedule interviews
+  between press members and Sun employees. I see that not only because I
+  had such scheduled interviews with Josh Berkus and Tim Bray, but also
+  because some other folks out there in the press (or blogosphere, if
+  that is a real word) have also posted comments from such interviews.
+  For what it is worth, Simon Phipps is another prominent Sun employee
+  who was slated in the interview track—I did not talk to him
+  personally, but I did attend his talk in conjunction with Tom Marble
+  (I might come back to that in another entry).
+
+  Let me get the last part of my talk with Josh out of the way first.
+  The reason Sun was putting him forward, was almost certainly to answer
+  the question I asked him towards the end of our talk (or something
+  closely along the same lines), namely: Why is Sun a good fit for
+  maintenance and development of PostgreSQL (for those not in-the-know,
+  Josh has been one of the main developers of PostgreSQL for four
+  years). The sort of vague answer is about the stability and
+  scalability of Solaris and Sun hardware. True enough, but I think
+  slightly at the level of nicety. Of more substance to my mind was
+  Josh's specific statement on the benefits of the ZFS filesystem. In
+  particular, ZFS allows dynamic use of multiple physical volumes, with
+  a volume manager controlling virtual storage pools. Just what you want
+  for growing databases.
+
+  What Josh and I talked about in more detail is probably idiosyncratic
+  to my interview with him. Although I had not spoken with him before
+  directly, Josh has also worked with the Open Voting Consortium that I
+  am CTO of, and roughly in affiliation with I gave my paper. It was
+  interesting to get Josh's perspective on these issues, and he is
+  someone quite knowledgeable in this. Clearly, in whatever area he
+  enters, Josh does his homework. Last year, Josh testified before CA
+  legislature on FOSS in relation to voting systems, during a hearing
+  considering legislation to mandate such use. Well, really the hearing
+  followed up on the non-binding CA HR 242 that stated a preference for
+  such systems, instructed the California Secretary of State to conduct
+  hearings on the matter. The SoS wound up stonewalling on hearings, but
+  the California Senate picked up on the gap. Initially, OVC had asked
+  Brian Belendorf to testify; but when Brian was unavailable, he
+  recommended Josh. Lots of background that I just happen to know, but
+  readers need not necessarily follow.
+
+  In our interview, Josh expressed some alarm at the conflict of
+  interest that paid lobbyist who get money from proprietary vendors,
+  but work in elections, have. Some of them testified in the same
+  committee. Josh was proud of a coup he accomplished in having on hand,
+  during his testimony, a large list of FOSS vendors (in CA), in
+  refutation of claims by the proprietary software lobby that no such
+  companies existed. In a nicely strident statement, Josh observed that
+  the main "trade secret" of current vendors of election systems is just
+  how bad their source code is. But in a more abstract tone he
+  emphasises the "many eyes" needed to make sure bugs/backdoors are
+  caught; he believes, as I do, that it is not sufficient simply to
+  reveal code in limited contexts. Concretely, as soon as "code
+  auditors" who have signed NDAs start finding bugs in proprietary
+  system that they have been assigned to examine, they (the auditors)
+  find themselves in court, with lawsuits from vendors. Probably these
+  are non-meritorious SLAPP actions; but how many programmers can afford
+  lawyers to aid the public good?
+
+  One interesting claim Josh made was that in Canada and the UK,
+  opponents of computerized voters feared that FOSS voting systems would
+  legitimize such systems, despite their technical lack of readiness.
+  This is certainly an interesting inversion of "FOSS-poison" attitude
+  in the USA. That is, here in the USA, a popular equation is of FOSS
+  systems with vulnerabilities (and equation promoted by FUD and
+  lobbying in my opinion, and I am sure in Josh's). Josh made an
+  interesting point that one computer security expert who made the claim
+  about the non-readiness of FOSS systems was overly pessimistic about
+  computer security, and overly optimistic about non-computer security.
+  I think there is a nice point there: while computer systems have
+  vulnerabilities, that does not mean that non-computerized systems are
+  necessarily safe. At least as a general rule: I think the safeguards
+  of the Australian ballot and padlocks on ballot boxes is relatively
+  well-understood, after 150 years.
+
+  I also attended one of the three sessions Josh gave (a busy guy), the
+  one on FOSS press relations. He did a nice job with this as well.
+  Probably a failing of many FOSS projects is not knowing exactly how to
+  deal with the broader media, and how to formulate and time good press
+  releases. Certainly these concerns are big for big and widely-used
+  projects like PostgreSQL. Many perfectly usable and useful smaller
+  projects (like, say, my own little Gnosis Utilities are actually
+  probably fine with a sort of "let the release go out quietly"
+  approach... some tools are meant for a narrow and technical audience
+  who already know where to look. PostgreSQL is one of those tools used
+  by millions, including by many big companies and organizations. For
+  something like that, FOSS should show the same savvy (or better) as
+  that big proprietary software vendors with PR departments have. In a
+  lot of ways, FOSS projects can and do achieve better media relations
+  than the unfree guys.
+
+SUNDAY JULY 30, 2006: A QUICK NOTE ON TIM BRAY AND ATOM
+
+  One of the topics I interviewed Tim Bray about was the use of a
+  globally unique identifier in Atom feeds. Basically, each Atom entry
+  is required to have a name distinct from the name of any other entry
+  in the world. However, the Atom standard (RFC4287) does not require a
+  particular rule for assigning these identifiers. Obvious options one
+  might use are UUIDs (RFC4122) or URIs (RRC3986). I suggested to Tim as
+  well that something sensible might be an identifier that somehow
+  hashes the content of the entry itself, hence providing a certain kind
+  of integrity constraint.
+
+  My concern here is twofold. Basically there are a couple ways that
+  non-unique identifiers might arise. One is that someone is going to
+  write a bad Atom Publishing Protocol server that either assigns the
+  same ID to multiple entries it holds, or where multiple installations
+  of the same server fail to find appropriate unique components (e.g. a
+  default prefix that is not site-configured). In response to this, Tim
+  suggested it would happen less than I think, simply because it is
+  pretty easy to get either URIs or UUIDs right. Fair enough.
+
+  The more interesting problem is where people maliciously duplicate
+  IDs, either to spoof entries, or to perform insertion attacks, or
+  otherwise to disrupt the use of Atom (or disrupt particular producers
+  of feeds). In support of my point, Tim noted that soon there will be
+  feeds with substantial financial value, such as credit card
+  transactions. At the same time, he made a point of the fact that Atom
+  does not make anything worse in comparison with existing RSS feeds: in
+  his example, if e.g. Technorati decided to become malicious, they
+  could perfectly easily put words in his mouth.
+
+  Part of Tim's attitude reflects what I noted before about his
+  commitment to practicality over purity. He comments that he saw much
+  of this as social problems not technology problem. A nice quote from
+  his comments is: "In general it's a good thing to name things using
+  URIs; and in general it's good not to micro-manage how people use
+  URIs." That has a nice sound to it. In fairness, I am sure that Tim
+  does not fail to recognize that there is a technology component to
+  security layers, authentication mechanisms, and so on... he just sees
+  these questions as lying outside the concerns Atom itself addresses
+  (and are reasonably described as "social").
+
+  Still, the issue of security attacks involving identifier
+  falsification or spoofing intersts me. Hopefully I will have a chance
+  to write about this someday soon, in more detail (and once I have
+  thought through the specific threat models).
+
+SUNDAY JULY 30, 2006: MORE ON OPEN SOURCE VOTING PRESENTATION
+
+  In my initial entry, I mentioned in a general way my enthusiasm about
+  my Open Source Voting presentation. But really, I did not say very
+  much about its content. In part I was waiting to be able to provide
+  relevant links for readers. I believe our slides will soon be
+  available via the OSCon 2006 website, but the below resources are
+  available now:
+
+    * Arthur M. Keller and David Mertz, "Open Source Voting," presented
+    at Open Source Convention (OSCON 2006)", Portland Oregon, July
+    24-28, 2006.
+
+    * Arthur's collection of papers on electronic voting; on most or all
+    of them I am one of his coauthors.
+
+    * My own papers related to open source voting issues, again
+    sometimes with coauthors, including Arthur
+
+  My hope is that readers of this blog will decide to read some of those
+  fuller papers, which generally reflect what I presented at OSCon. The
+  presentation was something of a combination of the ideas in several
+  papers, but informally structured. In fact, despite the fact there are
+  only 14 slides in the whole show (including one that contains just the
+  name of the paper and its authors), I really only discussed about half
+  the slides during the lively discussion. One issue I did highlight in
+  my talk is something that is not really emphasized in any of the
+  papers, just implied. But this point is of growing importance in my
+  mind, and also ties in especially well with the OSCon context. The
+  idea is that issues about covert channels mean that FOSS is required
+  for rigorous mathematical reasons, not simply out of general political
+  desirability, or because of the positive "many eyes" effects that FOSS
+  promotes. Sure, for me the first principle is that the technical
+  mechanisms of elections should be disclosed to voters for the same
+  fundamental democratic reasons that so-called Sunshine Laws reveal the
+  workings of governance. However, even for readers (or audience
+  members) who do not share my political sentiment, there is some basic
+  mathematics to consider.
+
+  One of the principle considerations in designing voting systems is
+  that it is important not to disclose the identity of voters. A vote
+  does not simply need to be recorded accurately and reliably, it also
+  needs to be recorded anonymously. Apart from the specifics of the OVC
+  design, a voting system contains a variety of channels for
+  transmission of information: some might be electronic, XML files and
+  whatnot; others are simply pieces of paper that get moved around
+  according to various rules and patterns (paper is an excellent
+  steganographic medium). The plain fact is that very few channels are
+  at their Shannon limit; and what that tends to mean—almost always—is
+  that multiple concrete encodings can represent the same semantic
+  content. For example, an XML file can have slightly different forms
+  that are reduced to a common meaning via whitespace normalization. Or
+  a computer-printed paper ballot can have a pixel here and there that
+  does not effect which vote is cast (for example, subtly moved around
+  in an identificatory watermark; or even effects that superficially
+  look like printer artifacts).
+
+  The problem is that even a fully open and disclosed data API leaves
+  this sort of wiggle room to hide some bits and bytes in a covert
+  channel. Maybe that extra space character is an accident of how the
+  outputter is coded; or maybe it is put there to deliberately leak
+  information about voter identity (once the "black hats" know where to
+  look). Any closed source implementation—even one produced by
+  (counterfactual) vendors that we fully trust and who have shown a good
+  prior record of best security practices (both very much contrary to
+  the status of existing voting system vendors)—can fully conform with
+  an open standards data API, while still containing a covert channel.
+  An open source implementation however, can be checked at the code
+  level to make sure no such covert channel is encoded... and the proof
+  of its operation is that all the channels contain exactly those bits
+  that the open source should produce. That is, if someone were to
+  substitute malicious source for the examined source, say during the
+  installation or distribution process, that malicious code would have
+  to produce slightly different bits if it were to produce a covert
+  channel. So there we have it: closed source cannot, in principle,
+  guard against this significant attack. Open source is required as a
+  simple question of mathematics.
+
+SATURDAY JULY 29, 2006: SECOND DAY: SOFTWARE LIBRE
+
+  I visited a couple sessions that got at general notions of FOSS as
+  acting in the service of political freedoms. In my mind, this ties
+  fairly closely to the licensing issues I chatted about earlier.
+
+  A really fascinating and, to my mind very optimistic, talk was on FOSS
+  in Venezuela. The movement towards FOSS has been quite strong in South
+  America; in the Venezuelan context, two of the speakers were active
+  members in an organization called SoLVe (Software Libre Venezuela),
+  and organized a conference similar to OSCon under its aegis.
+
+  Jeff Zucker who has worked with UNICEF and UNESCO on software issues
+  introduced the main speakers. Alejandro Imass gave a perfectly
+  reasonable talk on developing FOSS ERM systems. I confess that the
+  topic seemed slightly dry to me; worthwhile, but it did not grab me
+  from either the political or technical/theoretical point-of-view. He
+  emphasized some good principles of component architectures and loose
+  connections between related systems, but that is relatively common to
+  good design principles.
+
+  Lino Ramirez, on the other hand was quite fiery, or at least of great
+  interest to me personally. He provided some background on Venezuela's
+  FOSS bill, which has undergone an interesting process of democratic
+  input from ordinary citizens, per some reformed mandates for
+  participatory democracy in Venezuela. Ramirez also compared this bill
+  (following on a presidential directive to similar effect, but the
+  directive is less fixed than a law would be) to similar prior efforts
+  in Brazil and Peru. In both of those cases, quite good bills were
+  derailed by intensive lobbying by Microsoft, who is also running a
+  massive campaign against the Venezuelan legislation.
+
+  Apart from the specific outcome of this bill, Venezuela has
+  implemented a number of technical outreach programs for poor and
+  indiginous peoples. These include installation of FOSS software in
+  schools and special training centers in remote locations. Many towns
+  and villages have gained computer centers where locals can learn
+  computer skills and access the internet; all of this would have been
+  impossible without FOSS. A nice case in point was the creation of a
+  linux distribution in the native Wayúu language. Having tools like
+  OpenOffice.org in small-group languages like Wayúu aids in preserving
+  the cultural heritage of such languages and peoples. A really nice
+  upshot of this was shown in the question period, where one of the
+  leading OpenOffice.org evangelists first learned of the translation at
+  this session... and the interchange will presumably lead to good
+  promotion and advertisement for both OpenOffice.org (which is
+  accessible to more native peoples than closed source software ever can
+  or will be), and to SoLVe's leadership in education and cultural
+  preservation efforts, in the developing world.
+
+  I also attended a session by Karl Fogel on early the history of
+  copyright. This talk was interesting, but I guess familiar enough to
+  me. After the development of the printing press in Europe (or really,
+  of course, its transplantion from China), governments like the British
+  Crown granted monopoly control of printing press technology to a
+  limited guild of printers. Rationalizations of the "moral rights of
+  authors" grew out of the base reality that publishers want the state
+  to subsidize their profits... with authors having never played much of
+  a role in any of this. None of that was really surprising to me; even
+  if I had not specifically known it, I would have predicted as much
+  from my knowledge of social and economic history... a Ph.D. in
+  political philosophy, like I have, actually wins you some decent
+  insights into how politics and economics actually work. Still, I am
+  certain the lesson was valuable for many listeners, and the analogies
+  with current issues around blogs, filesharing, and FOSS are worth
+  drawing.
+
+FRIDAY JULY 28, 2006: SECOND DAY: PYTHON 3000
+
+  One of the events I was especially looking forward to was Guido van
+  Rossum's talk on what is coming up in Python 3.0. In truth, I knew
+  there would not be anything in the talk that has not been discussed in
+  more detail on the Python development lists, or that at least would be
+  discussed there soon enough. Nonetheless, hearing the announcement
+  from the BDFL himself carried a certain mystique.
+
+  Unfortunately, Guido was developing a cold, or at least a cough, right
+  about when he had to give his talk. So he had a trouble speaking
+  without hoarseness. The presentation was still interesting: as the
+  audience almost certainly hoped, he made a mildly comical
+  disparagement of the Perl 6 process by way of comparison—but strictly
+  in the friendliest manner, obviously without any hostility or
+  competitive sentiment towards the Perl coders. His comment though was
+  that the Perl 6 methodology appeared to be for a group of developers
+  to travel to a distant island, and remain there until they invented a
+  new programming language. In a somewhat more serious tone, he also
+  contrasted Python 3.0 with C++, where the latter is completely
+  unwilling to accept even the smallest backwards-compatibility
+  breakage. Guido described Python 3.0 as falling in the middle of these
+  extremes.
+
+  Moreover, our BDFL announced a pretty concrete schedule for 3.0: An
+  alpha should be available near the beginning of 2007, with a release
+  version before the end of the year. Python 2.6 will almost surely be
+  released before the final 3.0, and the Python 2.x line will continue
+  for a good while to overlap 3.0 (because 3.0 will not run all the
+  older Python programs unmodified). Python 2.7 will probably contain
+  some back-ports of 3.0 features, where they can be implemented without
+  breakage; and 2.7 will also probably contain a collection of migration
+  tools. Guido envisions migration as relying on two classes of tools:
+
+    1. Code analyzers along the lines of PyChecker and PyLint that can
+    in many cases extract the intent of code, vis-a-vis the specific
+    types of objects being handled. Most breakage will come about
+    because particular types (think collections) behave somewhat
+    differently than they used to. Guido gave the example of trying to
+    determine whether f(x.keys()) represents code breakage. There are
+    two points of concern here:
+
+    (1)(a). Is x.keys() really a call to a method of a dictionary(-like)
+    object, as you would tend to think?
+
+    (1)(b). As mentioned below, this call on a dictionary will start
+    returning either an iterator or a view in Python 3.0, rather than a
+    fixed list. Depending on what you do with it, the change may or may
+    not matter to the code in f(). I.e. if you just do "for thing in
+    keys:", all is happy; if you mutate the expected list, problems
+    occur. The exact fix is not generally automatable, since developers
+    can reasonably want different behaviors in response to the change.
+
+     2. Warnings about likely changes. Presumably with 2.7 (and later
+     2.x versions), there will be a means of warning developers of
+     constructs that are likely to cause porting issues. In the simplest
+     case, this will include deprecated functions and syntax constructs.
+     But presumably the warnings may cover "potential problems" like the
+     above example.
+
+  So what is going to be new? And what is going to be removed? Removal
+  is interesting. Some basic redundancy like dct.has_key(x) is going
+  away, since nowadays you write if x in dct anyway. A few other
+  relatively painless things along the same lines happen also. But more
+  interesting is the fact that lambda is not going anywere (it is also
+  not being enhanced according to any of the numerous proposals). This
+  little fact met with a surprising number of cheers (and probably some
+  less audible rolled eyes among a different subset of the audience).
+  Old style classes also go away, to everyone's approval; that is not
+  100% breakage free, but it is just simply a good thing. Similarly with
+  the removal of string exceptions, and the creation of a BaseException
+  ancestor of all exceptions. A little bit of syntax is simplified too.
+  I will lose my dear <> version of inequality, but that is an awfully
+  easy update.
+
+  Some new feature include:
+
+    1. All strings become Unicode (breaky), and a new bytes type lets
+    you encode mutable arrays of 8-bit bytes. Basically, one is "text"
+    the other is "binary data". Accompanying this will probably be a
+    variety of mechanisms to make I/O methods inherently handle Unicode,
+    transparently deal with decoding on open(fname) and the like (and
+    also things like seeks).
+
+    2. Inequality comparisons become even more breaky than they have
+    been (see my recent Charming Python bemoaning inequalities). I have
+    mixed feelings myself, but in a certain way I think it is a
+    reasonable approach. Python will give up (most of) its willingness
+    to guess about what coders intend when comparing unlike types of
+    things. At least that adds consistency. Rather than
+    sometimes-but-who-knows-when having sorts break, we can just assume
+    they do not work unless collections are homogeneous, or unless
+    heroic measures are taken in advance (but as a known requirement).
+
+    3. As expected, the move towards iterators and variations on lazy
+    objects continues apace. List comprehensions do not go away, but
+    they are direct synonyms (syntax sugar) for a list() call wrapped
+    around a generator comphrehension. This changes the leakage of
+    variables to surroudning scope, which is a good thing.
+
+  There is more, some of it mildly incompatible. But overall it looks
+  like a very conservative revision of the Python language, and one
+  looking forward to the next 1000 years of Python programming (as Guido
+  puts it).
+
+  Another thing I completely failed to notice until Paul McGavin pointed
+  it out to me: Guido said nary a word about optional type declarations.
+  Given what a hot button this idea is, the lacuna was surprising. I
+  would not necessarily be surprised to hear he had decided against it;
+  but hearing nothing at all, either way, is curious.
+
+THURSDAY JULY 27, 2006: SECOND DAY: MICROFORMATS
+
+  I had the opportunity to talk with Tim Bray for about a half hour this
+  morning, as I have mentioned I would. He is an interesting guy, and I
+  am going to scatter topics we spoke about over several of these
+  entries rather than simply report his comments verbatim and linearly.
+
+  One of the things I asked Tim about was a topic that Dethe Elza has
+  addressed in a recent guest column for XML Matters: microformats.
+  Despite the wonderful article Dethe wrote, I have a certain suspicion
+  in my attitude towards microformats. Specifically, they strike me as a
+  way to smuggle in a brand new schema definition embedded within an
+  existing schema (e.g. XHTML), while pretending not to need a schema.
+  What, after all, is so much clearer about writing <div class="vevent">
+  than just writing <vevent> to start with? One might argue that the
+  first can render in an XHTML-compliant browser—but the latter can
+  equally render in common browsers as long as a CSS stylesheet is
+  attached that says what to do with it. Or for that matter, it doesn't
+  take much XSLT or AJAX to render that <vevent> element as something
+  nice. Even without a formal schema, the actual "vevent" tag just seems
+  to document itself better, and to look cleaner.
+
+  My hunch had been that Tim Bray, given his prominent role in XML
+  standardization, would look down on ad hoc and "impure" uses of
+  semantic markup that eschewed formal XML tags. It turned out I was
+  wrong on two counts. On the one hand, Tim rather took exception to my
+  description of a schema as a semantics, suggesting a schema was simply
+  a syntax description. I know he is right at some formal level; but I
+  still think a practically implemented and processed XML schema really
+  does represent a semantic constraint. Sure, W3C XML Schema—or RELAX NG
+  that both Tim and I share a strong preference for—are narrowly just
+  grammars. But an XML dialect, to my mind, can hardly help (especially
+  at its best) but wear its semantic intent on its sleeve.
+
+  In any case, that is not the main point. In the end, Tim was much less
+  skeptical of microformats than I remain. But oddly, it seemed to be
+  because Tim is much less of a puritan about the formal use of XML than
+  I am. His observation was that XML is just tags, and they can happily
+  coexist with other markup systems, and there is nothing all that
+  important or even necessarily long-lived about XML. All that, of
+  course, is true—but it embodies an attitude, I think, that takes
+  formalism very lightly, and as simply a practical consideration. An
+  interesting perspective, I believe from someone who was, after all,
+  co-editor of the XML and XML namespace specifications.
+
+  At the end of the day, I attended one of the "birds-of-a-feather"
+  sessions on microformats, led by a representative Technorati. These
+  sessions focus on informal discussion rather than on formal
+  presentation. Those folks are enthusiasts about microformats, perhaps
+  some of the leading proponents. It was in interesting discussion, and
+  one in which I initially raised my above concern. The sentiment of the
+  room seemed to be that "mere web developers" could handle
+  enhanced-XHTML (i.e. extra "class" attributes) more easily than they
+  could deal with the "full complexity of XML". I confess I do not quite
+  see that. Why is the longer version in the above example simpler? Even
+  if XML namespaces are used to get something "long" like <card:vevent>?
+
+  Several attendees, however, made a rather good point about support in
+  existing HTML editing tools (and also the fact the "quirks" mode of
+  browsers do a lot to accomodate non-technical or semi-technical
+  producers of web pages). However, then the discussion turned to how
+  microformats might support versioning and backward compatibility. And
+  then to how microformats might be combined and embedded in each other.
+  Or in other words, to my mind, the room decided to reinvent XML
+  namespaces in a more ad hoc way. The whole thing brought me to an idea
+  for "Mertz' correlary to Greenspun's Tenth Rule. So rather than:
+
+    Any sufficiently complicated C or Fortran program contains an ad
+    hoc, informally-specified, bug-ridden, slow implementation of half
+    of Common Lisp.
+
+  My correlary might read:
+
+    Any sufficiently complicated XML-based ad hoc format, eventually
+    finds a way to embed the moral equivalent of informally-specified,
+    bug-ridden, and ugly XML namespaces
+
+  OK, maybe not the most mellifluous I have ever managed. But definitely
+  the stuff of some later installment of XML Matters.
+
+THURSDAY JULY 27, 2006: FIRST DAY OF ATTENDANCE: PRESENTATION
+
+  The highlight of today, for me, was of course my own presentation of
+  Open Source Voting. It turned out there was a wrinkle to the matter
+  though. My co-presenter Arthur Keller wound up missing his plane. The
+  original plan was for him to primarily run the presentation, with me
+  adding some particular threads more extemporaneously. Moreover, I
+  hadn't even seen the latest version of the slides he planned to use
+  (he has given variants on this talk several times before).
+
+  Of some redeeming value was the fact that I had the opportunity today
+  to meet in person my past Open Voting Consortium collaborator, Fred
+  McLain, who did a wonderful job in leading developement of OVCs demo
+  software. We had spoken and emailed frequently in the past, but I had
+  not seen Fred face-to-face until today. So at the last moment, with
+  Fred's consent (and in fact, I think, his enthusiasm), I recruited
+  Fred to join me on the session stage; and I am happy to say that he
+  added some wonderful commentary to the session. There was also a
+  silver lining to Arthur's travel glitch. Arthur is a fine computer
+  scientist, and an even better proponent of fairness, integrity, and
+  transparency in election. But my feeling is that Arthur tends towards
+  a more formal presentation style than I would personally be inclined
+  towards.
+
+  Being accidentally promoted to sole presenter (or at least primary, in
+  gesture to Fred), I was able to run the session in a more
+  extemporaneous fashion, and especially with a greater emphasis on
+  audience particiation and questions. I must say with some pride that
+  this session was by far the liveliest I have been to so far. The
+  audience, on this very political topic about which many people feel
+  very strongly, was extremely involved. A great number of them asked
+  many well-informed questions, and carried much of the explanation
+  forward—with just some gentle nudging and explication by me. In fact,
+  there was enough involvement in the topic that the session ran quite a
+  while over its allocated time, even after we invited anyone who needed
+  to do so to feel free to leave the session. But the large majority of
+  the audience enjoyably stayed around another half-hour beyond the
+  scheduled 40 minutes, and most of them participated by adding good
+  insight to both the technical and political aspects of this. It was
+  just lucky that an accident of scheduling put this session at the end
+  of the day, just before the conference-wide reception; and in
+  particular, without any next panel needing the room immediately.
+
+  I'll get back to this topic tomorrow. But I wanted to put in a few
+  words during tonight's report.
+
+
+WEDNESDAY JULY 26, 2006: FIRST DAY OF ATTENDANCE: SESSIONS
+
+  I attended just a few sessions today, because of my late night arrival
+  and my mini-crisis about my own presentation. But those I saw were
+  quite lively.
+
+  I had the opportunity to meet Python luminary Raymond Hettinger.
+  Raymond has done some of the most wonderful and mind-bending stuff in
+  the development of Python. A lot of the stuff I contemplated in my
+  columns about coroutines, generators, state machines, lightweight
+  switching and data passing, and other areas, was ultimately developed
+  into PEPs by Raymond, and then often concretely coded by him, and
+  incorporated into the Python development tree. Or in other cases, my
+  own articles have simply tried to keep up with Hettinger's
+  innovations. Very briefly before Raymond's talk, I had a chance to
+  very briefly meet Anna Ravenscroft and our own BDFL Guido van Rossum.
+  And some other Python notables like Kevin Altis during the day.
+
+  Hettinger was an amazingly lively and charismatic presenter. He did
+  this whirlwind presentation of idea about implementing AI in Python.
+  The moral was, at a first pass, just how concise and readable complex
+  ideas could be in Python. But I think the subtext to his talk was
+  about achieving proper levels of abstraction and generality. That is
+  something Python enables, but it is also a skill good programmers of
+  other languages need to develop. With a focus in mind on how useful
+  Python can be in education, and to pique the interest of young, future
+  programmers, Raymond presented a number of game- or puzzle-solving
+  problems, some hard, some easy, but all boiled down to a dozen or two
+  lines of Python each.
+
+  After the talk, I spoke with Raymond some more. I think I have a bit
+  of a scoop to reveal here. I hope I'm not breaking confidence... but
+  then, I was wearing my press badge when we spoke. Hettinger is doing a
+  book in conjunction with van Rossum, for Prentice-Hall called... drum
+  roll please... The Python Programming Language. The fascinatingly
+  original title reflects the purpose of the book. That is, it is
+  intended as an official document of exactly what Python is. That is,
+  not just what the current CPython implementation actually does, but
+  what in general any implementation would need to do to be Python.
+
+  Another notable speaker I heard was Tim Bray, whom I'll be
+  interviewing as well tomorrow morning. Tim spoke about the Atom
+  syndication format. He seems to think it is likely to be "the next big
+  thing", and indeed Atom clearly rationalizes the hodge-podge of RSS
+  variants, and provides a consistent publishing and syndication format
+  and protocol. Technically, the Atom Publishing Protocol is something a
+  bit different from the Atom format itself. But APP really
+  straightforwardly builds on HTTP in a rational and modular way; enough
+  so that Bray can say with a straight face that "APP has no API". I was
+  rather charmed as well by Tim's vehement dismissal of the phrase "user
+  generated content" (as if there were some other kind). For Tim,
+  naturally, the whole point of Web-associated technologies is to let
+  so-called users generate content. But then, this is no different from
+  users in their more mellifluous description, "people", who have talked
+  and written and argued and advocated long before there was a Web, or
+  an Internet, or whatever. More with Tim tomorrow.
+
+WEDNESDAY JULY 26, 2006: FIRST DAY OF ATTENDANCE: EXHIBITION
+
+  It has been an eventful day. Perhaps most eventful of all because the
+  scheduled co-presenter in my own panel wound up missing his airplane,
+  and I presented individually instead. Plus my own rather ordinary
+  adventures with my already late-night flight of last night being even
+  further delayed. Still, anyone who travels has more interesting
+  stories than mine. More on my own Open Source Voting panel in a later
+  post.
+
+  At the beginning of the day, I talked with a variety of exhibitors. A
+  lot of the hardware companies had booths—Intel, AMD, Dell. While I
+  certainly understand that FOSS runs on machines from these hardware
+  producers, their exhibits seemed somehow rather non-specific to this
+  conference. Another line of exhibitors was the traditional well-know
+  FOSS products: Zend, Mozilla, Novell, and some I know less well like
+  Splunk, Simula, Scalix. Plus a number of book publishers. Sadly not my
+  own Addison-Wesley, though they had the slightly oddball TeX User
+  Group (TeX is a fine tool, but they mostly just had Knuth's books to
+  sell; excellent books, but not exactly the stuff of evangelism). Of
+  course, our own dear IBM spans all these spaces, but oddly, IBM did
+  not maintain a booth at exhibition. My list above is not complete,
+  just a sample of booths I noticed.
+
+  What piqued my interest to the greatest degress, however, was the
+  several organization I might characterize as "copyright/license
+  interests". The Apache Software Foundation had a booth, so did the
+  Electronic Frontier Foundation, the Free Software Foundation; to an
+  extent the Perl Foundation fits in this line, though I did not speak
+  with them. There are several talks coming up related to copyright,
+  either broadly or narrowly. If I have a chance to attend those, I'll
+  expand on my thoughts here.
+
+  In a general sense, I was very interested to hear what representatives
+  of various approaches to licensing of FOSS had to say about the
+  benefits of their specific licenses and maintaining organization. I
+  probably went into the most detail with Jim Jagielski (wearing his ASF
+  hat for this conversation). We talked about the ASF's goal of
+  expanding the projects managed under the ASF aegis, while still
+  striving for some coherence in the tool set among ASF's now extremely
+  numerous projects (something like 200 separate Apache projects to my
+  reckoning). I spoke with a few other conference attendees about
+  Apache's efforts, such as the integration of Jakarta, Lucene, and
+  other code bases such as the Incubator projects. Sentiments were
+  mixed, with some natural disquiet about the rough edges and deep
+  dependency trees. But overall, most developers seem to feel ASF has
+  done a pretty good job of merging and integrating related projects
+  wherever possible. Maven, Apache's dependency maintenance tool was
+  considered either a great simplifier, or a crutch to get by with
+  excessive dependencies, depending on whom you talk to.
+
+  Back to Jim Jagielski and ASF's attitudes about licensing policy. At
+  first brush, ASF seems particularly warry of dual licensing
+  approaches, and really values putting all their projects under the
+  same ASF license. Pushed a little, Jim admitted to possibilities of
+  code being maintained (i.e. dual licensed, though he did not exactly
+  want to put it this way), if it started out as Public Domain or
+  BSD-family license. Without quite saying it this way, ASF's rather
+  reasonable concern is to make sure code comes from Apache-compatible
+  code bases. At heart, this is in conflict with the more restrictive
+  GPL and LGPL approaches, though it also seemed to weigh against
+  inclusion of tools like mod_perl in the Apache family directly,
+  despite the liberality of the Artistic License (not to say they are
+  not still happy for the capabilities of such tools, that interoperate
+  with Apache itself, or other ASF projects; it's just a question of
+  level of license and organizational integration).
+
+  I found the Free Software Foundation booth staff a little less on top
+  of licensing issues than I might have hoped. Given the almost
+  completely political mission of FSF (versus other more mixed-mission
+  organizations), I would have thought issues like the meaning of the
+  GPL 3 modifying the LGPL terms to be simple riders to the base GPL 3
+  license would be the stuff they were passionate about. But in the end,
+  I pretty much explained these legal questions to them... and even what
+  I perceived as Richard Stallman and Eben Moglen's motivations in the
+  matter. Of course, this was just a few volunteers who worked a booth,
+  obviously FSF's central staff lives and breathes this stuff.
+
+  Not quite a licensing issue exactly, I got into a really nice
+  conversation with Dru Lavigne at the FreeBSD booth. In my mind, I
+  confess, BSD's main difference from Linux amounts to licensing
+  philosophies. Both are perfectly wonderful modern Unix-like OSs with
+  good installers and the same desktops. I realize the core developers
+  of each get passionate about the ins-and-outs of scheduler design and
+  micro-optimization of IPC, but that's lower level than the work I tend
+  to do.
+
+  Dru, in our conversation had some intersting ideas, and some passion,
+  about the need for FreeBSD to develop a certification program, perhaps
+  something like the LPI program that your reporter wrote a
+  tutorial/training series on. I feel, despite my well-received
+  tutorials, that ultimately certification does little to genuinely
+  assure quality of programming staff, nor even bare knowledgeability.
+  Cramming for a test doesn't reflect (negatively or positively) on
+  genuine problem solving skills and flexibility in thinking, which are
+  what you want in IT staff. Dru felt, however, that certfification
+  programs were important for FreeBSD's wider acceptance in corporate
+  settings; I can't say I disagree with her on this. In the end, the
+  problems she sees are twofold: setting up certification programs tends
+  to incur large initial costs from the OS/tool developers who fund
+  their creation; and also the cost of test-taking tends to exclude many
+  very fine developers in the developing world, where the US dollar cost
+  is simply too much relative to their national income levels and
+  currency exchange rates. I may talk with Dru further (via email or
+  telephone) following the conference, and let readers here know more on
+  her thoughts on this.
+
+FRIDAY JULY 21, 2006: WELCOME TO READERS OF MY OSCON COVERAGE
+
+  I am excited about this opportunity to let you know about some of the
+  topics that will be addressed in OSCon 2006 sessions. It is quite an
+  impressive lineup of panels and speakers. I will not be there for the
+  tutorial sessions, but the Wed-Fri regular sessions will make for a
+  busy few days.
+
+  As readers of my columns will know, I have a particularly strong
+  interest in Python and in XML, so I suspect my choice of sessions will
+  lean in those directions. However, I welcome feedback from readers on
+  sessions they have particular interest in hearing about. If possible,
+  I am happy to juggle my attendance schedule to cover areas of reader
+  concern. Take a look at the schedule, and feel free to comment in
+  advance of (or during) the conference, either at this site or by
+  emailing me at mertz@gnosis.cx.
+
+  I am also looking forward to interviewing some open source luminaries
+  at the conference. Right now, I have short interviews lined up with
+  two developers who work in Sun's open source areas, Tim Bray and Josh
+  Berkus. As the conference progresses, I plan on feeling out other
+  speakers or attendees who have insights into various areas of open
+  source, software development, and general technology trends.

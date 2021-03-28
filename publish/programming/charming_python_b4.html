@@ -1,0 +1,426 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>CHARMING PYTHON #B4: -- Parsing in Python with [SimpleParse]. -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="charming_python_b3.html" TITLE="CHARMING PYTHON #b3">
+<link REL="next" HREF="charming_python_b5.html" TITLE="CHARMING PYTHON #b5">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+
+
+<h1>Charming Python #b4:</h1>
+<h2>Parsing in Python with <em><code>SimpleParse</code></em>.</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Analyzer, Gnosis Software, Inc.<br>
+ December, 2001<br>
+ <br>
+</p>
+<blockquote>
+    A number of parsing tools have been written for Python.  An
+    earlier column dealt with the low-level state-machine (and
+    therefore, parser) <em><code>mxTextTools</code></em>.  This column discusses one
+    high level parsing language built on top of Python.
+    <em><code>SimpleParse</code></em> provides an EBNF-style syntax on top of
+    <em><code>mxTextTools</code></em> that can greatly clarify the expression of
+    grammars.
+</blockquote>
+<h3>What Is Python?</h3>
+ <p>
+  Python is a freely available, very-high-level, interpreted
+  language developed by Guido van Rossum.  It combines a clear
+  syntax with powerful (but optional) object-oriented semantics.
+  Python is available for almost every computer platform you
+  might find yourself working on, and has strong portability
+  between platforms.
+</p>
+<h3>Introduction</h3>
+ <p>
+  Formal parsers are a bit new to me, as perhaps to a number of
+  readers.  In this article, I introduce some basic concepts in
+  parsing, and discuss a Python tool for peforming parsing.
+  Hopefully, both readers and I will benefit from the exercise.
+</p>
+<p>
+  Naturally, like most any programmer, I have frequently needed
+  to identify parts and structures that exist inside textual
+  documents:  log files, configuration files, delimited data, and
+  more free-form (but still semi-structured) report formats.  All
+  of these documents have their own "little languages" for what
+  can occur within them.  In fact, a number of installments of
+  this column have dealt with these very matters.
+</p>
+<p>
+  The way I have programmed these informal parsing tasks has
+  always been somewhat of a hodgepodge of custom state-machines,
+  regular expressions, and context driven string tests.  The
+  pattern in these programs was always, roughly, "read a bit of
+  text, figure out if we can make something of it, maybe read a
+  bit more text afterwards, keep trying."
+</p>
+<p>
+  Parsers of the formal sort distill descriptions the parts and
+  structures in documents into concise, clear, and <strong>declarative</strong>
+  rules for how to identify what makes up a document.  The
+  declarative aspect is particularly interesting here.  All my
+  old ad hoc parsers were imperative in flavor:  read some
+  characters, make some decisions, accumulate some variables,
+  rinse, repeat.  As this column's installments on functional
+  programming have observed, the recipe style of program flow is
+  comparatively error-prone and difficult to maintain.
+</p>
+<p>
+  Formal parsers almost always use variants on Extended
+  Backus-Naur Form (EBNF) to describe the "grammars" of the
+  languages they describe.  Those tools we look at here do so, as
+  does the popular compiler development tool YACC (and its
+  variants).  Basically, an EBNF grammar gives names to the
+  <em>parts</em> one might find in a document; additionally, larger
+  parts are frequently composed of smaller parts.  The frequency
+  and order in which small parts may occur in larger parts is
+  specified by operators--mostly the same symbols one sees in
+  regular expressions.  In parser-talk, each named part in a
+  grammar is called a "production."
+</p>
+<p>
+  Possibly without even knowing it, readers have already seen
+  EBNF descriptions at work.  For example, the familiar Python
+  Language Reference defines what a floating point number looks
+  like in Python as:
+</p>
+<div class="code-sample"><h4>EBNF-style description of floating point number</h4><pre>
+floatnumber:    pointfloat | exponentfloat
+pointfloat:     [intpart] fraction | intpart "."
+exponentfloat:  (nonzerodigit digit* | pointfloat) exponent
+intpart:        nonzerodigit digit* | "0"
+fraction:       "." digit+
+exponent:       ("e"|"E") ["+"|"-"] digit+
+
+</pre></div><p>
+  Or one might have seen an XML DTD element defined in an EBNF
+  style.  For example, the <code>&lt;body&gt;</code> of a developerWorks tutorial
+  looks like:
+</p>
+<div class="code-sample"><h4>EBNF-style description in a developerWorks DTD</h4><pre>
+&lt;!ELEMENT body  ((example-column | image-column)?, text-column) &gt;
+
+</pre></div><p>
+  Spellings vary slightly, but the general notions of
+  quantification, alternation and sequencing exist in in all
+  EBNF-style language grammars.
+</p>
+<h3>Building Tag Tables With <em><code>SimpleParse</code></em></h3>
+ <p>
+  <em><code>SimpleParse</code></em> is an interesting tool.  To use this module, you
+  need the underlying module <em><code>mxTextTools</code></em>, which implements a
+  "tagging engine" in C. An earlier installment discussed
+  <em><code>mxTextTools</code></em>, which is powerful, but rather difficult to use.
+  Once <em><code>SimpleParse</code></em> is layered on top of <em><code>mxTextTools</code></em>, the work
+  becomes a lot easier.
+</p>
+<p>
+  What one does to use <em><code>SimpleParse</code></em> is really quite simple, and
+  removes the need to think about most of the complexity of
+  <em><code>mxTextTools</code></em>.  The first thing to do is create an EBNF-style
+  grammar that describes the language one wants to handle.  The
+  second step is to call <em><code>mxTextTools</code></em> to create a <em>tag list</em>
+  that describes all the successful productions when the grammar
+  is applied to the document.  Finally, one actually <em>does</em>
+  something with the tagtable returned by <em><code>mxTextTools</code></em>.
+</p>
+<p>
+  For this article, the "language" we will parse is the set of
+  markup codes used by "smart ASCII" to indicate things like
+  boldface, module names and book titles.  This is the very same
+  language <em><code>mxTextTools</code></em> was earlier used to identify, and
+  regular expressions and state-machines before that, in earlier
+  installments.  The language is far simpler than a full
+  programming language would be, but complicated enough to be
+  representative.
+</p>
+<p>
+  We probably need to back up for one moment here.  What the heck
+  is a "tag list" that <em><code>mxTextTools</code></em> gives us?  Basically, this
+  is a nested structure that simply gives the character offsets
+  where every production was matched in the source text.
+  <em><code>mxTextTools</code></em> traverses a source text quickly, but it does not
+  <em>do</em> anything to the source text itself (at least not when
+  using the <em><code>SimpleParse</code></em> grammars).  Let us look at an abridged
+  tag list to illustrate:
+</p>
+<div class="code-sample"><h4>Tag list produced from [SimpleParse] grammar</h4><pre>
+(1,
+ [('plain',
+   0,
+   15,
+   [('word', 0, 4, [('alphanums', 0, 4, [])]),
+    ('whitespace', 4, 5, []),
+    ('word', 5, 10, [('alphanums', 5, 10, [])]),
+    ('whitespace', 10, 11, []),
+    ('word', 11, 14, [('alphanums', 11, 14, [])]),
+    ('whitespace', 14, 15, [])]),
+  ('markup',
+   15,
+   27,
+ ...
+ 289)
+
+</pre></div><p>
+  The elipses in the middle contain a bunch more matches.  But
+  the part we see says the following.  The root production
+  ("para") succeeds and ends at offset 289 (the length of the
+  source text).  The child production "plain" matches offsets 0
+  through 15.  This "plain" child is itself composed of smaller
+  productions.  After the "plain" production, the "markup"
+  production matches offsets 15 through 27.  The details are left
+  out, but this first "markup" is made of components, and
+  additional productions succeed later in the source.
+</p>
+<h3>An Ebnf-style Grammar For "smart Ascii"</h3>
+ <p>
+  We have seen a glance at the tag list that <em><code>SimpleParse</code></em> +
+  <em><code>mxTextTools</code></em> can give us.  But what we really need to look at
+  is the grammar that was used to generate this tag list.  The
+  grammar is where the real work happens.  EBNF grammars are
+  almost self-explanatory to read (although designing one <em>does</em>
+  require a bit of thought and testing):
+</p>
+<div class="code-sample"><h4>typographify.def</h4><pre>
+para           := (plain / markup)+
+plain          := (word / whitespace / punctuation)+
+whitespace     := [ \t\r\n]+
+alphanums      := [a-zA-Z0-9]+
+word           := alphanums, (wordpunct, alphanums)*, contraction?
+wordpunct      := [-_]
+contraction    := "'", ('am'/'clock'/'d'/'ll'/'m'/'re'/'s'/'t'/'ve')
+markup         := emph / strong / module / code / title
+emph           := '-', plain, '-'
+strong         := '*', plain, '*'
+module         := '[', plain, ']'
+code           := "'", plain, "'"
+title          := '_', plain, '_'
+punctuation    := (safepunct / mdash)
+mdash          := '--'
+safepunct      := [!@#$%^&amp;()+=|\{}:;&lt;&gt;,.?/"]
+
+</pre></div><p>
+  This grammar is almost exactly the way you would describe the
+  "smart ASCII" language verbally, which is a nice sort of
+  clarity.  A paragraph consist of some plain text and some
+  marked-up text.  Plain text consists of some collection of
+  words, whitespace, and punctuation.  Marked up text might be
+  emphasized, or strongly emphasized, or module names, etc.
+  Strongly emphasized text is surrounded by asterisks.  And so
+  on.  A couple features like just what a "word" really is, or
+  just what a contraction can end with, take a bit of thought,
+  but the syntax of EBNF doesn't get in the way.
+</p>
+<p>
+  In contrast, the same sort of rules can be described even more
+  tersely using regular expressions.  This is what the first
+  version of the "smart ASCII" markup program did.  But this
+  terseness is much harder to write, and harder still to tweak
+  later.  The below <em><code>re</code></em> code expresses largely (but not
+  precisely) the same set of rules:
+</p>
+<div class="code-sample"><h4>Python regex's for smart ASCII markup</h4><PRE><FONT COLOR=#1111CC># [module] names</FONT>
+re_mods =   r<FONT COLOR=#115511>"""([\(\s'/"&gt;]|^)\[(.*?)\]([&lt;\s\.\),:;'"?!/-])"""</FONT>
+<FONT COLOR=#1111CC># *strongly emphasize* words</FONT>
+re_strong = r<FONT COLOR=#115511>"""([\(\s'/"]|^)\*(.*?)\*([\s\.\),:;'"?!/-])"""</FONT>
+<FONT COLOR=#1111CC># -emphasize- words</FONT>
+re_emph =   r<FONT COLOR=#115511>"""([\(\s'/"]|^)-(.*?)-([\s\.\),:;'"?!/])"""</FONT>
+<FONT COLOR=#1111CC># _Book Title_ citations</FONT>
+re_title =  r<FONT COLOR=#115511>"""([\(\s'/"]|^)_(.*?)_([\s\.\),:;'"?!/-])"""</FONT>
+<FONT COLOR=#1111CC># 'Function()' names</FONT>
+re_funcs =  r<FONT COLOR=#115511>"""([\(\s/"]|^)'(.*?)'([\s\.\),:;"?!/-])"""</PRE></FONT></div><p>
+  If you discover or invent some slightly new variant of the
+  language, it is <strong>a lot</strong> easier to play with the EBNF grammar
+  than with those regular expressions.  Moreover, using
+  <em><code>mxTextTools</code></em> will generally even be faster in performing the
+  manipulations of the patterns
+</p>
+<h3>Generating And Using A Taglist</h3>
+ <p>
+  For our sample program, we put the actual grammar in a separate
+  file.  For most purposes, this is a good organization to use.
+  Changing the grammar is usually a different sort of task than
+  changing the application logic; and the files reflect this.
+  But the whole of what we do with the grammar is pass it as a
+  string to a <em><code>SimpleParse</code></em> function, so in principle we could
+  include it in the main application (or even dynamically
+  generate it in some way).
+</p>
+<p>
+  Let us look at our entire--compact--tagging application:
+</p>
+<div class="code-sample"><h4>typographify.py</h4><PRE><FONT COLOR=#3333CC><B>import</B></FONT> os
+<FONT COLOR=#3333CC><B>from</B></FONT> sys <FONT COLOR=#3333CC><B>import</B></FONT> stdin, stdout, stderr
+<FONT COLOR=#3333CC><B>from</B></FONT> simpleparse <FONT COLOR=#3333CC><B>import</B></FONT> generator
+<FONT COLOR=#3333CC><B>from</B></FONT> mx.TextTools <FONT COLOR=#3333CC><B>import</B></FONT> TextTools
+
+input = stdin.read()
+decl = open(<FONT COLOR=#115511>'typographify.def'</FONT>).read()
+<FONT COLOR=#3333CC><B>from</B></FONT> typo_html <FONT COLOR=#3333CC><B>import</B></FONT> codes
+parser = generator.buildParser(decl).parserbyname(<FONT COLOR=#115511>'para'</FONT>)
+taglist = TextTools.tag(input, parser)
+<FONT COLOR=#3333CC><B>for</B></FONT> tag, beg, end, parts <FONT COLOR=#3333CC><B>in</B></FONT> taglist[1]:
+    <FONT COLOR=#3333CC><B>if</B></FONT> tag == <FONT COLOR=#115511>'plain'</FONT>:
+        stdout.write(input[beg:end])
+    <FONT COLOR=#3333CC><B>elif</B></FONT> tag == <FONT COLOR=#115511>'markup'</FONT>:
+        markup = parts[0]
+        mtag, mbeg, mend = markup[:3]
+        start, stop = codes.get(mtag, (<FONT COLOR=#115511>'&lt;!-- unknown --&gt;'</FONT>,<FONT COLOR=#115511>'&lt;!-- / --&gt;'</FONT>))
+        stdout.write(start + input[mbeg+1:mend-1] + stop)
+stderr.write(<FONT COLOR=#115511>'parsed %s chars of %s\n'</FONT> %  (taglist[-1], len(input)))</PRE></div><p>
+  Here is what it does.  First read in the grammar, and create an
+  <em><code>mxTextTools</code></em> parser from the grammar.  The generated parser is
+  similar to the tag-table that is found in the hand-written
+  <em><code>mxTypographify</code></em> module discussed in an earlier installment
+  (but without the comments in the earlier, of course).  Next we
+  apply the tag-table/parser to the input source to create a tag
+  list.  Finally, we loop through the tag list, and emit some new
+  marked-up text.  The loop could, of course, do anything else
+  desired with each production encountered.
+</p>
+<p>
+  For the particular grammar used for smart ASCII, everything in
+  the source text is expected to fall into either a "plain"
+  production or a "markup" production.  Therefore, it suffices to
+  loop across a single level in the tag list (except when we look
+  exactly one level lower for the specific markup production,
+  such as "title") But a more free-form grammar--such as occurs
+  for most programming languages--could easily recursively
+  descend into the tag list, and look for production names at
+  every level.  For example, if the grammar were to allow nested
+  markup codes, this recursive style would probably be used.
+  Readers might enjoy the exercise of figuring out how to adjust
+  the grammar (hint:  remember that productions are allowed to be
+  mutually recursive).
+</p>
+<p>
+  The particular markup codes that go to the output live in yet
+  another file, for organizational not essential reasons.  A
+  little trick of using a dictionary as a <code>switch</code> statment is
+  used here (although the <code>otherwise</code> case remains too narrow in
+  the example).  The idea is just that we might in the future
+  want to create multiple "output format" files for, say, HTML,
+  DocBook, LaTeX, or others.  The particular markup file used for
+  the example just looks like:
+</p>
+<div class="code-sample"><h4>typo_html.py</h4><PRE>codes = \
+{ <FONT COLOR=#115511>'emph'</FONT>    : (<FONT COLOR=#115511>'&lt;em&gt;'</FONT>, <FONT COLOR=#115511>'&lt;/em&gt;'</FONT>),
+  <FONT COLOR=#115511>'strong'</FONT>  : (<FONT COLOR=#115511>'&lt;strong&gt;'</FONT>, <FONT COLOR=#115511>'&lt;/strong&gt;'</FONT>),
+  <FONT COLOR=#115511>'module'</FONT>  : (<FONT COLOR=#115511>'&lt;em&gt;&lt;code&gt;'</FONT>, <FONT COLOR=#115511>'&lt;/code&gt;&lt;/em&gt;'</FONT>),
+  <FONT COLOR=#115511>'code'</FONT>    : (<FONT COLOR=#115511>'&lt;code&gt;'</FONT>, <FONT COLOR=#115511>'&lt;/code&gt;'</FONT>),
+  <FONT COLOR=#115511>'title'</FONT>   : (<FONT COLOR=#115511>'&lt;cite&gt;'</FONT>, <FONT COLOR=#115511>'&lt;/cite&gt;'</FONT>),
+}</PRE></div><p>
+  Extending this to other output formats is straightforward.
+</p>
+<h3>Conclusion</h3>
+ <p>
+  <em><code>SimpleParse</code></em> provides a concise and very readable EBNF-style
+  wrapper to the underlying power and speed of the cryptic
+  <em><code>mxTextTools</code></em> C module.  Moreover, EBNF grammars are already
+  familiar to many programmers, even if only in passing.  I
+  cannot <em>prove</em> anything about what is easier to
+  understand--intuitions differ--but I can comment quantitatively
+  on source length.  The <em><code>mxTypographify</code></em> module that was
+  manually developed earlier is the following size:
+</p>
+<div class="code-sample"><h4>wc mxTypographify.py</h4><PRE>199     776    7041 mxTypographify.py</PRE></div><p>
+  Of these 199 lines, a fair number are comments.  And 18 of
+  those lines are an included regular expression version of the
+  markup function that is included for timing comparisons.  But
+  what the program does is essentially identical to what
+  <code>typographify.py</code>--listed above--does.  In contrast, our
+  <em><code>SimpleParse</code></em> program, including its support files comes to:
+</p>
+<div class="code-sample"><h4>wc typo*.def typo*.py</h4><PRE>19      79     645 typographify.def
+20      79     721 typographify.py
+ 6      25     205 typo_html.py
+45     183    1571 total</PRE></div><p>
+  In other words, about one fourth as many lines.  This version
+  has fewer comments, but that is mostly because the EBNF grammar
+  is fairly self-documenting.  I would not want to emphasize LOC
+  too strongly--obviously, one can play games with minimizing or
+  maximizing code length.  But in a general way, one of the few
+  real empirical results of work studies on programmers is that
+  kLOC/programmer-month is fairly close to constant across
+  languages and libraries.  Of course, the regular expression
+  version is, in turn, one third as long as the <em><code>SimpleParse</code></em>
+  version--but I think the density of its expression makes it
+  fragile to maintain and harder to write.  And we saw in the
+  previous installment that <em><code>mxTextTools</code></em> is considerably faster
+  at runtime.  I think, on balance, <em><code>SimpleParse</code></em> wins of the
+  approaches considered.
+</p>
+<h3>Resources</h3>
+ <p>
+  An earlier installment of this column (#14) called <cite>Text
+  Processing in Python with mxTextTools</cite> introduces the
+  <em><code>mxTextTools</code></em> library that <em><code>SimpleParse</code></em> is built on top of:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/publish/programming/charming_python_14.html">http://gnosis.cx/publish/programming/charming_python_14.html</a>
+</blockquote>
+<p>
+  The reference module <em><code>mxTypographify</code></em> was built using
+  <em><code>mxTextTools</code></em> directly.  We see in this article how much more
+  readable the <em><code>SimpleParse</code></em> version becomes:
+</p>
+<blockquote>
+   <a href="http://gnosis.cx/download/mxTypographify.py">http://gnosis.cx/download/mxTypographify.py</a>
+</blockquote>
+<p>
+  <em><code>mxTextTools</code></em> is now part of the larger eGenix package of
+  extensions.  Information can be found at:
+</p>
+<blockquote>
+   <a href="http://www.lemburg.com/files/python/mxTextTools.html">http://www.lemburg.com/files/python/mxTextTools.html</a>
+</blockquote>
+<p>
+  Mike Fletcher's <em><code>SimpleParse</code></em> can be found, along with a brief
+  introduction to its usage, at:
+</p>
+<blockquote>
+   <a href="http://members.rogers.com/mcfletch/programming/simpleparse/simpleparse.html">http://members.rogers.com/mcfletch/programming/simpleparse/simpleparse.html</a>
+</blockquote>
+<p>
+  John Aycock's <em><code>Spark</code></em> module is in many ways a more
+  sophisticated parsing framework than is <em><code>SimpleParse</code></em>.  A
+  number of Python developers have recommended <em><code>Spark</code></em> to me,
+  which has the additional virtue of being pure-Python (with a
+  corresponding natural disadvantage in terms of speed) <em><code>Spark</code></em>
+  has a homepage at:
+</p>
+<blockquote>
+   <a href="http://pages.cpsc.ucalgary.ca/~aycock/spark/">http://pages.cpsc.ucalgary.ca/~aycock/spark/</a>
+</blockquote>
+<p>
+  Information on the ISO 14977 standard for EBNF syntax can be
+  found at:
+</p>
+<blockquote>
+   <a href="http://www.cl.cam.ac.uk/~mgk25/iso-ebnf.html">http://www.cl.cam.ac.uk/~mgk25/iso-ebnf.html</a>
+</blockquote>
+<h3></h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  David Mertz would like to write, with Nietzsche, that these are
+  the musings of an old philologist, but that untruth would
+  unmask itself.  But perhaps his (right here gratuitously
+  plugged) forthcoming book, <cite>Text Processing in Python</cite>, will
+  someday be mistaken for a cybernetic variant of philology.
+  David may be reached at mertz@gnosis.cx; his life pored over at
+ <a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+</p>
+</body></html>

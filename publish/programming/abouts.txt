@@ -1,0 +1,414 @@
+charming_python_1.txt:ABOUT THE AUTHOR
+charming_python_1.txt-------------------------------------------------------------------------
+charming_python_1.txt-
+charming_python_1.txt-  {Picture of Author: http://gnosis.cx/cgi/img_dqm.cgi}
+charming_python_1.txt-  There must be some enthymetic necessity to David Mertz writing
+charming_python_1.txt-  a column on Python.  Like the Monty crew, whose phonorecordings
+charming_python_1.txt-  he imbibed as a teenager, he wound up with graduate degrees in
+charming_python_1.txt-  philosophy.  Now that he writes computer programs for a
+charming_python_1.txt-  living--and writes about writing computer programs--a certain
+charming_python_1.txt-  symmetry is served by writing such in and about Python.  David
+charming_python_1.txt-  may be reached at mertz@gnosis.cx; his life pored over at
+--
+charming_python_10.txt:ABOUT THE AUTHOR
+charming_python_10.txt-------------------------------------------------------------------------
+charming_python_10.txt-
+charming_python_10.txt-  {Picture of Author: http://gnosis.cx/cgi/img_dqm.cgi}
+charming_python_10.txt-  David Mertz writes many apocopetic articles.  David may be
+charming_python_10.txt-  reached at mertz@gnosis.cx; his life pored over at
+charming_python_10.txt-  http://gnosis.cx/publish/.  Suggestions and recommendations on
+charming_python_10.txt-  this, past, or future, columns are welcomed.
+charming_python_10.txt-
+charming_python_10.txt-
+charming_python_10.txt-
+--
+charming_python_11.txt:ABOUT THE AUTHOR
+charming_python_11.txt-------------------------------------------------------------------------
+charming_python_11.txt-
+charming_python_11.txt-  {Picture of Author: http://gnosis.cx/cgi/img_dqm.cgi}
+charming_python_11.txt-  David Mertz believes that the real is the rational; and that
+charming_python_11.txt-  the avant-garde remains at the cutting-edge.  But he regrets
+charming_python_11.txt-  that nostalgia just isn't what it used to be. David may be
+charming_python_11.txt-  reached at mertz@gnosis.cx; his life pored over at
+charming_python_11.txt-  http://gnosis.cx/publish/.  Suggestions and recommendations on
+charming_python_11.txt-  this, past, or future, columns are welcomed.
+charming_python_11.txt-
+--
+charming_python_12.txt:ABOUT THE AUTHOR
+charming_python_12.txt-------------------------------------------------------------------------
+charming_python_12.txt-
+charming_python_12.txt-  {Picture of Author: http://gnosis.cx/cgi/img_dqm.cgi}
+charming_python_12.txt-  David Mertz' failures as a hunter, fisherman, and shepherd have
+charming_python_12.txt-  led him to his life of critical criticism.  Tomorrow he may try
+charming_python_12.txt-  something else.  David may be reached at mertz@gnosis.cx; his
+charming_python_12.txt-  life pored over at http://gnosis.cx/publish/.  Suggestions and
+charming_python_12.txt-  recommendations on this, past, or future, columns are welcomed.
+charming_python_12.txt-
+charming_python_12.txt-
+--
+charming_python_13.txt:ABOUT THE AUTHOR
+charming_python_13.txt-------------------------------------------------------------------------
+charming_python_13.txt-
+charming_python_13.txt-  {Picture of Author: http://gnosis.cx/cgi/img_dqm.cgi}
+charming_python_13.txt-  Since conceptions without intuitions are empty, and intutions
+charming_python_13.txt-  without conceptions, blind, David Mertz wants a cast sculpture
+charming_python_13.txt-  of Milton for his office.  Start planning for his birthday.
+charming_python_13.txt-  David may be reached at mertz@gnosis.cx; his life pored over at
+charming_python_13.txt-  http://gnosis.cx/publish/.  Suggestions and recommendations on
+charming_python_13.txt-  this, past, or future, columns are welcomed.
+charming_python_13.txt-
+--
+charming_python_14.txt:ABOUT THE AUTHOR
+charming_python_14.txt-------------------------------------------------------------------------
+charming_python_14.txt-
+charming_python_14.txt-  {Picture of Author: http://gnosis.cx/cgi/img_dqm.cgi}
+charming_python_14.txt-  David Mertz wonders if he could pass the Turing test (and
+charming_python_14.txt-  whether this article has).  David may be reached at
+charming_python_14.txt-  mertz@gnosis.cx; his life pored over at
+charming_python_14.txt-  http://gnosis.cx/publish/.  Suggestions and recommendations on
+charming_python_14.txt-  this, past, or future, columns are welcomed.
+charming_python_14.txt-
+charming_python_14.txt-
+--
+charming_python_2.txt:ABOUT THE AUTHOR
+charming_python_2.txt-------------------------------------------------------------------------
+charming_python_2.txt-
+charming_python_2.txt-  {Picture of Author: http://gnosis.cx/cgi/img_dqm.cgi}
+charming_python_2.txt-  David Mertz has, by this time, been writing software for a
+charming_python_2.txt-  couple decades, but has spent that same time generally writing
+charming_python_2.txt-  *about* quite different matters.  Roads come together.  The
+charming_python_2.txt-  main thing that has attracted him to Python is that in
+charming_python_2.txt-  comparison to most other programming languages it is both
+charming_python_2.txt-  aposiopetic and aphaeretic.  You can just write what you mean
+charming_python_2.txt-  without the language making extra demands of your fingers.
+--
+charming_python_3.txt:ABOUT THE AUTHOR
+charming_python_3.txt-------------------------------------------------------------------------
+charming_python_3.txt-
+charming_python_3.txt-  {Picture of Author: http://gnosis.cx/cgi/img_dqm.cgi}
+charming_python_3.txt-  David Mertz is not really quite sure if the open source
+charming_python_3.txt-  movement is a dinner party.  But he would certainly like to
+charming_python_3.txt-  think that proprietary intellectual property is a paper tiger.
+charming_python_3.txt-  His own ideas, certainly, want to be free.  David may be
+charming_python_3.txt-  reached at mertz@gnosis.cx; his life pored over at
+charming_python_3.txt-  http://gnosis.cx/publish/.  Suggestions and recommendations on
+charming_python_3.txt-  this, past, or future, columns are welcomed.
+--
+charming_python_4.txt:ABOUT THE AUTHOR
+charming_python_4.txt-------------------------------------------------------------------------
+charming_python_4.txt-
+charming_python_4.txt-  {Picture of Author: http://gnosis.cx/cgi/img_dqm.cgi}
+charming_python_4.txt-  In a ramiculated career, David Mertz has produced his share of
+charming_python_4.txt-  synecdoches. Most of them have been in areas of academic
+charming_python_4.txt-  "postmodern" philosophy, but this article also occupies several
+charming_python_4.txt-  levels of descriptive "states." David may be reached at
+charming_python_4.txt-  mertz@gnosis.cx; his life pored over at http://gnosis.cx/publish/.
+charming_python_4.txt-  Suggestions and recommendations on this, past, or future, columns
+charming_python_4.txt-  are welcomed.
+--
+charming_python_5.txt:ABOUT THE AUTHOR
+charming_python_5.txt-------------------------------------------------------------------------
+charming_python_5.txt-
+charming_python_5.txt-  {Picture of Author: http://gnosis.cx/cgi/img_dqm.cgi}
+charming_python_5.txt-  David Mertz has been a programmer and a writer for nearly two
+charming_python_5.txt-  decades; but David Mertz has only written *about* programming
+charming_python_5.txt-  of late (and enjoys it greatly).  David Mertz, in "real life,"
+charming_python_5.txt-  is a wayward humanities academic, lured by lucre to IT.  David
+charming_python_5.txt-  Mertz is fond of anaphora (and of alliteration).  David may be
+charming_python_5.txt-  reached at mertz@gnosis.cx; his life pored over at
+charming_python_5.txt-  http://gnosis.cx/publish/.  Suggestions and recommendations on
+--
+charming_python_6.txt:ABOUT THE AUTHOR
+charming_python_6.txt-------------------------------------------------------------------------
+charming_python_6.txt-
+charming_python_6.txt-  {Picture of Author: http://gnosis.cx/cgi/img_dqm.cgi}
+charming_python_6.txt-  David Mertz believes that God gave use the keyboard and the TTY
+charming_python_6.txt-  while all other interface devices are mere human artifice.
+charming_python_6.txt-  David may be reached at mertz@gnosis.cx; his life pored over at
+charming_python_6.txt-  http://gnosis.cx/publish/.  Suggestions and recommendations on
+charming_python_6.txt-  this, past, or future, columns are welcomed.
+charming_python_6.txt-
+charming_python_6.txt-
+--
+charming_python_7.txt:ABOUT THE AUTHOR
+charming_python_7.txt-------------------------------------------------------------------------
+charming_python_7.txt-
+charming_python_7.txt-  {Picture of Author: http://gnosis.cx/cgi/img_dqm.cgi}
+charming_python_7.txt-  As David Mertz went to sleep one night after troubled
+charming_python_7.txt-  wakefulness, he dreamed himself transformed into a technical
+charming_python_7.txt-  journalist.  He needs the rest.  David may be reached at
+charming_python_7.txt-  mertz@gnosis.cx; his life pored over at
+charming_python_7.txt-  http://gnosis.cx/publish/.  Suggestions and recommendations on
+charming_python_7.txt-  this, past, or future, columns are welcomed.
+charming_python_7.txt-
+--
+charming_python_8.txt:ABOUT THE AUTHOR
+charming_python_8.txt-------------------------------------------------------------------------
+charming_python_8.txt-
+charming_python_8.txt-  {Picture of Author: http://gnosis.cx/cgi/img_dqm.cgi}
+charming_python_8.txt-  David Mertz writes many apocopetic articles.  David may be
+charming_python_8.txt-  reached at mertz@gnosis.cx; his life pored over at
+charming_python_8.txt-  http://gnosis.cx/publish/.  Suggestions and recommendations on
+charming_python_8.txt-  this, past, or future, columns are welcomed.
+charming_python_8.txt-
+charming_python_8.txt-
+--
+charming_python_9.txt:ABOUT THE AUTHOR
+charming_python_9.txt-------------------------------------------------------------------------
+charming_python_9.txt-
+charming_python_9.txt-  {Picture of Author: http://gnosis.cx/cgi/img_dqm.cgi}
+charming_python_9.txt-  David Mertz writes many apocopetic articles.  David may be
+charming_python_9.txt-  reached at mertz@gnosis.cx; his life pored over at
+charming_python_9.txt-  http://gnosis.cx/publish/.  Suggestions and recommendations on
+charming_python_9.txt-  this, past, or future, columns are welcomed.
+charming_python_9.txt-
+charming_python_9.txt-
+--
+compression_primer.txt:ABOUT THE AUTHOR
+compression_primer.txt-------------------------------------------------------------------------
+compression_primer.txt-
+compression_primer.txt-  David Mertz is many things.  He has a habit of developing
+compression_primer.txt-  software or writing about it.  But he also writes articles in
+compression_primer.txt-  obscure areas of academic political philosophy for such
+compression_primer.txt-  journals.  He has dim memories of understanding transfinite set
+compression_primer.txt-  theory, logic, model-theory and such matters.  A bit less dim
+compression_primer.txt-  are his memories of being a union organizer.  And he may yet be
+compression_primer.txt-  something else, as his hopes of being less than halfway to
+compression_primer.txt-  shrugging off this mortal coil are quite reasonable.  He may be
+--
+extending_markup_2.txt:ABOUT THE AUTHOR
+extending_markup_2.txt-------------------------------------------------------------------------
+extending_markup_2.txt-
+extending_markup_2.txt-  {Picture of Author:  http://gnosis.cx/cgi/img_dqm.cgi}
+extending_markup_2.txt-  David Mertz cannot fool all of the people all of the time, but
+extending_markup_2.txt-  sometimes he wishes he could.  David may be reached at
+extending_markup_2.txt-  mertz@gnosis.cx; his life pored over at http://gnosis.cx/publish/.
+extending_markup_2.txt-  Suggestions and recommendations on this, past, or future, columns
+extending_markup_2.txt-  are welcomed.
+extending_markup_2.txt-
+extending_markup_2.txt-
+--
+feature_5min_python.txt:ABOUT THE AUTHOR
+feature_5min_python.txt-------------------------------------------------------------------------
+feature_5min_python.txt-
+feature_5min_python.txt-  David Mertz dabbles in a lot of things.  Lately, he has mostly
+feature_5min_python.txt-  done web-application development and writing articles like
+feature_5min_python.txt-  this.  You can find out copious biographical details by rooting
+feature_5min_python.txt-  around at http://gnosis.cx/publish/.
+feature_5min_python.txt-
+--
+review_fte.txt:ABOUT THE AUTHOR
+review_fte.txt-------------------------------------------------------------------------
+review_fte.txt-
+review_fte.txt-  There is hardly anything David Mertz feels more strongly about
+review_fte.txt-  than text-editors.  It stands to reason after a tally of the
+review_fte.txt-  hours and minutes of his days.  You can find out copious
+review_fte.txt-  biographical details by rooting around at
+review_fte.txt-  http://gnosis.cx/publish/.
+--
+review_htmlpp.txt:ABOUT THE AUTHOR
+review_htmlpp.txt-------------------------------------------------------------------------
+review_htmlpp.txt-
+review_htmlpp.txt-  David Mertz enjoys writing programs to arrange words for him
+review_htmlpp.txt-  just about as much as he enjoys writing words himself.  You can
+review_htmlpp.txt-  find out copious biographical details by rooting around at
+review_htmlpp.txt-  http://gnosis.cx/publish/.
+--
+review_idle.txt:ABOUT THE AUTHOR
+review_idle.txt-------------------------------------------------------------------------
+review_idle.txt-
+review_idle.txt-  David Mertz hopes in earnest that the next buzzword for the web
+review_idle.txt-  will be "gnostic," its cognates, and related neologisms.  Try
+review_idle.txt-  out, "let's go gnosticate on the project," for euphony; perhaps
+review_idle.txt-  it works.  He hopes further that his prior art will support his
+review_idle.txt-  linguistic patent.  You can reach him at mertz@gnosis.cx, and
+review_idle.txt-  find copious biographical details by rooting around at
+review_idle.txt-  http://gnosis.cx/publish/.
+review_idle.txt-
+--
+review_jedit.txt:ABOUT THE AUTHOR
+review_jedit.txt-------------------------------------------------------------------------
+review_jedit.txt-
+review_jedit.txt-  There is hardly anything David Mertz feels more strongly about than
+review_jedit.txt-  text-editors. It stands to reason after a tally of the hours and
+review_jedit.txt-  minutes of his days. You can find out copious biographical details
+review_jedit.txt-  by rooting around at http://gnosis.cx/publish/.
+review_jedit.txt-
+--
+review_nedit.txt:ABOUT THE AUTHOR
+review_nedit.txt-------------------------------------------------------------------------
+review_nedit.txt-
+review_nedit.txt-  There is hardly anything David Mertz feels more strongly about
+review_nedit.txt-  than text-editors.  It stands to reason after a tally of the
+review_nedit.txt-  hours and minutes of his days.  You can find out copious
+review_nedit.txt-  biographical details by rooting around at
+review_nedit.txt-  http://gnosis.cx/publish/.
+--
+review_perlbuilder.txt:ABOUT THE AUTHOR
+review_perlbuilder.txt-------------------------------------------------------------------------
+review_perlbuilder.txt-
+review_perlbuilder.txt-  If David Mertz were more paraleiptically inclined, he might
+review_perlbuilder.txt-  deny his subliminal endorsement of another P--- language.  You
+review_perlbuilder.txt-  can reach him at mertz@gnosis.cx, and find copious biographical
+review_perlbuilder.txt-  details by rooting around at http://gnosis.cx/publish/.
+review_perlbuilder.txt-
+--
+review_pfe.txt:ABOUT THE AUTHOR
+review_pfe.txt-------------------------------------------------------------------------
+review_pfe.txt-
+review_pfe.txt-  There is hardly anything David Mertz feels more strongly about
+review_pfe.txt-  than text-editors.  It stands to reason after a tally of the
+review_pfe.txt-  hours and minutes of his days.  You can find out copious
+review_pfe.txt-  biographical details by rooting around at
+review_pfe.txt-  http://gnosis.cx/publish/.
+--
+review_ppwizard.txt:ABOUT THE AUTHOR
+review_ppwizard.txt-------------------------------------------------------------------------
+review_ppwizard.txt-
+review_ppwizard.txt-  David Mertz dabbles in a lot of things.  Lately, he has mostly
+review_ppwizard.txt-  done web-application development and writing articles like
+review_ppwizard.txt-  this.  You can find out copious biographical details by rooting
+review_ppwizard.txt-  around at http://gnosis.cx/publish/.
+--
+review_textpad.txt:ABOUT THE AUTHOR
+review_textpad.txt------------------------------------------------------------------
+review_textpad.txt-
+review_textpad.txt-  There is hardly anything David Mertz feels more strongly about
+review_textpad.txt-  than text-editors.  It stands to reason after a tally of the
+review_textpad.txt-  hours and minutes of his days.  You can find out copious
+review_textpad.txt-  biographical details by rooting around at
+review_textpad.txt-  http://gnosis.cx/publish/.
+review_textpad.txt-
+review_textpad.txt-
+review_textpad.txt-
+--
+review_xmetal.txt:ABOUT THE AUTHOR
+review_xmetal.txt-------------------------------------------------------------------------
+review_xmetal.txt-
+review_xmetal.txt-  David Mertz wrote this review aboard a great big clipper ship,
+review_xmetal.txt-  going from this land here to that (but with no sailor's suit
+review_xmetal.txt-  and cap). You can find out copious biographical details by
+review_xmetal.txt-  sailing to http://gnosis.cx/publish/.
+--
+review_xmlinstance.txt:ABOUT THE AUTHOR
+review_xmlinstance.txt-------------------------------------------------------------------------
+review_xmlinstance.txt-
+review_xmlinstance.txt-  While still probably less than many of his readers, David Mertz
+review_xmlinstance.txt-  is starting to feel like he knows altogether too much about
+review_xmlinstance.txt-  matters XML.  You can find out copious biographical details by
+review_xmlinstance.txt-  sailing to http://gnosis.cx/publish/.
+--
+review_xmlspy.txt:ABOUT THE AUTHOR
+review_xmlspy.txt-------------------------------------------------------------------------
+review_xmlspy.txt-
+review_xmlspy.txt-  David Mertz will settle for paraphrase where cannot manage
+review_xmlspy.txt-  periphrasis. You can find out copious biographical details by
+review_xmlspy.txt-  rooting around at http://gnosis.cx/publish/.
+--
+web_accessibility_1.txt:ABOUT THE AUTHOR
+web_accessibility_1.txt-------------------------------------------------------------------------
+web_accessibility_1.txt-
+web_accessibility_1.txt-  {Picture of Author: http://gnosis.cx/cgi/img_dqm.cgi}
+web_accessibility_1.txt-  David Mertz has been consumed with ressentiment since the
+web_accessibility_1.txt-  introduction of the <blink> tag in Netscape 2.0.  David may be
+web_accessibility_1.txt-  reached at mertz@gnosis.cx; his life pored over at
+web_accessibility_1.txt-  http://gnosis.cx/publish/.  Suggestions and recommendations on
+web_accessibility_1.txt-  this, past, or future, columns are welcomed.
+web_accessibility_1.txt-
+web_accessibility_1.txt-
+--
+web_accessibility_2.txt:ABOUT THE AUTHOR
+web_accessibility_2.txt-------------------------------------------------------------------------
+web_accessibility_2.txt-
+web_accessibility_2.txt-  {Picture of Author: http://gnosis.cx/cgi/img_dqm.cgi}
+web_accessibility_2.txt-  David Mertz has been consumed with ressentiment since the
+web_accessibility_2.txt-  introduction of the <blink> tag in Netscape 2.0.  David may be
+web_accessibility_2.txt-  reached at mertz@gnosis.cx; his life pored over at
+web_accessibility_2.txt-  http://gnosis.cx/publish/.  Suggestions and recommendations on
+web_accessibility_2.txt-  this, past, or future, columns are welcomed.
+web_accessibility_2.txt-
+web_accessibility_2.txt-
+--
+xml_matters_1.txt:ABOUT THE AUTHOR
+xml_matters_1.txt-------------------------------------------------------------------------
+xml_matters_1.txt-
+xml_matters_1.txt-  {Picture of Author: http://gnosis.cx/cgi/img_dqm.cgi}
+xml_matters_1.txt-  David Mertz finds there to be a hysteretic relationship between
+xml_matters_1.txt-  writing and comprehension.  He has begun, for example, to
+xml_matters_1.txt-  comprehend his own doctoral work.  David may be reached at
+xml_matters_1.txt-  mertz@gnosis.cx; his life pored over at
+xml_matters_1.txt-  http://gnosis.cx/publish/.  Suggestions and recommendations on
+xml_matters_1.txt-  this, past, or future, columns are welcomed.
+xml_matters_1.txt-
+--
+xml_matters_2.txt:ABOUT THE AUTHOR
+xml_matters_2.txt-------------------------------------------------------------------------
+xml_matters_2.txt-
+xml_matters_2.txt-  {Picture of Author:  http://gnosis.cx/cgi/img_dqm.cgi}
+xml_matters_2.txt-  David Mertz cannot fool all of the people all of the time, but
+xml_matters_2.txt-  sometimes he wishes he could.  David may be reached at
+xml_matters_2.txt-  mertz@gnosis.cx; his life pored over at http://gnosis.cx/publish/.
+xml_matters_2.txt-  Suggestions and recommendations on this, past, or future, columns
+xml_matters_2.txt-  are welcomed.
+xml_matters_2.txt-
+xml_matters_2.txt-
+--
+xml_matters_3.txt:ABOUT THE AUTHOR
+xml_matters_3.txt-------------------------------------------------------------------------
+xml_matters_3.txt-
+xml_matters_3.txt-  {Picture of Author:  http://gnosis.cx/cgi/img_dqm.cgi}
+xml_matters_3.txt-  It might be catachretic, but it is not a malapropism to describe
+xml_matters_3.txt-  David Mertz juxtopositions of interests herein as sylleptic.  Words
+xml_matters_3.txt-  is words.  David may be reached at mertz@gnosis.cx; his life pored
+xml_matters_3.txt-  over at http://gnosis.cx/publish/.  Suggestions and recommendations
+xml_matters_3.txt-  on this, past, or future, columns are welcomed.
+xml_matters_3.txt-
+xml_matters_3.txt-
+--
+xml_matters_4.txt:ABOUT THE AUTHOR
+xml_matters_4.txt-------------------------------------------------------------------------
+xml_matters_4.txt-
+xml_matters_4.txt-  {Picture of Author:  http://gnosis.cx/cgi/img_dqm.cgi}
+xml_matters_4.txt-  David Mertz became disenchanted with the academy and became a
+xml_matters_4.txt-  technical journalist: post hoc ergo prompter hoc. David may be
+xml_matters_4.txt-  reached at mertz@gnosis.cx; his life pored over at
+xml_matters_4.txt-  http://gnosis.cx/publish/.  Suggestions and recommendations on
+xml_matters_4.txt-  this, past, or future, columns are welcomed.
+xml_matters_4.txt-
+xml_matters_4.txt-
+--
+xml_matters_5.txt:ABOUT THE AUTHOR
+xml_matters_5.txt-------------------------------------------------------------------------
+xml_matters_5.txt-
+xml_matters_5.txt-  {Picture of Author:  http://gnosis.cx/cgi/img_dqm.cgi}
+xml_matters_5.txt-  David Mertz must have mislaid his MacGuffin in one of his
+xml_matters_5.txt-  other articles.  It is bound to show up again soon. David may
+xml_matters_5.txt-  be reached at mertz@gnosis.cx; his life pored over at
+xml_matters_5.txt-  http://gnosis.cx/publish/.  Suggestions and recommendations on
+xml_matters_5.txt-  this, past, or future, columns are welcomed.
+xml_matters_5.txt-
+xml_matters_5.txt-
+--
+xml_matters_6.txt:ABOUT THE AUTHOR
+xml_matters_6.txt-------------------------------------------------------------------------
+xml_matters_6.txt-
+xml_matters_6.txt-  {Picture of Author:  http://gnosis.cx/cgi/img_dqm.cgi}
+xml_matters_6.txt-  David Mertz must have mislaid his MacGuffin in one of his
+xml_matters_6.txt-  other articles.  It is bound to show up again soon. David may
+xml_matters_6.txt-  be reached at mertz@gnosis.cx; his life pored over at
+xml_matters_6.txt-  http://gnosis.cx/publish/.  Suggestions and recommendations on
+xml_matters_6.txt-  this, past, or future, columns are welcomed.
+xml_matters_6.txt-
+xml_matters_6.txt-
+--
+xml_matters_7.txt:ABOUT THE AUTHOR
+xml_matters_7.txt-------------------------------------------------------------------------
+xml_matters_7.txt-
+xml_matters_7.txt-  {Picture of Author:  http://gnosis.cx/cgi/img_dqm.cgi}
+xml_matters_7.txt-  David Mertz, in his gnomist aspirations, wishes he had coined
+xml_matters_7.txt-  the observation that the great thing about standards is that
+xml_matters_7.txt-  there are so many to choose from.  But then, he is also fuzzy
+xml_matters_7.txt-  on OS design.  David may be reached at mertz@gnosis.cx; his
+xml_matters_7.txt-  life pored over at http://gnosis.cx/publish/. Suggestions and
+xml_matters_7.txt-  recommendations on this, past, or future, columns are welcomed.
+xml_matters_7.txt-

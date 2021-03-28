@@ -1,0 +1,717 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>TUTORIAL FOR LPI EXAM 201: part 6 -- Topic 211: System Maintenance -- </title>
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Tutorial For Lpi Exam 201: Part 6</h1>
+<h2>Topic 211: System Maintenance</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Professional Neophyte<br>
+ August, 2005<br>
+ <br>
+</p>
+<blockquote>
+    Welcome to "System Maintenance", the sixth of eight tutorials
+    designed to prepare you for LPI exam 201. In this tutorial you will
+    learn some basic concept of system logging, software packaging, and
+    backup strategies.
+</blockquote>
+<h3>Before You Start</h3>
+ <h3>About this series
+</h3>
+ <p>
+  The Linux Professional Institute (LPI) certifies Linux system
+  administrators at junior and intermediate levels. There are two exams
+  at each certification level. This series of eight tutorials helps you
+  prepare for the first of the two LPI intermediate level system
+  administrator exams--LPI exam 201. A companion series of tutorials is
+  available for the other intermediate level exam--LPI exam 202. Both
+  exam 201 and exam 202 are required for intermediate level
+  certification. Intermediate level certification is also known as
+  certification level 2.
+</p>
+<p>
+  Each exam covers several or topics and each topic has a weight. The
+  weight indicate the relative importance of each topic. Very roughly,
+  expect more questions on the exam for topics with higher weight. The
+  topics and their weights for LPI exam 201 are:
+</p>
+<p>
+  <strong> Topic 201: Linux Kernel (5)
+  </strong> Topic 202: System Startup (5)
+  <strong> Topic 203: Filesystems (10)
+  </strong> Topic 204: Hardware (8)
+  <strong> Topic 209: File Sharing Servers (8)
+  </strong> Topic 211: System Maintenance (4)
+  <strong> Topic 213: System Customization and Automation (3)
+  </strong> Topic 214: Troubleshooting (6)
+</p>
+<h3>About this tutorial
+</h3>
+ <p>
+  Welcome to "System Maintenance", the sixth of eight tutorials designed
+  to prepare you for LPI exam 201. In this tutorial you will learn some
+  basic concept of system logging, software packaging, and backup
+  strategies.
+</p>
+<h3>Prerequisites
+</h3>
+ <p>
+  To get the most from this tutorial, you should already have a basic
+  knowledge of Linux and a working Linux system on which you can
+  practice the commands covered in this tutorial.
+</p>
+<h3>About system maintenance
+</h3>
+ <p>
+  This tutorial--and the corresponding LPI exam, is a little bit of a
+  grab-bag of several topics that do not cleanly fall in other
+  categories.  System logging and analyzing log files is an important
+  task for a system administrator to be familiar with.  Likewise, a
+  maintained system should carry out a sensible backup strategy using
+  standard Linux tools.
+</p>
+<p>
+  Not every system administrator will need to create custom software
+  packages, but for administrators of multiple (similar) installations,
+  installing site- or company-specific software packages will be part of
+  an administrators duties.  This tutorial looks at the Debian and RPM
+  package formats, as well as touching on basic "tarballs".
+</p>
+<h3>System Logging</h3>
+ <h3>About logging
+</h3>
+ <p>
+  Many processes and servers under a Linux system append changing status
+  information to "log files." These log files <em>often</em> live in the
+  <code>/var/log/</code> directory, and <em>often</em> begin with a time stamp indicating
+  when the described event occurred. But for better or worse, there is
+  no real consistency in the precise format of log files. The one
+  feature you can pretty much count on is that Linux log files are plain
+  ASCII files, and contain one "event" per line of the file. Often--but
+  not always--log files contain a (relatively) consistent set of space-
+  or tab-delimited data field.
+</p>
+<p>
+  Some processes, especially internet services, handle log file
+  writes within their own process.  At heart, writing to a log file is
+  just an append to an open file handle.  But many programs (especially
+  daemons and cron'd jobs) use the standard syslog API to let the
+  <code>syslogd</code> or <code>klogd</code> daemons handle the specific logging process.
+</p>
+<h3>Parsing log files
+</h3>
+ <p>
+  Exactly how you go about parsing a log file depends greatly on the
+  specific format it takes.  For log files with regular table format,
+  tools like <code>cut</code>, <code>split</code>, <code>head</code> and <code>tail</code> are likely to be useful.
+  For all log files, <code>grep</code> is a great tool for finding and filtering
+  contents of interest.  For more complex processing tasks, you are
+  likely to think of <code>sed</code>, <code>awk</code>, <code>perl</code> or <code>python</code> as tools of
+  choice.
+</p>
+<p>
+  For a good introduction to many of the text processing tools you are
+  most likely to use in processing and analyzing log files, see David's
+  IBM developerWorks tutorial on the GNU text processing utilities.  A
+  number of good higher-level tools also exist for working with log
+  files, but these tools are usually distribution specific and/or
+  non-standard (but often Free Software) utilities.
+</p>
+<h3>Logging with syslogd and klogd
+</h3>
+ <p>
+  The daemon <code>klogd</code> intercepts and logs Linux kernel messages.  As a
+  rule, <code>klogd</code> will utilize the more general <code>syslogd</code> capabilities,
+  but in special cases it may log messages directly to a file.
+</p>
+<p>
+  The general daemon <code>syslogd provides logging for many programs. Every
+  logged message contains at least a time and a hostname field, and
+  usually a program name field. The specific behavior of 'syslogd</code> is
+  controlled by the configuration file <code>/etc/syslog.conf</code>. Application
+  (including kernel) messages may be logged to files, usually living
+  under <code>/var/log/</code>, or remotely over a network socket.
+</p>
+<h3>Configuring /etc/syslog.conf
+</h3>
+ <p>
+  The file <code>/etc/syslog.conf</code> contains a set of rules, one per line.
+  Empty lines and lines starting with a <code>#</code> are ignored. Each rule
+  consists of two whitespace-separated fields, a selector field and an
+  action field. The selector, in turn, contains one of more
+  dot-separated facility/priority pairs. A facility is a subsystem that
+  wishes to log messages, and can have the (case-insensitive) values:
+  "auth", "authpriv", "cron", "daemon", "ftp", "kern", "lpr", "mail",
+  "mark", "news", "security", "syslog", "user", "uucp" and "local0"
+  through "local7".
+</p>
+<p>
+  Priorities have a specific order, and matching a given priority means
+  "this one or higher" unless an initial <code>=</code> (or <code>!=</code>) is used.
+  Priorities are, in ascending order: "debug", "info", "notice",
+  "warning" or "warn", "err" or "error", "crit", "alert", "emerg" or
+  "panic" (several names have synonyms). "none" means that no priority
+  is indicated.
+</p>
+<p>
+  Both facilities and priorities may accept the <code>*</code> wildcard.  Multiple
+  facilities may be comma-separated, and multiple selectors may be
+  semi-colon separated.  For example:
+</p>
+<div class="code-sample"><h4></h4><pre># from /etc/syslog.conf
+# all kernel mesages
+kern.*                    -/var/log/kern.log
+# `catch-all' logfile
+*.=info;*.=notice;*.=warn;\
+  auth,authpriv.none;\
+  cron,daemon.none;\
+  mail,news.none          -/var/log/messages
+# Emergencies are sent to everybody logged in
+*.emerg                   *
+
+</pre></div><h3>Configuring remote logging
+</h3>
+ <p>
+  To enable remote logging of <code>syslogd</code> messages (really application
+  messages, but handled by <code>syslogd</code>), you must first enable the
+  "syslog" service on both the listening and the sending machines.  To
+  do this, you need to add a line to each <code>/etc/services</code> configuration
+  file containing something like:
+</p>
+<div class="code-sample"><h4></h4><pre>syslog    514/UDP
+
+</pre></div><p>
+  To configure the local (sending) <code>syslogd</code> to send messages to a
+  remote host, you specify a regular facility and priority, but give an
+  action beginning with an <code>@</code> symbol for the destination host.  A host
+  may be configured in the usual fashion, it either <code>/etc/hosts</code> or via
+  DNS (it need not be resolved already when <code>syslogd</code> first launches).
+  For example:
+</p>
+<div class="code-sample"><h4></h4><pre># from /etc/syslog.conf
+# log all critical messages to master.example.com
+*.crit                @master.example.com
+# log all mail messages except info level to mail.example.com
+mail.*;mail.!=info    @mail.example.com
+
+</pre></div><h3>Rotating log files
+</h3>
+ <p>
+  Often you will not want to let particular log files grow unboundedly.
+  The utility <code>logrotate</code> may be used to archive older logged
+  information. Usually <code>logrotate</code> is run as a <code>cron</code> job, generally
+  daily. 'logrotate allows automatic rotation, compression, removal, and
+  mailing of log files. Each log file may be handled daily, weekly,
+  monthly, or only when it grows too large.
+</p>
+<p>
+  The behavior of <code>logrotate</code> is controlled by the configuration file
+  <code>/etc/logrotate.conf</code> (or some other file, if specified).  The
+  configuration file may contain both global options and file-specific
+  options.  Generally, archived logs are saved for a finite time period,
+  and are given sequential backup names.   For example, one system of
+  mine contains the following files due to its rotation schedule.
+</p>
+<div class="code-sample"><h4></h4><pre>-rw-r-----  1 root adm 4135 2005-08-10 04:00 /var/log/syslog
+-rw-r-----  1 root adm 6022 2005-08-09 07:36 /var/log/syslog.0
+-rw-r-----  1 root adm  883 2005-08-08 07:35 /var/log/syslog.1.gz
+-rw-r-----  1 root adm  931 2005-08-07 07:35 /var/log/syslog.2.gz
+-rw-r-----  1 root adm  888 2005-08-06 07:35 /var/log/syslog.3.gz
+-rw-r-----  1 root adm 9494 2005-08-05 07:35 /var/log/syslog.4.gz
+-rw-r-----  1 root adm 8931 2005-08-04 07:35 /var/log/syslog.5.gz
+
+</pre></div><h3>Packaging Software</h3>
+ <h3>In the beginning was the tarball
+</h3>
+ <p>
+  For custom software distribution on Linux, there is actually much less
+  needed than you might think.  Linux has a fairly clean standard about
+  where files of various types should reside, and installing custom
+  software, at heart, need not involve much more than putting the right
+  files in the right places.
+</p>
+<p>
+  The Linux tool <code>tar</code> ("tape archive"; though it need not, and usually
+  does not, actually utilize tapes) is perfectly adequate to create an
+  archive of files with specified filesystem locations. For
+  distribution, you generally want to compress a <code>tar</code> archive with
+  <code>gzip</code> (or <code>bzip2</code>) as well. See the final section of this tutorial on
+  Backup for more information on these utilities. A compressed <code>tar</code>
+  archive is generally named with the extensions <code>.tar.gz</code> or .tgz' (or
+  <code>.tar.bz2</code>).
+</p>
+<p>
+  Early Linux distributions--and some current ones like Slackware--use
+  simple tarballs as their distribution mechanism. For a custom
+  distribution of in-house software to centrally maintained Linux
+  systems, this continues to be the simplest approach
+</p>
+<h3>Custom archive formats
+</h3>
+ <p>
+  Many programming languages and other tools come with custom
+  distribution systems that are neutral between Linux distributions, and
+  usually between altogether different operating systems. Python has its
+  <code>distutils</code> tools and archive format; Perl has CPAN archives; Java has
+  <code>.jar</code> files; Ruby has <code>gems</code>. Many non-language applications have a
+  standard system for distributing plug-ins or other enhancements to a
+  base application as well.
+</p>
+<p>
+  While you can perfectly well use an package format like DEB or RPM to
+  distribute, e.g. a Python package, it often makes more sense to follow
+  the packaging standard of the tool the package is created for. Of
+  course, for system level utilities and applications, or for most
+  compiled userland applications, that standard is on the Linux
+  distribution packaging standards. But for custom tools written in
+  specific programming languages, something different might promote
+  easier reuse of your tools across distributions and platforms (whether
+  in-house or external users are the intended target).
+</p>
+<h3>The "big two" package formats
+</h3>
+ <p>
+  There are two main package formats used by Linux distributions: Redhat
+  Package Manager (RPM) and Debian (DEB). Both are similar in purpose,
+  but different in details. In general, either one is a format for an
+  "enhanced" archive of files. The enhancements provided by these
+  package formats include annotations for version numbers, dependencies
+  of one application upon other applications or libraries, human
+  readable descriptions of packaged tools, and a general mechanism for
+  managing the installation, upgrade and deinstallation of packaged
+  tools.
+</p>
+<p>
+  Under DEB files, the nested configuration file <code>control</code> contains most
+  of the package metadata.  For RPM files, the file <code>spec</code> plays this
+  role.  The full details of creating good packages in either format is
+  beyond this tutorial, but we will outline the basics here.
+</p>
+<h3>What is in a .deb file?
+</h3>
+ <p>
+  A DEB package is created with the archive tool, and cousin of <code>tar</code>,
+  <code>ar</code> (or by some higher-level tool that utilizes <code>ar</code>). Therefore we
+  can use <code>ar</code> to see just what is really inside a <code>.deb</code> file.
+  Normally we would use higher-level tools like <code>dpkg</code>, <code>dpkg-deb</code> or
+  <code>apt-get</code> to actually work with a DEB package.  For example:
+</p>
+<div class="code-sample"><h4></h4><pre>% ar tv unzip_5.51-2ubuntu1.1_i386.deb
+rw-r--r-- 0/0      4 Aug  1 07:23 2005 debian-binary
+rw-r--r-- 0/0   1007 Aug  1 07:23 2005 control.tar.gz
+rw-r--r-- 0/0 133475 Aug  1 07:23 2005 data.tar.gz
+
+</pre></div><p>
+  The file <code>debian-binary</code> simply contains the DEB version (currently
+  <code>2.0</code>).  The tarball <code>data.tar.gz</code> contains the actually application
+  files--executables, documentation, manual pages, configuration files,
+  and so on.
+</p>
+<p>
+  The tarball <code>control.tar.gz</code> is the most interesting, from a packaging
+  perspective.  Let us look at the example DEB package we chose:
+</p>
+<div class="code-sample"><h4></h4><pre>% tar tvfz control.tar.gz
+drwxr-xr-x root/root         0 2005-08-01 07:23:43 ./
+-rw-r--r-- root/root       970 2005-08-01 07:23:43 ./md5sums
+-rw-r--r-- root/root       593 2005-08-01 07:23:43 ./control
+
+</pre></div><p>
+  As you might expect, <code>md5sums</code> contains cryptographic hashes of all
+  the distributed files for verification purposes.  The file <code>control</code>
+  is where the metadata lives.  In some cases you might also find or
+  wish to include scripts called <code>postinst</code> and <code>prerm</code> in
+  <code>control.tar.gz</code> to take special steps after installation or before
+  removal, respectively.
+</p>
+<h3>Creating a DEB control file
+</h3>
+ <p>
+  The installation scripts can do anything a shell script might. Look at
+  some examples in existing packages for examples. But those scripts are
+  optional, and often not needed or included. Required for a <code>.deb</code>
+  package is its <code>control</code> file. The format of this file contains
+  various metadata fields, and is best illustrated by showing an
+  example:
+</p>
+<div class="code-sample"><h4></h4><pre>% cat control
+Package: unzip
+Version: 5.51-2ubuntu1.1
+Section: utils
+Priority: optional
+Architecture: i386
+Depends: libc6 (&gt;= 2.3.2.ds1-4)
+Suggests: zip
+Conflicts: unzip-crypt (&lt;&lt; 5.41)
+Replaces: unzip-crypt (&lt;&lt; 5.41)
+Installed-Size: 308
+Maintainer: Santiago Vila &lt;sanvila@debian.org&gt;
+Description: De-archiver for .zip files
+ InfoZIP's unzip program. With the exception of multi-volume archives
+ (ie, .ZIP files that are split across several disks using PKZIP's /&amp; option),
+ this can handle any file produced either by PKZIP, or the corresponding
+ InfoZIP zip program.
+ .
+ This version supports encryption.
+
+</pre></div><p>
+  Basically, except the custom data values, you should make your control
+  file look just like this one.  For non-CPU specific packages--either
+  scripts, pure documentation, or source code use <code>Architecture: all</code>.
+</p>
+<h3>Making a DEB package
+</h3>
+ <p>
+  Creating a DEB package is performed with the tool <code>dpkg-deb</code>.  We
+  cannot cover all the intricacies of good packaging, but the basic idea
+  is to create a working directory <code>./debian/</code> and put the necessary
+  contents into it before running <code>dpkg-deb</code>.  You will also want to set
+  permissions on your files to match their intended state when
+  installed.  For example:
+</p>
+<div class="code-sample"><h4></h4><pre>% mkdir -p ./debian/usr/bin/
+% cp foo-util ./debian/usr/bin                # copy executable/script
+% mkdir -p ./debian/usr/share/man/man1
+% cp foo-util.1 ./debian/usr/share/man/man1   # copy the manpage
+% gzip --best ./debian/usr/share/man/man1/foo-util.1
+% find ./debian -type d | xarg chmod 755      # set dir permissions
+% mkdir -p ./debian/DEBIAN
+% cp control ./debian/DEBIAN   # first create a matching 'control'
+% dpkg-deb --build debian      # create the archive
+% mv debian.deb foo-util_1.3-1all.deb  # rename to final package name
+
+</pre></div><h3>More on DEB package creation
+</h3>
+ <p>
+  In the last panel you can see that our local directory structure
+  underneath <code>./debian/</code> is meant to match the intended installation
+  structure.  A few more points on creating a good package are worth
+  observing.
+</p>
+<p>
+  * Generally you should create a file as part of your distribution
+</p>
+<blockquote>
+    called <code>./debian/usr/share/doc/foo-util/copyright</code> (adjust for
+    package name).
+</blockquote>
+<p>
+  * It is also good practice to create the files
+</p>
+<blockquote>
+    <code>./debian/usr/share/doc/foo-util/changelog.gz</code> and
+    <code>./debian/usr/share/doc/foo-utils/changelog.Debian.gz</code>.
+</blockquote>
+<p>
+  * The tool <code>lintian</code> will check for questionable features in a DEB
+</p>
+<blockquote>
+    package.  Not everything <code>lintian</code> complains about is strictly
+    necessary to fix; but if you intend wider distribution, it is a good
+    idea to fix all issues it raises.
+</blockquote>
+<p>
+  * The tool <code>fakeroot</code> is helpful for packaging with the right owner.
+</p>
+<blockquote>
+    Usually a destination wants tools installed as root, not as the
+    individual user who happened to generate the package (<code>lintian</code> will
+    warn about this). You can accomplish this with, e.g.:
+</blockquote>
+<blockquote>
+      % fakeroot dpkg-deb --build debian
+</blockquote>
+<h3>What is in an .rpm file?
+</h3>
+ <p>
+  RPM takes a slightly different strategy than DEB does in creating
+  packages.  Its configuration file is called <code>spec</code> rather than
+  <code>control</code>, but the <code>spec</code> file also does more work than a <code>control</code>
+  file does.  All the details of steps needed for preinstallation,
+  postinstallation, preremoval, and installation itself, are contained
+  as embedded script files in a <code>spec</code> configuration.  In fact, the
+  <code>spec</code> format even comes with macros for common actions.
+</p>
+<p>
+  Once you create an RPM package, you do so with the <code>rpm -b</code> utility.
+  For example:
+</p>
+<div class="code-sample"><h4></h4><pre>% rpm -ba foo-util-1.3.spec  # peform all build steps
+
+</pre></div><p>
+  This package build process does not rely on specific named directories
+  as with DEB, but rather on directives in the more complex <code>spec</code> file.
+</p>
+<h3>Creating RPM metadata
+</h3>
+ <p>
+  The basic metadata in an RPM is much like that in a DEB.  For example,
+  <code>foo-util-1.3.spec</code> might contain something like:
+</p>
+<div class="code-sample"><h4></h4><pre># spec file for foo-util 1.3
+Summary: A utility that fully foos
+Name: foo-util
+Version: 1.3
+Release: 1
+Copyright: GPL
+Group: Application/Misc
+Source: ftp://example.com/foo-util.tgz
+URL: http://example.com/about-foo.html
+Distribution: MyLinux
+Vendor: Acme Systems
+Packager: John Doe &lt;jdoe@acme.example.com&gt;
+
+%description
+The foo-util program is an advanced fooer that combines the
+capabilities of OneTwo's foo-tool and those in the GPL bar-util.
+
+</pre></div><h3>Scripting in an RPM
+</h3>
+ <p>
+  Several sections of an RPM <code>spec</code> file may contain mini shell scripts.
+  These include:
+</p>
+<p>
+  * %prep: steps to perform to get the build ready, such as clean out
+</p>
+<blockquote>
+    earlier (partial) builds.  Often the following macro is helpful and
+    sufficient:
+</blockquote>
+<blockquote>
+      %prep
+      %setup
+</blockquote>
+<p>
+  * %build: steps to actually build the tool.  If you use the <code>make</code>
+</p>
+<blockquote>
+    facility, this might amount to:
+</blockquote>
+<blockquote>
+      %build
+      make
+</blockquote>
+<p>
+  * %install: steps to install the tool.  Again, if you use <code>make</code> this
+</p>
+<blockquote>
+    might mean:
+</blockquote>
+<blockquote>
+      %install
+      make install
+</blockquote>
+<p>
+  * %files: you <em>must</em> include a list of files that are part of the
+</p>
+<blockquote>
+    package.  Even though your <code>Makefile</code> might use these files, the
+    package manager program (<code>rpm</code>) will not know about them unless you
+    include them here, e.g.:
+</blockquote>
+<blockquote>
+      %files
+      %doc README
+      /usr/bin/foo-util
+      /usr/share/man/man1/foo-util.1
+</blockquote>
+<h3>Backup Operations</h3>
+ <h3>About backup
+</h3>
+ <p>
+  The first rule about making backups is: Do it! It is all too easy in
+  server administration--or even just with Linux on the desktop--to
+  neglect backing up, or backing up on the schedule suited to your
+  requirements.
+</p>
+<p>
+  The easiest way to carry out backups in a systematic and schedules way
+  is to perform them on a <code>cron</code> job.  See the Topic 213 tutorial for a
+  discussion of configuring <code>crontab</code>.  In part, the choice of backup
+  schedule depends on the backup tool and media you choose to use.
+</p>
+<p>
+  Backup to tape is a traditional technique, and tape drives continue to
+  offer the largest capacity of relatively inexpensive media.  But
+  recently, writeable or rewriteable CDs and DVD have become
+  ubiquitious, and will often make reasonable removable media for
+  backups.
+</p>
+<h3>What to backup
+</h3>
+ <p>
+  A nice thing about Linux is that it uses a predicable and hierarchical
+  arrangement of files.  As a consequence, you rarely need to backup an
+  entire filesystem hierarchy; most of a Linux filesystem hierarchy can
+  be reinstalled from distribution media easily enough.  In large
+  environments, a master server image might be used to create a basic
+  Linux system, which can be customized by restoring a few selected
+  files that were backed up elsewhere.
+</p>
+<p>
+  Basically, what you want backed up is <code>/home/</code>, <code>/etc/</code>,
+  <code>/usr/local/</code>, and maybe <code>/root/</code> and <code>/boot/</code>.  Often you will also
+  want to backup some parts of <code>/var/</code>, such as <code>/var/log/</code> and
+  <code>/var/mail/</code>.
+</p>
+<h3>Backup with cp and scp
+</h3>
+ <p>
+  Perhaps the simplest way to perform a backup is with <code>cp</code> or <code>scp</code> and
+  the <code>-r</code> (recurse) switch. The former copies to "local" media (but
+  including NFS mounts), the latter can copy to remote servers in a
+  securely encrypted fashion. For either, you need a mounted drive with
+  sufficient space to accomodate the files you want to backup, of
+  course. To gain any real hardware protection, you want the partition
+  you copy to to be a different physical device than the drive(s) you
+  are backing up from.
+</p>
+<p>
+  Copying with <code>cp</code> or <code>scp</code> can be part of an incremental backup
+  schedule.  The trick here is to use the utility <code>find</code> to figure out
+  which files have been modified recently.  Here is a simple example
+  where we copy all the files in <code>/home/</code> that have been modified in the
+  lst day:
+</p>
+<div class="code-sample"><h4></h4><pre>#!/bin/bash
+# File: backup-daily.sh
+# ++ Run this on a daily cron job ++
+#-- first make sure the target directories exist
+for d in `find /home -type d` ; do mkdir -p /mnt/backup$d ; done
+#-- then copy all the recently modified files (one day)
+for f in `find /home -mtime -1` ; do cp $f /mnt/backup$f  ; done
+
+</pre></div><p>
+  The <code>cp -u</code> flag is somewhat similar, but it depends on the
+  continuity of the target filesystem between backup events.  The <code>find</code>
+  approach works fine if you change the mount point of <code>/mnt/backup</code>
+  (e.g. to a different NFS location).  And the <code>find</code> system works
+  equally well with <code>scp</code>, once you specify the necessary login
+  information to the remote site.
+</p>
+<h3>Backup with tar
+</h3>
+ <p>
+  Although <code>cp</code> and <code>scp</code> are workable for backup, generally <code>tar</code> sees
+  wider use, being designed specifically for creating "tape archives".
+  Despite the origin of the name, <code>tar</code> is equally capable of creating a
+  simple <code>.tar</code> file as raw data on a tape drive.  For example, you
+  might backup to a tape drive using a command like:
+</p>
+<div class="code-sample"><h4></h4><pre>% tar -cvf /dev/rmt0 /home    # Archive /home to tape
+
+</pre></div><p>
+  To direct the output to a file is hardly any different:
+</p>
+<div class="code-sample"><h4></h4><pre>% tar -cvf /mnt/backup/2005-08-12.tar /home
+
+</pre></div><p>
+  In fact, since <code>gzip</code> is streamable, you can easily compress an
+  archive during creation:
+</p>
+<div class="code-sample"><h4></h4><pre>% tar -cv /home | gzip - &gt; /mnt/backup/2005-08-12.tgz
+
+</pre></div><p>
+  You can combine <code>tar</code> with <code>find</code> in the same ways shown for <code>cp</code> or
+  <code>scp</code>.  To list the files on a tape drive, you might use:
+</p>
+<p>
+     % tar -tvf /dev/rmt0
+</p>
+<p>
+  To retrieve a particular file:
+</p>
+<p>
+     % tar -xvf /dev/rmt0 file.name
+</p>
+<h3>Backup with cpio
+</h3>
+ <p>
+  The utility <code>cpio</code> is a superset of <code>tar</code>.  It handles <code>tar</code> archives,
+  but will also work with several other formats, and has many more
+  options built in.  <code>cpio</code> comes with a huge wealth of switches to
+  filter which files are backed up, and even supports remote backup
+  internally (rather than needing to pipe through <code>scp</code> or the like).
+  The main advantage <code>cpio</code> has over <code>tar</code> is that you can both add
+  files to archives, but also remove files back out.
+</p>
+<p>
+  Below are some quick examples of <code>cpio</code>.  Create a file archive on a
+  tape device:
+</p>
+<div class="code-sample"><h4></h4><pre>% find /home -print |cpio -ocBv  /dev/rmt0
+
+</pre></div><p>
+  List the entries in a file archive on a tape device:
+</p>
+<div class="code-sample"><h4></h4><pre>% cpio -itcvB &lt; /dev/rmt0
+
+</pre></div><p>
+  Retrieve a file from a tape drive:
+</p>
+<div class="code-sample"><h4></h4><pre>% cpio -icvdBum file.name &lt; /dev/rmt0
+
+</pre></div><h3>Backup with dump and restore
+</h3>
+ <p>
+  A set of tools named <code>dump</code> and <code>restore</code> or related names are
+  sometimes used to backup whole filesystems.  Unfortunately, these
+  tools are specific to filesystem types, and are not uniformly
+  available.  For example, the original <code>dump</code> and <code>restore</code> are ext2/3
+  specific, while the tools <code>xfsdump</code> and <code>xfsrestore</code> are used for XFS
+  filesystems.  Not every filesystem type has the equivalent tools, and
+  even if they do, switches are not necessarily uniform.
+</p>
+<p>
+  It is good to be aware of these utilities, but they are not very
+  uniform across Linux systems.  For some purposes--such as if you use
+  entirely XFS partitions--the performance of <code>dump</code> and <code>restore</code> can
+  be a great boost over a simple <code>tar</code> or <code>cpio</code>.
+</p>
+<h3>Incremental backup with rsync
+</h3>
+ <p>
+  <code>rsync</code> is utility that provides fast incremental file transfer. For
+  automated remote backups, <code>rsync</code> is often the best tool for the job.
+  A nice feature of <code>rsync</code> over other tools is that it can optionally
+  enforce two-way syncronization.  That is, rather than simply backup
+  newer or changed files, it can also automatically remove locally
+  deleted files from the remote backup.
+</p>
+<p>
+  To get a sense of the options, the moderately complex script at
+ <a href="http://samba.anu.edu.au/rsync/examples.html">http://samba.anu.edu.au/rsync/examples.html</a> is useful to look at:
+</p>
+<div class="code-sample"><h4></h4><pre>#!/bin/sh
+# This script does personal backups to a rsync backup server. You will
+# end up with a 7 day rotating incremental backup. The incrementals will
+# go into subdirs named after the day of the week, and the current
+# full backup goes into a directory called "current"
+# tridge@linuxcare.com
+# directory to backup
+BDIR=/home/$USER
+# excludes file - this contains a wildcard pats of files to exclude
+EXCLUDES=$HOME/cron/excludes
+# the name of the backup machine
+BSERVER=owl
+# your password on the backup server
+export RSYNC_PASSWORD=XXXXXX
+BACKUPDIR=`date +%A`
+OPTS="--force --ignore-errors --delete-excluded --exclude-from=$EXCLUDES
+  --delete --backup --backup-dir=/$BACKUPDIR -a"
+export PATH=$PATH:/bin:/usr/bin:/usr/local/bin
+# the following line clears the last weeks incremental directory
+[ -d $HOME/emptydir ] || mkdir $HOME/emptydir
+rsync --delete -a $HOME/emptydir/ $BSERVER::$USER/$BACKUPDIR/
+rmdir $HOME/emptydir
+# now the actual transfer
+rsync $OPTS $BDIR $BSERVER::$USER/current
+
+</pre></div></body></html>

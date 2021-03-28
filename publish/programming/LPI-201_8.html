@@ -1,0 +1,433 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>TUTORIAL FOR LPI EXAM 201: part 8 -- Topic 214: Troubleshooting -- </title>
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Tutorial For Lpi Exam 201: Part 8</h1>
+<h2>Topic 214: Troubleshooting</h2>
+ <br>
+<p>Brad Huntting and David Mertz<br>
+ Professional Neophyte<br>
+ August, 2005<br>
+ <br>
+</p>
+<blockquote>
+    Welcome to "Troubleshooting", the eighth of eight tutorials designed
+    to prepare you for LPI exam 201. In large part this tutorial
+    reiterates material already covered in more detail in earlier
+    tutorials, but with an eye to "what to do when things go wrong?"
+</blockquote>
+<h3>Before You Start</h3>
+ <h3>About this series
+</h3>
+ <p>
+  The Linux Professional Institute (LPI) certifies Linux system
+  administrators at junior and intermediate levels. There are two exams
+  at each certification level. This series of eight tutorials helps you
+  prepare for the first of the two LPI intermediate level system
+  administrator exams--LPI exam 201. A companion series of tutorials is
+  available for the other intermediate level exam--LPI exam 202. Both
+  exam 201 and exam 202 are required for intermediate level
+  certification. Intermediate level certification is also known as
+  certification level 2.
+</p>
+<p>
+  Each exam covers several or topics and each topic has a weight. The
+  weight indicate the relative importance of each topic. Very roughly,
+  expect more questions on the exam for topics with higher weight. The
+  topics and their weights for LPI exam 201 are:
+</p>
+<p>
+  <strong> Topic 201: Linux Kernel (5)
+  </strong> Topic 202: System Startup (5)
+  <strong> Topic 203: Filesystems (10)
+  </strong> Topic 204: Hardware (8)
+  <strong> Topic 209: File Sharing Servers (8)
+  </strong> Topic 211: System Maintenance (4)
+  <strong> Topic 213: System Customization and Automation (3)
+  </strong> Topic 214: Troubleshooting (6)
+</p>
+<h3>About this tutorial
+</h3>
+ <p>
+  Welcome to "Troubleshooting", the eighth of eight tutorials designed
+  to prepare you for LPI exam 201. In large part this tutorial
+  reiterates material already covered in more detail in earlier
+  tutorials, but with an eye to "what to do when things go wrong?"
+</p>
+<h3>Prerequisites
+</h3>
+ <p>
+  To get the most from this tutorial, you should already have a basic
+  knowledge of Linux and a working Linux system on which you can
+  practice the commands covered in this tutorial.
+</p>
+<h3>About troubleshooting
+</h3>
+ <p>
+  Unfortunately, troubleshooting a Linux system that is not working--or
+  more especially, is not <strong>entirely</strong> working--is probably the most
+  frustrating parts of system administration.  Linux is not special in
+  this regard, the same can be said of any operating system or other
+  complex software system.  It is relatively straightforward, most of
+  the time, to add new hardware or software, tweak the behavior of
+  installed software, or script and schedule routine operations.  But
+  when a running system suddenly doesn't, a system administrator is
+  presented with a dizzying collection of things that <strong>might</strong> be wrong.
+</p>
+<p>
+  This tutorial cannot solve many real world problems.  That takes a
+  good understanding of Linux overall, combined with even more patience
+  and elbow grease.  But we will point to tools that are helpful in the
+</p>
+<div class="code-sample"><h4></h4><pre>troubleshooting process (most touched on in other tutorials), and
+</pre></div><p>
+  remind readers of some of the best places to look for sources of
+  trouble.
+</p>
+<h3>Creating Recovery Disks</h3>
+ <h3>Before you recover
+</h3>
+ <p>
+  When, in course of system events, a Linux installation gets so messed
+  up that it just cannot boot normally, a good first course of action is
+  to attempt to "boot single-user" to fix the problem.  Single user mode
+  (runlevel 1) allows you to access and modify many problems without
+  worrying about permission issues or files being locked by other users
+  and processes.  Moreover, single user mode runs with a minimum of
+  services, daemons and tasks that might confound--or even be the cause
+  of--your underlying problem.
+</p>
+<p>
+  In some cases, however, even files needed for single user mode such as
+  <code>/etc/passwd</code>, <code>/etc/fstab</code>, <code>/etc/inittab</code>, <code>/sbin/init</code>,
+  <code>/dev/console</code>, etc. can become corrupted, and the system will not
+  boot, even into single-user mode. In times like this, a recovery disk
+  (a bootable disk which contains the essentials needed to repair a
+  broken partition, sometimes called a <code>repair disk</code>) can be used to get
+  the system back on its feet.
+</p>
+<h3>Recovery CDs
+</h3>
+ <p>
+  Nowadays, standalone CD (or DVD) distributions such as Knoppix can be
+  used as "Cadillac" recovery disks, sporting a vast array of drivers,
+  debugging tools, and even a web browser. Even if you have special
+  needs such as unusual drivers (e.g. kernel modules) or recovery
+  software, you are usually best off downloading a Linux Live-CD like
+  Knoppix, and customizing the contents of the ISO image before burning
+  a recovery disk. See the tutorial for Topic 203 for information on
+  loop mounting an ISO image. You may obtain and read about Knoppix at
+ <a href="http://www.knoppix.org/.">http://www.knoppix.org/.</a>
+</p>
+<h3>Recovery Floppies
+</h3>
+ <p>
+  For very old systems without bootable CD-ROMs, floppies containing
+  only the bare essentials have to be used for recovery. Niceties like
+  <code>emacs</code> and <code>vim</code> are typically too bulky to fit on a single recovery
+  floppy, so an experienced system administrator should be prepaired to
+  use a striped down editor like <code>ed</code> to fix corrupted configuration
+  files.
+</p>
+<p>
+  To create custom boot floppies, reader should read the Linux
+  Documentation Project's "Linux-Bootdisk HOWTO." In many cases,
+  however, Linux distributions will offer to create a recovery diskettes
+  at installation time, or later using included tools. Be sure to create
+  and store recover disks <strong>before</strong> you really need them!
+</p>
+<h3>Identifying Boot Stages</h3>
+ <h3>About booting
+</h3>
+ <p>
+  The tutorial on Topic 202 contains much more extensive information
+  about Linux boot sequences. We will review the stages in quick summary
+  for this tutorial
+</p>
+<p>
+  The first stage of bootup has changed little since IBM compatible PC's
+  with harddisks where first introduced. The BIOS reads the first sector
+  of the boot disk into memory and runs it. This 512 byte Master Boot
+  Record (MBR), which also stores the fdisk label, turns around and
+  loads the "OS loader" (either GRUB or LILO) from the "active"
+  partition.
+</p>
+<h3>Booting the kernel
+</h3>
+ <p>
+  Once the system BIOS (on an x86 system, other architectures vary
+  slightly) runs the MBR, several steps happen for the Linux kernel to
+  load.  If boot does not succeed, determining where it fails is the
+  first step in figuring out what needs to be fixed.
+</p>
+<p>
+  * Load Boot Loader (LILO/Grub)
+</p>
+<p>
+  * Boot loader starts and hands off control to kernel
+</p>
+<p>
+  * Kernel: Load base kernel and other essential kernel modules.
+</p>
+<p>
+  * Hardware initializiation and setup
+</p>
+<blockquote>
+    <em> Kernel starts
+    </em> Initialize kernel infrastructure (VM, scheduler, etc)
+    <em> Device Drivers Probe and Attach
+    </em> Root filesystem mounted
+</blockquote>
+<h3>Booting the userland
+</h3>
+ <p>
+  Assuming a base kernel, kernel modules, and root filesystem start
+  successfully (or at least successfully enough not to freeze
+  completely), the system initialization process starts:
+</p>
+<p>
+  * daemon initialization and setup
+</p>
+<blockquote>
+    <em> /sbin/init started as process 1.
+    </em> /sbin/init reads /etc/inittab
+    <em> /etc/rc&lt;n&gt;.d/S* scripts are run by /etc/init.d/rc
+    </em> disks fsck'ed
+    <em> network interfaces configured
+    </em> daemons started
+    - getty(s) started on console and serial ports
+</blockquote>
+<h3>Troubleshooting Lilo And Grub</h3>
+ <h3>Looking for the boot loader
+</h3>
+ <p>
+  When Grub starts up it flashes "GRUB loading, please wait..." on the
+  screen and then jumps into its boot menu. LILO usually displays a
+  <code>LILO:</code> prompt (but some versions jump directly to a menu). If you do
+  not reach a LILO or GRUB screen, it is probably time for a separate
+  recovery disk. Generally, you will know you have this problem with
+  some kind of BIOS message about not finding a boot sector, or maybe
+  even not finding a harddisk at all.
+</p>
+<p>
+  If your system cannot locate a usable boot sector, it is possible that
+  your LILO or GRUB installation became corrupted. Sometimes other
+  operating systems step on boot sectors (or overzealous "virus
+  protection programs" on Windows), and occasionally other problems
+  arise. A recovery disk will let you reinstall LILO or GRUB. Typically
+  you will want to <code>chroot</code> to your old root filesystem to utilize your
+  prior LILO or GRUB configuration files.
+</p>
+<p>
+  In the hardisk-not-found case, hardware failure is likely (and you
+  will hope you made a backup); often in the no-boot-sector case too.
+  See the tutorial on Topic 202 for more information on LILO and GRUB.
+</p>
+<h3>Configuring LILO and GRUB
+</h3>
+ <p>
+  LILO is configured with the file <code>/etc/lilo.conf</code>, or by another
+  configuration file specified at the command line.  To reinstall LILO,
+  first make sure your <code>lilo.conf</code> file really matches your current
+  system configuration (the right partition and disk number information
+  especially; this can become mixed up if you swap harddisk and/or
+  change partitions).  Once you have verified your configuration, simply
+  run <code>/sbin/lilo</code> as root (or in single user mode).
+</p>
+<p>
+  Configuring and reinstalling GRUB is essentially the same process as
+  for LILO.   GRUB's configuration file is <code>/boot/grub/menu.lst</code>, but it
+  is read each time the system boots.  Likewise, the GRUB shell live at
+  <code>/boot/grub/</code>, but you can choose which harddisk the basic GRUB MBR
+  lives at with the <code>groot=</code> option in <code>/boot/grub/menu.lst</code>.  To
+  install GRUB to an MBR, run a command like <code>grub-install /dev/hda</code>,
+  which will check the currently mounted <code>/boot/</code> for its configuration.
+</p>
+<h3>General Troubleshooting</h3>
+ <h3>The Linux filesystem structure
+</h3>
+ <p>
+  Linux distributions vary a bit in where they put files.  The Linux
+  Filesystem Hierarchy Standard is making progress in furthering
+  standardization of this.  A few standard directories are already well
+  standardized, and are particularly important to look at for startup
+  and runtime problems:
+</p>
+<p>
+  * /proc/ - This is the virtual filesystem where information on
+</p>
+<blockquote>
+    processes and system status.  All the guts of a running system live
+    here, in a sense.  See Topic 201 for more information.
+</blockquote>
+<p>
+  * /var/log/ - Log files live here.  If something goes wrong, changes
+</p>
+<blockquote>
+    are good that helpful information is in some log file here.
+</blockquote>
+<p>
+  * / - Generally the root of the filesystem under Linux simply contains
+</p>
+<blockquote>
+    other nested directories.  On some systems bootup files like
+    <code>vmlinuz</code> and <code>initrd.img</code> might be here rather than in <code>/boot/</code>.
+</blockquote>
+<p>
+  * /boot/ - Files directly used in the kernel boot process.
+</p>
+<p>
+  * /lib/modules/ - Kernel modules live nested under this directory, in
+</p>
+<blockquote>
+    subdirectories named for the current kernel version (if you boot
+    multiple kernel versions, multiple directories should exist).  For
+    example:
+</blockquote>
+<blockquote>
+      % ls /lib/modules/2.6.10-5-386/kernel/
+      arch  crypto  drivers  fs  lib  net  security  sound
+</blockquote>
+<h3>Finding bootup messages
+</h3>
+ <p>
+  During actual system boot, messages can scroll by quickly, and you may
+  not have time to identify problems or unexpected initialization
+  activities.  Some information of interest is likely to be logged with
+  <code>syslog</code>, but the basic kernel and kernel module messages can be
+  examined with the tool <code>dmesg</code>.
+</p>
+<h3>Hardware/system identification tools
+</h3>
+ <p>
+  The tutorial for Topic 203 (Hardware) contains more information on
+  hardware identification.  Generally, you should keep in mind these
+  system tools:
+</p>
+<p>
+  <strong> lspci: List all PCI devices
+  </strong> lsmod: List loaded kernel modules
+  <strong> lsusb: List USB devices
+  </strong> lspnp: List Plug-and-Play devices
+  * lshw: List hardware
+</p>
+<p>
+  Slightly farther from hardware, but still useful:
+</p>
+<p>
+  <strong> lsof: List open files
+  </strong> insmod: Load kernel module
+  <strong> rmmod: Remove kernel module
+  </strong> modprobe: Higher level insmod/rmmod/lsmod wrapper
+  <strong> uname: Print system information (kernel version, etc)
+  </strong> strace: Trace system calls
+</p>
+<p>
+  When you get desperate in trying to use binaries, whether libraries or
+  applications, the tool <code>strings</code> can really rescue you (but expect to
+  work at it).  Crucial information like hardcoded paths are sometimes
+  buried in binaries, and with a good measure of trial-and-error, you
+  can find them by looking for the <code>strings</code> within binaries.
+</p>
+<h3>Troubleshooting System Resources And Environment</h3>
+ <h3>The initialization
+</h3>
+ <p>
+  As Topic 202 addresses in more detail, the startup of Linux, after the
+  kernel loads, is controlled by the <code>init</code> process.  The main
+  controlling configuration for <code>init</code> is <code>/etc/inittab</code>.  The
+  <code>/etc/inittab</code>  contains details on what steps to peform at each
+  runlevel.  But perhaps the most crucial thing it does is actually set
+  the runlevel for later actions.  If your system is having troubles
+  booting, a setting a different runlevel may help the process.  The key
+  line is something like:
+</p>
+<div class="code-sample"><h4></h4><pre># The default runlevel. (in /etc/inittab)
+id:2:initdefault:
+
+</pre></div><h3>Resource scripts
+</h3>
+ <p>
+  The rc scripts run at boot time, shutdown time, and whenever the
+  system changes runlevels and are responsible for starting and stoping
+  the most system daemons. In most (i.e. modern) Linux distributions,
+  the rc scripts live in the directory <code>/etc/init.d/</code> and are linked to
+  the directories <code>/etc/rc&lt;N&gt;.d/</code> (for N=runlevel) where they are named
+  <code>S*</code> for startup scripts and <code>K*</code> for shutdown scripts. The system
+  never runs the scripts from <code>/etc/init.d</code> directly, but looks for them
+  in <code>/etc/rc&lt;N&gt;.d/[SK]*</code>.
+</p>
+<h3>The system shell
+</h3>
+ <p>
+  Rarely, but conceivably, a system administrator may wish to change the
+  system wide shell startup script <code>/etc/profile</code>. Such a change affects
+  every interactive shell (except for <code>/bin/tcsh</code> users or other
+  non-'/bin/sh' compatible shells). Corrupting this file can easily lead
+  to a situation where no one can login, and a recovery disk may be
+  needed to rectify the situation. The normal method of changing shell
+  behavior on an individual basis is by modifying
+  <code>/home/$USER/.bash_profile</code> and <code>/home/$USER/.bashrc</code>.
+</p>
+<h3>Configure kernel parameters
+</h3>
+ <p>
+  The <code>sysctl</code> system (see the manpage for <code>sysctl</code>) was taken from BSD
+  Unix and is be used to tune some system resources. Run <code>sysctl -a</code> to
+  see what variables can be controlled by <code>sysctl</code> and what they are set
+  to. The <code>sysctl</code> utility is most useful to tuning networking
+  parameters as well as some kernel parameters. Use the file
+  <code>/etc/sysctl.conf</code> set <code>sysctl</code> parameters at boot time.
+</p>
+<h3>Dynamic libraries
+</h3>
+ <p>
+  On most systems, dynamic libraries are constantly being added,
+  updated, replaced and removed. Since almost every program on the
+  system needs to find and load dynamic libraries, the names version
+  numbers and locations of most dynamic libraries are cached by the
+  <code>ldconfig</code> program. Normally only the dynamic libraries in the system
+  directories <code>/lib/</code> and <code>/usr/lib/</code> are cached. To add more
+  directories to the system wide default search path, add the directory
+  names (such as <code>/usr/X11R6/lib</code>) to the <code>/etc/ld.so.conf</code> and run
+  <code>ldconfig</code> as root.
+</p>
+<h3>System logging
+</h3>
+ <p>
+  Topic 211 discusses <code>syslog</code> in detail.  The key file to keep in mind
+  if you have problems (and especially if you want to make sure you can
+  analyze them later), is <code>/etc/syslog.conf</code>.  By changing the contents
+  of this configuration, you have fine-tuned control over what events
+  are logged, and where they are logged--including potentially via mail
+  or remote machines.  If problems occur, make sure the subsystems where
+  you think they arise log information in a manner you can readily
+  examine forensically.
+</p>
+<h3>Periodic events
+</h3>
+ <p>
+  On almost every Linux system, the <code>cron</code> daemon is running.  See Topic
+  213 for more details on <code>cron</code> and <code>crontab</code>.  In general a source of
+  potential problems to keep in mind is scripts that are run
+  intermittently.  It is possible that what you believe to be a kernel
+  or application issue results from unrelated scripts that are run
+  behind the scenes by <code>cron</code>.
+</p>
+<p>
+  An extreme measure is to kill <code>cron</code> altogether.  You can find its
+  process nubmer with <code>ps ax | grep cron</code>, and <code>kill</code> can terminate it.
+  A less drastic measure is to edit <code>/etc/crontab</code> to run a more
+  conservative collection of tasks; also be sure to contrain the user
+  tasks that are scheduled by editing <code>/etc/cron.allow</code> and
+  <code>/etc/cron.deny</code>.  Even though users usually should not have enough
+  permissions to cause system-wide problems, a good first step is to
+  temporarily disable user <code>crontab</code> configurations, and see if that
+  resolves problems.
+</p>
+</body></html>

@@ -1,0 +1,380 @@
+XML MATTERS #18: REXML
+XML Processing in the Ruby Programming Language
+
+David Mertz, Ph.D.
+Simplifier, Gnosis Software, Inc.
+January 2002
+
+    There are at least two attitudes one can have towards XML
+    processing.  One attitude is to adopt standard API's that can
+    be called from many programming languages.  A second approach
+    is to tailor an XML processing library to the specific
+    strengths of the programming language you will develop an XML
+    application in.  Early installments of this column have
+    looked at versions of the second attitude -- with the
+    author's own Python [xml_pickle] and [xml_objectify], and
+    with the Haskell [HaXml] library.  A commonly used library
+    for the fiarly new, but rapidly growing Ruby programming
+    language also takes the second attitude.  The "Ruby Electric
+    XML" (REXML) library takes the strenghts of Ruby, and builds
+    XML processing around those.  [REXML] has analogs for the
+    stream-style of SAX and the tree-style of DOM, but restricts
+    itself to neither API directly.
+
+
+PREFACE
+------------------------------------------------------------------------
+
+  Regular readers of this column have almost certainly detected
+  my dissatisfaction with the most popular techniques for
+  manipulating XML documents.  The articles that have discussed
+  my Python [xml_objectify] modify has largely been in response
+  to the complexity of DOM.  My introduction to the Haskell
+  [HaXml] library was primarily a reaction to a perceived
+  obtuseness of XSLT.  Continuing this pattern, I find SAX also
+  to be far "heavier" than is necessary for many of the problems
+  SAX solves.
+
+  The SAX API is, by far, more lightweight than either DOM or
+  XSLT--not only in terms of computer resources, but more
+  importantly in terms of programmer effort and learning curve.
+  Even so, even SAX demands that an XML programmer utilize a
+  parser library, and conform to a callback API.  The data inside
+  XML documents simply is not complex enough to warrant these
+  demands.  In my opinion, there ought to be an easier way to
+  handle XML documents; and in particular, one ought to be more
+  free to use a variety of familiar tools and techniques when
+  manipulating XML.
+
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  Let me first introduce the Ruby language.  I cannot say nearly
+  enough here to get unfamiliar readers up to speed--for that I
+  recommend consulting the sources in the Resources.  But as a
+  programmer learning the Ruby language myself, I can let readers
+  know -why- it is interesting.  Ruby is a "scripting" language
+  that has been described as "Perl done right;" but then again,
+  so probably has every newer scripting language, including
+  Python.  For Ruby, the description rings truer, not in the
+  sense that Perl is done wrong (no language flames here), but in
+  the sense the Ruby keeps much of Perl's conciseness and many of
+  its shortcuts, while starting from a clean Smalltalk-ish OOP
+  attitude.  Moreover, at least to me, Ruby achieves conciseness
+  while still avoiding the "executable line noise" quality that
+  some Perl code has.  At the same time, a number of Ruby
+  constructs "feel" more direct than Python versions (even if not
+  really saving much overall length).
+
+  [REXML] is a library written by Sean Russell.  It is not the only
+  XML library for Ruby, but it is a popular one, and is written
+  in pure Ruby (so is [NQXML], but [XMLParser] wraps around the
+  Jade library, written in C) In his REXML overview, he comments:
+
+    I have this problem:  I dislike obscifucated [sic] APIs.
+    There are several XML parser APIs for Java.  Most of them
+    follow DOM or SAX, and are very similar in philosophy with an
+    increasing number of Java APIs. Namely, they look like they
+    were designed by theorists who never had to use their own
+    APIs. The extant XML APIs, in general, suck.  They take a
+    markup language which was specifically designed to be very
+    simple, elegant, and powerful, and wrap an obnoxious,
+    bloated, and large API around it.  I was always having to
+    refer to the API documentation to do even the most basic XML
+    tree manipulations; nothing was intuitive, and almost every
+    operation was complex.
+
+  While I might not have put it quite as stridently, I agree with
+  Russell--XML APIs are just plain too much work for most of what
+  one does with them.
+
+
+MAKING EASY THINGS EASY
+------------------------------------------------------------------------
+
+  I would guess that what 80% of all the programmers who need to
+  deal with XML documents really want is just a way to grab the
+  data and easily manipulate it as (structured) data.  DOM makes
+  this hard, and SAX makes it even harder.  In several previous
+  articles, I have advocated the clarity and simplicity of my own
+  Python [xml_objectify] module.  Let me repeat a quick example,
+  using an the file 'address.xml' which describes an address
+  book:
+
+      #----- How to refer to nested data using xml_objectify ----#
+      >>> from xml_objectify import XML_Objectify
+      >>> addressbook = XML_Objectify('address.xml').make_instance()
+      >>> print addressbook.person[1].address.city
+      New York
+
+  We need to know a little bit the format of the data (see
+  Resources for the sample document, used throughout this
+  article).  But not too much.  We need to know that the root of
+  the document is the address book (but not necessarily that it
+  is named '<addressbook>').  And we need to know that the
+  document can list multiple persons (but nothing goes wrong if
+  there is only one, who can still be referred to as
+  'addressbook.person[0]').  All the rest of what we need to know
+  is that, conceptually, persons have addresses and addresses
+  have cities.  It all -just works-!
+
+  In contrast, DOM--which advertises itself as OOP-ified
+  XML--makes us jump through hoops.  The first challenge is
+  referring to the root element; at least five different ways
+  come to mind:
+
+      #-------- Using DOM to name the XML document root -------#
+      >>> from xml.dom import minidom
+      >>> dom = minidom.parse('address.xml')
+      >>> dom.firstChild
+      <DOM Element: addressbook at 1811436>
+      >>> dom._get_documentElement()
+      <DOM Element: addressbook at 1811436>
+      >>> dom._get_firstChild()
+      <DOM Element: addressbook at 1811436>
+      >>> dom.getElementsByTagName('addressbook')[0]
+      <DOM Element: addressbook at 1811436>
+      >>> dom.childNodes[0]
+      <DOM Element: addressbook at 1811436>
+
+  One also has to guess a bit about exactly what is a method and
+  what is an attribute (or keep a manual handy).  Given that we
+  know we want the root element, probably the
+  '._get_documentElement()' method is the best choice.  Now what
+  if we want to find our way down to the second person's city, as
+  in the [xml_objectify] example?
+
+      #--------- How to refer to nested data using DOM --------#
+      >>> addressbook = dom._get_documentElement()
+      >>> print addressbook.getElementsByTagName('person')[1].\
+      ... getElementsByTagName('address')[0].getAttribute('city')
+      New York
+
+  This style is quite verbose, but is probably the closest DOM
+  equivalent.  One might use the '.childNodes' attribute array
+  directly to save a few characters, but this is fragile if, for
+  example, there are children of '<addressbook>' that are things
+  other than '<person>'.  One also has to know the nitty-gritty
+  detail that 'city' is an element attribute rather than a subtag
+  content (either way might make sense for the basic data in
+  question).
+
+
+USING REXML IN TREE MODE
+------------------------------------------------------------------------
+
+  [REXML] has the goal of -just working-.  For the most part, it
+  succeeds pretty well.  Actually, [REXML] supports two different
+  styles of XML processing, both "tree" and "stream."  The first
+  is an easier version of what DOM tries to do; the second is an
+  easier version of what SAX tries to do.  Let us look at the
+  tree style first.  Suppose we want to grab the same address
+  book document in the prior example.  The below examples, by the
+  way, are from a modified 'eval.rb' that I created; the standard
+  'eval.rb' (linked to in the Ruby tutorial) can display
+  extremely long results from expression evaluations of complex
+  objects--mine remains quiet in the non-error case:
+
+      #------- How to refer to nested data using REXML --------#
+      ruby> require "rexml/document"
+      ruby> include REXML
+      ruby> addrbook = (Document.new File.new "address.xml").root
+      ruby> persons = addrbook.elements.to_a("//person")
+      ruby> puts persons[1].elements["address"].attributes["city"]
+      New York
+
+  This expression is rather natural.  The '.to_a()' method creates
+  an array of all the '<person>' elements in the document, which
+  can be useful in other naming.  An element is something like a
+  DOM node, but is really much closer to the XML itself (while
+  also remaining simpler to work with).  The argument to
+  '.to_a()' is an XPATH, in this case identifying all the
+  '<person>' elements anywhere in the document.  If we strictly
+  wanted the one at the first level, we might use:
+
+      #-------- Creating an array of matching elements --------#
+      ruby> persons = addrbook.elements.to_a("/addressbook/person")
+
+  We can use XPATHs even more directly as overloaded indexes to
+  the '.elements' attribute.  For example:
+
+      #---- Another way to refer to nested data using REXML ---#
+      ruby> puts addrbook.elements["//person[2]/address"].attributes["city"]
+      New York
+
+  Notice that XPATH uses one-based indexing, unlike the
+  zero-based indexing of Ruby and Python arrays.  In other words,
+  it is still the same person whose city we are checking.  We can
+  see more about this person by looking at the [REXML] elements
+  themselves:
+
+      #--- Displaying the XML source of elements with REXML ---#
+      ruby> puts addrbook.elements["//person[2]/address"]
+      <address city='New York' street='118 St.' number='344' state='NY'/>
+      ruby> puts addrbook.elements["//person[2]/contact-info"]
+      <contact-info>
+        <email address='robb@iro.ibm.com'/>
+        <home-phone number='03-3987873'/>
+      </contact-info>
+
+  Moreover, XPATHs need not match just one element.  We saw this
+  in defining the 'persons' array, but another example emphasizes
+  it:
+
+      #------- Matching multiple elements with XPATHs ---------#
+      ruby> puts addrbook.elements.to_a("//person/address[@state='CA']")
+      <address city='Sacramento' street='Spruce Rd.' number='99' state='CA'/>
+      <address city='Los Angeles' street='Pine Rd.' number='1234' state='CA'/>
+
+  In contrast, the indexing of the '.elements' attribute only
+  produces the -first- matching element:
+
+      #------ When XPATHs match only the first occurrence -----#
+      ruby> puts addrbook.elements["//person/address[@state='CA']"]
+      <address city='Sacramento' street='Spruce Rd.' number='99' state='CA'/>
+      ruby> puts addrbook.elements.to_a("//person/address[@state='CA']")[0]
+      <address city='Sacramento' street='Spruce Rd.' number='99' state='CA'/>
+
+  XPATH addresses may also be used via the 'XPath' class in
+  [REXML], which has methods such as '.first()', '.each()' and
+  '.match()'.
+
+  One particularly idiomatic method of [REXML] elements is the
+  '.each' iterator.  While Ruby has a looping construct 'for'
+  that can operate over collections, Ruby programmers generally
+  prefer to use iterator methods that pass control to a
+  codeblock.  The two following constructs are equivalent, but
+  the second has a more natural feel in Ruby:
+
+      #------ Iterating through matching XPATHs in REXML ------#
+      ruby> for addr in addrbook.elements.to_a("//address[@state='CA']")
+          |    puts addr.attributes["city"]
+          | end
+      Sacramento
+      Los Angeles
+      ruby> addrbook.elements.each("//address[@state='CA']") {
+          |    |addr| puts addr.attributes["city"]
+          | }
+      Sacramento
+      Los Angeles
+
+
+USING REXML IN STREAM MODE
+------------------------------------------------------------------------
+
+  For purposes of "just working" the tree mode of [REXML] is
+  probably the easiest approach in the Ruby language.  But
+  [REXML] also offers a stream mode that is a lot like a lighter
+  weight variant of SAX.  As with SAX, [REXML] gives the
+  application programmer no default data structures from the XML
+  document.  Instead, a "listener" or "handler" class is
+  responsible for providing a set of methods that respond to
+  various events in the document stream.  These are the usual
+  collection:  a tag starts, a tag ends, element text is
+  encountered, and so on.
+
+  While stream mode is not nearly as effortless as working in
+  tree mode, it should generally be much faster.  The [REXML]
+  tutorial claims that stream mode is -one thousand five hundred-
+  times as fast.  While I have not attempted to benchmark it, I
+  suspect this is a limit case (my small examples were still
+  instantaneous in tree mode).  Either way, the difference in
+  speed is likely to be significant, if speed matters.
+
+  Let us look at just a very simple example that does the same
+  thing as the "list the California cities" examples above.
+  Extending this to complex document processing is relatively
+  straightforward:
+
+      #------- Stream processing XML documents in REXML -------#
+      ruby> require "rexml/document"
+      ruby> require "rexml/streamlistener"
+      ruby> include REXML
+      ruby> class Handler
+          |    include StreamListener
+          |    def tag_start name, attrs
+          |       if name=="address" and attrs.assoc("state")[1]=="CA"
+          |          puts attrs.assoc("city")[1]
+          |       end
+          |    end
+          | end
+      ruby> Document.parse_stream((File.new "address.xml"), Handler.new)
+      Sacramento
+      Los Angeles
+
+  One thing to note in the stream processing example is that tag
+  attributes are passed as an array of arrays, which is slightly
+  more work to handle than a hash would be (but is probably
+  faster to create within the library).
+
+
+CONCLUSION
+------------------------------------------------------------------------
+
+  This installment has looked at one more light-weight
+  alternative to the cumbersome APIs of DOM, SAX and XSLT.  Along
+  with the [xml_objectify], PYX and [HaXml] options that earlier
+  installments have examined, Ruby programmers also have a quick
+  way of processing XML without a steep learning curve.
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  Maya Stodte has written an introduction to Ruby for IBM
+  developerWorks (but it is two years old now, Ruby has
+  progressed in that time):
+
+    http://www-106.ibm.com/developerworks/library/ruby.html
+
+  Joshua Drake has also written a more recent--but slightly thin
+  on explanation (too much code illustrating too little,
+  IMO)--description of some basic Ruby constructs:
+
+    http://www-106.ibm.com/developerworks/library/l-ruby1.html
+
+  Ruby, fortunately, has a wonderful tutorial on its website.
+  The language reference and other documents are also worth
+  looking at:
+
+    http://www.ruby-lang.org/~slagell/
+
+  I have also looked at Ruby creator Yukihiro Matsumoto's book
+  for O'Reilly called _Ruby in a Nutshell_.  As a programmer
+  learning Ruby, this is confessedly probably not as well suited
+  to me as to a more experienced Ruby users.  Even taking into
+  account my inexperience, I get the feeling this book was "not
+  quite translated enough" (from the Japanese text it derives
+  from).  While _Ruby in a Nutshell_ is very well organized as a
+  reference, a good number of the descriptions left me scratching
+  my head, and remaining uncertain about occassional subtleties
+  of the language.
+
+  The REXML homepage contains a very good tutorial.  The latter
+  is not entirely complete, but it does a good job of getting
+  users up to speed:
+
+    http://www.germane-software.com/~ser/Software/rexml/
+
+  Readers might be interested to know that a website exists
+  specifically for news and discussion of Ruby and XML.  It has
+  an obvious domain name:
+
+    http://www.rubyxml.com/
+
+  The address book example I use in this article can be found at:
+
+    http://gnosis.cx/download/address.xml
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author:  http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz wishes to let a thousand flowers bloom.  David may
+  be reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/.  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+
+

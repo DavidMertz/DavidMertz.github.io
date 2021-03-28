@@ -1,0 +1,150 @@
+<HTML>
+<HEAD><TITLE>Library - CLASS ColorScheme</TITLE>
+<STYLE type="text/css">
+EM { font-weight: normal; font-style: italic; color: #000066; }
+B { color: #660000; }
+H1 { font-size: large; font-weight: bold; background-color: #DDEEFF; }
+H2 { font-size: medium; font-weight: bold; }
+P.indent { margin-left: 5%; }
+P.code { margin-left: 5%; color: #006600; font-weight: bold; font-family: MONOSPACE; font-size: small; }
+P.synopsis { margin-left: 5%; }
+DL { margin-left: 5%; }
+UL { margin-left: 3%; margin-right: 8%; text-indent: -5%; }
+P.syntax { margin-left: 15%; text-indent: -10%; margin-right: 5%; }
+</STYLE></HEAD>
+
+<BODY>
+
+<H1>CLASS ColorScheme</H1>
+
+   <P class="synopsis">
+   Store and set color scheme information
+
+<!----------------------------------------------------------------><HR>
+
+<H2>Return</H2>
+
+   <P class="indent">
+   The function ColorScheme() returns the class object of the
+   ColorScheme class.
+
+<H2>Description</H2>
+
+   <P class="indent">
+   The ColorScheme class acts as a container for structured data about
+   color schemes.  The normal use of a ColorScheme instance is simply to
+   be contained within the Configuration class :ColorScheme instance
+   variable.
+
+   <P class="indent">
+   The ColorScheme class supports introspection via the standard
+   data members :_data and :_methods.
+
+<H2>Class Data</H2>
+
+   <P class="indent">None
+
+<H2>Class Methods</H2>
+
+   <DL>
+   <DT><A HREF="ColorScheme_new.html"><b>:new()</b></A>
+   <DD>Creates an instance of the ColorScheme class.
+   </DL>
+
+<H2>Life Cycle</H2>
+
+   <P class="indent">
+   A ColorScheme instance comes into existence immediately upon its
+   assignment with the ColorScheme():new() method.  No seperate :create()
+   method is required to request system resources.
+
+   <P class="indent">
+   A ColorScheme instance is destroyed when its variable falls out of
+   its declaration scope.  In most cases, the ColorScheme instance
+   should be assigned to the :ColorScheme data member of the
+   Configuration class.  The scope of the data member containing a
+   ColorScheme instance will be the same as the scope of the container
+   Configuration object instance.
+
+<H2>Instance Data</H2>
+
+   <DL>
+   <DT><b>:_data</b> <em>[EXPORTED; Array (member data list)]</em>
+   <DD>Introspection data to expose member data.
+
+   <DT><b>:_methods</b> <em>[EXPORTED; Array (member methods list)]</em>
+   <DD>Introspection data to expose member methods.
+
+   <DT><b>:SchemeName</b> <em>[EXPORTED; Character (from ColorScheme:Old())]</em>
+   <DD>String description of the color scheme?
+
+   <DT><b>:Statusbar</b> <em>[EXPORTED; Numeric (from ColorScheme:Old()))]</em>
+   <DD>Color of the status bar background?
+
+   <DT><b>:Hilite</b> <em>[EXPORTED; Numeric (from ColorScheme:Old()))]</em>
+   <DD>Color of 3D-effect highlights?
+
+   <DT><b>:Shadow</b> <em>[EXPORTED; Numeric (from ColorScheme:Old()))]</em>
+   <DD>Color of 3D-effect shadows?
+
+   <DT><b>:Titlebar</b> <em>[EXPORTED; Numeric (from ColorScheme:Old()))]</em>
+   <DD>Color of titlebar elements in widgets using that element?
+
+   <DT><b>:Titletext</b> <em>[EXPORTED; Numeric (from ColorScheme:Old()))]</em>
+   <DD>Color of titlebar text in widgets?
+
+   <DT><b>:Activeborder</b> <em>[EXPORTED; Numeric (from ColorScheme:Old()))]</em>
+   <DD>Color of active border of widgets, where applicable?
+
+   <DT><b>:Passiveborder</b> <em>[EXPORTED; Numeric (from ColorScheme:Old()))]</em>
+   <DD>Color of passive border of widgets, where applicable?
+
+   <DT><b>:DialogBG</b> <em>[EXPORTED; Numeric (from ColorScheme:Old()))]</em>
+   <DD>Color of dialog-box background?
+
+   </DL>
+
+<H2>Instance Methods</H2>
+
+   <DL>
+   <DT><b>:init()</b>
+   <DD>Set introspection data members.  Subcall to ColorScheme:Old()
+       (see Class method :new())
+
+   <DT><b>:Old()</b>
+   <DD>Set all exposed data members to GRA_CLR_* values expressing the
+       compatibility color scheme, except the member :SchemeName, which
+       is set to "Compatibility Color Scheme".
+
+   <DT><b>:Windows()</b>
+   <DD>Set all exposed data members to XBPSYSCLR_* values expressing the
+       appropriate elements of the Windows color scheme, except the
+       member :SchemeName, which is set to "Windows Color Scheme".
+
+   </DL>
+
+<H2>Examples</H2>
+
+   <P class="code">
+   oCfg := Configuration:new()  <br>
+   oCfg:ColorScheme := ColorScheme():new():Windows()
+
+<H2>Files</H2>
+
+   <P class="indent">
+   Source file is <tt>ColorScheme.prg</tt>
+
+<!----------------------------------------------------------------><HR>
+
+<H2>See Also:</H2>
+
+<P><A HREF="Configuration.html">CLASS Configuration</A></P>
+
+
+<!----------------------------------------------------------------><HR>
+
+
+</BODY>
+</HTML>
+
+

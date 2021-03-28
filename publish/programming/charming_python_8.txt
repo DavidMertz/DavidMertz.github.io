@@ -1,0 +1,435 @@
+CHARMING PYTHON #8 (20000053)
+Interviews with Creators of Vyper and Stackless Python
+
+David Mertz, Ph.D.
+Svengali, Gnosis Software, Inc.
+September 2000
+
+    What most programmers probably think of when they talk about
+    "Python" is the specific implementation sometimes called
+    "CPython" (because it is implemented in C).  However, Python
+    as a language specification has been implemented several
+    times in parallel with the evolution of Guido van Rossum's
+    reference implementation.  This column consists of annotated
+    interviews with the creators of two of the non-standard
+    Pythons - Stackless and Vyper.  In a subsequent column,
+    similar interviews with the authors of JPython and Python.NET
+    will be presented.
+
+
+WHAT IS PYTHON?
+------------------------------------------------------------------------
+
+  Python is a freely available, very-high-level, interpreted
+  language developed by Guido van Rossum.  It combines a clear
+  syntax with powerful (but optional) object-oriented semantics.
+  Python is available for almost every computer platform you
+  might find yourself working on, and has strong portability
+  between platforms.
+
+
+INTRODUCTION
+------------------------------------------------------------------------
+
+  To my count, there are four implementations of Python that you
+  can download and run today, and one more implementation whose
+  creation is underway.  Each one of these implementations has
+  some very interesting reasons for existing, and these reasons
+  are presented here (and in the followup article) in the words
+  of the implementation developers themselves.  Recompiling a
+  compiler or interpreter to a different platform is trivially a
+  different implementation (there might be minor conditional
+  compilations and changes), but the sort of implementation that
+  interests me are ones that transcend platform issues per se.
+  In fact, the Python implementations we'll look at are mostly
+  multi-platform themselves.  The idea of an implementation is
+  also different from that of a -version-.  All the
+  implementations I discuss are basically at the same language
+  version (1.5.2) in terms of the language features.  Obviously
+  CPython 1.6/2.0/3000 will/does have a partially new underlying
+  implementation, but the other implementations can equally match
+  the features at these language levels.
+
+  It is hard to identify a general pattern for what programming
+  languages get re-implemented, how often, for what reason, and
+  by whom.  Some popular languages in roughly the same niche as
+  Python--such as Perl, REBOL, and PHP--have only one
+  implementation (compiled to many platforms).  TCL is mostly
+  similar to Perl/PHP, but there -is- a Java-platform version
+  called Jacl.  At the other extreme, languages like C, Awk,
+  Cobol, REXX, and Java have each been implemented almost
+  countless times.  But those re-implementations have tended to
+  come out of licensing and marketing concerns rather than out of
+  conceptual and abstract issues about implementations.
+  Languages of particular academic interest seem to get
+  re-implemented a lot (especially functional, logical or
+  hyper-pure OOP languages like Smalltalk and Eiffel).  Lisp has
+  dozens--if not hundreds--of implementations and descendents.
+
+  Unlike the Python implementations we will look at, descendents
+  of Lisp tend to introduce a lot of novel -language- features
+  along with new implementations.  For the most part, the Python
+  implementations implement the -same- Python language as the
+  main CPython version.  And all the current versions are open
+  source cooperative efforts, with the innovations having little
+  to do with market positioning, or even with the license battles
+  that sometimes divide open source projects.  Futhermore, the
+  different Python versions are not really -forks- in a
+  traditional way, but more so -concepts- that find their
+  expression as Python implementations.
+
+  The two implementations not addressed in detail until the
+  followup column are JPython and Python.NET.  JPython is a
+  compiler written in Java that compiles Python source code to
+  Java bytecodes.  The Python application is ultimately run in a
+  JVM (with the user perhaps having no idea it was written in
+  Python source code rather than Java, nor needing to care).
+  Python.NET is an implementation yet to ship, but that will
+  be--at least in structure--similar to JPython.  Python.NET will
+  let Python participate it Microsoft's .NET project, which
+  basically amounts to a non-Java VM that can run programs
+  written in a variety of languages (such as the new C#, Visual
+  Basic, C++, and also Python).  Stay tuned for what the
+  developers of those implementations have to say.
+
+  In this column, we read what the developers of two
+  theoretically fascinating implementations have to say.
+
+
+VYPER
+------------------------------------------------------------------------
+
+  Vyper is an implementation of the Python language written in
+  the functional language Ocaml (3.00).  In contrast to other
+  Python implementations, Vyper provides a number of (optional)
+  language extensions: both more powerful scoping rules and some
+  new functional features.  Vyper is not being actively developed
+  anymore, but it might be enhanced later (see Resources for
+  obtaining Vyper, including its source code).  I asked Vyper's
+  creator John Max Skaller about his motives in creating Vyper:
+
+    [Skaller]:  There were two reasons for building Vyper:
+    First, I like Python, especially the simplicity.  But I
+    dislike the lack of scoping, and the need to resort to hacks
+    to do anything advanced.  So I decided to fix these problems
+    by building a much more advanced programming language with
+    some of the concepts of functional programming languages
+    built in, while retaining compatibility with python.
+
+    [Skaller]:  The second reason is performance.  I have a major
+    Python program, namely interscript, a literate programming
+    tool, which not only suffers from the lack of good structure
+    in Python (as mentioned above), but also from performance
+    problems.
+
+    [Mertz]:  It would be helpful for readers if you could say a
+    word or two about what literate programming is, since that
+    was a motivation for creating Vyper.
+
+    [Skaller]:  The idea is that you do not document programs
+    (after the fact), but write documents that -contain- the
+    programs.  Invented by Donald Knuth.
+
+    [Skaller]:  Interscript is typesetter and programming
+    language independent, and it can be extended -in document- by
+    arbitrary executable code, written in Python.  That is, one
+    can -generate- both code and documentation arbitrarily,
+    although a large number of prebuilt constructions are made
+    available for "everyday" needs.
+
+    [Skaller]:  But LP will never be accepted as a mainstream
+    technology unless it is FAST.  I put a lot of work into
+    making it fast, but in the end, Python isn't fast enough to
+    do what needs to be done:  processing strings character by
+    character in an interpreted language just cannot be made
+    fast.
+
+    [Skaller]:  So the idea was to build a python -compiler-,
+    which could at least generate machine binaries that could
+    optimise this kind of code.  This is one of the reasons for
+    some of the Vyper extensions, to make optimisation possible.
+
+    [Skaller]:  I never did write the compiler:  the idea was to
+    write an interpreter, which was used to load all the modules
+    of a program at compile time, and then 'freeze' the resulting
+    dictionaries into executable binaries.  Vyper today is the
+    interpreter, but I had a lot of fun extending the language,
+    and then I got a paying job writing a compiler and now have
+    no time to continue the work.
+
+    [Mertz]:  A particularly novel feature of Vyper is its
+    implementation in Ocaml.  A lot of readers probably assume a
+    compiler/interpreter would be implemented in C (to get close
+    to the metal); or maybe for a defined machine, a compiler
+    could be done in Python itself.  Why use Ocaml?
+
+    [Skaller]:  Ocaml generates machine code directly.  It
+    performs quite well compared with C, faster for some kinds of
+    work.  It also comes with a garbage collector.  Ocaml is a
+    high level language.  Unlike C, C++, Python or most other
+    *so-called* high level languages.
+
+    [Skaller]:  Ocaml is a mixed functional/imperative language.
+    Like Python.  Vyper emphasises the functional aspects of
+    Python more strongly than Python does.  It corrects glaring
+    design faults, particularly lack of lexical scoping.
+
+    [Skaller]:  In practice, there is strong theory behind
+    functional programming, whereas there is NO theory for
+    imperative programming.  This means functional programming
+    languages are generally miles better than any imperative
+    ones, from the point of view of development, but often lack
+    the performance of systems closer to the imperative
+    architecture of the underlying hardware.
+
+  Interestingly, the next implementation--although coming from a
+  different direction, in some ways supercedes Vyper:
+
+    [Skaller]:  The other big killer of the project was Stackless
+    Python.  It does something the compiler I am currently
+    working on does, and which Vyper probably could never do:
+    make the implementation of "ultra-lightweight threads"
+    possible.  (cooperative multi-tasking driven by an event
+    dispatcher).  Vyper is implemented in Ocaml, which uses the
+    machine stack:  something that must be avoided, since stack
+    switching (for handling many clients at once from a server),
+    is extremely expensive.
+
+
+STACKLESS PYTHON
+------------------------------------------------------------------------
+
+  At first brush, Stackless Python might seem like a minor fork
+  to CPython.  In terms of coding, Stackless makes just a few
+  change to the actual Python C code (and redefines "truth").
+  The concept that Christian Tismer--the creator of Stackless
+  Python--introduces with Stackless is quite profound, however.
+  It is the concept of "continuations" (and a way to program them
+  in Python).
+
+  Trying to explain it in the simplest terms, a continuation is a
+  representation, at a particular point in a program, of
+  everything the program is capable of doing subsequently.  A
+  continuation is a potential that depends on initial conditions.
+  Rather than loop in a traditional way, it is possible to invoke
+  the same continuation recursively with different initial
+  conditions.  One broad claim I have read made is that
+  continuations, in a theoretical sense, are more fundamental and
+  underlay *every other control structure*.  Don't worry if these
+  ideas cause your brain to melt; that is a normal reaction.
+
+  Reading Tismer's background article in the Resources is a good
+  start for further understanding.  Pursuing his references is a
+  good way to continue from there.  But for now, let us talk with
+  Tismer at a more general level:
+
+    [Mertz]:  Exactly what is Stackless Python?  Is there
+    something a beginner can get her mind around that explains
+    what is different about Stackless?
+
+    [Tismer]:  Stackless Python is a Python implementation that
+    does not save state on the C stack.  It does have stacks--as
+    many as you want--but these are Python stacks.
+
+    [Tismer]:  The C stack cannot be modified in a clean way from
+    a language like C, unless you do it in the expected order.
+    It imposes a big obligation on you:  You will come back,
+    exactly here, exactly in the reverse way as you went off.
+
+    [Tismer]:  "Normal" programmers do not see this as a
+    restriction in the first place.  This is so since they have
+    to learn to push their minds onto stacks from the outset.
+    There is nothing bad about stacks, and usually their imposed
+    execution order is the way to go, but that does not mean that
+    we have to wait for one such stack sequence to complete,
+    before we can run a different one.
+
+    [Tismer]:  Programmers realize this when they have to do
+    non-blocking calls and callbacks.  Suddenly the stack is in
+    the way, we must use threads, or explicitly store state in
+    objects, or build explicit, switchable stacks, and so on.
+    The aim of Stackless is to deliver the programmer from these
+    problems.
+
+    [Mertz]:  The goal of Stackless is to be 100% binary
+    compatible with CPython.  Is it?
+
+    [Tismer]:  Stackless is 100% binary compatible at the moment.
+    That means:  You install Python 1.5.2, you replace
+    python15.dll with mine, and everything still works, including
+    every extension module.  It is not a goal, it was a demand,
+    since I didn't want to take care about all the extensions.
+
+    [Mertz]:  Stackless Python has been absolutely fascinating
+    to read about for me.  Like most earthbound programmers, I
+    have trouble getting my mind wholly around it, but that is
+    part of what makes it so interesting.
+
+    [Tismer]:  Well, I'm earthbound, too, and you might imagine
+    how difficult it was to implement such a thing, without any
+    idea what a continuation is and what it should look like in
+    Python.  Getting myself into doing something that I wasn't
+    able to think was my big challenge.  After it's done, it is
+    easy to think, also to redesign.  But of those six months of
+    fulltime work, I guess five were spent goggling into my
+    screen and banging my head onto the keyboard.
+
+    [Tismer]:  Continuations are hard to sell.  Coroutines and
+    generators, and especially microthreads are easier.  All of
+    the above -can- be implemented without having explicit
+    continuations.  But when you have continuations already, you
+    find that the step to these other structures is quite small,
+    and continuations are the way to go.  So I'm going to change
+    my marketing strategy and not try any longer to sell the
+    continuations, but their outcome.  Continuations will still
+    be there for those who can see the light.
+
+    [Mertz]:  There is a joke about American Engineers and French
+    Engineers.  The American team brings a prototype to the
+    French team.  The French team's response is "Well, It works
+    fine in practice; but how will it hold up in theory?"  I
+    think the joke is probably meant to poke fun at a "French"
+    style, but to my own mind I completely identify with the
+    "French" reaction.  Bracketing any specific national
+    stereotypes in the joke, it is my identification in it that
+    draws me to Stackless.  CPython works in practice, but
+    Stackless works in theory!  (In other words, the abstract
+    purity of continuations is more interesting to me personally
+    than is the context switch speedups of microthreads, for
+    example).
+
+    [Tismer]:  My feeling is a bit similar.  After realizing that
+    CPython can be implemented without the C stack involved, I
+    was sure that it *must* be implemented this way; everything
+    else looks insane to me.  CPython already pays for the
+    overhead of frame objects, but it throws all their freedom
+    away by tying them to the C stack.  I felt I had to liberate
+    Python.  :-)
+
+    [Tismer]:  I started the project in May 1999.  Sam Rushing
+    was playing with a hardware coroutine implementation, and a
+    discussion on python-dev began.  Such a stack copying hack
+    would never make it into Python, that was clear.  But a
+    portable, clean implementation of coroutines would, possibly.
+    Unfortunately, this is impossible.  Steve Majewski gave up
+    five years ago, after he realized that he could not solve
+    this problem without completely rewriting Python.
+
+    [Tismer]:  That was the challenge.  I had to find out.
+    Either it is possible, and I would implement it.  Or it is
+    not, and I would prove the impossibility.  Not much later,
+    after first thoughts and attempts, Sam told me about call/cc
+    and how powerful it was.  At this time, I had no idea in what
+    way they could be more powerful than coroutines, but I
+    believed him and implemented them.  Six or seven times,
+    always a complete rewrite, after I understood more.
+
+    [Tismer]:  Ultimately I wanted to create threads at blinding
+    speed, but my primary intent was to find out how far I can
+    reach at all.
+
+    [Mertz]:  On the practical side, just what performance
+    improvements is Stackless likely to have?  How great are
+    these improvements in the current implementation?  How much
+    more is possible with tweaking?  What specific sorts of
+    applications are most likely to benefit from Stackless?
+
+    [Tismer]:  With the current implementation, there is no
+    large advantage for Stackless over the traditional calling
+    scheme.  Normal Python starts a recursion to a new
+    interpreter.  Stackless unwinds up to a dispatcher and starts
+    an interpreter from there.  This is nearly the same.  Real
+    improvements are there for implementations of coroutines and
+    threads.  They need to be simulated by classes, or to be real
+    threads in Standard Python, while they can be implemented
+    much more directly with Stackless.
+
+    [Tismer]:  Much more improvement of the core doesn't seem
+    possible without dramatic changes to the opcode set.  But a
+    reimplementation with more built-in support for continuations
+    et al. can improve the speed of these quite a lot.
+
+    [Tismer]:  Specific applications which might benefit greatly
+    are possibly like Swarm simulations, or multi-user games with
+    very many actors, performing tiny tasks.  One example is the
+    EVE game which is under development, using Stackless Python.
+    http://www.eve-online.com, see section 8.6 of the FAQ:
+    http://www.eve-online.com/faq/faq_08.asp
+
+    [Mertz]:  What do you think about incorporating Stackless
+    into the CPython trunk?  Is Stackless just as good as an
+    available branch, or does something get better if it becomes
+    the core version?
+
+    [Tismer]:  There are arguments for and against it.  Against:
+    As long as I'm sitting on the Stackless implementation, it is
+    mine, and I do not need to discuss the hows and whys.  But at
+    the same time, I'm struggling (and don't manage) to keep up
+    with CVS.  Better to have other people doing this.
+
+    [Tismer]:  For other Python users, who aren't necessarily
+    interested in kinky stuff, there are a few:  They won't
+    recognize Stackless at all, just the fact that it happens to
+    be faster, and that the maximum recursion level now is an
+    option and not a hardware limit.  And there is another
+    promise for every user:  There will be pickleable execution
+    states.  That means you can save your program while it is
+    running, send it to a friend and continue running it.
+
+    [Tismer]:  Finally, I'm all for it, provided that all my
+    stuff makes it into the core, at the same time.  I do not
+    want to see a half-baked solution, as has been proposed
+    several times.
+
+    [Mertz]:  Any thoughts on future directions for Stackless?
+    Anything new and different expected down the pipeline?
+    Stackless still suffers from some recursions.  Will they
+    vanish?"
+
+    [Tismer]:  Pickling support will be partially implemented.
+    This will be working first for microthreads, since they
+    provide the cleanest abstraction at the moment.  They are
+    living in a "clean room" where the remaining recursion
+    problem doesn't exist.  My final goal is to remove *all*
+    interpreter recursion from Python.  Some parts of Stackless
+    still have recursions, especially all the predefined __xxx___
+    methods of objects.  This is very hard to finalize, since we
+    need to change quite a few things, add new opcodes, unroll
+    certain internal calling sequences and so on.
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  Home for information on Vyper:
+
+    http://vyper.sourceforge.net/
+
+  Home for information on Stackless Python:
+
+    http://stackless.com/
+
+  For Christian Tismer's explanation of continuations and
+  stacklessness, take a look at:
+
+    http://www.stackless.com/spcpaper.pdf
+
+  Other articles on Stackless (Cameron Laird):
+
+    http://starbase.neosoft.com/~claird/comp.lang.python/stackless.html
+
+  Ocaml home page:
+
+    http://caml.inria.fr
+
+
+ABOUT THE AUTHOR
+------------------------------------------------------------------------
+
+  {Picture of Author: http://gnosis.cx/cgi-bin/img_dqm.cgi}
+  David Mertz writes many apocopetic articles.  David may be
+  reached at mertz@gnosis.cx; his life pored over at
+  http://gnosis.cx/publish/.  Suggestions and recommendations on
+  this, past, or future, columns are welcomed.
+
+

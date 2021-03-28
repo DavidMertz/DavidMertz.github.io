@@ -1,0 +1,383 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>CHARMING PYTHON #B13: The [itertools] module -- Functional programming in Python becomes lazy -- </title>
+<link REL="shortcut icon" href="http://gnosis.cx/publish/pen.ico">
+<link REL="parent" HREF="http://gnosis.cx/publish/" TITLE="All Articles">
+<link REL="prev" HREF="charming_python_b12.html" TITLE="CHARMING PYTHON #b12">
+<link REL="next" HREF="charming_python_b14.html" TITLE="CHARMING PYTHON #b14">
+<link REL="Book" HREF="http://gnosis.cx/TPiP/"
+                 TITLE="Text Processing in Python">
+<link REL="author" HREF="http://gnosis.cx/publish/resumes/resume.html">
+
+<style>.code-sample {background-color: #CCCCCC}</style>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<h1>Charming Python #b13: The <em><code>itertools</code></em> Module</h1>
+<h2>Functional programming in Python becomes lazy</h2>
+ <br>
+<p>David Mertz, Ph.D.<br>
+ Idempotentate, Gnosis Software, Inc.<br>
+ April, 2003<br>
+ <br>
+</p>
+<blockquote>
+    Python 2.2 introduced simple generators to Python language,
+    and reconceived standard loops in terms of underlying
+    iterators.  With Python 2.3, generators become standard (no
+    need for <cite>_future_</cite>), and the new module <em><code>itertools</code></em> is
+    introduced to work flexibly with iterators.  Over time, I
+    think more capabilities will be introduced to this module,
+    but already it is a very interesting thing.  The <em><code>itertools</code></em>
+    modules is essentially a set of combinatorial higher-order
+    functions, but ones that work with lazy iterators rather
+    than with finite lists.  This installment explores the new
+    module, and gives reader a sense of the new expressive power
+    available with combinatorial iterators.
+</blockquote>
+<h3>Understanding A New Concept</h3>
+ <p>
+  The idea of iterators was introduced into Python with version
+  2.2. Well, that is not quite true: hints of the idea were already
+  present in the older function <code>xrange()</code>, and the file method
+  <code>.xreadlines()</code>. Python 2.2 generalized the notion in much of its
+  internal implementation, and made programming custom iterators
+  much more straightforward by introducing the <code>yield</code> keyword (the
+  presence of <code>yield</code> turns a function into a generator, which in
+  turn returns an iterator).
+</p>
+<p>
+  The motivation behind iterators is twofold: (1) Working with data
+  as sequences is very frequently the most straightforward
+  approach; (2) A sequence that is processed in linear order often
+  does not need to actually <em>exist</em> all at once.
+</p>
+<p>
+  The <code>x*()</code> premonitions provide clear examples of these
+  principles. If you want to do something a billion times, your
+  program will probably take a while to execute, but there is no
+  general need for it to claim a lot of memory. Likewise, for many
+  types of files, processing can be a line-by-line matter, and
+  there is no need to store the whole file in memory.  All sorts
+  of other sequences can best be treated lazily too--they might
+  depend on data arriving incrementally over a channel, or upon a
+  computation that proceeds step-by-step.
+</p>
+<p>
+  Most of the time, an iterator is utilized within a <code>for</code> loop,
+  just like a true sequence is. Iterators provide a <code>.next()</code>
+  method that can be invoked explicitly, but 99% of the time, what
+  you will see is along the line of:
+</p>
+<div class="code-sample"><h4></h4><pre>for x in iterator:
+    do_something_with(x)
+
+</pre></div><p>
+  The loop is terminated when the behind-the-scenes call to
+  <code>iterator.next()</code> raises a <code>StopIteration</code> exception.  By the
+  way, a true sequence can be turned into an iterator by calling
+  <code>iter(seq)</code>--this will not save any memory, but it can be
+  useful in the functions discussed below.
+</p>
+<h3>Python's Evolving Split Personality</h3>
+ <p>
+  There is something schizophrenic in Python's attitudes towards
+  functional programming (FP). On the one hand, many Python
+  developers disparage the traditional FP functions <code>map()</code>,
+  <code>filter()</code>, and <code>reduce()</code>--usually recommending using list
+  comprehensions in their place. But the whole of the <em><code>itertools</code></em>
+  module is composed of function of the very same sort, merely
+  operating on "lazy sequences" (iterators) rather than on
+  completed sequences (lists, tuples). Furthermore, there is no
+  syntax in Python 2.3 for "iterator comprehensions," which would
+  seem to have to same motivation as list comprehensions.
+</p>
+<p>
+  I suspect Python will eventually grow some form of iterator
+  comprehension; but it depends on finding a suitably natural
+  syntax for them. In the meanwhile, we have a number of useful
+  combinatorial functions in the <em><code>itertools</code></em> module. Broadly, what
+  every one of these functions do is accept some
+  parameters--usually including some basis iterators--and return a
+  new iterator. For example, the functions <code>ifilter()</code>, <code>imap()</code>,
+  and <code>izip()</code> are directly equivalent to the respective builtins
+  that lack the initial <code>i</code>.
+</p>
+<h3>Missing Equivalents</h3>
+ <p>
+  There is no <code>ireduce()</code>, in <em><code>itertools</code></em>, although it might seem
+  natural; a possible Python implementation is:
+</p>
+<div class="code-sample"><h4>Sample implementation of ireduce()</h4><pre>
+def ireduce(func, iterable, init=None):
+    if init is None:
+        iterable = iter(iterable)
+        curr = iterable.next()
+    else:
+        curr = init
+    for x in iterable:
+        curr = func(curr, x)
+        yield curr
+
+</pre></div><p>
+  The use case for <code>ireduce()</code> is similar to that for <code>reduce()</code>.
+  For example, suppose you wanted to add a list of numbers
+  contained in a large file, but stop when a condition is met. You
+  could monitor the ongoing total with:
+</p>
+<div class="code-sample"><h4></h4><pre>from operator import add
+from itertools import *
+nums = open('numbers')
+for tot in takewhile(condition, ireduce(add, imap(int, nums)):
+    print "total =", tot
+
+</pre></div><p>
+  A more real-world example is probably something like applying a
+  stream of events to a stateful object, such as to a GUI widget.
+  But even the simple example above shows the FP flavor of
+  iterator combinators.
+</p>
+<h3>Basic Iterator Factories</h3>
+ <p>
+  All the functions in in <em><code>itertools</code></em> can easily be implemented in
+  pure Python, as generators. The main point of including the
+  module in Python 2.3+ is to provide standard behaviors and
+  names for some useful functions.  While programmers could write
+  their own versions, each one would create a slightly
+  incompatible variation in practice.  The other point, however,
+  is to implement iterator combinators in efficient C code.
+  Using <em><code>itertools</code></em> functions will be a bit faster than writing
+  your own combinators.  The standard documentation shows
+  equivalent pure-Python implementations for each <em><code>itertools</code></em>
+  function, so there is no need to repeat those in this article.
+</p>
+<p>
+  The functions in <em><code>itertools</code></em> are basic enough--and distinctly
+  named enough--that it probably makes sense to import all the
+  names from the module. The function <code>enumerate()</code>, for example,
+  might sensibly live in <em><code>itertools</code></em>, but is instead a builtin
+  function in Python 2.3+. Notably, you can easily express
+  <code>enumerate()</code> in terms of <em><code>itertools</code></em> functions:
+</p>
+<div class="code-sample"><h4>Reimplementation of enumerate builtin</h4><pre>
+from itertools import *
+enumerate = lambda iterable: izip(count(), iterable)
+
+</pre></div><p>
+  Let us look first at the few <em><code>itertools</code></em> functions that do <em>not</em>
+  use other iterators as a basis, but simply create iterators "from
+  scratch." <code>times()</code> returns an iterator that yields an identical
+  object multiple times; in itself, this capability is moderately
+  useful, but it is really nice as a substitute for the superfluous
+  use of <code>xrange()</code> and index variable to simply repeat an action.
+  I.e., rather than:
+</p>
+<div class="code-sample"><h4></h4><pre>for i in xrange(1000):
+    do_something()
+
+</pre></div><p>
+  You can now use the more neutral:
+</p>
+<div class="code-sample"><h4></h4><pre>for _ in times(1000):
+    do_something
+
+</pre></div><p>
+  If no second argument is given to <code>times()</code>, it simply yields
+  <code>None</code> repeatedly.  The function <code>repeat()</code> is similar to
+  <code>times()</code>, but unboundedly returns the same object.  This
+  iterator is useful either where a loop has an independent
+  <code>break</code> condition, or within combinators like <code>izip()</code> and
+  <code>imap()</code>.
+</p>
+<p>
+  The function <code>count()</code> is a bit like a cross between <code>repeat()</code>
+  and <code>xrange()</code>.  <code>count()</code> returns consecutive integers
+  unboundedly (starting at an optional argument).  However, given
+  that <code>count()</code> does not currently support overflow to longs
+  correctly now, you might as well use <code>xrange(n,sys.maxint)</code>
+  still; it's not literally unbounded, but for most purposes it
+  amounts to the same thing.  Like <code>repeat()</code>, <code>count()</code> is
+  particularly useful inside other iterator combinators.
+</p>
+<h3>Combinatorial Functions</h3>
+ <p>
+  A few of the real combinatorial functions in <em><code>itertools</code></em> have
+  been mentioned in passing. <code>ifilter()</code>, <code>izip()</code>, and <code>imap()</code>
+  act just as you would expect from their corresponding sequence
+  functions. <code>ifilterfalse()</code> is a convenience so that you do not
+  need to negate a predicate function in a <code>lambda</code> or a <code>def</code> (and
+  it saves significant function call overhead). But functionally,
+  you could define <code>ifilterfalse()</code> (approximately, ignoring the
+  <code>None</code> predicate) as:
+</p>
+<div class="code-sample"><h4>Approximate implementation of ifilterfalse()</h4><pre>
+def ifilterfalse(predicate, iterable):
+    return ifilter(lambda predicate: not predicate, iterable)
+
+</pre></div><p>
+  The functions <code>dropwhile()</code> and <code>takewhile()</code> partition an
+  iterator by a predicate.  The former ignores yielded elements
+  <em>until</em> a predicate is fulfilled, the latter yields <em>while</em> a
+  predicate holds.  <code>dropwhile()</code> skips an indefinite number of
+  initial elements of an iterator, so might not begin iterating
+  until after a delay.  <code>takewhile()</code> starts right away, but
+  terminates the iterator if the passed in predicate become true.
+</p>
+<p>
+  The function <code>islice()</code> is basically just the iterator version
+  of list slicing.  You can specify a start, stop, and step, just
+  as with regular slices.  If a start is given, a number of
+  elements are dropped until the passed in iterator reaches the
+  element of interest.  This is another case where I think
+  refinement to Python is possible--the best thing would be for
+  iterators to simply recognize slices, just as lists do (as a
+  synonym for what <code>islice()</code> does).
+</p>
+<p>
+  One final function, <code>starmap()</code> is a slight variation on
+  <code>imap()</code>.  If the function passed in as an argument takes
+  multiple arguments, the iterable passed should yield tuples of
+  the right size.  Basically this is the same as <code>imap()</code> with
+  several iterables passed in, only with the collection of
+  iterables previously combined with <code>izip()</code>.
+</p>
+<h3>Beyond The Basics</h3>
+ <p>
+  The functions included in <em><code>itertools</code></em> make for a good start. If
+  nothing else, they encourage Python programmers to become more
+  comfortable with utilizing and combining iterators. In a general
+  way, widespread use of iterators is clearly important to the
+  future of Python.  But past what is included, there are some
+  others that I would recommend for future updates to the module.
+  Readers can easily use these immediately--of course, if they
+  are later included, the names or interface details could
+  differ.
+</p>
+<p>
+  One category that would seem to be of general use is functions
+  that take multiple iterables as arguments, then yield
+  individual elements from each iterable.  In contrast to this,
+  <code>izip()</code> yields tuples of elements, and <code>imap()</code> yields values
+  computed based on the basis elements.  The two obvious
+  arrangements, to my mind, are <code>chain()</code> and <code>weave()</code>.  The
+  first is similar in effect to concatenation of sequences (but
+  appropriately lazy).  That is, where for plain sequences you
+  might use, e.g.:
+</p>
+<div class="code-sample"><h4></h4><pre>for x in ('a','b','c') + (1, 2, 3):
+    do_something(x)
+
+</pre></div><p>
+  For general iterables, you could use:
+</p>
+<div class="code-sample"><h4></h4><pre>for x in chain(iter1, iter2, iter3):
+    do_something(x)
+
+</pre></div><p>
+  A Python implementation is:
+</p>
+<div class="code-sample"><h4>Sample implementation of chain()</h4><pre>
+def chain(*iterables):
+    for iterable in iterables:
+        for item in iterable:
+            yield item
+
+</pre></div><p>
+  With iterables, you might also combine several by interspersing
+  them.  There is not builtin syntax to do the same with
+  sequences, but <code>weave()</code> itself works fine for completed
+  sequences also.  A possible implementation is below (Magnus Lie
+  Hetland proposed a similar function on comp.lang.python):
+</p>
+<div class="code-sample"><h4>Sample implementation of weave()</h4><pre>
+def weave(*iterables):
+    "Intersperse several iterables, until all are exhausted"
+    iterables = map(iter, iterables)
+    while iterables:
+        for i, it in enumerate(iterables):
+            try:
+                yield it.next()
+            except StopIteration:
+                del iterables[i]
+
+</pre></div><p>
+  Let me illustrate the behavior of <code>weave()</code> since it might not be
+  immediately obvious from the implementation:
+</p>
+<div class="code-sample"><h4></h4><pre>&gt;&gt;&gt; for x in weave('abc', xrange(4), [10,11,12,13,14]):
+...     print x,
+...
+a 0 10 b 1 11 c 2 12 13 3 14
+
+</pre></div><p>
+  Even after some iterators are exhausted, the remaining ones
+  continue to yield values, until everything available is yielded
+  at some point.
+</p>
+<p>
+  I will propose just one more possible <em><code>itertools</code></em> function. This
+  one owes a lot to functional programming ways of conceiving
+  problems. <code>icompose()</code> has a certain symmetry with the function
+  <code>ireduce()</code> suggested above. But where <code>ireduce()</code> feeds a (lazy)
+  sequence of values to a function, and yields each result,
+  <code>icompose()</code> applies a sequence of functions to the return value
+  of each predecessor function. A likely use of <code>ireduce()</code> is to
+  feed a sequence of events to an long-lived object. <code>icompose()</code>
+  might instead repeatedly pass an object to a mutator function
+  that returns a new object. The first is a fairly traditional OOP
+  way of thinking about events, while the second is more of an FP
+  way of thinking.
+</p>
+<p>
+  Here is a possible implementation of <code>icompose()</code>:
+</p>
+<div class="code-sample"><h4></h4><pre>def icompose(functions, initval):
+    currval = initval
+    for f in functions:
+        currval = f(currval)
+        yield currval
+
+</pre></div><h3>Conclusion</h3>
+ <p>
+  Iterators--conceived as lazy sequences--are a powerful concept
+  that opens new styles of Python programming. There is a subtle
+  difference, though, between thinking of an iterator as just a
+  data source, and thinking of it in a sequential style. Neither
+  way of thinking is more true <em>per se</em>, but the latter opens the
+  path towards a combinatorial shorthand for manipulating
+  programmatic events. The combinatorial functions in
+  <em><code>itertools</code></em>--and especially some it might grow, like those I
+  suggest--come close to a declarative style of programming. To my
+  mind, these declarative styles are generally less error-prone,
+  and more powerful.
+</p>
+<h3>Resources</h3>
+ <p>
+  Charming Python: Iterators and simple generators
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/linux/library/l-pycon">http://www-106.ibm.com/developerworks/linux/library/l-pycon</a>
+</blockquote>
+<p>
+  Charming Python: Implementing "weightless threads" with Python
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/linux/library/l-pythrd.html">http://www-106.ibm.com/developerworks/linux/library/l-pythrd.html</a>
+</blockquote>
+<p>
+  Charming Python: Generator-based state machines
+</p>
+<blockquote>
+   <a href="http://www-106.ibm.com/developerworks/linux/library/l-pygen.html">http://www-106.ibm.com/developerworks/linux/library/l-pygen.html</a>
+</blockquote>
+<h3>About The Author</h3>
+ <p>
+  <img src="http://gnosis.cx/cgi/img_dqm.cgi" alt="Picture of Author">
+  While David Mertz also likes hubris and impatience, this
+  installment is about laziness.  David may be reached at
+  mertz@gnosis.cx; his life pored over at<a href="http://gnosis.cx/publish/.">http://gnosis.cx/publish/.</a>
+  Suggestions and recommendations on this, past, or future, columns
+  are welcomed.
+</p>
+</body></html>
