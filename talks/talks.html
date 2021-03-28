@@ -1,0 +1,655 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>David Mertz Conference Speaking</title>
+</head>
+
+<body>
+  <h2>David Mertz Conference Speaking</h2>
+
+  <h3>Summary</h3>
+  <dl>
+    <dt>2006</dt>
+    <dd>OSCon 2006, 
+    <a href="#oscon-2006"><i>Open Source Voting</i></a></dd>
+
+    <dt>2007</dt>
+    <dd>OSCon 2007, 
+    <a href="#oscon-2007"><i>Open Source Voting (revisited)</i></a></dd>
+
+    <dt>2010</dt>
+    <dd>Pycon 2010, 
+    <a href="#pycon-2010"><i>Maximize your program's laziness</i></a></dd> 
+
+    <dt>2012</dt>
+    <dd>PyCon 2012, 
+    <a href="#pycon-2012"><i>Coroutines, event loops, and the history of Python generators</i></a></dd>
+    
+    <dd>OSCon 2012, 
+    <a href="#oscon-2012"><i>US Patriot Act and implications for Cloud Computing &amp; Data Privacy</i></a></dd>
+    
+    <dd>PyCon-India 2012, 
+    <a href="#pycon-india-2012"><i>Keynote Address: A verifiable election system</i></a></dd>
+    
+    <dt>2013</dt>
+    <dd>PyCon 2013,
+    <a href="#pycon-2013"><i>Why you should use Python 3 for text processing</i></a></dd>
+    
+    <dd>PyCon-UK 2013, 
+    <a href="#pycon-uk-2013"><i>Keynote Address: What I learned about Python – and about Guido's time machine 
+                                – by reading the python-ideas mailing list</i></a></dd>
+   
+    <dt>2014</dt>
+    <dd>PyCon-ZA 2014, 
+    <a href="#pycon-za-2014"><i>Keynote Address: What I learned about Python – and about Guido's time machine 
+                                – by reading the python-ideas mailing list</i></a></dd>
+
+    <dd>Los Angeles Professional Python Users Group,
+    <a href="#python-la-2014"><i>PyPy-STM</i></a></dd>
+
+    <dt>2015</dt>
+    <dd>PyCon Belarus 2015, 
+    <a href="#pycon-by-2015"><i>Keynote Address: Python's (future) type annotation system(s)</i></a></dd>
+    
+    <dt>2016</dt>
+    <dd>Encuentro Social de Desarrolladores (Cuba), 
+    <a href="#pycon-cuba-2016"><i>Functional Programming in Python</i></a></dd>
+    
+    <dd>Conferencia Internacional de Software Libre 2016 (Cuba), 
+    <a href="#pycon-cuba-2016"><i>Reflections on teaching Python to working scientists</i></a></dd>
+
+    <dd>PyCon 2016 (Education Summit),
+    <a href="#pycon-2016"><i>Reflections on teaching Python to working scientists</i></a></dd>
+
+    <dd>PyData SF 2016,
+    <a href="#pydata-sf-2016"><i>Keynote Address: 
+                                 Working Efficiently with Big Data in Text Formats</i></a></dd>
+
+    <dt>2017</dt>
+    <dd>PyData Seattle 2017,
+    <a href="#pydata-seattle-2017"><i>Tutorial: Parallelizing Scientific Python with Dask</i></a>,
+    with Jim Christ</dd> 
+
+    <dt>2018</dt>
+    <dd></dd>
+
+    <dt>2019</dt>
+    <dd>PiterPy 2019,
+    <a href="https://www.youtube.com/watch?v=peS_W16QjQk"><i>Interview with PiterPy Organizer</i></a></dd>
+
+    <dd>PiterPy 2019,
+    <a href="#piterpy-2018"><i>GAN</i></a></dd>
+
+  </ol>
+
+<hr/>
+<!-- ====================================================================== -->
+
+  <a name="oscon-2006"/>
+  <h3>OSCon 2006</h3>
+  <h4>Open Source Voting</h4>
+  
+  <p>About: <a href=
+    "http://conferences.oreillynet.com/cs/os2006/view/e_sess/8606">
+    http://conferences.oreillynet.com/cs/os2006/view/e_sess/8606</a></p>
+
+  <p><a href=
+  "http://conferences.oreillynet.com/cs/os2006/view/e_spkr/2781">Arthur
+  Keller</a>, University of California, Santa Cruz<br/>
+  <a href=
+  "http://conferences.oreillynet.com/cs/os2006/view/e_spkr/2812">David
+  Mertz</a>, CTO, Open Voting Consortium</p>
+
+  <p>The hanging chads of 2000 showed that America's voting systems were
+  out of date and unreliable. Yet, the electronic voting systems widely
+  adopted since then are even worse. In the 2004 elections, nearly 50
+  million votes existed only in alterable electronic form. The software
+  that processed them would have made tampering easy. Both the election
+  data and the software were hidden from public view. There were serious
+  allegations of fraud, but no possibility of a public audit to resolve
+  them.</p>
+
+  <p>Electoral fraud disenfranchises everyone. To preserve the right to
+  vote, the Open Voting Consortium (OVC) is working to establish a voting
+  system worthy of public trust. While protecting voter anonymity, this
+  Open Voting system makes all data and software auditable, publicly
+  inspectable, permanent, and tamper-proof. The proposed project will
+  develop the software and data systems needed to tabulate countywide
+  voting. This project is a vital enabling step in a larger campaign,
+  teaming OVF and OVC with government, business, and universities, to make
+  open voting the norm in American elections.</p>
+
+  <p>In April 2004, OVC publicly demonstrated an open source precinct
+  voting system. The system included:</p>
+
+  <ol>
+    <li>an electronic voting machine, accessible through either a touch
+    screen or an auditory interface, which printed paper ballots and
+    maintained an electronic audit trail,</li>
+
+    <li>a ballot verification system that allowed the visually impaired to
+    hear the selections on their ballots, and</li>
+
+    <li>a ballot reconciliation system that compared the paper ballots with
+    the electronic audit trail, and accounted for spoiled ballots.</li>
+  </ol>
+
+  <p>We are developing a secure, reliable, auditable vote tabulation system
+  that covers five main functions: security, auditing, vote tabulation,
+  bulk optical ballot scanning, and web-based vote tally reporting.</p>
+  
+<hr/>
+<!-- ====================================================================== -->
+
+  <a name="oscon-2007"/>
+  <h3>OSCon 2007</h3>
+  <h4>Open Source Voting</h4>
+  
+  <p>About: <a href=
+  "http://conferences.oreillynet.com/cs/os2006/view/e_sess/8606">
+  http://conferences.oreillynet.com/cs/os2006/view/e_sess/8606</a></p>
+
+  <p><a href="http://conferences.oreillynet.com/cs/os2007/view/e_spkr/2781">
+  Arthur Keller</a>, University of California, Santa Cruz<br/>
+  <a href="http://conferences.oreillynet.com/cs/os2007/view/e_spkr/3919">
+  Fred McLain</a><br/>
+  <a href="http://conferences.oreillynet.com/cs/os2007/view/e_spkr/2812">
+  David Mertz</a>, CTO, Open Voting Consortium</p>
+
+  <p>The hanging chads of 2000 showed that America's voting systems were
+  out of date and unreliable. Yet, the electronic voting systems widely
+  adopted since then are even worse. In the 2004 elections, nearly 50
+  million votes existed only in alterable electronic form. Suspicious
+  undervotes on the electronic voting machines affected the outcome of
+  several congressional elections in 2006. The software that processed them
+  would have made tampering easy. Both the election data and the software
+  were hidden from public view. There were serious allegations of fraud,
+  but no possibility of a public audit to resolve them.</p>
+
+  <p>Electoral fraud disenfranchises everyone. To preserve the right to
+  vote, the Open Voting Consortium (OVC) is working to establish a voting
+  system worthy of public trust. While protecting voter anonymity, this
+  Open Voting system makes all data and software auditable, publicly
+  inspectable, permanent, and tamper-proof. The proposed project will
+  develop the software and data systems needed to tabulate countywide
+  voting. This project is a vital enabling step in a larger campaign,
+  teaming OVF and OVC with government, business, and universities, to make
+  open voting the norm in American elections.</p>
+
+  <p>In April 2004, OVC publicly demonstrated an open source precinct
+  voting system. The system included:</p>
+
+  <ol>
+    <li>An electronic voting machine, accessible through either a touch
+    screen or an auditory interface, that printed paper ballots and
+    maintained an electronic audit trail,</li>
+
+    <li>A ballot verification system that allowed the visually impaired to
+    hear the selections on their ballots, and</li>
+
+    <li>A ballot reconciliation system that compared the paper ballots with
+    the electronic audit trail, and accounted for spoiled ballots.</li>
+  </ol>
+
+  <p>We will update last year's presentation with progress in the
+  development of a secure, reliable, auditable vote tabulation system that
+  covers five main functions: security, auditing, vote tabulation, bulk
+  optical ballot scanning, and web-based vote tally reporting.</p>
+  
+<hr/>
+<!-- ====================================================================== -->
+
+  <a name="pycon-2010"/>
+  <h3>Pycon 2010</h3>
+  <h4>Maximize your program's laziness</h4>
+
+  <p>Video: <a href=
+  "http://www.talkminer.com/viewtalk.jsp?videoid=bliptv3259746&amp;q=">
+  http://www.talkminer.com/viewtalk.jsp?videoid=bliptv3259746&amp;q=</a></p>
+
+  <p>Slides: <a href=
+  "http://gnosis.cx/publish/Laziness.pdf">http://gnosis.cx/publish/Laziness.pdf</a></p>
+
+  <p>David Mertz</p>
+
+  <h5>Summary</h5>
+
+  <p>The cheapest, fastest and most reliable components of a computer
+  system are those that aren't there" has a parallel in data structures.
+  &nbsp;The fastest, most parsimonious, &nbsp;and best performing data
+  structure is one which is never concretized within a program run. &nbsp;A
+  promise to create data when, or if, it is needed is often easy to make
+  without needing to realize the data computationally.</p>
+
+  <p>The addition of iterators and generators to Python during the 2.x
+  series, and their more systematic use in 3.x, provides an easy way to
+  work with lazy computation. &nbsp;Using these facilities well can improve
+  program performance, often in terms of big-O complexity even.
+  &nbsp;However, sometimes more complex lazy data structures require
+  special design in order to encapsulate more complex promises than one can
+  make with list-like iterators.</p>
+
+  <h5>Description</h5>
+
+  <p>Talk outline</p>
+  <ol>
+    <li>5 minute review of laziness, with examples from functional
+        programming language(s).</li>
+    <li>8 minute review of iterators and itertools.</li>
+    <li>3 minute review of generators and generator expressions.</li>
+    <li>3 minute review of memoization and weakrefs.</li>
+    <li>10 minute case study on laziness in computation components in
+        acyclical direct graph.</li>
+    <li>1 minute wrap up of miscellaneous exoterica.<br /></li>
+  </ol>
+  
+<hr />
+<!-- ====================================================================== -->
+
+  <a name="pycon-2012"/>
+  <h3>PyCon 2012</h3>
+  <h4>Coroutines, event loops, and the history of Python generators</h4>
+  
+  <p>Slides: <a href="http://gnosis.cx/publish/Laziness.pdf">
+  http://gnosis.cx/publish/Generators.pdf</a></p>
+
+  <p>Video: <a href=
+  "http://pyvideo.org/video/668/coroutines-event-loops-and-the-history-of-pytho">
+  http://pyvideo.org/video/668/coroutines-event-loops-and-the-history-of-pytho</a></p>
+
+  <p><a href="https://us.pycon.org/2012/speaker/profile/135/">David
+  Mertz</a></p>
+
+  <h5>Description</h5>
+
+  <p>This talk traces lightweight concurrency from Python 2.2's generators,
+  which enabled semi-coroutines as a mechanism for scheduling "weightless"
+  threads; to PEP 342, which created true coroutines, and hence made
+  event-driven programming easier; to 3rd party libraries built around
+  coroutines, from older GTasklet and peak.events to the current
+  Greenlet/gevent and Twisted Reactor.</p>
+
+  <h5>Abstract</h5>
+
+  <p>This talk aims to provide both a practical guide and theoretical
+  underpinnings to the use of generator-based lightweight concurrency in
+  Python.</p>
+
+  <ol>
+    <li>Lightning tour of generator constructs. Why generator-based
+        scheduling is particularly useful for event-based programming.</li>
+    <li>Simple example of a "trampoline" or scheduler.</li>
+    <li>Slightly fleshed out example of scheduler with discussion of
+        data-passing issues.</li>
+    <li>Examples using GTasklet to make coroutine code look more like
+        familiar sequential code (the framework is based on greenlets rather
+        than generators, but accomplishes similar purpose).</li>
+    <li>Brief examples of Twisted Reactors and Deferreds.</li>
+    <li>Limits of generator-based concurrency (i.e. doesn't help with
+        multiple cores and multiple servers). "Throw at the wall" list of ways
+        to generalize to larger scales than single cores.</li>
+  </ol>
+
+<hr/>
+<!-- ====================================================================== -->
+
+  <a name="oscon-2012"/>
+  <h3>OSCon 2012</h3>
+  <h4>US Patriot Act and implications for Cloud Computing &amp; Data Privacy</h4>
+  
+  <p>About: <a href=
+  "http://www.oscon.com/oscon2012/public/schedule/detail/23880">
+  http://www.oscon.com/oscon2012/public/schedule/detail/23880</a></p>
+  <p>Slides:
+    <ul>
+      <li><a href=
+"http://cdn.oreillystatic.com/en/assets/1/event/80/US%20Patriot%20Act%20and%20implications%20for%20Cloud%20Computing%20_%20Data%20Privacy%20%20Presentation.pdf">
+          Diane Mueller slides</a></li>
+      <li><a href="http://gnosis.cx/oscon_2012/Paranoia.pdf">
+          David Mertz slides</a></li>
+      <li><a href="http://gnosis.cx/oscon_2012/">
+          Archive/audio at gnosis.cx</a></li>
+    </ul>
+  </p>
+
+  <p><a href="http://www.oscon.com/oscon2012/public/schedule/speaker/92956">
+  Diane Mueller</a> (ActiveState),<br/>
+  <a href="http://www.oscon.com/oscon2012/public/schedule/speaker/27225">
+  David Mertz</a> (IBM developerWorks)</p>
+
+  <p>Is the US Patriot Act causing you to hesitate on leveraging the cloud
+  in your enterprise? Do you want to leverage the power of cloud computing
+  but unsure what the security and privacy implications are for sensitive
+  corporate data?</p>
+
+  <p>Organizations are thinking long and hard about the legal and
+  regulatory implications of cloud computing. When it comes to actual
+  corporate data, no matter what the efficiency gains are, legal
+  departments are often directing IT departments to steer clear of any
+  service that eliminates their ability to keep potential sensitive
+  information out of the hands of Federal prosecutors.</p>
+
+  <p>Despite all the hype about every application moving into the cloud,
+  some practical patterns are starting to emerge in the types of data
+  corporations are willing to move to the cloud. Learn how to create a
+  secure, compliant, private platform and cloud for developing,
+  distributing and managing enterprise applications.</p>
+
+  <p>I will cover: Introduction to the US Patriot Act and Data Privacy
+  issues Implications for on Cloud Computing Jurisdictional Issues Best
+  Practices &amp; Practical Patterns Classes of applications that best
+  leverage the cloud What types of applications should stay on-premise
+  Private Cloud Model(s) Building a Compliant Cloud Strategy</p>
+
+<hr/>
+<!-- ====================================================================== -->
+
+  <a name="pycon-india-2012"/>
+  <h3>PyCon-India 2012</h3>
+  <h4>Keynote Address</h4>
+  <h5>A verifiable election system</h5>
+
+  <p>Video: <a href="http://www.youtube.com/watch?v=EJseJV6RLUg">
+  http://www.youtube.com/watch?v=EJseJV6RLUg</a></p>
+
+  <p>Slides: <a href=
+  "http://www.slideshare.net/LuluLotus/election-security">
+  http://www.slideshare.net/LuluLotus/election-security</a></p>
+
+  <p>The first part of this talk addressed Python Software Foundation administrative matters.  The rest of this talk was about voting systems.  It doesn't have anything to do with the PSF per se, although the PSF has used the described method.</p> 
+
+  <p>This talk doesn't really have much to do with Python either.  The systems presented and implemented were written in Python, but you could do it in a different programming language.  ...  for that matter, you could do most of it with pencils and paper.</p>
+
+
+<hr/>
+<!-- ====================================================================== -->
+
+  <a name="pycon-2013"/>
+  <h3>PyCon 2013</h3>
+  <h4>Why you should use Python 3 for text processing</h4>
+
+  <p>Slides: <a href= "https://speakerdeck.com/pyconslides/why-you-should-use-python-3-for-text-processing-by-david-mertz">
+https://speakerdeck.com/pyconslides/why-you-should-use-python-3-for-text-processing-by-david-mertz</a></p>
+
+  <p>Video: <a href=
+  "http://pyvideo.org/video/1704/why-you-should-use-python-3-for-text-processing">
+  http://pyvideo.org/video/1704/why-you-should-use-python-3-for-text-processing</a></p>
+
+  <p><a href="https://us.pycon.org/2013/speaker/profile/335/">David
+  Mertz</a></p>
+
+  <h5>Description</h5>
+
+  <p>Python is a great language for text processing. Each new version of Python--but especially the 3.x series--has enhanced this strength of the language. String (and byte) objects have grown some handy methods and some built-in functions have improved or been added. More importantly, refinements and additions have been made to the standard library to cover the most common tasks in text processing.</p>
+
+  <h5>Abstract</h5>
+
+  <p>This talk, by its nature, will be a somewhat impressionistic review of nice-to-have improvements to text processing that have come to python--in part in the long time frame since my book on the topic, but with an emphasis on 3.x features.</p>
+
+  <ol>
+    <li>Improvements to collections help with many things, but seem to come up particularly often as nice ways to do text processing tasks: e.g.  namedtuple; Counter; OrderedDict; defaultdict.</li>
+    <li>Lots of improvements and rationalization of email package (mailbox too).</li>
+    <li>Unicode handling--sometimes an important aspect of text processing--remains unwieldy, but has at least entered the domain of
+        "possible to do right" (usually).</li>
+    <li>Codecs improvements</li>
+    <li>Relatively old but continues to improve: textwrap.</li>
+    <li>ElementTree as standard library high-level option for XML handling
+        (with various tweaks in 3.x version).</li>
+    <li>str.format(); technically back ported to 2.x also, but a good option that wasn't in historical python versions.</li>
+    <li>Miscellaneous improvements to datetime.</li>
+    <li>logging has become good enough that it should be a standard tool for logging (also backported generally).</li>
+    <li>hashlib</li>
+    <li>csv improvements.</li>
+    <li>Not only in 3.x, but json as a standard module is wonderful for serialization and data sharing.</li>
+    <li>Ancient but little known tip: use str.startswith([list,of,values]).</li>
+  </ol>
+
+<hr/>
+<!-- ====================================================================== -->
+
+  <a name="pycon-uk-2013"/>
+  <h3>PyCon-UK 2013</h3>
+  <h4>Keynote Address</h4>
+  <h5>What I learned about Python &ndash; and about Guido's time machine 
+      &ndash; by reading the <tt>python-ideas</tt> mailing list</h5>
+
+  <p>Video: <a href="http://youtu.be/t0Nyk5WSGuE">
+  http://youtu.be/t0Nyk5WSGuE</a></p>
+
+  <p>Slides: <a href=
+  "http://gnosis.cx/pycon-uk-2013/Keynote-Ideas.pdf">
+  http://gnosis.cx/pycon-uk-2013/Keynote-Ideas.pdf</a></p>
+
+  <p>Opening keynote address by David Mertz at PyCon-UK 2013.  
+  Discusses threads on the python-ideas mailing list, and takes 
+  as example variations on the built-in sum() function to reveal 
+  surprising subtleties.</p>
+
+<hr/>
+<!-- ====================================================================== -->
+
+  <a name="pycon-za-2014"/>
+  <h3>PyCon-ZA 2014</h3>
+  <h4>Keynote Address</h4>
+  <h5>What I learned about Python &ndash; and about Guido's time machine 
+      &ndash; by reading the <tt>python-ideas</tt> mailing list</h5>
+
+  <p>Video: <a href="http://pyvideo.org/pycon-za-2014/what-i-learned-about-python-and-about-guidos-t.html">
+  http://pyvideo.org/pycon-za-2014/what-i-learned-about-python-and-about-guidos-t.html</a></p>
+
+  <p>Slides: <a href=
+  "http://gnosis.cx/pycon-za-2014/Keynote-Ideas.pdf">
+  http://gnosis.cx/pycon-za-2014/Keynote-Ideas.pdf</a></p>
+
+  <p>Keynote address by David Mertz at PyCon-ZA 2014.  
+  Discusses threads on the python-ideas mailing list, and takes 
+  as example variations on the built-in sum() function to reveal 
+  surprising subtleties.</p>
+
+  <h4>Closing Remarks</h4>
+  <h5>PSF Membership Changes</h5>
+
+  <p>Video: <a href="http://pyvideo.org/pycon-za-2014/pyconza-2014-closing-remarks.html">http://pyvideo.org/pycon-za-2014/pyconza-2014-closing-remarks.html</a></p>
+
+  <p>Slides: <a href="http://gnosis.cx/pycon-za-2014/PSF-PyCon-ZA.pdf">http://gnosis.cx/pycon-za-2014/PSF-PyCon-ZA.pdf</a></p>
+
+  <hr/>
+<!-- ====================================================================== -->
+
+  <a name="python-la-2014"/>
+  <h3>Los Angeles Professional Python Users Group</h3>
+  <h4>PyPy-STM</h4>
+  <h5>Description</h5>
+  <ul>
+    <li>PyPy is a compliant alternative implementation of the Python language, written in Python... It's fast!</li>
+    <li>STM is a "concurrency control mechanism analogous to database transactions for controlling access to shared memory in concurrent computing. It is an alternative to lock-based synchronization."</li>
+    <li>A win in using PyPy-STM is that code that looks like threaded Python code can actually execute (optimistically) on multiple CPU cores.</li>
+    <li>"[A]lthough running on multiple cores in parallel, <tt>pypy-stm</tt> gives the illusion that threads are run serially"</li>
+</ul>
+
+
+  <p>Slides: <a href=
+  "http://gnosis.cx/python-la-2014/PyPy-STM.pdf">
+  http://gnosis.cx/python-la-2014/PyPy-STM.pdf</a></p>
+
+<hr/>
+<!-- ====================================================================== -->
+
+  <a name="pycon-by-2015"/>
+  <h3>PyCon Belarus 2015</h3>
+  <h4>Keynote Address</h4>
+  <h5>Python's (future) type annotation system(s)</h5>
+
+  <p>Video: <a href="https://youtu.be/8QIYPws-51A">
+  https://youtu.be/8QIYPws-51A</a></p>
+
+  <p>Slides: <a href=
+  "http://gnosis.cx/pycon-by-2015/Type-Annotations.pdf">
+  http://gnosis.cx/pycon-by-2015/Type-Annotations.pdf</a></p>
+
+  <p><b>Abstract:</b></p>
+
+  <p>Python is a dynamically (but <i>strongly</i>, for some value of "strongly")
+  typed programming language.  Notwithstanding its dynamism, checking types--or 
+  other behaviors--of variables has always been possible in Python code, and a 
+  steady stream of users have had a desire to do so.</p>
+
+  <p>At a conceptual level, enforcing a type is a subset of enforcing an 
+  invariant on a variable, and the broader demand for <i>design by 
+  contract</i> has been a recurrent theme in Python discussions.  PEP 316 
+  addressed this desire (but was not accepted) a decade ago, as did the long 
+  defunct library PyDBC.  Currently maintained, however, is the PyContracts 
+  library, which allows documenting and enforcing both types narrowly, and 
+  predicates of variables more broadly.  I myself wrote a simple recipe for 
+  basic type checking using PEP 3107 annotations at the Python Cookbook: Type 
+  checking using Python 3.x annotations 
+  (http://code.activestate.com/recipes/578528-type-checking-using-python-3x-annotations/).
+  </p>
+
+  <p>Both <tt>assert</tt> statements and guarded conditionals are often 
+  used to declare and assure a type or other invariant.  Enforcing a type can 
+  either be done strictly using <tt>isinstance(x, Type)</tt> or 
+  <tt>issubclass(X, Type)</tt>; or via <i>duck typing</i>, often in the form 
+  of <tt>hasattr(x, method)</tt>.  The introduction of abstract base classes 
+  (ABCs) in Python 2.6 added an inheritance-based approach to duck typing, 
+  including the ability to register <i>virtual subclasses</i>.  Of course, 
+  one can <tt>assert</tt> or do a boolean test on <i>any predicate</i> as 
+  well.</p>
+
+  <p>The Mypy tool operated a bit differently than other type checking or 
+  invariant libraries.  There are two elements to this difference:</p> 
+
+  <ol>
+      <li>It performs its type checking statically prior to a program 
+      actually running, using PEP 3107 annotations that do not otherwise affect 
+      the runtime behavior of a program.</li>
+
+      <li>It has a relatively rich type system, inspired much more by the 
+      recursive typing of Haskell and functional programming than by the simple 
+      types in C (C++ template typing stands somewhere in the middle of this, 
+      perhaps in a similar place as Mypy).  The library <tt>reticulated</tt> has 
+      a similar system to Mypy.</li>
+  </ol>
+
+  <p>In August of 2014, our BDFL, GvR, proposed "blessing" Mypy's approach 
+  to type annotations as the official purpose of function annotations for 
+  Python 3.6+.  Such a blessing is intended to lead to more widespread use of 
+  type annotations, and a standard about their syntax is intended to allow 
+  for an ecosystem of tools beyond Mypy to take advantage of the provided 
+  information.  </p>
+
+<hr/>
+<!-- ====================================================================== -->
+
+  <a name="pycon-cuba-2016"/>
+  <h3>Encuentro Social de Desarrolladores (Cuba)</h3>
+  <h4>Functional Programming in Python</h4>
+  <h5>An introduction to using functional programming techniques in Python 
+  presented to the Havana Python User Group.  Presentation based on and 
+  utilizes teaching materials developed for Continuum Analytics.</h5>
+
+  <p>Notebooks: <a href=
+  "http://gnosis.cx/pycon-cuba-2016/Functional_Programming_in_Python/">
+  http://gnosis.cx/pycon-cuba-2016/Functional_Programming_in_Python/</a></p>
+
+  <h3>Conferencia Internacional de Software Libre 2016 (Cuba)</h3>
+  <h4>Reflections on teaching Python to working scientists</h4>
+  <h5>Slides and a live demonstration of some teaching notebooks from Continuum Analytics at the end of the talk</h5>
+
+  <p>Slides: <a href=
+  "http://gnosis.cx/pycon-cuba-2016/Teaching-Scientists.pdf">
+  http://gnosis.cx/pycon-cuba-2016/Teaching-Scientists.pdf</a></p>
+
+  <p>Notebooks: <a href=
+  "http://gnosis.cx/pycon-cuba-2016/Scientific_Programming_using_Anaconda/">
+  http://gnosis.cx/pycon-cuba-2016/Scientific_Programming_using_Anaconda/</a></p>
+
+<hr/>
+<!-- ====================================================================== -->
+
+  <a name="pydata-sf-2016"/>
+  <h3>PyData SF 2016</h3>
+  <h4>Keynote Address</h4>
+  <h5>Working Efficiently with Big Data in Text Formats</h5>
+
+  <p><b>Abstract</b></p>
+
+  <p>In an ideal world, all our large datasets would live in well optimized 
+    storage formats, such as RDBMS's, key-value NoSQL stores, HDF5 hierarchical 
+    datasets, or other formats that are well typed and fast to access. In our 
+    actual world, a great deal of our data lives in CSV, flat-file, or JSON 
+    formats, roughly stored on file systems, with little typing of data values. 
+    Moreover, data in these formats often have variably sized records making 
+    seeking data a linear scan operation.</p>
+
+  <p>Continuum Analytics has produced a custom optimized library called IOPro 
+    that includes a component called TextAdapter. TextAdapter provides 
+    abstractions to data access into these textual formats that adds much 
+    better data typing, minimizes memory use, uses indexing for seeking, and 
+    other facilities for better, faster data access without requiring 
+    conversion of exploratory datasets into permanent optimized formats. We 
+    will be releasing this code as an Open Source project, and plan on 
+    enhancing the library to allow further performance optimizations and 
+    integration with the Dask project.</p>
+
+  <p>As well as looking at technical and performance details of TextAdapter, 
+    this talk will discuss the economic and social concerns of company 
+    developed and supported Open Source projects. Continuum continues to 
+    explore some of these issues through our release of TextAdapter, following 
+    on company trajectory of moving projects from proprietary to open source 
+    status whenever reasonable.</p>
+
+  <p>Slides: <a href=
+  "http://gnosis.cx/pydata-sf-2016/TextAdapter.pdf">
+  http://gnosis.cx/pydata-sf-2016/TextAdapter.pdf</a></p>
+
+  <p>Video: <a href="https://www.youtube.com/watch?v=qZy-9chm3dk">
+  https://www.youtube.com/watch?v=qZy-9chm3dk</a></p>
+
+<hr/>
+<!-- ====================================================================== -->
+
+  <a name="pydata-seattle-2017"/>
+  <h3>PyData Seattle 2017</h3>
+  <h4>Tutorial</h4>
+  <h5>Parallelizing Scientific Python with Dask</h5>
+
+  <p><b>Description</b></p>
+
+  <p>Dask is a flexible tool for parallelizing Python code on a single 
+  machine or across a cluster. It builds upon familiar tools in the PyData 
+  ecosystem (e.g. NumPy and Pandas) while allowing them to scale across 
+  multiple cores or machines. This tutorial will cover both the high-level 
+  use of dask collections, as well as the low-level use of dask graphs and 
+  schedulers.</p>
+
+  <p>We can think of dask at a high and a low level:</p>
+
+  <p>High level collections: Dask provides high-level Array, Bag, and 
+  DataFrame collections that mimic and build upon NumPy arrays, Python lists, 
+  and Pandas DataFrames, but that can operate in parallel on datasets that do 
+  not fit into main memory.</p>
+
+  <p>Low Level schedulers: Dask provides dynamic task schedulers that 
+  execute task graphs in parallel. These execution engines power the 
+  high-level collections mentioned above but can also power custom, 
+  user-defined workloads to expose latent parallelism in procedural code. 
+  These schedulers are low-latency and run computations with a small memory 
+  footprint.</p>
+
+  <p>Different users operate at different levels but it is useful to 
+  understand both. This tutorial will cover both the high-level use of 
+  dask.array and dask.dataframe and the low-level use of dask graphs and 
+  schedulers. Attendees will come away able to use dask.delayed to 
+  parallelize existing code, understanding the differences between the 
+  dask schedulers, and when to use one over another, and with a firm 
+  understanding of the different dask collections 
+  (dask.array and dask.dataframe) and how and when to use them.</p>
+
+
+  <p>Video: <a href="https://www.youtube.com/watch?v=VAuFSo2cIhs&t=988s">
+  https://www.youtube.com/watch?v=VAuFSo2cIhs&t=988s</a></p>
+</body>
+</html>
