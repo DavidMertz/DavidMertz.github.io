@@ -1,0 +1,37 @@
+'''''Rocket Arena''''' ('''''RA''''') is a free [[mod (computer gaming)|mod]] for the multiplayer [[first-person shooter]] games ''[[Quake]]'', ''[[Quake II]]'', ''[[Quake III Arena]]'', ''[[Quake 4]]'', ''[[Half-Life]]'' (called ''Lambda Arena''), and ''[[Unreal Tournament]]''. It was created by David "crt" Wright of GameSpy and first released for ''Quake'' in [[1997]], less than a year after ''Quake'''s debut. ''Rocket Arena'' became a successful and influential user-created game modification.
+
+== Gameplay ==
+''Rocket Arena'' is very similar to standard [[deathmatch]], in that players battle it out against each other for survival. The major differences are that the players all start with identical resources (including weapons, ammunition, health, and armor) and that all resources are removed from the map (preventing players from improving their condition). These two conditions focus the gameplay towards fighting and away from more traditional [[deathmatch]] techniques that involve resource domination.
+
+Each ''Rocket Arena'' game contains one or more rounds. Each round begins by spawning players randomly throughout the map, or arena. Once a player is [[Frag (video gaming)|frag]]ged, he or she is removed from play, and allowed to spectate. When one team has no more players in the arena, the other team wins the round and the next round begins. The team that wins the most rounds, wins the game. Games are played continuously.
+
+=== Standard Rocket Arena mode ===
+Every player creates a team or joins a team depending on the set number of players allowed per team. A queue is formed and the first two teams play a game (which may include several rounds). The winning team stays at the top of the queue and fights the next team, while the losing team is placed at the end of the queue.
+
+=== Clan Arena mode ===
+Every player joins either the Red team or the Blue team, and these two teams play games continuously. Every player gets to play every round, and since there are no other teams, there is no waiting in a queue to play. Clan Arena became popular due to the fact that players start off with all their weapons and are not able to hurt themselves or their team. Clan Arena mode is also included in ''[[Challenge ProMode Arena|Quake III: Challenge ProMode Arena]]''.
+
+=== Red Rover mode ===
+Every player joins either the Red team or the Blue team, and these two teams play game continuously. In this mode, when a player is fragged, they immediately respawn as a member of the opposing team. This allows for continuous play, instead of having to wait for the next round. The game ends when one team no longer has any players. Once a player frags another, he/she receives a point, and when they die they lose a point. Which ever player at the end of the round has the most points, that player wins that particular match.
+
+=== Practice mode ===
+There are no teams. Every player enters the world as invincible with infinite ammunition. As the name implies, it is for practicing. Often used to learn the intricacies of the maps.
+
+== Rocket Arena maps ==
+''Rocket Arena'' can be played on most maps not designed for ''Rocket Arena'', but it comes with many maps made specifically for it. The maps made for RA usually contain a few (3-4) "arenas", generally a small arena for 1v1, one or two moderately sized arenas for 2v2 - 4v4, and a large arena for games with more than four players per team.
+
+== Popularity of Rocket Arena ==
+''Rocket Arena'' aims to correct some of the weaknesses many perceive with conventional [[deathmatch]]. In particular, in deathmatch, slain players are reincarnated in a relatively weak condition, and often face opponents that have gathered better resources. This can lead to conditions where a few players can dominate a game, hoarding all of the game's resources and repeatedly kill their perpetually disadvantaged opponents without ever dying themselves. Such domination isn't always a good reflection of the dominant player's fighting skills, but instead it frequently reflects their map prowess and resource gathering skills.
+
+''Rocket Arena'' aims to level the playing field by giving reincarnated players full health, weapons, and armour. No further pickups are available, so each player's condition monotonically decreases through the game, until they are killed and reborn. The nature of RA rewards accuracy and the conservative use of ammunition, and encourages fluid, open play rather than some of the static conditions in which ordinary deathmatch can sometimes turn into; tactics such as hiding, sniping, and camping (seen by many as unsportsmanlike) lose much of their effectiveness in Arena-mode combat. Many players consider ''Rocket Arena'' to be the best and fairest showcase of a player's fighting skills, where effects of luck and unsportsmanlike play are largely mitigated.
+
+==External links==
+* [http://rocketarena.planetquake.gamespy.com/ Rocket Arena Homepage]
+
+[[Category:1997 computer and video games]]
+[[Category:Computer game mods]]
+[[Category:Half-Life mods]]
+[[Category:Unreal]]
+[[Category:Quake 3 Arena mods]]
+
+[[pl:Rocket Arena]]

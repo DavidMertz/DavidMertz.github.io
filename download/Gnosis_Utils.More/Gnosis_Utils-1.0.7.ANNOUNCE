@@ -1,0 +1,60 @@
+Subject: [Announce] Gnosis Utils 1.0.7 
+ 
+This release contains a few updates, fixes and enhancements:
+ 
+   * New module gnosis.anon. This module generates "anonyms" for email 
+     addresses, and forwards any mail sent to those anonyms on to the 
+     corresponding real addresses. In other words, this is a protocol 
+     that allows anonymous recipients to get email. Currently alpha-status. 
+     See http://gnosis.cx/anon for further information. 
+ 
+   * Updated gnosis.xml.pickle to handle the new BooleanType in 
+     Python 2.3. Python <= 2.2 can read these pickles as well. 
+     Revised family mapping for functions/classes. 
+ 
+   * Bugfix in gnosis.xml.pickle.util for classes that are 
+     loaded from sys.modules. 
+ 
+   * Rewrote gnosis.util.introspect.instance_noinit to use more 
+     robust "new" module and/or __new__() as applicable. Added 
+     obj_from_classtype to public API. 
+ 
+   * Updated xml.objectify to handle namespaces. Additional check 
+     for passed DOM node. Added new tests. 
+ 
+   * New util xmlcat.py for concatenating XML files. 
+ 
+It may be obtained at: 
+   http://gnosis.cx/download/Gnosis_Utils-1.0.7.tar.gz 
+ 
+The current release is always available as: 
+   http://gnosis.cx/download/Gnosis_Utils-current.tar.gz 
+
+Browse the development snapshot at:
+   http://gnosis.cx/download/gnosis/
+ 
+Try it out, have fun, send feedback! 
+ 
+David Mertz (mertz@gnosis.cx) 
+Frank McIngvale (frankm@hiwaay.net) 
+ 
+------------------------------------------------------------------------ 
+ 
+BACKGROUND:  Gnosis Utilities contains a number of Python libraries, many 
+(but not all) related to working with XML.  These include: 
+ 
+    gnosis.indexer          (Full-text indexing/searching) 
+    gnosis.xml.pickle       (XML pickling of Python objects) 
+    gnosis.xml.objectify    (Any XML to "native" Python objects) 
+    gnosis.xml.validity     (Enforce validity constraints) 
+    gnosis.xml.indexer      (XPATH indexing of XML documents) 
+    [...].convert.txt2html  (Convert ASCII source files to HTML) 
+    gnosis.util.dtd2sql     (DTD -> SQL 'CREATE TABLE' statements) 
+    gnosis.util.sql2dtd     (SQL query -> DTD for query results) 
+    gnosis.util.xml2sql     (XML -> SQL 'INSERT INTO' statements) 
+    gnosis.util.combinators (Combinatorial higher-order functions) 
+    gnosis.util.introspect  (Introspect Python objects) 
+    gnosis.magic            (Multimethods, metaclasses, etc) 
+    gnosis.anon             (Generate "anonyms" for email addresses) 
+ 
+...and so much more! :-) 

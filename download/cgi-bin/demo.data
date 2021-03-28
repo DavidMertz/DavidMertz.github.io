@@ -1,0 +1,16 @@
+# Election summary for OVC demo ballot (write-ins count as candidate)
+single  8       # Prez, 7 candidates plus write-in
+single  8       # Senator
+single  3       # Representative
+single  3       # Treasurer
+single  4       # AG
+single  3       # Edu Commis
+single  4       # State Senate
+single  3       # Assembly
+single  2       # Transportation initiative
+single  2       # health care
+single  2       # term limit
+multi   3   10  # Cat Catcher
+ranked  8   8   # County Commissioner
+
+

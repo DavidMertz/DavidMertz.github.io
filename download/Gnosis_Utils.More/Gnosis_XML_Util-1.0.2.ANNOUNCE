@@ -1,0 +1,51 @@
+Subject: [Announce] Gnosis (XML) Utils 1.0.2
+
+This release contains one major bugfix, and one new XML module:
+
+   * Added module gnosis.xml.validity.  This module contains custom
+     classes for creating a Python object that is constrained by
+     XML validity rules (DTD or Schema).  Taking its inspiration from the
+     Haskell module HaXml, a programmer using gnosis.xml.validity can
+     guarantee that no operation on an object will result in something
+     that would be serialized as invalid XML.  See
+     gnosis/doc/xml_matters_20.txt for details.
+
+   * Fixed bug with integer parsing in gnosis.xml.pickle (a single "0"
+     was being treated as a failed octal number, rather than as...well,
+     zero).
+
+It may be obtained at:
+   http://gnosis.cx/download/Gnosis_Utils-1.0.2.tar.gz
+
+The current release is always available as:
+   http://gnosis.cx/download/Gnosis_Utils-current.tar.gz
+
+Try it out, have fun, send feedback!
+
+David Mertz (mertz@gnosis.cx)
+Frank McIngvale (frankm@hiwaay.net)
+
+------------------------------------------------------------------------
+
+BACKGROUND:  Gnosis Utilites contains a number of Python libraries, most
+(but not all) related to working with XML.  These include:
+
+    gnosis.xml.pickle       (XML pickling of Python objects)
+    gnosis.xml.objectify    (Any XML to "native" Python objects)
+    gnosis.xml.validity     (Enforce validity constraints)
+    gnosis.xml.indexer      (XPATH indexing of XML documents)
+    gnosis.indexer          (Full-text indexing/searching)
+    [...].convert.txt2html  (Convert ASCII source files to HTML)
+    gnosis.util.dtd2sql     (DTD -> SQL 'CREATE TABLE' statements)
+    gnosis.util.sql2dtd     (SQL query -> DTD for query results)
+    gnosis.util.xml2sql     (XML -> SQL 'INSERT INTO' statements)
+    gnosis.util.combinators (Combinatorial higher-order functions)
+    gnosis.util.introspect  (Introspect Python objects)
+
+...and so much more! :-)
+
+
+SUMMARY:
+<P><A HREF="http://gnosis.cx/download/Gnosis_XML_Util.ANNOUNCE">
+Gnosis_XMLUtil 1.0.2</A>  (6-June-02)
+

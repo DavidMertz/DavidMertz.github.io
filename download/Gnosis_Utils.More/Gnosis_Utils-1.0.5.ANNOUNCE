@@ -1,0 +1,47 @@
+Subject: [Announce] Gnosis Utils 1.0.5
+
+This release contains two major bugfixes, and several improvements:
+
+   * gnosis.xml.pickle now works with PyXML 0.8.x (and earlier, of course).
+   * Bugfix in handling of initargs in gnosis.xml.pickle.
+   * Print warning during installation if xml.minidom is missing/broken.
+   * (Packaging) Fixed generation of PKG-INFO.
+   * Fix to let gnosis run in a standalone (e.g. py2exe) environment.
+   * Improvements to xml.pickle.test suite
+   * Documentation updates to xml.pickle.doc
+
+It may be obtained at:
+   http://gnosis.cx/download/Gnosis_Utils-1.0.5.tar.gz
+
+The current release is always available as:
+   http://gnosis.cx/download/Gnosis_Utils-current.tar.gz
+
+Try it out, have fun, send feedback!
+
+David Mertz (mertz@gnosis.cx)
+Frank McIngvale (frankm@hiwaay.net)
+
+------------------------------------------------------------------------
+
+BACKGROUND:  Gnosis Utilities contains a number of Python libraries, most
+(but not all) related to working with XML.  These include:
+
+    gnosis.xml.pickle       (XML pickling of Python objects)
+    gnosis.xml.objectify    (Any XML to "native" Python objects)
+    gnosis.xml.validity     (Enforce validity constraints)
+    gnosis.xml.indexer      (XPATH indexing of XML documents)
+    gnosis.indexer          (Full-text indexing/searching)
+    [...].convert.txt2html  (Convert ASCII source files to HTML)
+    gnosis.util.dtd2sql     (DTD -> SQL 'CREATE TABLE' statements)
+    gnosis.util.sql2dtd     (SQL query -> DTD for query results)
+    gnosis.util.xml2sql     (XML -> SQL 'INSERT INTO' statements)
+    gnosis.util.combinators (Combinatorial higher-order functions)
+    gnosis.util.introspect  (Introspect Python objects)
+
+...and so much more! :-)
+
+
+SUMMARY:
+<P><A HREF="http://gnosis.cx/download/Gnosis_Utils.ANNOUNCE">
+Gnosis_Utils 1.0.5</A>  (16-Nov-02)
+

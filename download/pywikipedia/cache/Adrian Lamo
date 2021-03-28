@@ -1,0 +1,123 @@
+[[Image:Lamo-Mitnick-Poulsen.png|thumb|300px|Adrian Lamo (left) with contemporaries [[Kevin Mitnick]] (center) and [[Kevin Poulsen]].]]
+
+'''Adrian Lamo''' (born [[1981]]) is an infamous former [[grey hat]] [[hacker]] and journalist, principally known for breaking into a series of high-security computer networks, and his subsequent arrest. Best known among these were his intrusions into ''[[The New York Times]]'' and [[Microsoft]]. He is also known for attempting to identify security flaws in computer networks of [[Fortune 500]] companies and then notifying them of any found; while still illegal in many places without permission, this can be seen as a form of unsolicited [[penetration test]]ing.
+
+==Personal==
+Lamo was born in [[Boston, Massachusetts|Boston]], [[Massachusetts]] to [[Mario Lamo]] and Mary Lamo-Atwood.<ref>[http://www.sfweekly.com/issues/2003-04-16/news/feature_3.html A Duty to Hack]</ref> Dubbed the "homeless hacker" for his transient lifestyle, Lamo spent most of his travels couch-surfing, squatting in abandoned buildings and travelling to [[Internet cafe]]s, libraries and universities to investigate networks, and sometimes exploit security holes. Despite performing authorized and unauthorized [[vulnerability assessment]] for several large, high-profile entities, Lamo refused to accept payment for his services. In the past, his lifestyle allowed him to travel up and down the coasts of the [[United States]], often by coach, carrying all necessary possessions in a backpack.
+
+==Professional==
+Since Lamo's sentencing, he has entered the early stages of a career as an award-winning<ref>[http://www.jacconline.org/home/index.cfm?event=displayArticlePrinterFriendly&uStory_id=854d04fd-e9c3-4747-882f-3b6153dcacd3 Adrian Lamo 2005 awards at JACC]</ref><ref>[http://www.jacconline.org/home/index.cfm?event=displayArticlePrinterFriendly&uStory_id=6f5dcdf1-f96c-45a8-9067-125ece6b69d3 Adrian Lamo 2004 awards at JACC]</ref> journalist, studying at [[American River College]], with writing, photography, and editorial work / collaboration appearing in [[Network World]], [[Mobile Magazine]], [[2600: The Hacker Quarterly|2600 Magazine]], [[The American River Current]], [[XY Magazine]], and others. Lamo has interviewed dichotomous personalities ranging from [[John Ashcroft]], to [[Oliver Stone]]<ref>[http://www.csus.edu/news/102306OliverStone.stm Oliver Stone set to visit CSUS]</ref> to alleged members of the [[Earth Liberation Front]]. Lamo also has a history of public speaking - he was a keynote speaker at a government security conference in 2005 alongside [[Bruce Schneier]], and a panelist at the Information Security In the Age of Terrorism conference.<ref>[http://www.technicaldefense.com/news/information-security-terrorism.pdf Information Security in the Age of Terrorism]</ref>
+
+==Activities and techniques==
+[[Image:Duty.gif|thumb|left|Lamo is featured in a cover story by [[SF Weekly]]]]
+Adrian Lamo is perhaps best known for breaking into ''The New York Times'' internal computer network in February 2002, adding his name to confidential databases of expert sources, and using the paper's [[LexisNexis]] account to conduct research on high-profile subjects, although his first published activities involved operating [[AOL]] watchdog site [[Inside-AOL.com]]<ref>Brown, Janelle. "[http://archive.salon.com/tech/log/1999/07/01/inside_aol/ Can AOL silence its critics?]" ''[[Salon.com]]''. July 1, 1999.</ref><ref>Poulsen, Kevin. "[http://www.securityfocus.com/news/119 Hijackers take AIM accounts]." ''SecurityFocus.com''. November 29, 2000.</ref><ref>Null, Christopher. "[http://www.wired.com/news/infostructure/0,1377,57753,00.html?tw=wn_ascii Hackers Run Wild and Free on AOL]". ''Wired News''. February 21, 203. If this article disappears, see [http://www.interesting-people.org/archives/interesting-people/200302/msg00182.html mailing].</ref>. The Times filed a complaint and a warrant for Lamo's arrest was issued in August 2003 following a 15 month investigation by federal prosecutors in New York. At 10:15 AM on [[September 9]], after spending a few days in hiding, he surrendered to the [[United States Marshals Service|US Marshals]] in [[Sacramento, California|Sacramento]], [[California]]. He re-surrendered to the [[Federal Bureau of Investigation|FBI]] in New York City on [[September 11]], and pleaded guilty to one count of [[computer crime]]s against [[Microsoft]], [[Lexis-Nexis]] and ''[[The New York Times]]'' on [[8 January]], 2004. 
+
+Later in 2004, Lamo was sentenced to six months' detention at his parents' home plus two years probation, and was ordered to pay roughly $65,000 in restitution.  He was convicted of compromising security at ''[[The New York Times]]'' and [[Microsoft]], and is alleged to have admitted to exploiting security weaknesses at [[Excite@Home]]<ref>Lemos, Robert. "[http://news.com.com/2100-1001-261728.html Hacker helps Excite@Home toughen defenses]". ''[[News.com]]''. May 29, 2001.</ref><ref>Security Focus. "[http://bsdvault.net/article.php?sid=208 @Home's mis-configured proxy Excites hacker]". BSDvault. May 30.</ref>, [[Yahoo!]]<ref>Poulsen, Kevin. "[http://www.securityfocus.net/news/254 Yahoo! News Hacked]". ''SecurityFocus''. September 18, 2001.</ref>, [[Microsoft]], [[MCI|MCI WorldCom]]<ref>Poulsen, Kevin. "[http://www.securityfocus.org/news/296 Lamo's Adventures in WorldCom]". ''SecurityFocus''. December 5, 2001.</ref>, [[Ameritech]], [[Cingular]] and has allegedly <!-- where are these allegations? -->violated network security at [[Time Warner|AOL Time Warner]], [[Bank of America]], [[Citigroup]], [[McDonald's]] and [[Sun Microsystems Inc.|Sun Microsystems]].<ref name="powerpoint">[http://www.fspgroup.ca/Documents/How_To_Keep_Your_Info_Inside.ppt How To Keep Your Info Inside]. (Powerpoint) Also see [http://72.14.203.104/search?q=cache:uOa1TQUvtjkJ:www.fspgroup.ca/Documents/How_To_Keep_Your_Info_Inside.ppt+Adrian+Lamo+Sun+Microsystems&hl=en&gl=us&ct=clnk&cd=5 Google's cache]. (You may have to highlight text in the cache in order to be able to read it.) See "Also gained access to: Bank of America, JP Morgan, Citicorp, Sun Microsystems, AOL".
+</ref> Companies sometimes use proxies to allow their employees access to the internet, without giving the internet access to their internal network. However, when these proxies are improperly configured, they can allow access to the company's internal network. Lamo often exploited this, sometimes using a tool called ProxyHunter.<ref name="powerpoint"/>[[Image:Lam2.jpg|thumb|right|Adrian Lamo in 2006.]]
+
+Critics have repeatedly labelled Lamo as a publicity seeker or common [[crime|criminal]], claims that he has refused to publicly refute. When challenged for a response to allegations that he was glamorizing crime for the sake of publicity, his response was "Anything I could say about my person or my actions would only cheapen what they have to say for themselves." When approached for comment during his criminal case, Lamo would frequently frustrate reporters with [[non sequitur (absurdism)|non sequiturs]] such as "Faith manages"<ref>McCullagh, Declan. "[http://news.com.com/2008-1014_3-5076942.html The 'homeless hacker' talks]". ''CNET News.com''. September 16, 2003.</ref> and "It was a beautiful day."<ref>McCullagh, Declan. "[http://news.com.com/Judge+lifts+hacker's+PC+restrictions/2100-1002_3-5076124.html Judge lifts hacker's PC restrictions]". ''CNET News.com''. September 12, 2003.</ref> 
+
+At his sentencing, Lamo expressed remorse for harm he had caused through his intrusions, with the court record quoting him as adding "I want to answer for what I have done and do better with my life."<ref>Poulsen, Kevin. "[http://www.theregister.co.uk/2004/09/16/feds_on_lamo/ Feds say Lamo inspired other hackers]". ''[[The Register]]''. September 16, 2004.</ref>
+
+==DNA controversy==
+On [[May 9]], [[2006]], while 18 months into a two year probation sentence, Adrian Lamo refused to give the [[United States government]] a blood sample they demand so as to record his [[DNA]] in their [[Combined DNA Index System|CODIS]] system.<ref>Poulsen, Kevin. "[http://www.wired.com/news/technology/0,70869-0.html Feds Want Hacker's Genetic Code]". ''Wired News''. May, 10, 2006.</ref> According to his attorney, Adrian Lamo has a religious objection to giving blood, but is willing to give his DNA in another form. "He went in there with fingernail clippings and hair, and they refused to accept it, because they will only accept blood" said federal [[public defender]] [[Mary French (Attorney)|Mary French]]. An [[11 December]] [[2006]] hearing is scheduled to address a [[motion to dismiss]] filed by Lamo's counsel.
+[[Image:Lamo-tss.jpg|thumb|left|Lamo is interviewed by [[Leo Laporte]] on [[TechTV]]'s [[The Screen Savers]]]]
+On [[June 15]], lawyers for Lamo filed<ref>[http://blog.wired.com/27BStroke6/comment.blog?a=render&entry_id=1502799 Kevin Poulsen on June 15 filing]</ref> another motion citing the Book of Genesis as one basis for Lamo's religious opposition to the frivolous spilling of blood: ''"The Book of Genesis leaves unambiguous this matter. Therein, those who would spill the blood of man are rebuked as follows: "Whoever sheds the blood of man, by man shall his blood be shed; for in the image of God has God made man." Genesis 9:6 (New International Version)."''
+
+Lamo continued: ''"Under this admonition, not only would I be blinding myself to the direct instructions of scripture by shedding blood, but I would similarly be casting whomever facilitated this act into sin, multiplying my culpability,''" setting the basis for defense counsel [[Mary French (Attorney)|Mary French]] to urge US District Court Judge Frank Damrell to exempt Lamo from the sampling entirely, or to order his probation officer to accept some other biological product in lieu of blood, as previously offered by Lamo.
+
+==''Can You Hack It?''==
+* ''[[Can You Hack It?]]'', a documentary covering Lamo's life and times, is slated for release under the care of [[Trigger Street Productions]].<ref>{{imdb title|id=0816690|title=Can You Hack It?}}</ref> Directed by [[Sam Bozzo]], it features [[Apple Computer]] co-founder [[Steve Wozniak]], [[TechTV]] personality [[Leo Laporte]], and narration by actor [[Kevin Spacey]]. The film explores the practical and ethical themes of modern computer hacking, intertwining Lamo's story with those of controversial figures throughout history.
+
+== Trivia == 
+* Lamo remains a senior staff writer at [[The American River Current]], and works with [[2600: The Hacker Quarterly|2600 Magazine]] and [[XY Magazine]].
+* In his spare time, he donates his time and expertise to [[Voluntary Legal Services of Northern California]], a Sacramento-based [[nonprofit]] organization providing assistance to indigent and low-income clients involved in civil litigation. 
+* Lamo was appointed to the Lesbian, Gay, Bisexual, Transgender, Queer and Questioning Youth Task Force by [[San Francisco]] [[Board of supervisors|Supervisor]] [[Tom Ammiano]]. <ref>[http://www.sfgov.org/site/bdsupvrs_page.asp?id=11779 Adrian Lamo, Seat No. 10;]</ref>
+* Lamo was bumped from a segment of [[NBC Nightly News]] when, after being asked to demonstrate his skills for the camera, he hacked NBC in under five minutes. 
+
+==Notes==
+<div class="references-small">
+<references />
+</div>
+
+===References===
+* [http://www.bluetack.co.uk/forums/lofiversion/index.php/t2371.html Losing His Religion: Techfocus interviews Adrian Lamo] Bill Royle, TechFocus.
+*[http://slashdot.org/article.pl?sid=04/04/09/1530212 Slashdot.org] Discussion regarding TechFocus interview [[09 April]] [[2004]].
+*[http://www.newarchitect.com/documents/s=2415/na1202r/ Inside The Hacker Mind] Chris Null, New Architect December 2002.
+*[http://www.securityfocus.com/news/340 New York Times Internal Network Hacked] Kevin Poulsen, SecurityFocus [[26 February]] [[2002]].
+*[http://online.securityfocus.com/news/595 Lamo Bumped from NBC After Hacking Them] Kevin Poulsen, SecurityFocus [[27 August]] [[2002]].
+*[http://securityfocus.com/news/6888 Adrian Lamo charged with computer crimes] Kevin Poulsen, SecurityFocus [[5 September]] [[2003]].
+*[http://securityfocus.com/news/7771 Lamo Pleads Guilty to Times Hack] Kevin Poulsen, SecurityFocus [[8 January]] [[2004]].
+*[[Off the Hook]] [http://www.2600.com/offthehook/2004/0404.html Interview - April 7, 2004]; with [[Eric Corley|Emmanuel Goldstein]] and Bernie S. on the phone with Lamo's comments recorded [http://en.wikisource.org/wiki/OTH_Lamo_Transcript_20040407 here]
+*[http://news.zdnet.com/2100-1009_22-5077078.html?tag=zdnnfd.main 'Homeless Hacker' speaks out] Tech News on ZDNet
+*[http://www.wired.com/news/infostructure/0,1377,50811,00.html He Hacks by Day, Squats by Night] Noah Shachtman, Wired News [[6 March]] [[2002]].
+*[http://www.hollywood.com/movies/detail/id/3462967 Hollywood.com] Preliminary documentation of [[Trigger Street Productions]] documentary involving Lamo.
+*[http://www.businessweek.com/bwdaily/dnflash/mar2002/nf2002035_9312.htm BusinessWeek] Stop Him Before He Hacks Again
+*[http://www.macuser.com/people/woz_kevin_spacey_adrian_lamo_a.php MacUser.com] Woz + Kevin Spacey + Adrian Lamo = A Movie about Hacking?
+
+==External links==
+*{{cite web
+| url = http://users.resist.ca/~adrian/
+| title = Just Breathe
+| accessdate = 2006-10-20
+| last = Lamo
+| first = Adrian
+| publisher = Resist!ca
+}}
+*{{cite web
+| url = http://video.google.com/videosearch?q=TechTV+Adrian+Lamo
+| title = TechTV Video - Adrian Lamo interviews prior to arrest
+| accessdate = 
+| accessmonthday = 
+| accessyear = 
+| author = 
+| last = 
+| first = 
+| authorlink = 
+| coauthors = 
+| date = 
+| year = 
+| month = 
+| format = 
+| work = 
+| publisher = 
+| pages = 
+| language = 
+| archiveurl = 
+| archivedate = 
+| quote = 
+}}
+*{{cite web
+| url = http://freelamo.org
+| title = Articles about Adrian Lamo dating back to 2001 and pro-Lamo advocacy
+| accessdate = 2006-10-20
+| publisher = FreeLamo.org
+}}
+*{{imdb name|id=2238804|name=Adrian Lamo}}
+*{{imdb title|id=0816690|title=Can You Hack It?}}
+
+<!-- Translations -->
+
+{{Persondata
+|NAME=Lamo, Adrian
+|ALTERNATIVE NAMES="Doctor" Lamo
+|SHORT DESCRIPTION=American programmer and writer
+|DATE OF BIRTH=[[1981]]
+|PLACE OF BIRTH=[[Boston, Massachusetts]]
+|DATE OF DEATH=
+|PLACE OF DEATH=
+}}
+
+[[Category:1981 births|Lamo, Adrian]]
+[[Category:Living people|Lamo, Adrian]]
+[[Category:American criminals|Lamo, Adrian]]
+[[Category:American journalists|Lamo, Adrian]]
+[[Category:Colombian-Americans|Lamo, Adrian]]
+[[Category:Computer hacking|Lamo, Adrian]]
+[[Category:Date of birth missing|Lamo, Adrian]]
+[[Category:LGBT people from the United States|Lamo, Adrian]]
+[[Category:People from Boston|Lamo, Adrian]]
+[[Category:People from the San Francisco Bay Area|Lamo, Adrian]]
+
+[[lt:Adrian Lamo]]
+[[pl:Adrian Lamo]]

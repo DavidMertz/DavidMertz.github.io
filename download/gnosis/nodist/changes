@@ -1,0 +1,23 @@
+
+- added support for bools (incl backward compat for readers)
+
+- changed functions/classes from family uniq -> lang
+
+- merged gnosis/anon
+
+- create objects using module new or klass.__new__ instead
+  of homebrewed version
+
+- merged updates to gnosis/util/test
+
+- merged objectify changes
+
+- merged objectify/doc
+
+- merged objectify/test
+
+- obj_from_classtype now public
+
+- get_class_from_sysmodules fix
+
+- merged xmlcat.py

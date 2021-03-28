@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- edited with XMLSPY v5 U (http://www.xmlspy.com) by Paul Spencer (Boynings Consulting) -->
+<xsd:schema targetNamespace="urn:oasis:names:tc:evs:schema:eml" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:oasis:names:tc:evs:schema:eml" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0" id="230">
+	<xsd:annotation>
+		<xsd:documentation>
+			Changes to version 1.0 (2002-10-29):
+				xsd:any child of Contest made optional
+			Changes from version 0.3 to 1.0 (2002-10-10):
+				None
+			Changes from version 0.2 to 0.3 (25/9/2002):
+				CandidateName changed to Candidate
+				Candidate now a child of Contest
+				Multiple contests allowed
+				Optional xsd:any added to CandidateList and Contest elements
+			Changes from version 0.1 to 0.2 (11/7/2002):
+				ElectionName added
+		</xsd:documentation>
+	</xsd:annotation>
+	<xsd:include schemaLocation="emlcore.xsd"/>
+	<xsd:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink.xsd"/>
+	<xsd:element name="CandidateList">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="ElectionName"/>
+				<xsd:element name="Contest" maxOccurs="unbounded">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element ref="ContestName"/>
+							<xsd:element name="Description" type="MessagesStructure" minOccurs="0"/>
+							<xsd:element ref="Candidate" maxOccurs="unbounded"/>
+							<xsd:any namespace="##any" minOccurs="0"/>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:any namespace="##any" minOccurs="0"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

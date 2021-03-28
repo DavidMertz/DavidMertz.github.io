@@ -1,0 +1,85 @@
+Nice Places to Look At:
+Local Text Files to Examine Conversion On
+
+
+--  
+  http://gnosis.cx/publish/biology/bio_norm.txt
+
+  http://gnosis.cx/publish/biology/eowilson.txt
+
+  http://gnosis.cx/publish/mertz/harding.txt
+
+  http://gnosis.cx/publish/mertz/honors_thesis.txt
+
+  http://gnosis.cx/publish/mertz/practice_of_math.txt
+
+  http://gnosis.cx/publish/programming/5min_python_code.txt
+
+  http://gnosis.cx/publish/programming/charming_python_1.txt
+
+  http://gnosis.cx/publish/programming/charming_python_10.txt
+
+  http://gnosis.cx/publish/programming/charming_python_2.txt
+
+  http://gnosis.cx/publish/programming/charming_python_3.txt
+
+  http://gnosis.cx/publish/programming/charming_python_4.txt
+
+  http://gnosis.cx/publish/programming/charming_python_5.txt
+
+  http://gnosis.cx/publish/programming/charming_python_6.txt
+
+  http://gnosis.cx/publish/programming/charming_python_7.txt
+
+  http://gnosis.cx/publish/programming/charming_python_8.txt
+
+  http://gnosis.cx/publish/programming/charming_python_9.txt
+
+  http://gnosis.cx/publish/programming/compression_primer.txt
+
+  http://gnosis.cx/publish/programming/extending_markup_2.txt
+
+  http://gnosis.cx/publish/programming/feature_5min_python.txt
+
+  http://gnosis.cx/publish/programming/review_fte.txt
+
+  http://gnosis.cx/publish/programming/review_htmlpp.txt
+
+  http://gnosis.cx/publish/programming/review_jedit.txt
+
+  http://gnosis.cx/publish/programming/review_nedit.txt
+
+  http://gnosis.cx/publish/programming/review_perlbuilder.txt
+
+  http://gnosis.cx/publish/programming/review_pfe.txt
+
+  http://gnosis.cx/publish/programming/review_ppwizard.txt
+
+  http://gnosis.cx/publish/programming/review_textpad.txt
+
+  http://gnosis.cx/publish/programming/review_xmlspy.txt
+
+  http://gnosis.cx/publish/programming/web_accessibility_1.txt
+
+  http://gnosis.cx/publish/programming/web_accessibility_2.txt
+
+  http://gnosis.cx/publish/programming/xml_matters_1.txt
+
+  http://gnosis.cx/publish/programming/xml_matters_2.txt
+
+  http://gnosis.cx/publish/programming/xml_matters_3.txt
+
+  http://gnosis.cx/publish/programming/xml_matters_4.txt
+
+  http://gnosis.cx/publish/programming/xml_matters_5.txt
+
+  http://gnosis.cx/publish/programming/xpp_introspection/essay.txt
+
+  http://gnosis.cx/publish/resumes/cv.txt
+
+  http://gnosis.cx/publish/resumes/resume.txt
+
+  http://gnosis.cx/publish/reviews/cornel_west_cpr.txt
+
+  http://gnosis.cx/publish/reviews/zizek_butler_rpr.txt
+

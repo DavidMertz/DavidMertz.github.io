@@ -1,0 +1,35 @@
+{{dablink|For the geographical '''antipodal point''' of a place on the Earth, see [[antipodes]].}}
+
+In [[mathematics]], the '''antipodal point''' of a point on the surface of a sphere is the point which is [[diameter|diametrically]] opposite it — so situated that a line drawn from the one to the other passes through the centre of the sphere and forms a true diameter.
+
+An antipodal point is sometimes called an '''antipode''', a [[back-formation]] from the [[Greek language|Greek]] [[loan word]] ''antipodes'',  which originally meant "opposite the feet."
+
+== Theory ==
+
+In [[mathematics]], the concept of ''antipodal points'' is generalized to [[sphere]]s of any dimension: two points on the sphere are antipodal if they are opposite ''through the centre''; for example, taking the centre as [[Origin (mathematics)|origin]], they are points with related [[vector (spatial)|vector]]s '''v''' and &minus;'''v'''. On a [[circle]], such points are also called '''diametrically opposite'''. In other words, each line through the centre intersects the sphere in two points, one for each [[ray]] out from the centre, and these two points are antipodal.
+
+The [[Borsuk-Ulam theorem]] is a result from [[algebraic topology]] dealing with such pairs of points. It says that any [[continuous function]] from ''S''<sup>''n''</sup> to '''R'''<sup>''n''</sup> maps some pair of antipodal points in ''S''<sup>''n''</sup> to the same point in '''R'''<sup>''n''</sup>. Here, ''S''<sup>''n''</sup> denotes the sphere in ''n''-dimensional space (so the "ordinary" sphere is ''S''<sup>3</sup>).
+
+The '''antipodal map''' ''A'' : ''S''<sup>''n''</sup> → ''S''<sup>''n''</sup>, defined by ''A''(''x'') = &minus;''x'', sends every point on the sphere to its antipodal point. It is [[homotopy|homotopic]] to the [[identity function|identity map]] if ''n'' is odd, and its [[degree (mathematics)|degree]] is (&minus;1)<sup>''n''+1</sup>.
+
+If one wants to consider antipodal points as identified, one passes to [[projective space]] (see also [[projective Hilbert space]], for this idea as applied in [[quantum mechanics]]).
+
+==References==
+* {{1911}}
+
+==External links==
+* {{planetmath reference|id=4731|title=antipodal}}
+
+[[Category:Topology]]
+
+[[da:Antipode]]
+[[de:Antipode]]
+[[es:Antípodas]]
+[[et:Antipood]]
+[[fr:Point antipodal]]
+[[it:Punto antipodale]]
+[[nl:Antipode]]
+[[ja:対蹠地]]
+[[pl:Antypody]]
+[[ru:Антипод]]
+[[sv:Antipod]]

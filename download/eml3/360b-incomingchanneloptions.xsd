@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- edited with XMLSPY v5 U (http://www.xmlspy.com) by Paul Spencer (Boynings Consulting) -->
+<xsd:schema targetNamespace="urn:oasis:names:tc:evs:schema:eml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:oasis:names:tc:evs:schema:eml" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0" id="360b">
+	<xsd:annotation>
+		<xsd:documentation>
+			Changes from version 0.2 to 1.0 (2002-10-10):
+				Optional Proxy element added
+			Changes from version 0.1 to 0.2 (2002-10-07):
+				xsd:any made optional
+		</xsd:documentation>
+	</xsd:annotation>
+	<xsd:include schemaLocation="emlcore.xsd"/>
+	<xsd:element name="IncomingVoterNotification">
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="IncomingGenericCommunicationStructure">
+					<xsd:sequence>
+						<xsd:element name="PreferredVotingChannel" type="VotingChannelType"/>
+						<xsd:element ref="Proxy" minOccurs="0"/>
+						<xsd:any namespace="##any" minOccurs="0"/>
+					</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

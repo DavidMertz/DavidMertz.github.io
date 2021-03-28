@@ -1,0 +1,49 @@
+Subject: [Announce] Gnosis (XML) Utils 1.0.3
+
+This release contains some improvements to gnosis.xml.objectify:
+
+ * Reorganized single-file module into subpackage with test/ and
+   doc/ subpackages/directories.
+
+ * Added caching of dynamic object creation.  This leads to a
+   considerable speedup where the same-named XML subnode occurs
+   many times in the XML file (a frequent situation).
+
+ * Allowed "objectification" of a DOM tree, as well as the prior
+   filename/filehandle.  Especially in Jython contexts, one is
+   sometimes delivered a a pre-build DOM rather than raw XML.
+
+It may be obtained at:
+   http://gnosis.cx/download/Gnosis_Utils-1.0.3.tar.gz
+
+The current release is always available as:
+   http://gnosis.cx/download/Gnosis_Utils-current.tar.gz
+
+Try it out, have fun, send feedback!
+
+David Mertz (mertz@gnosis.cx)
+
+------------------------------------------------------------------------
+
+BACKGROUND:  Gnosis Utilites contains a number of Python libraries, most
+(but not all) related to working with XML.  These include:
+
+    gnosis.xml.pickle       (XML pickling of Python objects)
+    gnosis.xml.objectify    (Any XML to "native" Python objects)
+    gnosis.xml.validity     (Enforce validity constraints)
+    gnosis.xml.indexer      (XPATH indexing of XML documents)
+    gnosis.indexer          (Full-text indexing/searching)
+    [...].convert.txt2html  (Convert ASCII source files to HTML)
+    gnosis.util.dtd2sql     (DTD -> SQL 'CREATE TABLE' statements)
+    gnosis.util.sql2dtd     (SQL query -> DTD for query results)
+    gnosis.util.xml2sql     (XML -> SQL 'INSERT INTO' statements)
+    gnosis.util.combinators (Combinatorial higher-order functions)
+    gnosis.util.introspect  (Introspect Python objects)
+
+...and so much more! :-)
+
+
+SUMMARY:
+<P><A HREF="http://gnosis.cx/download/Gnosis_XML_Util.ANNOUNCE">
+Gnosis_XMLUtil 1.0.3</A>  (Thu 07-18-2002)
+

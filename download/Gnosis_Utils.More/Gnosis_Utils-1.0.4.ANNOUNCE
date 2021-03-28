@@ -1,0 +1,51 @@
+Subject: [Announce] Gnosis (XML) Utils 1.0.4
+Date: Mon 09-30-2002
+
+BACKGROUND:  Gnosis Utilites contains a number of Python libraries, most
+(but not all) related to working with XML.  These include:
+
+    gnosis.xml.pickle       (XML pickling of Python objects)
+    gnosis.xml.objectify    (Any XML to "native" Python objects)
+    gnosis.xml.validity     (Enforce validity constraints)
+    gnosis.xml.indexer      (XPATH indexing of XML documents)
+    gnosis.indexer          (Full-text indexing/searching)
+    [...].convert.txt2html  (Convert ASCII source files to HTML)
+    gnosis.util.dtd2sql     (DTD -> SQL 'CREATE TABLE' statements)
+    gnosis.util.sql2dtd     (SQL query -> DTD for query results)
+    gnosis.util.xml2sql     (XML -> SQL 'INSERT INTO' statements)
+    gnosis.util.combinators (Combinatorial higher-order functions)
+    gnosis.util.introspect  (Introspect Python objects)
+
+...and so much more! :-)
+
+------------------------------------------------------------------------
+
+This release contains a variety of minor bugfixes contributed by
+users:
+
+ * gnosis.xml.validity accidentally left out of 1.0.3
+   distribution.
+
+ * gnosis.introspect has minor improvements/corrections.
+
+ * User contributed, but not really tested, improvements to
+   gnosis.indexer.  Let me know if this breaks something (it has
+   to do with reindexing working correctly).
+
+ * Cleanup of gnosis.xml.objectify bug introduced in 1.0.3
+   (problem was detecting file object rather than string or
+   DOM).
+
+ * Probably something else I forgot.
+
+It may be obtained at:
+   http://gnosis.cx/download/Gnosis_Utils-1.0.4.tar.gz
+
+The current release is always available as:
+   http://gnosis.cx/download/Gnosis_Utils-current.tar.gz
+
+Try it out, have fun, send feedback!
+
+David Mertz (mertz@gnosis.cx)
+
+

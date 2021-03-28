@@ -1,0 +1,36 @@
+
+Gnosis_Utils contains several classes for working with XML,
+as well as other generally useful tools. The major modules,
+in alphabetical order:
+
+  xml.indexer   - Create full-text XPATH indexes of XML documents
+  xml.objectify - Convert arbitrary XML documents to Python objects.
+  xml.pickle    - Pickle objects to/from XML format, compatible
+                  with standard pickle API.
+  xml.validity  - Classes for creating Python objects constrained by
+                  XML validity rules (DTD or Schema).
+
+Installation (*):
+
+  python setup_gnosis.py build
+  python setup_gnosis.py install
+
+Trying it out:
+
+  cd gnosis/xml/pickle/test
+  python test_all.py
+
+  If any errors occur, please email mertz@gnosis.cx, or frankm@hiwaay.net.
+  Please include the output from test_all.py in your email, as well
+  as other pertinent details such as Python version and operating system.
+
+For more info:
+
+  pydoc gnosis
+  pydoc gnosis.xml.pickle.doc
+  See xml_matters articles under gnosis/doc
+
+(*) If you are using Python 2.0, you must first install a newer
+version of PyXML. See: http://pyxml.sourceforge.net/topics/download.html
+You don't have to do anything for Python 2.1 and up.
+

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- edited with XMLSPY v5 U (http://www.xmlspy.com) by Paul Spencer (Boynings Consulting) -->
+<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by Paul Spencer (alphaXML Ltd.) -->
+<xsd:schema targetNamespace="urn:oasis:names:tc:evs:schema:eml" xmlns="urn:oasis:names:tc:evs:schema:eml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0" id="460">
+	<xsd:annotation>
+		<xsd:documentation>
+			Changes from version 0.4 to 1.0 (2002-10-08):
+				CastVote now an extension of the CastVoteStructure defined in 440
+				Added ProposedRejection to CastVote
+			Changes from version 0.3 to 0.4 (2002-10-08):
+				Optional xsd:any added
+			Changes from version 0.2 to 0.3 (2002-07-11):
+				AuditInformation added
+		</xsd:documentation>
+	</xsd:annotation>
+	<xsd:include schemaLocation="440-castvote.xsd"/>
+	<xsd:element name="Votes">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="CastVote" maxOccurs="unbounded">
+					<xsd:complexType>
+						<xsd:complexContent>
+							<xsd:extension base="CastVoteStructure">
+								<xsd:sequence>
+									<xsd:element name="ProposedRejection" type="YesNoType" minOccurs="0"/>
+								</xsd:sequence>
+							</xsd:extension>
+						</xsd:complexContent>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="AuditInformation" minOccurs="0">
+					<xsd:complexType>
+						<xsd:complexContent>
+							<xsd:restriction base="AuditInformationStructure">
+								<xsd:sequence>
+									<xsd:element ref="VotingChannel" minOccurs="0" maxOccurs="0"/>
+									<xsd:element name="ProcessingUnits" minOccurs="0">
+										<xsd:complexType>
+											<xsd:sequence>
+												<xsd:element name="OriginatingDevice" type="ProcessingUnitStructure" minOccurs="0" maxOccurs="0"/>
+												<xsd:element name="Gateway" type="ProcessingUnitStructure" minOccurs="0" maxOccurs="0"/>
+												<xsd:element name="VotingSystem" type="ProcessingUnitStructure" minOccurs="0"/>
+												<xsd:element name="CountingSystem" type="ProcessingUnitStructure" minOccurs="0" maxOccurs="0"/>
+												<xsd:element name="VTokenLoggingSystem" type="ProcessingUnitStructure" minOccurs="0" maxOccurs="0"/>
+												<xsd:element name="SealLoggingSystem" type="ProcessingUnitStructure" minOccurs="0" maxOccurs="0"/>
+												<xsd:element name="Other" minOccurs="0" maxOccurs="unbounded">
+													<xsd:complexType>
+														<xsd:complexContent>
+															<xsd:extension base="ProcessingUnitStructure">
+																<xsd:attribute name="Type" type="xsd:string" use="required"/>
+															</xsd:extension>
+														</xsd:complexContent>
+													</xsd:complexType>
+												</xsd:element>
+											</xsd:sequence>
+										</xsd:complexType>
+									</xsd:element>
+									<xsd:any namespace="##any" minOccurs="0"/>
+								</xsd:sequence>
+							</xsd:restriction>
+						</xsd:complexContent>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:any namespace="##any" minOccurs="0"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

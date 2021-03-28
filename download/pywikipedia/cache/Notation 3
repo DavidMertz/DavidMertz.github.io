@@ -1,0 +1,37 @@
+'''Notation 3''', or '''N3''' as it is more commonly known, is a shorthand non-[[XML]] serialization of [[Resource Description Framework]] models, designed with human-readability in mind: N3 is much more compact and readable than XML RDF notation. The format is being developed by [[Tim Berners-Lee]] and others from the [[Semantic Web]] community.
+
+==Examples==
+
+RDF model here written in standard XML notation:
+
+<pre>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <rdf:Description rdf:about="http://en.wikipedia.org/wiki/Tony_Benn">
+    <dc:title>Tony Benn</dc:title>
+    <dc:publisher>Wikipedia</dc:publisher>
+  </rdf:Description>
+</rdf:RDF>
+</pre>
+
+may be written like this in Notation 3 like this:
+
+<pre>
+@prefix dc: <http://purl.org/dc/elements/1.1/>.
+
+<http://en.wikipedia.org/wiki/Tony_Benn>
+  dc:title "Tony Benn";
+  dc:publisher "Wikipedia".
+</pre>
+
+==External links==
+
+*[http://www.w3.org/DesignIssues/Notation3.html Notation 3 Specification] on ''[[W3C]] Design Issues'' by Tim Berners-Lee
+*[http://www.w3.org/2000/10/swap/Primer Notation 3 Primer]: ''Getting into RDF & Semantic Web using N3''
+*[http://infomesh.net/2002/notation3 A Rough Guide to Notation3]
+*[http://www.ninebynine.org/RDFNotes/RDFForLittleLanguages.htm RDF for "Little Languages"]
+[[category:Semantic web]]
+
+[[ru:Нотация 3]]
+[[de:Notation 3 (Informatik)]]

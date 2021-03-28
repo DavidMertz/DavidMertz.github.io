@@ -1,0 +1,7 @@
+'''Network Indicator''' (NI) is a part of the [[Signalling Information Octet]] (SIO) and contains SubService Field which indicates the type of the network (e.g. INTL/NATL) and the Service Indicator Field which indicates the nature of the message (SCCP/TUP).
+
+== See also ==
+* [[Message Transfer Part]]
+* [[Signalling System 7]]
+
+{{compu-network-stub}}

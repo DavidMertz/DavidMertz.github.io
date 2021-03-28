@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- edited with XMLSPY v5 U (http://www.xmlspy.com) by Paul Spencer (Boynings Consulting) -->
+<xsd:schema targetNamespace="urn:oasis:names:tc:evs:schema:eml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:oasis:names:tc:evs:schema:eml" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0" id="330">
+	<xsd:annotation>
+		<xsd:documentation>
+			Changes from version 0.4 to 1.0 (2002-10-10):
+				None
+			Changes from version 0.3 to 0.4 (2002-09-20 to meet needs of UK local elections):
+				ElectionEventName replaced by new Event element
+				PollingPlace added
+				New element Blocked with a Reasion attribute to mark if voter has postal vote, already voted by another method etc
+				Qualifier added to allow partial lists (e.g. of those with postal votes)
+				optional xsd:any added
+		</xsd:documentation>
+	</xsd:annotation>
+	<xsd:include schemaLocation="emlcore.xsd"/>
+	<xsd:include schemaLocation="310-voterregistration.xsd"/>
+	<xsd:element name="ElectionList">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Qualifier" minOccurs="0">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element ref="VotingChannel" minOccurs="0"/>
+							<xsd:element name="Comment" type="xsd:string" minOccurs="0"/>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element ref="Event" minOccurs="0"/>
+				<xsd:element ref="PollingPlace" minOccurs="0"/>
+				<xsd:choice>
+					<xsd:element name="Election" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element ref="ElectionName" minOccurs="0"/>
+								<xsd:element ref="ContestName" minOccurs="0"/>
+								<xsd:element ref="ElectionRuleId" minOccurs="0"/>
+								<xsd:element name="VoterRegistration" maxOccurs="unbounded">
+									<xsd:complexType>
+										<xsd:complexContent>
+											<xsd:extension base="VoterRegistrationStructure">
+												<xsd:sequence>
+													<xsd:element ref="Blocked" minOccurs="0"/>
+												</xsd:sequence>
+											</xsd:extension>
+										</xsd:complexContent>
+									</xsd:complexType>
+								</xsd:element>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:sequence>
+						<xsd:element ref="ElectionRuleId" minOccurs="0"/>
+						<xsd:element name="VoterRegistration" maxOccurs="unbounded">
+							<xsd:complexType>
+								<xsd:complexContent>
+									<xsd:extension base="VoterRegistrationStructure">
+										<xsd:sequence>
+											<xsd:element ref="Blocked" minOccurs="0"/>
+										</xsd:sequence>
+									</xsd:extension>
+								</xsd:complexContent>
+							</xsd:complexType>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:choice>
+				<xsd:any namespace="##any" minOccurs="0"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="Blocked">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="YesNoType">
+					<xsd:attribute name="Reason" type="xsd:string" use="optional"/>
+					<xsd:attribute name="Channel" type="VotingChannelType" use="optional"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

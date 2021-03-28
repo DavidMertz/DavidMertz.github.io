@@ -1,0 +1,658 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v5 U (http://www.xmlspy.com) by Paul Spencer (Boynings Consulting) -->
+<xsd:schema targetNamespace="urn:oasis:names:tc:evs:schema:eml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ts="urn:oasis:names:tc:evs:schema:eml:ts" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns="urn:oasis:names:tc:evs:schema:eml" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0" id="eml-core">
+	<xsd:annotation>
+		<xsd:documentation>
+			Changes from version 0.8 to 1.0 (2002-10-10):
+				Proxy and PostalProxy removed from enumerations for VotingChannelType
+				New element ProxyAgrees added to Proxy
+				Messages element made optional in IncomingGenericCommunicationsStructure and OutgoingGenericCommunicationsStructure
+			Changes from version 0.7 to 0.8 (2002-10-07):
+				More detail added to Affiliation
+				Multiple Id elements added to Proposer to allow, for example, electoral roll numbers to be added
+				New Candidate element and CandidateStructure type replace CandidateName
+				New Agent element and AgentStructure type added
+				EventStart and EventEnd removed
+				New DateType simple type is a union of xsd:date and xsd:dateTime
+				New Gender element
+				New Logo element
+				Candidate Id attribute made optional as it is not known at the time of nomination
+				LocationName replaced by PollingPlace. This allows multiple levels.
+				Message now has an optional Type attribute
+				ElectionEventName replaced by Event with an EventName and EventQualifier
+				Added ProxyStructure
+				In VoterInformationStructure, Military replaced by more general Qualification
+				Optional TransactionId added to EML element so it is available to every message
+				Message element has an optional xml:lang element. This has been removed from other places that added it (ElectionStatement, Profile)
+			Changes from version 0.6 to 0.7:
+				AuditInformationStructure changed to allow logging of more device types
+				AuditInformation element deleted as use will be by derivation from the data type
+				ProcessingUnitStructure added for inclusion in the audit information
+			Changes from version 0.5 to 0.6:
+				ReportingUnitNameStructure and ReportingUnitName added
+			Changes from version 0.4 to 0.5:
+				ScrutinyRequirementStructure and ScrutinyRequirement added
+				VTokenQualified and VTokenQualifiedStructure added
+				VTokenQualified added as an alternative to VToken in VoterIdentificationStructure
+				AuditInformationStructure now has the audit information included
+				Proxy added to OutgoingGenericCommunicationStructure and IncomingGenericCommunicationStructure
+				TransactionId removed from OutgoingGenericCommunicationStructure and IncomingGenericCommunicationStructure
+				Proxy and PostalProxy added to enumerations for VotingChannelType
+
+		</xsd:documentation>
+	</xsd:annotation>
+	<xsd:include schemaLocation="emlexternals.xsd"/>
+	<xsd:import namespace="urn:oasis:names:tc:evs:schema:eml:ts" schemaLocation="emltimestamp.xsd"/>
+	<xsd:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="xmldsig-core-schema.xsd"/>
+	<xsd:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink.xsd"/>
+	<xsd:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
+	<xsd:element name="Affiliation">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="RegisteredName" type="xsd:string"/>
+				<xsd:element name="Description" type="xsd:string" minOccurs="0"/>
+				<xsd:element ref="Logo" minOccurs="0"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="Agent" type="AgentStructure"/>
+	<xsd:element name="BallotName" type="BallotNameStructure"/>
+	<xsd:element name="Candidate" type="CandidateStructure"/>
+	<xsd:element name="ContestName" type="ContestNameStructure"/>
+	<xsd:element name="ElectionName" type="ElectionNameStructure"/>
+	<xsd:element name="ElectionRuleId" type="ElectionRuleIdType"/>
+	<xsd:element name="ElectionStatement" type="MessagesStructure"/>
+	<xsd:element name="EML">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="TransactionId" type="xsd:string" minOccurs="0"/>
+				<xsd:element name="Display" minOccurs="0" maxOccurs="unbounded">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="Stylesheet" maxOccurs="unbounded">
+								<xsd:complexType>
+									<xsd:simpleContent>
+										<xsd:extension base="xsd:anyURI">
+											<xsd:attribute name="Type" type="xsd:string" use="required"/>
+										</xsd:extension>
+									</xsd:simpleContent>
+								</xsd:complexType>
+							</xsd:element>
+						</xsd:sequence>
+						<xsd:attribute name="Format" type="xsd:NMTOKEN" use="optional"/>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element ref="Seal" minOccurs="0"/>
+				<xsd:any namespace="##targetNamespace" processContents="strict"/>
+			</xsd:sequence>
+			<xsd:attribute name="Id" type="xsd:NMTOKEN" use="required"/>
+			<xsd:attribute name="SchemaVersion" type="xsd:NMTOKEN" use="required"/>
+			<xsd:attribute ref="xml:lang" type="xsd:language" use="optional"/>
+		</xsd:complexType>
+		<xsd:unique name="DisplayOrder">
+			<xsd:selector xpath=".//*"/>
+			<xsd:field xpath="@DisplayOrder"/>
+		</xsd:unique>
+	</xsd:element>
+	<xsd:element name="Event">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="EventName"/>
+				<xsd:element ref="EventQualifier" minOccurs="0"/>
+			</xsd:sequence>
+			<xsd:attribute name="DisplayOrder" type="xsd:positiveInteger" use="optional"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="EventName">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:restriction base="EventNameStructure">
+					<xsd:attribute name="Id" use="optional"/>
+				</xsd:restriction>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="EventQualifier" type="EventQualifierStructure"/>
+	<xsd:element name="Gender">
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:string">
+				<xsd:enumeration value="male"/>
+				<xsd:enumeration value="female"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:element>
+	<xsd:element name="Logo">
+		<xsd:complexType mixed="true">
+			<xsd:attribute ref="xlink:href" use="optional"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="MaxVotes" type="xsd:positiveInteger" default="1"/>
+	<xsd:element name="MinVotes" type="xsd:nonNegativeInteger" default="0"/>
+	<xsd:element name="OptionName" type="OptionNameStructure"/>
+	<xsd:element name="PollingPlace">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Location" maxOccurs="unbounded">
+					<xsd:complexType>
+						<xsd:simpleContent>
+							<xsd:extension base="xsd:string">
+								<xsd:attribute name="Id" type="xsd:NMTOKEN" use="optional"/>
+								<xsd:attribute name="Type" type="xsd:string" use="optional"/>
+							</xsd:extension>
+						</xsd:simpleContent>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+			<xsd:attribute name="Channel" type="VotingChannelType" use="optional"/>
+			<xsd:attribute name="DisplayOrder" type="xsd:positiveInteger" use="optional"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="Proxy" type="ProxyStructure"/>
+	<xsd:element name="Profile" type="MessagesStructure"/>
+	<xsd:element name="Proposer" type="ProposerStructure"/>
+	<xsd:element name="ReportingUnitName" type="ReportingUnitNameStructure"/>
+	<xsd:element name="ScrutinyRequirement" type="ScrutinyRequirementStructure"/>
+	<xsd:element name="Seal" type="SealStructure"/>
+	<xsd:element name="VoterName" type="VoterNameStructure"/>
+	<xsd:element name="VotingChannel" type="VotingChannelType"/>
+	<xsd:element name="VotingMethod" type="VotingMethodType"/>
+	<xsd:element name="VToken" type="VTokenStructure"/>
+	<xsd:element name="VTokenQualified" type="VTokenQualifiedStructure"/>
+	<xsd:complexType name="AgentStructure">
+		<xsd:sequence>
+			<xsd:element name="Name" type="NameStructure"/>
+			<xsd:element ref="Affiliation" minOccurs="0"/>
+			<xsd:element name="OfficialAddress" type="AddressStructure" minOccurs="0"/>
+			<xsd:element name="Contact" type="ContactDetailsStructure" minOccurs="0"/>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="DisplayIdOpt"/>
+	</xsd:complexType>
+	<xsd:complexType name="AuditInformationStructure">
+		<xsd:sequence>
+			<xsd:element ref="VotingChannel" minOccurs="0"/>
+			<xsd:element name="ProcessingUnits" minOccurs="0">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="OriginatingDevice" type="ProcessingUnitStructure" minOccurs="0"/>
+						<xsd:element name="Gateway" type="ProcessingUnitStructure" minOccurs="0"/>
+						<xsd:element name="VotingSystem" type="ProcessingUnitStructure" minOccurs="0"/>
+						<xsd:element name="CountingSystem" type="ProcessingUnitStructure" minOccurs="0"/>
+						<xsd:element name="VTokenLoggingSystem" type="ProcessingUnitStructure" minOccurs="0"/>
+						<xsd:element name="SealLoggingSystem" type="ProcessingUnitStructure" minOccurs="0"/>
+						<xsd:element name="Other" minOccurs="0" maxOccurs="unbounded">
+							<xsd:complexType>
+								<xsd:complexContent>
+									<xsd:extension base="ProcessingUnitStructure">
+										<xsd:attribute name="Type" type="xsd:string" use="required"/>
+									</xsd:extension>
+								</xsd:complexContent>
+							</xsd:complexType>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:any namespace="##any" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="BallotNameStructure">
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attributeGroup ref="DisplayIdOpt"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:complexType name="CandidateStructure">
+		<xsd:sequence>
+			<xsd:element name="Name" type="NameStructure"/>
+			<xsd:element name="DateOfBirth" type="xsd:date" minOccurs="0"/>
+			<xsd:element name="Age" type="xsd:positiveInteger" minOccurs="0"/>
+			<xsd:element ref="Gender" minOccurs="0"/>
+			<xsd:element name="QualifyingAddress" type="AddressStructure" minOccurs="0"/>
+			<xsd:element name="Contact" type="ContactDetailsStructure" minOccurs="0"/>
+			<xsd:element ref="Affiliation" minOccurs="0"/>
+			<xsd:element ref="Agent" minOccurs="0"/>
+			<xsd:element ref="Profile" minOccurs="0"/>
+			<xsd:element ref="ElectionStatement" minOccurs="0"/>
+			<xsd:any namespace="##any" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="DisplayIdOpt"/>
+	</xsd:complexType>
+	<xsd:complexType name="ContactDetailsStructure">
+		<xsd:sequence>
+			<xsd:element name="MailingAddress" type="AddressStructure" minOccurs="0"/>
+			<xsd:element name="Email" type="EmailStructure" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Telephone" type="TelephoneStructure" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Fax" type="TelephoneStructure" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="PreferredContact" minOccurs="0">
+				<xsd:complexType>
+					<xsd:attribute ref="xlink:href" use="required"/>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="DisplayOrder" type="xsd:positiveInteger" use="optional"/>
+	</xsd:complexType>
+	<xsd:complexType name="ContestNameStructure">
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attributeGroup ref="DisplayIdMand"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:complexType name="ElectionNameStructure">
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attributeGroup ref="DisplayIdMand"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:complexType name="EmailStructure">
+		<xsd:simpleContent>
+			<xsd:extension base="EmailType">
+				<xsd:attribute name="Preferred" type="YesNoType" use="optional"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:complexType name="EventNameStructure">
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attribute name="Id" type="xsd:NMTOKEN" use="required"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:complexType name="EventQualifierStructure">
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attribute name="Id" type="xsd:NMTOKEN" use="optional"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:complexType name="IncomingGenericCommunicationStructure">
+		<xsd:sequence>
+			<xsd:element name="Voter">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="VoterIdentification">
+							<xsd:complexType>
+								<xsd:complexContent>
+									<xsd:restriction base="VoterIdentificationStructure">
+										<xsd:sequence>
+											<xsd:element ref="VoterName"/>
+											<xsd:element name="ElectoralAddress" type="AddressStructure" minOccurs="0" maxOccurs="0">
+												<xsd:annotation>
+													<xsd:documentation>This is the address that gives the voter the right to vote</xsd:documentation>
+												</xsd:annotation>
+											</xsd:element>
+											<xsd:element name="PreviousElectoralAddress" type="AddressStructure" minOccurs="0" maxOccurs="0"/>
+											<xsd:element ref="VToken" minOccurs="0" maxOccurs="0"/>
+											<xsd:element name="Id" minOccurs="0" maxOccurs="unbounded">
+												<xsd:complexType>
+													<xsd:simpleContent>
+														<xsd:extension base="xsd:string">
+															<xsd:attribute name="Type" type="xsd:string" use="required"/>
+														</xsd:extension>
+													</xsd:simpleContent>
+												</xsd:complexType>
+											</xsd:element>
+										</xsd:sequence>
+										<xsd:attribute name="DisplayOrder" type="xsd:positiveInteger" use="optional"/>
+									</xsd:restriction>
+								</xsd:complexContent>
+							</xsd:complexType>
+						</xsd:element>
+						<xsd:element name="VoterContact" type="ContactDetailsStructure"/>
+						<xsd:element ref="Proxy" minOccurs="0"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element ref="Event" minOccurs="0"/>
+			<xsd:element ref="ElectionName" minOccurs="0"/>
+			<xsd:element ref="ContestName" minOccurs="0"/>
+			<xsd:element name="Messages" type="MessagesStructure" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="MessagesStructure">
+		<xsd:sequence>
+			<xsd:element name="Message" maxOccurs="unbounded">
+				<xsd:complexType mixed="true">
+					<xsd:sequence>
+						<xsd:any namespace="##any" maxOccurs="unbounded"/>
+					</xsd:sequence>
+					<xsd:attribute name="Format" type="xsd:NMTOKEN" use="optional"/>
+					<xsd:attribute name="Type" type="xsd:string" use="optional"/>
+					<xsd:attribute ref="xml:lang" use="optional"/>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="DisplayOrder" type="xsd:positiveInteger" use="optional"/>
+	</xsd:complexType>
+	<xsd:complexType name="OptionNameStructure">
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attributeGroup ref="DisplayIdMand"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:complexType name="OutgoingGenericCommunicationStructure">
+		<xsd:annotation>
+			<xsd:documentation>Note that this can include multiple voters to allow communication with a distributor.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Voter" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="VoterIdentification">
+							<xsd:complexType>
+								<xsd:complexContent>
+									<xsd:restriction base="VoterIdentificationStructure">
+										<xsd:sequence>
+											<xsd:element ref="VoterName"/>
+											<xsd:element name="ElectoralAddress" type="AddressStructure" minOccurs="0" maxOccurs="0">
+												<xsd:annotation>
+													<xsd:documentation>This is the address that gives the voter the right to vote</xsd:documentation>
+												</xsd:annotation>
+											</xsd:element>
+											<xsd:element name="PreviousElectoralAddress" type="AddressStructure" minOccurs="0" maxOccurs="0"/>
+											<xsd:element ref="VToken" minOccurs="0" maxOccurs="0"/>
+											<xsd:element name="Id" maxOccurs="unbounded">
+												<xsd:complexType>
+													<xsd:simpleContent>
+														<xsd:extension base="xsd:string">
+															<xsd:attribute name="Type" type="xsd:string" use="required"/>
+														</xsd:extension>
+													</xsd:simpleContent>
+												</xsd:complexType>
+											</xsd:element>
+										</xsd:sequence>
+										<xsd:attribute name="DisplayOrder" type="xsd:positiveInteger" use="optional"/>
+									</xsd:restriction>
+								</xsd:complexContent>
+							</xsd:complexType>
+						</xsd:element>
+						<xsd:element name="VoterContact" type="ContactDetailsStructure"/>
+						<xsd:element ref="Proxy" minOccurs="0"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element ref="Event" minOccurs="0"/>
+			<xsd:element ref="ElectionName" minOccurs="0"/>
+			<xsd:element ref="ContestName" minOccurs="0"/>
+			<xsd:element name="ReturnContact" type="ContactDetailsStructure" minOccurs="0"/>
+			<xsd:element name="Messages" type="MessagesStructure" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ProcessingUnitStructure">
+		<xsd:annotation>
+			<xsd:documentation>Used to identify processing units (e.g. Gateway) for audit</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Name" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="Id" type="xsd:NMTOKEN"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ProposerStructure">
+		<xsd:sequence>
+			<xsd:element name="Name" type="NameStructure"/>
+			<xsd:element name="Contact" type="ContactDetailsStructure" minOccurs="0"/>
+			<xsd:element name="JobTitle" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="Id" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:simpleContent>
+						<xsd:extension base="xsd:string">
+							<xsd:attribute name="Type" type="xsd:string" use="required"/>
+						</xsd:extension>
+					</xsd:simpleContent>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:any namespace="##any"/>
+		</xsd:sequence>
+		<xsd:attribute name="Category" use="optional">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="primary"/>
+					<xsd:enumeration value="secondary"/>
+					<xsd:enumeration value="other"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+	<xsd:complexType name="ProxyStructure">
+		<xsd:sequence>
+			<xsd:choice>
+				<xsd:element name="Position" type="xsd:string"/>
+				<xsd:sequence>
+					<xsd:element name="Name" type="NameStructure"/>
+					<xsd:element name="Position" type="xsd:string" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:choice>
+			<xsd:element name="Address" type="AddressStructure" minOccurs="0"/>
+			<xsd:element name="Qualification" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="Reason" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="Period" minOccurs="0">
+				<xsd:complexType>
+					<xsd:choice>
+						<xsd:element name="Dates">
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element name="Start" type="xsd:date" minOccurs="0"/>
+									<xsd:element name="End" type="xsd:date"/>
+								</xsd:sequence>
+							</xsd:complexType>
+						</xsd:element>
+						<xsd:element ref="Event" maxOccurs="unbounded"/>
+					</xsd:choice>
+					<xsd:attribute name="Type" use="optional">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:enumeration value="event"/>
+								<xsd:enumeration value="period"/>
+								<xsd:enumeration value="permanent"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:attribute>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="ProxyAgrees" type="YesNoType" minOccurs="0"/>
+			<xsd:element name="Channel" type="VotingChannelType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:choice minOccurs="0" maxOccurs="0">
+				<xsd:element ref="VToken"/>
+				<xsd:element ref="VTokenQualified"/>
+			</xsd:choice>
+		</xsd:sequence>
+		<xsd:attribute name="DisplayOrder" type="xsd:positiveInteger" use="optional"/>
+	</xsd:complexType>
+	<xsd:complexType name="ReportingUnitNameStructure">
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attributeGroup ref="DisplayIdOpt"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:complexType name="ScrutinyRequirementStructure">
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attribute name="Type" type="xsd:string" use="required"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:complexType name="SealStructure">
+		<xsd:choice>
+			<xsd:element ref="ds:Signature"/>
+			<xsd:element ref="ts:Timestamp"/>
+			<xsd:any namespace="##any" processContents="lax"/>
+		</xsd:choice>
+	</xsd:complexType>
+	<xsd:complexType name="TelephoneStructure">
+		<xsd:sequence>
+			<xsd:element name="Number" type="TelephoneNumberType"/>
+			<xsd:element name="Extension" minOccurs="0">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="6"/>
+						<xsd:minLength value="1"/>
+						<xsd:pattern value="[0-9]{1,6}"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="Preferred" type="YesNoType" use="optional"/>
+		<xsd:attribute name="Mobile" type="YesNoType" use="optional"/>
+	</xsd:complexType>
+	<xsd:complexType name="VoterIdentificationStructure">
+		<xsd:sequence>
+			<xsd:element ref="VoterName" minOccurs="0"/>
+			<xsd:element name="ElectoralAddress" type="AddressStructure" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>This is the address that gives the voter the right to vote</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="PreviousElectoralAddress" type="AddressStructure" minOccurs="0"/>
+			<xsd:choice minOccurs="0">
+				<xsd:element ref="VToken"/>
+				<xsd:element ref="VTokenQualified"/>
+			</xsd:choice>
+			<xsd:element name="Id" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:simpleContent>
+						<xsd:extension base="xsd:string">
+							<xsd:attribute name="Type" type="xsd:string" use="required"/>
+						</xsd:extension>
+					</xsd:simpleContent>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="DisplayOrder" type="xsd:positiveInteger" use="optional"/>
+	</xsd:complexType>
+	<xsd:complexType name="VoterInformationStructure">
+		<xsd:sequence>
+			<xsd:element name="Contact" type="ContactDetailsStructure" minOccurs="0"/>
+			<xsd:element name="DateOfBirth" type="xsd:date" minOccurs="0"/>
+			<xsd:element name="EffectiveDateAdded" type="xsd:date" minOccurs="0"/>
+			<xsd:element name="EffectiveDateRemoved" type="xsd:date" minOccurs="0"/>
+			<xsd:element name="PreferredLanguage" type="xsd:language" minOccurs="0"/>
+			<xsd:element name="PreferredChannel" type="VotingChannelType" minOccurs="0"/>
+			<xsd:element name="Qualifier" type="xsd:string" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>e.g. military or other factor that may affect right to vote or how votes are managed</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Affiliation" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="PlaceOfBirth" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="Gender" minOccurs="0">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="male"/>
+						<xsd:enumeration value="female"/>
+						<xsd:enumeration value="unknown"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Ethnicity" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="SpecialRequests" minOccurs="0">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="SpecialRequest" type="xsd:string" maxOccurs="unbounded"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:any namespace="##any" minOccurs="0"/>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="DisplayIdOpt"/>
+	</xsd:complexType>
+	<xsd:complexType name="VoterNameStructure">
+		<xsd:complexContent>
+			<xsd:extension base="NameStructure">
+				<xsd:attributeGroup ref="DisplayIdOpt"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="VTokenStructure">
+		<xsd:sequence>
+			<xsd:element name="Component" maxOccurs="unbounded">
+				<xsd:complexType mixed="true">
+					<xsd:sequence>
+						<xsd:any namespace="##any"/>
+					</xsd:sequence>
+					<xsd:attribute name="Type" type="xsd:NMTOKEN" use="required"/>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="VTokenQualifiedStructure">
+		<xsd:complexContent>
+			<xsd:extension base="VTokenStructure">
+				<xsd:sequence>
+					<xsd:element name="Reason">
+						<xsd:complexType>
+							<xsd:simpleContent>
+								<xsd:extension base="xsd:string">
+									<xsd:attribute name="Type" type="xsd:string" use="required"/>
+								</xsd:extension>
+							</xsd:simpleContent>
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element ref="VToken" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:simpleType name="DateType">
+		<xsd:union memberTypes="xsd:date xsd:dateTime"/>
+	</xsd:simpleType>
+	<xsd:simpleType name="ElectionRuleIdType">
+		<xsd:union memberTypes="xsd:NMTOKEN xsd:anyURI"/>
+	</xsd:simpleType>
+	<xsd:simpleType name="EmailType">
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="129"/>
+			<xsd:pattern value="[^@]+@[^@]+"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="TelephoneNumberType">
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="35"/>
+			<xsd:minLength value="1"/>
+			<xsd:pattern value="\+?[0-9\(\)\-\s]{1,35}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="VotingChannelType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="SMS"/>
+			<xsd:enumeration value="WAP"/>
+			<xsd:enumeration value="digitalTV"/>
+			<xsd:enumeration value="internet"/>
+			<xsd:enumeration value="kiosk"/>
+			<xsd:enumeration value="polling"/>
+			<xsd:enumeration value="postal"/>
+			<xsd:enumeration value="telephone"/>
+			<xsd:enumeration value="other"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="VotingMethodType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="FPP"/>
+			<xsd:enumeration value="OPV"/>
+			<xsd:enumeration value="SPV"/>
+			<xsd:enumeration value="STV"/>
+			<xsd:enumeration value="additonalmember"/>
+			<xsd:enumeration value="approval"/>
+			<xsd:enumeration value="block"/>
+			<xsd:enumeration value="partylist"/>
+			<xsd:enumeration value="supplementary"/>
+			<xsd:enumeration value="other"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="YesNoType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="no"/>
+			<xsd:enumeration value="yes"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:attributeGroup name="DisplayIdMand">
+		<xsd:attribute name="Id" type="xsd:NMTOKEN" use="required"/>
+		<xsd:attribute name="DisplayOrder" type="xsd:positiveInteger" use="optional"/>
+	</xsd:attributeGroup>
+	<xsd:attributeGroup name="DisplayIdOpt">
+		<xsd:attribute name="Id" type="xsd:NMTOKEN" use="optional"/>
+		<xsd:attribute name="DisplayOrder" type="xsd:positiveInteger" use="optional"/>
+	</xsd:attributeGroup>
+</xsd:schema>

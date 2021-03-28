@@ -1,0 +1,742 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.61 [en] (OS/2; U) [Netscape]">
+</head>
+<body>
+
+<h1>
+"Other Python Versions" -- Interview Outtakes:</h1>
+These notes are perhaps of only obscure academic interest. But I myself
+found all my interviewees' responses fascinating, so here is the unexpurgated
+versions.
+<p>For the edited interviews, please see:
+<br><a href="http://gnosis.cx/publish/programming/charming_python_8.txt">&nbsp;&nbsp;&nbsp;
+Interviews with Creators of Vyper and Stackless Python</a>
+<br>and
+<br><a href="http://gnosis.cx/publish/programming/charming_python_10.txt">&nbsp;&nbsp;&nbsp;
+Interviews with Developers of JPython and Python for .NET</a>
+<p><b>Note:</b> Questions from Mertz are highlighted in blue, and answers
+from the various interviewees in red.
+<h2>
+Christian Tismer</h2>
+
+<pre><font color="#000099">> Q. Stackless Python has been absolutely fascinating to read about for
+> me.&nbsp; Like most earthbound programmers, I have trouble getting my mind
+> wholly around it, but that is part of what makes it so interesting to
+> me.
+
+</font><font color="#660000">Well, I'm earthbound, too, and you might imagine how difficult
+it was to implement such a thing, without any idea what a continuation
+is and how it should look like in Python. Getting myself into doing
+something that I wasn't able to think was my big challenge.
+After it's done, it is easy to think, also to redesign. But of those
+six months of fulltime work, I guess five were spent goggling into
+my screen and banging my head onto the keyboard.
+
+</font><font color="#000099">> There is a joke about American Engineers and French Engineers.&nbsp; The
+> American team brings a prototype to the French team.&nbsp; The French team's
+> response is "Well, It works fine in practice; but how will it hold up in
+> theory?"&nbsp; I think the joke is probably meant to poke fun at a "French"
+> style, but to my own mind I completely identify with the "French"
+> reaction.&nbsp; Bracketing any specific national stereotypes in the joke, it
+> is my identification in it that draws me to Stackless.&nbsp; CPython works in
+> practice, but Stackless works in theory!&nbsp; (In other words, the abstract
+> purity of continuations is more interesting to me personally than is the
+> context switch speedups of microthreads, for example).
+
+</font><font color="#660000">I see. My feeling is a bit similar. After realizing that CPython
+can be implemented without the C stack involved, I was sure that
+it *must* be implemented this way; everything else looks insane
+to me. CPython already pays for the overhead of frame objects,
+but it throws all their freedom away by tying them to the C stack.
+I felt I had to liberate Python. :-)
+
+</font><font color="#000099">> For readers though, let me ask the basics:
+>
+> Q. Exactly what is Stackless Python?&nbsp; Is there something a beginner
+> can get her mind around that explains what is different about Stackless?
+
+</font><font color="#660000">Stackless Python is exactly a Python implementation that does not
+save state on the C stack. It does of course have stacks, as many as
+you want, but these are Python stacks.
+
+The C stack cannot be modified in a clean way from a language
+like C, unless you do it in the foreseen order. It imposes a
+big promise on you: You will come back, exactly here, exactly
+in the reverse way as you went off.
+
+"Normal" programmers do not see this as a restriction in the
+first place. This is so since they have to learn to push their minds
+onto stacks from the outset. There is nothing bad about stacks,
+and usually their imposed execution order is the way to go, but
+that does not mean that we have to wait for one such stack sequence
+to complete, before we can run a different one.
+
+Programmers realize that when they have to do non-blocking calls
+and callbacks. Suddenly the stack is in a way, we must use threads,
+or explicitly store state in objects, build explicit, switchable
+stacks, and so on. Consumer/producer problems lead to unnatural
+formulations of algorithms, just because the one must call the
+other, and there is no natural order for this, but it is an artifact.
+See for instance todays XML parsers. They provide hooks for the
+programmer to insert his own behavior on certain events. But this
+is no natural thinking, it is reactive programming.
+
+The aim of Stackless is to deliver the programmer from these
+problems. When we wrote our first simple Pascal programs,
+these were easy ones. A couple of loops, cases, some input and
+output. This is like beginners think of programming, and I want
+them to be allowed to keep with this simple style.
+With Stackless Python, you can write both the consumer and the
+producer as if they were a simple little Pascal main program.
+
+</font><font color="#000099">> Q. Understanding Stackless involves thinking about some concepts that
+> are novel for a lot of workaday programmers.&nbsp; Is it possible to give the
+> sound bite expanation of the C-stack?&nbsp; Of continuations?&nbsp; Of coroutines?
+> Of microthreads?&nbsp; Of generators?&nbsp; (I think it was Tim Peters who
+> characterized continuations as (roughly) "The control structure the
+> fundamentally underlies all others, and is more basic than the GOTO" --
+> is that about right?)
+
+</font><font color="#660000">Please let me defer this one. Remind me to answer it, please.
+
+</font><font color="#000099">> Q. Why did you start this project?&nbsp; Was it just an itch you had to
+> scratch (as is often said of opensource projects)?&nbsp; Or is there a more
+> practical motive behind it?&nbsp; What is most important to you, the
+> theoretical issues underlying what you have done, or the specific
+> performance improvements that are likely to be enabled (for example,
+> with microthreads)?
+
+</font><font color="#660000">It was in May 1999. Sam Rushing was playing with a hardware
+coroutine implementation, and a dicussion of python-dev begun.
+Such a stack copying hack would never make it into Python, that
+was clear. But a portable, clean implementation of coroutines
+would, possibly. Unfortunately, this is impossible. Steve
+Majewski gave up five yoears ago, after he realized that he
+could not solve this problem without completely rewriting Python.
+
+That was the challenge. I had to find out. Either it is possible,
+and I would implement it. Or it is not, and I would prove the
+impossibility.
+Not much later, after first thoughts and attempts, Sam told
+me about call/cc and how powerful it was. At this time, I had
+no idea in what way they could be more powerful than coroutines,
+but I believed him and implemented them. Six or seven times,
+always a complete rewrite, after I understood more.
+
+Yes, finally I wanted to create threads at blinding speed, but
+my primary intent was to find out how far I can reach at all.
+
+</font><font color="#000099">> Q. On the practical side, just what performance improvements is
+> Stackless likely to have?&nbsp; How great are these improvements in the
+> current implementation?&nbsp; How much more is possible with tweaking?&nbsp; What
+> specific sorts of applications are most likely to benefit from
+> Stackless?
+
+</font><font color="#660000">With the current implementation, there is no real advantage for
+Stackless over the traditional calling scheme. Normal Python
+starts a recursion to a new interpreter. Stackless unwinds up
+to a dispatcher and starts an interpreter from there. This is
+nearly the same.
+Real improvements are there for implementations of coroutines
+and threads. They need to be simulated by classes, or to be
+real threads in Standard Python, while they can be implemented
+much more directly with Stackless.
+
+On the other hand, there is a 12 percent speed improvement
+(pystone) which stabilizes at, say, 8 percent for Stackless in
+the current implementation. This has nothing to do with Stackless,
+but comes from a rigorous optimization and redesign of the
+main interpreter loop. These optimizations could be done
+without Stackless at all, but my license forbids exactly that.
+
+Much more improvement of the core doesn't seem very possible
+without dramatic changes to the opcode set. But a reimplementation
+with more built-in support for continuations et al. can improve
+the speed of these quite a lot.
+
+Specific applications which might benefit quite much are
+possibly like Swarm simulations, or multi-user games with
+very many actors, performing tiny tasks. One example is
+the EVE game which is under development, using Stackless Python.
+http://www.eve-online.com, see section 8.6 of the FAQ:
+http://www.eve-online.com/faq/faq_08.asp
+
+</font><font color="#000099">> Q. There has been a lot of discussion on the Python newsgroup about
+> incorporating your Stackless patches into the main Python source.&nbsp; I
+> have a number of questions related to this:
+>
+>&nbsp; - How likely to you think such incorporation is?&nbsp; If it is moderately
+>&nbsp;&nbsp;&nbsp; likely, what version number will Python be at when Stackless makes it
+>&nbsp;&nbsp;&nbsp; into the trunk?
+
+</font><font color="#660000">I consider it moderately likely, very much dependent on how
+easy I can implement it again in an easy to understand manner,
+and depending on the mood of the BDFL.
+My current target is Python 2.1 .
+
+</font><font color="#000099">>&nbsp; - There are a few arguments against incorporating Stackless into the
+>&nbsp;&nbsp;&nbsp; CPython trunk, what do you think of them?
+>
+>&nbsp;&nbsp;&nbsp; It has been claimed that it is impossible to be Stackless in JPython,
+>&nbsp;&nbsp;&nbsp; and in the interest of keeping the versions in sync, Stackless should
+>&nbsp;&nbsp;&nbsp; not be in the main CPython.&nbsp; True?&nbsp; False?&nbsp; True but irrelevant?
+
+</font><font color="#660000">True, but a very bad argument. Like forbidding a book for the fact
+that it cannot be translated into every language.
+
+The problem is: In order to be stackless, you need to build something
+like a stackless core engine. CPython has a core engine, which I could
+changed to be (nearly) stackless.
+JPython does not have an engine at all, since it translates into
+Java VM code, which must be treated like hardware in this case.
+But the real drawback is: "Normal" hardware would allow to implement
+a stackless core. Java's VM does not, without changes.
+The alternatives are: Change the VM, or change JPython to implement
+a stackless core. The latter would be way too slow...
+
+Vice versa: If CPython would translate directly into C code instead
+of using its frames, we would be in the same Dilemma as Java is,
+since C doesn't support continuations, which means switching
+stacks.
+
+Assembly language would of course allow it, if it were allowed
+at all :-) . There has been a lot of work on C-- by Simon
+Peyton Jones et al., a portable assembler. This might be a
+chance when used as a frontend for code emission.
+
+I'm still not absolutely shure if the java way is impossible.
+Some more investigation is necessary, given that I don't
+output valid Java source, but VM instructions. This thought
+is very joung (came up while writing this).
+
+</font><font color="#000099">>&nbsp;&nbsp;&nbsp; It has been claimed that since Stackless represents a change in
+>&nbsp;&nbsp;&nbsp; thinking, Python maintainers would not be able to work with a
+>&nbsp;&nbsp;&nbsp; Stackless-patched trunk (maybe including Guido).&nbsp; Is this true?&nbsp; Is
+>&nbsp;&nbsp;&nbsp; it important?
+
+</font><font color="#660000">I think the Stackless part of the implementation is not that
+hard as people want to claim all the time. They simply don't
+read it since they believe it must be hard.
+
+They basically have to understand the one very basic principle:
+Try to change every recursion into tail-recursion, then avoid
+the recursive call and defer it to the calling dispatcher.
+This is everything and all.
+Making the implementation easier to understand is another thing,
+but this little principle is somethingthat I can demand from
+every true core developer.
+
+</font><font color="#000099">>&nbsp; - What do YOU think about incorporating Stackless into the CPython
+>&nbsp;&nbsp;&nbsp; trunk?&nbsp; It might help with your own leisure time, but how important
+>&nbsp;&nbsp;&nbsp; should it be to other Python users?&nbsp; For that matter, how important
+>&nbsp;&nbsp;&nbsp; is such an incorporation to you?&nbsp; Is Stackless just as good as an
+>&nbsp;&nbsp;&nbsp; available branch, or does something get better if it becomes the
+>&nbsp;&nbsp;&nbsp; version?
+
+</font><font color="#660000">Well, there are arguments for and against it.
+Against: As long as I'm sitting on the Stackless implementation,
+it is mine, and I do not need to discuss the hows and whys.
+But at the same time, I'm struggling (and don't manage) keeping
+up with CVS. Better to have other people doing this.
+
+For other Python users, who aren't necessarily interested in
+kinky stuff, there are a few:
+They won't recognize Stackless at all, jzst for the fact
+that it happens to be faster, and that the maximum recursion level
+now is an option and no hardware limit.
+And there is another promise for every user: There will be
+pickleable execution states. That means you can save your
+program while it is running, send it to a freind and continue
+running it.
+
+And, as long as there is just the stackless core, there is no real
+incompatibility to JPython than the possibility to extend it.
+Coroutines, Generators, uThreads and continuations will be
+only available through extension modules. The core is just
+prepared to stand and support all of this.
+
+Finally, I'm all for it, provided that all my stuff makes it
+into the core, at some time. I do not want to see a half-baked
+solution, as has ben proposed several times.
+
+</font><font color="#000099">> Q. The goal of Stackless is to be 100% binary compatible with CPython.
+> Is this goal entirely accomplished, or are there subtle "gotcha"
+> remaining?&nbsp; Even in obscure areas, are there thing programmers need to
+> watch out for in porting between Stackless and CPython (or to JPython,
+> Python.NET or Vyper, inasmuch as you know about these other
+> implementations)?
+
+</font><font color="#660000">Stackless is 100% binary compatible at the moment. That means:
+You install Python 1.5.2, you replace pythpon15.dll with mine,
+and everything still works, also every extrension module.
+It is not a goal, it was a demand, since I didn't want to
+tak care about all the extensions. Stackless was always
+develped under pythonWin, and PythonWin with all of its
+modules was never compiled against Stackless.
+
+If I'm going to rework it for inclusion into the core, this
+is no longer an issue, since everything will have to be
+recompiled then anyway (and fortunately not by me:).
+
+No idea what I should say about the C/J/.NT/Vyper part?
+
+</font><font color="#000099">> Q. Are there other aspects of Stackless that I have not asked about,
+> that you think "Charming Python" readers should know about?
+
+</font><font color="#660000">I need to defer this as well, no idea at the moment.
+Well, there is something. Onemajor difficulty at the moment
+is that Stackless isn't really as stackless as I'd like it to be.
+There are still places where recursions are possible. BTW they
+are always allowed. It was quite a difficult task to handle this
+properly, but it has been completely solved.
+Recursions still exist in all non-standard calls, like
+all the predefined __xxx__ methods, imports and a few more.
+
+Frames which span a recursion have the same restrictions as
+before. Especially, they are unable to split off a continuation,
+since they are in a non-determinate state.
+This is painful in some cases. For instance, pickling of frame
+chains is easy, as long as no such locked frame is involved.
+Pickling of locked (recursion) frames isn't possible without
+very hairy tricks. Furtunately, this works with uThreads,
+see below.
+
+</font><font color="#000099">> Q. Any thoughts on future directions for Stackless?&nbsp; Anything new and
+> different expected down the pipeline?
+
+</font><font color="#660000">Quite likely are:
+A patch set of the current implementation for Python 1.6 comes first.
+Gordon Mc Millan is writing a PEP for including Stackless, and this
+will trigger a re-implementation with more substantial core changes
+for Pyhton 2.1, binary incompatible to some (few) extensions,
+easier to understand and to maintain.
+Pickling support will be partially implemented. This will be
+working most likely for uThreads first, since they provide
+the cleanest abstraction at the moment. They are living in
+such a "clean room" that the remaining recursion problem
+doesn't exist.
+My final goal is to remove *all* interpreter recursion from
+Python. This is very hard,since it needs to change quite
+much, add new opcodes, unroll certain internal calling sequences
+and so on.
+I will take this on after the current level of Stackless is
+incorporated, not before.</font>
+
+</pre>
+
+<h1>
+Finn Bock</h1>
+
+<pre><font color="#000099">>Q. Exactly what is JPython?
+>
+>Q. What were the reasons for developing JPython in the first place?
+>What was wrong with the original CPython that required another version?
+>
+>Q. What strengths or advantages does JPython have over CPython?
+
+</font><font color="#660000">JPython gives supreme access to its underlaying implementation language.
+In most (properly all) C-based script languages, a C function must be
+wrapped in a thin layer of code that serves to expose the C function to
+the script language. Fine tools like SWIG exists to automate the
+creation of this wrapper code. JPython requires no such wrapper. All
+java code ever written is directly available for use from JPython.
+The integration goes both ways. Classes and instances defined in JPython
+can be passed to java code as if they were ordinary java classes and
+instances (which is exactly what they are).
+
+The embedding/extending API is very close to the way it is exposed to
+python. It makes access to JPython objects from within an application or
+module quite elegant. This beaty comes in part from the fact that
+JPython and java are both OO languages. Jim took great advantage of
+this.
+
+</font><font color="#000099">>What weakness or disadvantages does it have?
+
+</font><font color="#660000">JPython only gives access to java code. Not to any of the existing C
+modules. So every python module implemented in C must be re-implented in
+java. And CPython have quite a lot modules.
+
+There are almost no documentation to the embedding/extending API other
+than the source.
+
+</font><font color="#000099">>Q. Since JPython combines Java and Python, in a certain sense, what
+>strength and advantages does JPython have over Java?&nbsp; Likewise, weakness
+>and disadvantages?
+>
+>Q. How widely used do you think JPython is?&nbsp; Are there particular
+>industries or types of problems that are a particularly good match for
+>JPython?
+>
+>Q. Two technical matters surrounding JPython have particularly struck me
+>in discussions on the Python newsgroup.&nbsp; I was hoping you might weigh in
+>on either of these:
+>
+>&nbsp; (1) There is a lot of talk about the fact that JPython uses true
+>&nbsp; garbage-collection, while CPython uses reference counts.&nbsp; Do you
+>&nbsp; believe this is an advantage of JPython, or simply an implementation
+>&nbsp; requirement of Java?
+
+</font><font color="#660000">GC is necessity of java, but when porting C-based modules to java, I
+have enjoyed that I could ignore all the INCR/DECR of references.
+
+</font><font color="#000099">>&nbsp; Do you think CPython 2 (or Python 3000) should
+>&nbsp; go in the JPython direction?
+
+</font><font color="#660000">Reference-counting works quite nicely for CPython. There should not be
+any reason to change that in any fundamental way. GC works nicely for
+java and JPython. The few incompatibilities these differences have
+caused to real python applications can easily be avoided by a little
+careful extra coding.
+
+</font><font color="#000099">>&nbsp; (2) Christian Tismer's Stackless Python seems to have generated a lot
+>&nbsp; of excitement among Python users; many have argued that his patches
+>&nbsp; ought to be integrated into core CPython.&nbsp; One argument raised against
+>&nbsp; this change in CPython is that it is not possible to fold the same
+>&nbsp; changes into JPython, and keeping the versions in accord is important.
+>&nbsp; Do you think the technical appraisal of incompatibility between
+>&nbsp; JPython and Stackless Python is accurate?
+
+</font><font color="#660000">Yes and no. Well, I'm out on limb here because I do not fully understand
+Tismer's changes. If we look at only pure python code (without any java
+involvement) it should be possible to design a interpreter like ceval()
+that doesn't recurse. It would take a major redesign of the way JPython
+currently work and would properly loose the excellent speed JPython have
+by compiling into java byte code. But I think it is possible.
+
+However, I think the JPython argument against stackless is just one of
+many.
+
+</font><font color="#000099">>&nbsp; If so, how important do you
+>&nbsp; think keeping JPython and CPython compatible at this level is?
+
+</font><font color="#660000">Actually adding the stackless patches to CPython would not create much
+incompatibility, I think. The problem and most of the controversies
+occurs over the "continuation" module.
+
+I wouldn't be bothered much if stackless was added to CPython. If the
+"continuation" module was added as core, I fear I would encounter
+programs that I cannot read and understand. (It is generally accepted
+that continuations require a "brain upgrade" in order to understand
+them).
+
+</font><font color="#000099">>&nbsp; Underlying this question is whether JPython is an attempt to keep up
+>&nbsp; with CPython,
+
+</font><font color="#660000">The fact is that JPython *is* trying to catch up. Almost all new
+features are added to CPython first. (Well, JPython did have string
+method before CPython did). JPython have a disadvantage here because
+CPython have 30 times as many core developers as JPython does. But even
+so, a JPython version exists with almost all the new features in
+CPython1.6.
+
+</font><font color="#000099">>&nbsp; or whether the two are co-equal implementations:
+
+</font><font color="#660000">They are equal. But in the real world one is a little more equal that
+the other.
+
+</font><font color="#000099">>Q. What, if any, significant incompatibilities exist between JPython and
+>CPython?
+
+</font><font color="#660000">Modules that have/can not be implemented in JPython. Some modules can
+only be implemented as JNI modules and as such may not be useful in the
+deployment environment.
+
+</font><font color="#000099">>How easy am I likely to find moving application code between
+>the two implementations?
+
+</font><font color="#660000">There have been (and still are I'm sure) many small differences in the
+exact way the implementations works.
+
+</font><font color="#000099">>What are the major gotchas?
+
+</font><font color="#660000">Tellingly enough, the problems I encountered when porting my own script
+and programs as well is IDLE, PySol and the PMW toolkit was *not* the
+random reclaiming of the garbage collection or the missing __del__
+method. It was just the minor stuff that no other had encounter before.
+- mutability of the __name__ attribute.
+- changing __class__ caused a call to the __setattr__ hook.
+- Assigning to sys.modules['foo'] during the import of "foo" module.</font></pre>
+
+<h1>
+Barry Warsaw</h1>
+
+<pre><font color="#000099">Q. Exactly what is JPython?
+
+&nbsp;</font><font color="#660000">&nbsp;&nbsp; My standard marketing-speak reads: "JPython is a 100% Pure Java
+&nbsp;&nbsp;&nbsp; implementation of the Python programming language.&nbsp; It allows
+&nbsp;&nbsp;&nbsp; users to compile Python source code to Java byte codes, and run
+&nbsp;&nbsp;&nbsp; the resulting bytecodes on any Java Virtual Machine.&nbsp; It is a very
+&nbsp;&nbsp;&nbsp; seamless and smooth integration with Java: from Python you have
+&nbsp;&nbsp;&nbsp; complete access to all Java libraries, can build applets, can
+&nbsp;&nbsp;&nbsp; integrate with Java beans, and can subclass Java classes in Python
+&nbsp;&nbsp;&nbsp; and vice versa.&nbsp; Like Python, and unlike Java, JPython can also be
+&nbsp;&nbsp;&nbsp; used interactively: just type some JPython code at the prompt and
+&nbsp;&nbsp;&nbsp; see the results immediately."
+
+&nbsp;&nbsp;&nbsp; In simple terms, it allows the Java programmer to script any Java
+&nbsp;&nbsp;&nbsp; code she wants.&nbsp; This translates to a 2-10 times fewer lines of
+&nbsp;&nbsp;&nbsp; code in JPython than in Java.&nbsp; Because Python is a dynamically
+&nbsp;&nbsp;&nbsp; typed language, you can develop applications much faster, with
+&nbsp;&nbsp;&nbsp; many fewer bugs, and end up with a much more flexible program.
+
+</font><font color="#000099">Q. What were the reasons for developing JPython in the first place?
+What was wrong with the original CPython that required another version?
+
+</font><font color="#660000">&nbsp;&nbsp;&nbsp; I should point out here that JPython was invented by Jim Hugunin,
+&nbsp;&nbsp;&nbsp; who is now working for Xerox PARC's Aspect Oriented Programming
+&nbsp;&nbsp;&nbsp; project.&nbsp; Knowing Jim, I think his primary reason for creating
+&nbsp;&nbsp;&nbsp; JPython was the pure challenge.&nbsp; At the time, many people in the
+&nbsp;&nbsp;&nbsp; Python world just didn't think it could be done; Guido himself was
+&nbsp;&nbsp;&nbsp; one of the skeptics.&nbsp; Jim proved them wrong!
+
+&nbsp;&nbsp;&nbsp; So why continue to develop JPython now that the challenge has been
+&nbsp;&nbsp;&nbsp; met?&nbsp; Because it's the most valuable Java tool that most Java
+&nbsp;&nbsp;&nbsp; programmers don't know about yet!
+
+&nbsp;&nbsp;&nbsp; JPython isn't a competitor to Java, it's the perfect complement to
+&nbsp;&nbsp;&nbsp; it.&nbsp; Java is a statically typed, compiled language.&nbsp; This ensures
+&nbsp;&nbsp;&nbsp; type-safety of libraries and fast execution speeds.&nbsp; Although it
+&nbsp;&nbsp;&nbsp; is bytecode interpreted, most people view Java through the
+&nbsp;&nbsp;&nbsp; traditional write-compile-run-edit programming cycle.&nbsp; Of course,
+&nbsp;&nbsp;&nbsp; Java leverages a huge segment of the software world, so there are
+&nbsp;&nbsp;&nbsp; a lot of resources available to the Java programmer.
+
+&nbsp;&nbsp;&nbsp; But the same static typing and traditional programming cycle are
+&nbsp;&nbsp;&nbsp; what increases the cost of Java application development in terms
+&nbsp;&nbsp;&nbsp; of human resources.&nbsp; And here, Python absolutely excels.&nbsp; Because
+&nbsp;&nbsp;&nbsp; Python is such a simple and small language, it's very easily to
+&nbsp;&nbsp;&nbsp; learn (many experienced programmers can learn enough Python to be
+&nbsp;&nbsp;&nbsp; productive in about a day).&nbsp; And Python was designed with the
+&nbsp;&nbsp;&nbsp; observation that code is read many times more than it is written,
+&nbsp;&nbsp;&nbsp; so Python code is easy to share in a large team project.
+
+&nbsp;&nbsp;&nbsp; More importantly, Python is a very high-level dynamically typed
+&nbsp;&nbsp;&nbsp; language.&nbsp; What this translates to is the savings in amount of
+&nbsp;&nbsp;&nbsp; code needed to perform a task, as I alluded to above.&nbsp; With
+&nbsp;&nbsp;&nbsp; Python, because I can write many fewer lines of code, I can write
+&nbsp;&nbsp;&nbsp; them faster and have fewer bugs.&nbsp; This is wonderful for rapid
+&nbsp;&nbsp;&nbsp; application development.
+
+&nbsp;&nbsp;&nbsp; Python also provides an interactive interpreter.&nbsp; This means that
+&nbsp;&nbsp;&nbsp; you can sit at the interpreter prompt, import Java code, create
+&nbsp;&nbsp;&nbsp; instances, make method calls, etc., all interactively.&nbsp; This is a
+&nbsp;&nbsp;&nbsp; wonderful tool for training programmers on the use of corporate
+&nbsp;&nbsp;&nbsp; Java libraries, or for experimenting with new Java APIs.
+
+&nbsp;&nbsp;&nbsp; You also asked what's wrong with the original CPython?&nbsp; Well,
+&nbsp;&nbsp;&nbsp; nothing!&nbsp; IMO, all programmers should have both CPython and
+&nbsp;&nbsp;&nbsp; JPython in their arsenals :).
+
+</font><font color="#000099">Q. What strengths or advantages does JPython have over CPython?&nbsp; Or over
+Stackless, Vyper, Python.NET, if you have any opinions about those?
+What weakness or disadvantages does it have?
+
+</font><font color="#660000">&nbsp;&nbsp;&nbsp; What CPython lacks is access to the vast amount of Java code out
+&nbsp;&nbsp;&nbsp; in the world.&nbsp; If there are Java libraries you need to use,
+&nbsp;&nbsp;&nbsp; JPython is the answer.&nbsp; Conversely of course, JPython doesn't have
+&nbsp;&nbsp;&nbsp; easy access to any existing C libraries out in the world.&nbsp; Finn
+&nbsp;&nbsp;&nbsp; Bock has done work integrating things like Tkinter and a posix
+&nbsp;&nbsp;&nbsp; module through JNI, but those will always be non-standard in
+&nbsp;&nbsp;&nbsp; JPython because we want to retain the 100% Pure Java
+&nbsp;&nbsp;&nbsp; certification.
+
+&nbsp;&nbsp;&nbsp; I don't have any direct experience with Stackless, Vyper, or
+&nbsp;&nbsp;&nbsp; Python.NET except what I've read about them.&nbsp; I'm personally glad
+&nbsp;&nbsp;&nbsp; they all exist because it proves the immense attractiveness and
+&nbsp;&nbsp;&nbsp; clarity of Guido's language.
+
+</font><font color="#000099">Q. Since JPython combines Java and Python, in a certain sense, what
+strength and advantages does JPython have over Java?&nbsp; Likewise, weakness
+and disadvantages?
+
+&nbsp;&nbsp;&nbsp;</font><font color="#660000"> Again, I think these have been covered above.&nbsp; I'll just briefly
+&nbsp;&nbsp;&nbsp; mention performance issues with JPython.&nbsp; Since JPython implements
+&nbsp;&nbsp;&nbsp; Python's dynamic semantics, there is a fairly extensive run-time
+&nbsp;&nbsp;&nbsp; that comes with JPython.&nbsp; This can have a performance impact on
+&nbsp;&nbsp;&nbsp; some applications.&nbsp; Standard Java optimizations such as
+&nbsp;&nbsp;&nbsp; just-in-time compilers and Hotspot technology can mitigate those
+&nbsp;&nbsp;&nbsp; considerably (e.g. benchmarks 8 months ago showed that with a
+&nbsp;&nbsp;&nbsp; JIT-enabled JVM, JPython 1.1 could approach and sometimes surpass
+&nbsp;&nbsp;&nbsp; CPython 1.5.2 speeds).&nbsp; We'll be updating those benchmark results,
+&nbsp;&nbsp;&nbsp; and concentrating on performance issues after we roll out
+&nbsp;&nbsp;&nbsp; JPython's successor (more on that below).
+
+&nbsp;&nbsp;&nbsp; In analogy to CPython, you can always rewrite performance critical
+&nbsp;&nbsp;&nbsp; sections of your application in Java.
+
+</font><font color="#000099">Q. How widely used do you think JPython is?&nbsp; Are there particular
+industries or types of problems that are a particularly good match for
+JPython?
+
+&nbsp;&nbsp;&nbsp;</font><font color="#660000"> I think it's becoming more and more widely used.&nbsp; The companies
+&nbsp;&nbsp;&nbsp; that are using it find that it's a technology critical to their
+&nbsp;&nbsp;&nbsp; success.&nbsp; JPython is valuable to them for all kinds of tasks, from
+&nbsp;&nbsp;&nbsp; providing an approachable scripting environment to their end users
+&nbsp;&nbsp;&nbsp; to making it easy to create testing frameworks for their Java
+&nbsp;&nbsp;&nbsp; libraries and applications.&nbsp; JPython's biggest disadvantage at the
+&nbsp;&nbsp;&nbsp; moment is that it needs more publicity.&nbsp; I hope this article will
+&nbsp;&nbsp;&nbsp; help in that department!
+
+</font><font color="#000099">Q. Two technical matters surrounding JPython have particularly struck me
+in discussions on the Python newsgroup.&nbsp; I was hoping you might weigh in
+on either of these:
+
+&nbsp; (1) There is a lot of talk about the fact that JPython uses true
+&nbsp; garbage-collection, while CPython uses reference counts.&nbsp; Do you
+&nbsp; believe this is an advantage of JPython, or simply an implementation
+&nbsp; requirement of Java?&nbsp; Do you think CPython 2 (or Python 3000) should
+&nbsp; go in the JPython direction?
+
+</font><font color="#660000">&nbsp;&nbsp;&nbsp; Intelligent programmers can disagree about this, and both
+&nbsp;&nbsp;&nbsp; approaches have their advocates and detractors.&nbsp; The bottom line
+&nbsp;&nbsp;&nbsp; is that JPython has no choice in the matter, while in C there's no
+&nbsp;&nbsp;&nbsp; portable way to do general garbage collection if you want to be
+&nbsp;&nbsp;&nbsp; able to link in third party libraries.&nbsp; So neither approach will
+&nbsp;&nbsp;&nbsp; change, and this is just one area of the Python language that's
+&nbsp;&nbsp;&nbsp; implementation dependent.
+
+&nbsp;&nbsp;&nbsp; Reference counting has the advantage that collection time can be
+&nbsp;&nbsp;&nbsp; predicted, and finalizers can be used to free external resources.
+&nbsp;&nbsp;&nbsp; This is used in CPython quite a bit.&nbsp; There are programmers who
+&nbsp;&nbsp;&nbsp; rely on such behavior because they can easily understand what is
+&nbsp;&nbsp;&nbsp; going to happen, and when.&nbsp; While Java defines (in gory details)
+&nbsp;&nbsp;&nbsp; the finalization semantics in its garbage collected environment,
+&nbsp;&nbsp;&nbsp; the practical result is that Python programmers cannot rely on
+&nbsp;&nbsp;&nbsp; finalization (i.e. __del__() methods) to reclaim external
+&nbsp;&nbsp;&nbsp; resources.
+
+&nbsp;&nbsp;&nbsp; This issue is really much more relevant to extension writers,
+&nbsp;&nbsp;&nbsp; i.e. programmers who are writing Python extensions in C or Java.
+&nbsp;&nbsp;&nbsp; The CPython extension writer has to explicitly increment and
+&nbsp;&nbsp;&nbsp; decrement the reference counts, and this can lead to memory leaks
+&nbsp;&nbsp;&nbsp; or crashes if not done properly (fortunately CPython's reference
+&nbsp;&nbsp;&nbsp; counting rules are explicitly spelled out).&nbsp; The JPython extension
+&nbsp;&nbsp;&nbsp; writer on the other hand, has a much easier time because Java just
+&nbsp;&nbsp;&nbsp; takes care of things.
+
+&nbsp;&nbsp;&nbsp; In the end, reference counting vs. garbage collection are just two
+&nbsp;&nbsp;&nbsp; different valid memory management schemes.&nbsp; Both work well in
+&nbsp;&nbsp;&nbsp; their own context, if you understand the pros and cons.&nbsp; So the
+&nbsp;&nbsp;&nbsp; Python language definition must remain neutral on the subject of
+&nbsp;&nbsp;&nbsp; garbage collection and object finalization.
+
+&nbsp;&nbsp;&nbsp; Note that CPython 2.0 will have optional garbage collection of
+&nbsp;&nbsp;&nbsp; cyclic data, a bane of some types of applications for a long
+&nbsp;&nbsp;&nbsp; while.&nbsp; While this isn't the same as Java's garbage collection, it
+&nbsp;&nbsp;&nbsp; means the CPython programmer, like the JPython programmer, now no
+&nbsp;&nbsp;&nbsp; longer has to worry about explicitly breaking cycles.&nbsp; The
+&nbsp;&nbsp;&nbsp; interesting outcome is that, in the face of cycle collection,
+&nbsp;&nbsp;&nbsp; CPython's own finalization rules become problematic.
+
+</font><font color="#000099">&nbsp; (2) Christian Tismer's Stackless Python seems to have generated a lot
+&nbsp; of excitement among Python users; many have argued that his patches
+&nbsp; ought to be integrated into core CPython.&nbsp; One argument raised against
+&nbsp; this change in CPython is that it is not possible to fold the same
+&nbsp; changes into JPython, and keeping the versions in accord is important.
+&nbsp; Do you think the technical appraisal of incompatibility between
+&nbsp; JPython and Stackless Python is accurate?&nbsp; If so, how important do you
+&nbsp; think keeping JPython and CPython compatible at this level is?
+&nbsp; Underlying this question is whether JPython is an attempt to keep up
+&nbsp; with CPython, or whether the two are co-equal implementations:
+&nbsp; opinion?
+
+&nbsp;&nbsp;&nbsp;</font><font color="#660000"> I haven't really had the time to look very deeply at the technical
+&nbsp;&nbsp;&nbsp; details of Stackless.&nbsp; People who have tell me it's impossible,
+&nbsp;&nbsp;&nbsp; but then Jim Hugunin was told JPython was impossible, and look
+&nbsp;&nbsp;&nbsp; what happened there!&nbsp; In any event, it would be a large amount of
+&nbsp;&nbsp;&nbsp; work.
+
+&nbsp;&nbsp;&nbsp; On a philosophical note, Stackless provides the ability to do
+&nbsp;&nbsp;&nbsp; coroutines, generators, and micro-threads.&nbsp; Whether continuations
+&nbsp;&nbsp;&nbsp; themselves can ever be supported in JPython doesn't mean we can't
+&nbsp;&nbsp;&nbsp; support these higher-level abstractions in different ways, with a
+&nbsp;&nbsp;&nbsp; common API.&nbsp; I don't know if that's true, but it would be a worthy
+&nbsp;&nbsp;&nbsp; goal.
+
+&nbsp;&nbsp;&nbsp; As long as these constructs are implemented in the library and not
+&nbsp;&nbsp;&nbsp; as core language features, I don't think it would have much impact
+&nbsp;&nbsp;&nbsp; on JPython.
+
+&nbsp;&nbsp;&nbsp; I firmly believe that at the language level, JPython and CPython
+&nbsp;&nbsp;&nbsp; ought to be completely compatible.&nbsp; Where this is impossible,
+&nbsp;&nbsp;&nbsp; Guido will decide whether the differences are implementation
+&nbsp;&nbsp;&nbsp; dependent, or whether one or the other implementations are
+&nbsp;&nbsp;&nbsp; "buggy".&nbsp; I would eventually like to see both CPython and JPython
+&nbsp;&nbsp;&nbsp; become co-equal, with JPython pushing CPython development in
+&nbsp;&nbsp;&nbsp; certain directions as much as CPython pushes JPython.
+
+&nbsp;&nbsp;&nbsp; One current example of this is in Unicode support.&nbsp; CPython
+&nbsp;&nbsp;&nbsp; currently has two string types, an 8-bit string and Unicode
+&nbsp;&nbsp;&nbsp; strings.&nbsp; 8-bit strings double as binary data holders.&nbsp; In
+&nbsp;&nbsp;&nbsp; JPython, there are only Unicode strings (built on Java strings).
+&nbsp;&nbsp;&nbsp; So this is an area where JPython is helping to resolve issues
+&nbsp;&nbsp;&nbsp; surrounding unification of the string type in Python.
+
+&nbsp;&nbsp;&nbsp; Another example is the types/class dichotomy.&nbsp; In CPython, you
+&nbsp;&nbsp;&nbsp; have built in types like strings, dictionaries, lists, and
+&nbsp;&nbsp;&nbsp; numbers.&nbsp; You also have classes and instances.&nbsp; The built in types
+&nbsp;&nbsp;&nbsp; can't be inherited from, and to add more confusion, an instance
+&nbsp;&nbsp;&nbsp; has both a type and a class.&nbsp; It may be easier to fix this rift in
+&nbsp;&nbsp;&nbsp; JPython first because of its object-oriented implementation
+&nbsp;&nbsp;&nbsp; language.
+
+</font><font color="#000099">Q. What, if any, significant incompatibilities exist between JPython and
+CPython?&nbsp; How easy am I likely to find moving application code between
+the two implementations? What are the major gotchas?
+
+&nbsp;&nbsp;&nbsp;</font><font color="#660000"> The next version of JPython will be compatible with the Python 2.0
+&nbsp;&nbsp;&nbsp; language definition, so the biggest gotchas will be in the
+&nbsp;&nbsp;&nbsp; libraries.&nbsp; Any of the standard library modules from the CPython
+&nbsp;&nbsp;&nbsp; distribution that are written in pure Python should be portable.
+&nbsp;&nbsp;&nbsp; C extension modules will not be, unless they are specifically
+&nbsp;&nbsp;&nbsp; integrated through a JNI bridge, or re-implemented in Java.&nbsp; And
+&nbsp;&nbsp;&nbsp; any JPython application that extensively uses Java APIs will have
+&nbsp;&nbsp;&nbsp; a hard time porting back to CPython.
+
+&nbsp;&nbsp;&nbsp; On the other hand, there is a lot of common functionality in the
+&nbsp;&nbsp;&nbsp; libraries of the two systems.&nbsp; With sufficient foresight,
+&nbsp;&nbsp;&nbsp; compatibility layers can be built into your application.
+
+&nbsp;&nbsp;&nbsp; There are numerous small differences in the way some things work.
+&nbsp;&nbsp;&nbsp; These are outlined in the JPython documentation.&nbsp; Again, some are
+&nbsp;&nbsp;&nbsp; classified as acceptable differences given the language
+&nbsp;&nbsp;&nbsp; definition, and some point out places where one or the other
+&nbsp;&nbsp;&nbsp; implementation ought to be fixed.&nbsp; Most are quite minor.
+
+</font><font color="#000099">Q. Are there other aspects of JPython that I have not asked about, that
+you think "Charming Python" readers should know about?
+
+&nbsp;&nbsp;&nbsp; </font><font color="#660000">There have been a lot of concern on the various newsgroups and
+&nbsp;&nbsp;&nbsp; mailing lists about the fate of JPython, especially with our move
+&nbsp;&nbsp;&nbsp; to BeOpen.com and the licensing struggles with CNRI.&nbsp; I'd like to
+&nbsp;&nbsp;&nbsp; use this opportunity to let the community know that JPython is
+&nbsp;&nbsp;&nbsp; alive and well, albeit with a slightly new identity.
+
+&nbsp;&nbsp;&nbsp; Probably by press time we will have released an alpha version of
+&nbsp;&nbsp;&nbsp; JPython's successor, to be called Jython 2.0.&nbsp; The entire
+&nbsp;&nbsp;&nbsp; development process will be opened up and moved to SourceForge.
+&nbsp;&nbsp;&nbsp; It'll be developed and managed using the same kind of open process
+&nbsp;&nbsp;&nbsp; that is working so well for CPython.&nbsp; JPython's savior through
+&nbsp;&nbsp;&nbsp; these rough times, Finn Bock, is and will remain intimately
+&nbsp;&nbsp;&nbsp; involved in Jython's future development.&nbsp; This should help ensure
+&nbsp;&nbsp;&nbsp; Jython's continued availability and success.&nbsp; We'll have new
+&nbsp;&nbsp;&nbsp; mailing lists homed at pythonlabs.com for discussion of the Jython
+&nbsp;&nbsp;&nbsp; releases.
+
+</font><font color="#000099">Q. Any thoughts on future directions for JPython?&nbsp; Anything new and
+different expected down the pipeline?
+
+&nbsp;&nbsp;</font><font color="#660000">&nbsp; Finn Bock and I have been working on several technical milestones
+&nbsp;&nbsp;&nbsp; for the Jython 2.0 release, including integrating Finn's errata,
+&nbsp;&nbsp;&nbsp; updating Jython to support CPython 2.0 language features,
+&nbsp;&nbsp;&nbsp; integrating the free Apache Jakarta OROMatcher code (thus
+&nbsp;&nbsp;&nbsp; eliminating the need for dual licensing), and fixing lots and lots
+&nbsp;&nbsp;&nbsp; of bugs.&nbsp; The first alpha release may be incomplete in some of
+&nbsp;&nbsp;&nbsp; these areas but they'll all be finished by the time Jython 2.0 is
+&nbsp;&nbsp;&nbsp; released.</font></pre>
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Mertz;Dr. David;;;
+FN:Dr. David Mertz
+ORG:Gnosis Software\,Inc.;
+TITLE:Idempotentate
+EMAIL;type=WORK;type=pref:mertz@gnosis.cx
+TEL;type=GV;type=pref:323-863-5571
+TEL;type=CELL:413-824-9414
+ADR;type=HOME;type=pref:;;6637 W 6th St;Los Angeles\n;CA;90048;USA
+URL:http://gnosis.cx/publish/
+END:VCARD

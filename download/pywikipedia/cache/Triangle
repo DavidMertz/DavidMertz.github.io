@@ -1,0 +1,266 @@
+{{otheruses}}
+
+A '''triangle''' is one of the basic [[shape]]s of [[geometry]]: a [[polygon]] with three [[vertex|vertices]] and three sides which are [[Distance geometry#straight|straight]] [[line segment]]s.
+
+Any three non-[[collinear]] points determine a triangle and a unique [[Plane (mathematics)|plane]], i.e. two dimensional [[Cartesian space]] in [[Euclidean geometry]] .  
+
+From the [[systemics]] perspective, triangle is the [[structure]] of every [[system]] composed with three reciprocally connected/interrelated [[abstract]] or real [[object]]s.
+
+== Types of triangles ==
+Triangles can be classified according to the relative lengths of their sides:
+* In an '''equilateral triangle''' all sides are of equal length. An equilateral triangle is also '''equiangular''', i.e. all its internal [[angle]]s are equal&mdash;namely, 60°; it is a [[Polygon#Taxonomic classification|regular polygon]]<ref>http://mathworld.wolfram.com/EquilateralTriangle.html</ref> 
+* In an '''isosceles triangle'''  at least two sides are of equal length. An isosceles triangle also has two equal internal angles (namely, the angles where each of the equal sides meets the third side). An equilateral triangle is actually also an isosceles triangle, but not all isosceles triangles are equilateral triangles<ref>http://mathworld.wolfram.com/IsoscelesTriangle.html</ref>
+* In a '''scalene triangle''' all sides have different lengths. The internal angles in a scalene triangle are all different.<ref>http://mathworld.wolfram.com/ScaleneTriangle.html</ref>
+
+<table align="center"><tr align="center">
+<td>[[Image:Triangle.Equilateral.svg|Equilateral Triangle]]</td>
+<td>[[Image:Triangle.Isosceles.svg|Isosceles triangle]]</td>
+<td>[[Image:Triangle.Scalene.svg|Scalene triangle]]</td>
+</tr>
+<tr align="center">
+<td>Equilateral</td><td>Isosceles</td><td>Scalene</td>
+</tr>
+</table>
+
+Triangles can also be classified according to the size of their largest internal angle, described below using [[degree (angle)|degree]]s of arc.
+* A '''[[Special right triangles|right triangle]]''' (or '''right-angled triangle''', formerly called a '''rectangled triangle''') has one 90° internal angle (a [[angle|right angle]]). The side opposite to the right angle is the [[hypotenuse]]; it is the longest side in the right triangle. The other two sides are the ''legs'' or '''catheti''' (singular: '''[[wiktionary:cathetus|cathetus]]''') of the triangle.
+* An '''obtuse triangle''' has one internal angle larger than 90° (an [[angle|obtuse angle]]).
+* An '''acute triangle''' has internal angles that are all smaller than 90° (three [[angle|acute angle]]s). A regular triangle is an acute triangle, but not all acute triangles are regular triangles.
+
+<table align="center">
+<tr align="center">
+<td>[[Image:Triangle.Right.svg|Right triangle]]</td>
+<td>[[Image:Triangle.Obtuse.svg|Obtuse triangle]]</td>
+<td>[[Image:Triangle.Acute.svg|Acute triangle]]</td>
+</tr>
+<tr align="center">
+<td>Right</td><td>Obtuse</td><td>Acute</td>
+</tr>
+</table>
+
+== Basic facts ==
+Elementary facts about triangles were presented by [[Euclid]] in books 1-4 of his ''[[Euclid's Elements|Elements]]'' around [[300 BCE]].
+
+A triangle is a [[polygon]] and a 2-[[simplex]] (see [[polytope]]).  All triangles are two-[[dimension|dimensional]].
+
+Two triangles are said to be ''[[similarity (mathematics)|similar]]'' if and only if the angles of one are equal to the corresponding angles of the other. In this case, the lengths of their corresponding sides are [[Proportionality (mathematics)|proportional]]. This occurs for example when two triangles share an angle and the sides opposite to that angle are parallel.
+
+Using right triangles and the concept of similarity, the [[trigonometric function]]s sine and cosine can be defined. These are functions of an [[angle]] which are investigated in [[trigonometry]].
+
+In the remainder we will consider a triangle with vertices A, B and C, angles α, β and γ and sides ''a'', ''b'' and ''c''. The side ''a'' is opposite to the vertex ''A'' and angle α and analogously for the other sides.
+
+[[Image:Triangle.Labels.svg|200px|Labelled triangle|thumb|A triangle with vertices, sides and angles labelled]]
+
+In Euclidean geometry, the sum of the internal angles α + β + γ is equal to two right angles (180° or π radians). This allows determination of the third angle of any triangle as soon as two angles are known.
+
+[[Image:Pythagorean.svg|Pythagorean.svg|thumb|The Pythagorean theorem]]
+
+A central theorem is the [[Pythagorean theorem]] stating that in any right triangle, the area of the square on the [[hypotenuse]] is equal to the sum of the areas of the squares on the other two sides. If side C is the hypotenuse, we can write this as
+
+:<math>c^2 = a^2 + b^2 \,</math>
+
+This means that knowing the lengths of two sides of a right triangle is enough to calculate the length of the third&mdash;something unique to right triangles.
+The Pythagorean theorem can be generalized to the [[law of cosines]]:
+
+:<math>c^2 = a^2 + b^2 - 2ab \cos\gamma \,</math>
+
+which is valid for all triangles, even if γ is not a right angle. 
+The law of cosines can be used to compute the side lengths and angles of a triangle as soon as all three sides or two sides and an enclosed angle are known.
+
+The [[law of sines]] states
+
+:<math>\frac{\sin\alpha}a=\frac{\sin\beta}b=\frac{\sin\gamma}c=\frac1d</math>
+
+where ''d'' is the diameter of the [[circumcircle]] (the circle which passes through all three points of the triangle). The law of sines can be used to compute the side lengths for a triangle as soon as two angles and one side are known. If two sides and an unenclosed angle is known, the law of sines may also be used; however, in this case there may be zero, one or two solutions.
+
+There are two [[special right triangles]] that appear commonly in geometry.  The so-called "45-45-90 triangle" has angles with those angle measures and the ratio of its sides is :  <math>1:1:\sqrt{2}</math>.  The "30-60-90 triangle" has sides in the ratio of <math>1:\sqrt{3}:2</math>.
+
+== Points, lines and circles associated with a triangle ==
+There are hundreds of different constructions that find a special point inside a triangle, satisfying some unique property: see the references section for a catalogue of them.  Often they are constructed by finding three lines associated in a symmetrical way with the three sides (or vertices) and then proving that the three lines meet in a single point: an important tool for proving the existence of these is [[Ceva's theorem]], which gives a criterion for determining when three such lines are [[concurrent lines|concurrent]].  Similarly, lines associated with a triangle are often constructed by proving that three symmetrically constructed points are [[collinear]]: here [[Menelaus' theorem]] gives a useful general criterion.  In this section just a few of the most commonly-encountered constructions are explained.
+
+[[Image:Triangle.Circumcenter.svg|frame|right|The [[circumcenter]] is the centre of a circle passing through the three vertices of the triangle.]]
+
+A [[bisection|perpendicular bisector]] of a triangle is a straight line passing through the midpoint of a side and being perpendicular to it, i.e. forming a right angle with it. The three perpendicular bisectors meet in a single point, the triangle's [[circumcenter]]; this point is the center of the [[circumcircle]], the [[circle]] passing through all three vertices. The diameter of this circle can be found from the law of sines stated above.
+
+[[Thales' theorem]] states that if the circumcenter is located on one side of the triangle, then the opposite angle is a right one. More is true: if the circumcenter is located inside the triangle, then the triangle is acute; if the circumcenter is located outside the triangle, then the triangle is obtuse.
+
+[[Image:Triangle.Orthocenter.svg|frame|left|The intersection of the altitudes is the [[orthocenter]].]]
+
+An [[altitude (triangle)|altitude]] of a triangle is a straight line through a vertex and perpendicular to (i.e. forming a right angle with) the opposite side. This opposite side is called the ''base'' of the altitude, and the point where the altitude intersects the base (or its extension) is called the ''foot'' of the altitude. The length of the altitude is the distance between the base and the vertex. The three altitudes intersect in a single point, called the [[orthocenter]] of the triangle. The orthocenter lies inside the triangle if and only if the triangle is acute.
+The three vertices together with the orthocenter are said to form an [[orthocentric system]].
+
+[[Image:Triangle.Incircle.svg|frame|right|The intersection of the angle bisectors finds the center of the [[incircle]].]]
+
+An [[angle bisector]] of a triangle is a straight line through a vertex which cuts the corresponding angle in half. The three angle bisectors intersect in a single point, the [[incenter]], the center of the triangle's [[incircle]]. The incircle is the circle which lies inside the triangle and touches all three sides. There are three other important circles, the [[excircle]]s; they lie outside the triangle and touch one side as well as the extensions of the other two. The centers of the in- and excircles form an [[orthocentric system]].
+
+<br clear=left>
+[[Image:Triangle.Centroid.svg|frame|left|The [[centroid]] is the center of gravity.]]
+
+A [[median (geometry)|median]] of a triangle is a straight line through a vertex and the midpoint of the opposite side, and divides the triangle into two equal areas. The three medians intersect in a single point, the triangle's [[centroid]]. This is also the triangle's [[center of gravity]]: if the triangle were made out of wood, say, you could balance it on its centroid, or on any line through the centroid. The centroid cuts every median in the ratio 2:1, i.e. the distance between a vertex and the centroid is twice as large as the distance between the centroid and the midpoint of the opposite side.
+
+[[Image:Triangle.NinePointCircle.svg|frame|right|[[Nine-point circle]] demonstrates a symmetry where six points lie on the same circle.]]
+
+The midpoints of the three sides and the feet of the three altitudes all lie on a single circle, the triangle's [[nine-point circle]]. The remaining three points for which it is named are the midpoints of the portion of altitude between the vertices and the [[orthocenter]]. The radius of the nine-point circle is half that of the circumcircle. It touches the incircle (at the [[Feuerbach point]]) and the three [[excircle]]s.
+
+<br clear=left>
+[[Image:Triangle.EulerLine.svg|frame|left|[[Euler's line]] is a straight line through the centroid (orange), orthocenter (blue), circumcenter (green) and center of the nine-point circle (red).]]
+
+The centroid (yellow), orthocenter (blue), circumcenter (green) and center of the nine-point circle (red point) all lie on a single line, known as [[Euler's line]] (red line). The center of the nine-point circle lies at the midpoint between the orthocenter and the circumcenter, and the distance between the centroid and the circumcenter is half that between the centroid and the orthocenter.
+
+The center of the incircle is not in general located on Euler's line.
+
+If one reflects a median at the angle bisector that passes through the same vertex, one obtains a [[symmedian]]. The three symmedians intersect in a single point, the [[symmedian point]] of the triangle.
+
+<br clear=all>
+
+== Computing the area of a triangle ==
+Calculating the area of a triangle is an elementary problem encountered often in many different situations. Various approaches exist, depending on what is known about the triangle. What follows is a selection of frequently used formulae for the area of a triangle.<ref>http://mathworld.wolfram.com/TriangleArea.html</ref> 
+
+===Using geometry===
+The [[surface area|area]] ''S'' of a triangle is ''S''&nbsp;=&nbsp;½''bh'', where ''b'' is the length of any side of the triangle (the ''base'') and ''h'' (the ''altitude'') is the perpendicular distance between the base and the vertex not on the base. This can be shown with the following geometric construction.
+
+[[image:Triangle.GeometryArea.svg|frame|center|The triangle is first transformed into a [[parallelogram]] with twice the area of the triangle, then into a rectangle.]]
+
+To find the area of a given triangle (green), first make an exact copy of the triangle (blue), rotate it 180°, and join it to the given triangle along one side to obtain a [[parallelogram]]. Cut off a part and join it at the other side of the parallelogram to form a rectangle. Because the area of the rectangle is ''bh'', the area of the given triangle must be&nbsp;½''bh''.
+
+[[image:Triangle.VectorArea.svg|frame|right|The area of the parallelogram is the magnitude of the cross product of the two vectors.]]
+
+The product of the [[inradius]] and the [[semiperimeter]] of a triangle also gives its area. 
+
+===Using vectors===
+The area of a parallelogram can also be calculated by the use of [[Vector (spatial)|vectors]]. If ''AB'' and ''AC'' are vectors pointing from A to B and from A to C, respectively, the area of parallelogram ABDC is |''AB''&nbsp;×&nbsp;''AC''|, the magnitude of the [[cross product]] of vectors ''AB'' and ''AC''. |''AB''&nbsp;×&nbsp;''AC''| is also equal to |''h''&nbsp;×&nbsp;''AC''|, where ''h'' represents the altitude ''h'' as a vector.
+
+The area of triangle ABC is half of this, or ''S''&nbsp;=&nbsp;½|''AB''&nbsp;×&nbsp;''AC''|.
+
+The area of triangle ABC can also be expressed in term of [[dot product]]s as follows:
+
+:<math> \frac{1}{2} \sqrt{(\mathbf{AB} \cdot \mathbf{AB})(\mathbf{AC} \cdot \mathbf{AC}) -(\mathbf{AB} \cdot \mathbf{AC})^2} =\frac{1}{2} \sqrt{ |\mathbf{AB}|^2 |\mathbf{AC}|^2 -(\mathbf{AB} \cdot \mathbf{AC})^2}</math>
+
+[[Image:Triangle.TrigArea.svg|frame|left|Applying trigonometry to find the altitude ''h''.]]
+
+===Using trigonometry===
+The altitude of a triangle can be found through an application of [[trigonometry]]. Using the labelling as in the image on the left, the altitude is ''h''&nbsp;=&nbsp;''a''&nbsp;sin&nbsp;γ. Substituting this in the formula ''S''&nbsp;=&nbsp;½''bh'' derived above, the area of the triangle can be expressed as ''S''&nbsp;=&nbsp;½''ab''&nbsp;sin&nbsp;γ.
+
+It is of course no coincidence that the area of a parallelogram is ''ab''&nbsp;sin&nbsp;γ.
+
+If one uses 
+
+:<math> \cos C=\frac{a^2+b^2-c^2}{2ab}</math>
+
+and 
+
+:<math> \sin C = \sqrt{1- \cos^2 C} </math>
+
+and also the formula shown above, then one arrives at the following formula for area
+
+:<math> \frac{1}{4} \sqrt{2(a^2 b^2+a^2c^2+b^2c^2)-(a^4+b^4+c^4)}</math>
+
+[Note that, this is a multiplied out form of Heron's formula]
+
+===Using coordinates===
+If vertex A is located at the origin (0,&nbsp;0) of a [[Cartesian coordinate system]] and the coordinates of the other two vertices are given by B&nbsp;=&nbsp;(''x''<sub>B</sub>,&nbsp;''y''<sub>B</sub>) and C&nbsp;=&nbsp;(''x''<sub>C</sub>,&nbsp;''y''<sub>C</sub>), then the area ''S'' can be computed as ½ times the [[absolute value]] of the [[determinant]] 
+
+:<math>S=\frac{1}{2}\left|\det\begin{pmatrix}x_B & x_C \\ y_B & y_C \end{pmatrix}\right| = \frac{1}{2}|x_B y_C - x_C y_B|. </math>
+
+For three general vertices, the equation is:
+
+:<math>S=\frac{1}{2} \left| \det\begin{pmatrix}x_A & x_B & x_C \\  y_A & y_B & y_C \\ 1 & 1 & 1\end{pmatrix} \right| = \frac{1}{2} \big| x_A y_C - x_A y_B + x_B y_A - x_B y_C + x_C y_B - x_C y_A \big|. </math> 
+
+In three dimensions, the area of a general triangle {A&nbsp;=&nbsp;(''x''<sub>A</sub>,&nbsp;''y''<sub>A</sub>,&nbsp;''z''<sub>A</sub>), B&nbsp;=&nbsp;(''x''<sub>B</sub>,&nbsp;''y''<sub>B</sub>,&nbsp;''z''<sub>B</sub>) and C&nbsp;=&nbsp;(''x''<sub>C</sub>,&nbsp;''y''<sub>C</sub>,&nbsp;''z''<sub>C</sub>)} is the 'Pythagorean' sum of the areas of the respective projections on the three principal planes (i.e. ''x''=0, ''y''=0 and ''z''=0):
+
+:<math>S=\frac{1}{2} \sqrt{ \left( \det\begin{pmatrix} x_A & x_B & x_C \\ y_A & y_B & y_C \\ 1 & 1 & 1 \end{pmatrix} \right)^2 +
+\left( \det\begin{pmatrix} y_A & y_B & y_C \\ z_A & z_B & z_C \\ 1 & 1 & 1 \end{pmatrix} \right)^2 +
+\left( \det\begin{pmatrix} z_A & z_B & z_C \\ x_A & x_B & x_C \\ 1 & 1 & 1 \end{pmatrix} \right)^2 }. </math>
+
+===Using Heron's formula===
+Yet another way to compute ''S'' is [[Heron's Formula]]:
+:<math>S = \sqrt{s(s-a)(s-b)(s-c)}</math>
+
+where ''s''&nbsp;=&nbsp;½&nbsp;(''a''&nbsp;+&nbsp;''b''&nbsp;+&nbsp;''c'') is the '''semiperimeter''', or half of the triangle's perimeter.
+
+Multiplied out form of Heron's formula (see above for proof)
+
+:<math> \frac{1}{4} \sqrt{2(a^2 b^2+a^2c^2+b^2c^2)-(a^4+b^4+c^4)}</math>
+
+== Non-planar triangles ==
+A non-planar triangle is a triangle which is not contained in a (flat) plane. Examples of non-planar triangles in noneuclidean geometries are [[spherical triangle]]s in [[spherical geometry]] and [[hyperbolic triangle]]s in [[hyperbolic geometry]].
+
+While all regular, planar (two dimensional) triangles contain angles that add up to 180°, there are cases in which the angles of a triangle can be greater than or less than 180°. In curved figures, a triangle on a negatively curved figure ("saddle") will have its angles add up to less than 180° while a triangle on a positively curved figure ("sphere") will have its angles add up to more than 180°. Thus, if one were to draw a giant triangle on the surface of the Earth, one would find that the sum of its angles were greater than 180°.
+
+==References==
+<references/>
+
+== External links ==
+*[http://ostermiller.org/calc/triangle.html Triangle Calculator] - solves for remaining sides and angles when given three sides or angles, supports degrees and radians.
+*[http://agutie.homestead.com/files/Napoleon0.htm Napoleon's theorem] A triangle with three equilateral triangles. A purely geometric proof. It uses the Fermat point to prove Napoleon's theorem without transformations by Antonio Gutierrez from "Geometry Step by Step from the Land of the Incas"
+* [[William Kahan]]: [http://http.cs.berkeley.edu/~wkahan/Triangle.pdf Miscalculating Area and Angles of a Needle-like Triangle].
+* Clark Kimberling: [http://faculty.evansville.edu/ck6/encyclopedia/ETC.html Encyclopedia of triangle centers]. Lists some 1600 interesting points associated with any triangle.
+* Christian Obrecht: [http://perso.wanadoo.fr/obrecht/ Eukleides]. Software package for creating illustrations of facts about triangles and other theorems in Euclidean geometry.
+* [http://www.apronus.com/geometry/triangle.htm Proof that the sum of the angles in a triangle is 180 degrees]
+* [http://www.cut-the-knot.org/triangle Triangle constructions, remarkable points and lines, and metric relations in a triangle] at [[cut-the-knot]]
+* [http://www.kwiznet.com/p/takeQuiz.php?ChapterID=1469&amp;CurriculumID=4 Printable Worksheet on Types of Triangles]
+* [http://www.vias.org/comp_geometry/geom_triangle.html Compendium Geometry] Analytical Geometry of Triangles
+* [http://www.btinternet.com/~se16/hgb/triangle.htm Area of a triangle - 7 different ways]
+* [http://www.mathopenref.com/tocs/triangletoc.html Triangle definition pages] with interactive applets that are also useful in a classroom setting. Math Open Reference
+* [http://www.mathopenref.com/constequilateral.html Constructing an equilateral triangle ] , [http://www.mathopenref.com/constisosceles.html Isosceles triangle ]  and [http://www.mathopenref.com/constcopytriangle.html Copying a Triangle] with only a compass and straightedge, interactive animation.
+
+{{Polygons}}
+
+[[Category:Geometric shapes]]
+[[Category:Polygons]]
+[[Category:Triangles]]
+
+{{Link FA|pt}}
+
+[[ar:مثلث]]
+[[zh-min-nan:Saⁿ-kak-hêng]]
+[[bg:Триъгълник]]
+[[ca:Triangle]]
+[[cs:Trojúhelník]]
+[[co:Triangulu]]
+[[da:Trekant]]
+[[de:Dreieck]]
+[[et:Kolmnurk]]
+[[el:Τρίγωνο]]
+[[es:Triángulo]]
+[[eo:Triangulo]]
+[[eu:Hiruki]]
+[[fa:مثلث]]
+[[fr:Triangle]]
+[[gl:Triángulo]]
+[[ko:삼각형]]
+[[io:Triangulo]]
+[[id:Segitiga]]
+[[is:Þríhyrningur]]
+[[it:Triangolo]]
+[[he:משולש]]
+[[ka:სამკუთხედი]]
+[[ht:Triyang]]
+[[la:Triangulum]]
+[[lv:Trīsstūris]]
+[[lt:Trikampis]]
+[[li:Driehook]]
+[[ml:ത്രികോണം]]
+[[mr:त्रिकोण]]
+[[nl:Driehoek (meetkunde)]]
+[[ja:三角形]]
+[[no:Trekant]]
+[[pl:Trójkąt]]
+[[pt:Triângulo]]
+[[ro:Triunghi]]
+[[qu:Kimsak'uchu]]
+[[ru:Треугольник]]
+[[simple:Triangle]]
+[[sk:Trojuholník]]
+[[sl:Trikotnik]]
+[[sr:Троугао]]
+[[sh:Trokut]]
+[[fi:Kolmio]]
+[[sv:Triangel]]
+[[th:รูปสามเหลี่ยม]]
+[[vi:Tam giác]]
+[[tr:Üçgen]]
+[[uk:Трикутник]]
+[[vls:Drieoek]]
+[[zh:三角形]]
+[[zh-classical:三角形]]

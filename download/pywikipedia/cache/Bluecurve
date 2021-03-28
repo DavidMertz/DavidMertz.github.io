@@ -1,0 +1,20 @@
+[[Image:Red hat.png|thumb|230px|Bluecurve theme on Red Hat Linux.]]
+'''Bluecurve''' is a [[desktop theme]] for [[GNOME]] and [[KDE]] created by the [[Red Hat]] Artwork project. The main aim of Bluecurve was to create a unified look throughout the [[Linux]] environment. It has been used in [[Red Hat Linux]] since version 8.0, and [[Fedora Core]].
+
+The Bluecurve windowing theme was succeeded in Fedora Core 4 by [[ClearLooks]], although the icons remain. The GTK+ (widget) theme was replaced by [[ClearLooks]] in Fedora Core 5. However, the old BlueCurve themes (windowing and widgets) are still installed by default and can be selected in the theme manager.
+
+There has been controversy surrounding the theme, especially the alterations to KDE, which were sufficiently severe as to cause developer [[Bernhard Rosenkraenzer]] to quit [[Red Hat]] [http://slashdot.org/articles/02/09/25/2042208.shtml] &mdash; ''"mostly in mutual agreement &mdash; I don't want to work on crippling KDE, and they don't want an employee who admits RHL 8.0's KDE is crippleware."'' [http://lists.kde.org/?l=kde-devel&m=103293985032408] Others simply criticize it for giving the same look to both desktops, even though they are obviously different in many ways. Note that this approach was subsequently emulated by [[Mandrake Linux]] with their "Galaxy" theme, which was also available for GNOME and KDE.
+
+Enterprising [[Graphical_user_interface|GUI]] artists have created themes that emulate the Bluecurve theme on other operating systems, including [[Microsoft Windows|Windows]]. Users can also replace their default Windows icons with icons that emulate Bluecurve, using the [[IconPackager]] application. One such set can be downloaded at [[WinCustomize]].
+
+==External links==
+
+*[http://fedora.redhat.com/projects/artwork/ Red Hat Artwork]
+*[http://www.wlug.org.nz/BlueCurve Waikato Linux Users Group wiki article]
+*[http://www.wincustomize.com/ViewSkin.aspx?SID=1&SkinID=1003&LibID=2 Bluecurve icon pack for IconPackager (Windows)]
+
+[[Category:GNOME]]
+[[Category:KDE]]
+[[Category:Red Hat]]
+
+[[es:Bluecurve]]

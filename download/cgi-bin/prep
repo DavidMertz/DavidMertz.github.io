@@ -1,0 +1,9 @@
+rm tmp*
+python dos2unix.py *.cgi > /dev/null
+python dos2unix.py *.py > /dev/null
+python dos2unix.py *.txt > /dev/null
+chmod 750 *.cgi
+chmod go-r *.py*
+chmod go+r *.gif
+txt2html.cgi -rebuild_docs > /dev/null
+zip -j ../download/txt2html txt2html.cgi dmTxt2Html.py txt2html.txt

@@ -1,0 +1,136 @@
+<PRE>DMTXT2HTML.PY
+Convert ASCII source files <FONT COLOR=#3333CC><B>for</B></FONT> HTML presentation
+
+David Mertz (mertz@gnosis.cx)
+version 0.2 (August 2000)
+
+    This file <FONT COLOR=#3333CC><B>is</B></FONT> released to the public domain.  I (dqm) would
+    appreciate it <FONT COLOR=#3333CC><B>if</B></FONT> you choose to keep derived works under terms
+    that promote freedom, but obviously am giving up any rights
+    to compel such.
+
+
+
+  This program <FONT COLOR=#3333CC><B>is</B></FONT> <FONT COLOR=#3333CC><B>not</B></FONT> yet particularly smart, <FONT COLOR=#3333CC><B>and</B></FONT> will produce
+  undefined output (<FONT COLOR=#3333CC><B>or</B></FONT> even traceback) <FONT COLOR=#3333CC><B>if</B></FONT> the source file does
+  <FONT COLOR=#3333CC><B>not</B></FONT> meet expected format.  With time, it may get better about
+  this.
+
+      <FONT COLOR=#1111CC>#------------------- Shell Usage -----------------------#</FONT>
+      Usage: python dmTxt2Html.py [options] [filename]    (<FONT COLOR=#3333CC><B>or</B></FONT>)
+             txt2html.cgi [options] [filename]
+
+          -h, /h, -?, /?, ?:   Show this help screen
+          -type:&lt;type&gt;:        Set conversion type
+                               (see discussion of types)
+          -REBUILD_DOCS:       Generate <FONT COLOR=#115511>'txt2html.txt'</FONT>
+          -out:&lt;out&gt;:          Output filename (default STDOUT)
+          -proxy:&lt;mode&gt;:       Use proxy element(s) <FONT COLOR=#3333CC><B>in</B></FONT> output
+          &lt;STDIN&gt;, -, /:       Input <FONT COLOR=#3333CC><B>from</B></FONT> STDIN (default)
+
+      Proxy modes are:  NAVIGATOR, TRAP_LINKS, ALL, NONE.
+      Elements are <FONT COLOR=#115511>"navigation bar"</FONT> at top of pages <FONT COLOR=#3333CC><B>and</B></FONT>
+      virtualization of <FONT COLOR=#3333CC><B>in</B></FONT>-page links.  Shell default <FONT COLOR=#3333CC><B>in</B></FONT> NONE.
+
+      Note: CGI <FONT COLOR=#3333CC><B>is</B></FONT> detected by the absence of arguments;, <FONT COLOR=#3333CC><B>if</B></FONT>
+            all defaults are wanted, specify STDIN explicitly:
+
+          python txt2html.py - &lt; MyArticle.txt &gt; MyArticle.html
+-
+      <FONT COLOR=#1111CC>#-------------------- CGI Usage ------------------------#</FONT>
+      Usage: A URL string may be composed manually, but the
+             normal usage will be to call txt2html.cgi <FONT COLOR=#3333CC><B>from</B></FONT> an
+             HTML form with the fields:  <FONT COLOR=#115511>'source'</FONT>, 'preface,
+             <FONT COLOR=#115511>'type'</FONT>, <FONT COLOR=#115511>'proxy'</FONT>.  <FONT COLOR=#115511>'preface'</FONT> allows explicit
+             overriding of HTTP headers <FONT COLOR=#3333CC><B>in</B></FONT> the returned page,
+             normally as a hidden field.  Use with caution (<FONT COLOR=#3333CC><B>or</B></FONT>
+             don't use at all, the default <FONT COLOR=#3333CC><B>is</B></FONT> sensible).
+
+      Example: &lt;form method=<FONT COLOR=#115511>"get"</FONT> action=<FONT COLOR=#115511>"http://gnosis.cx/cgi/txt2html.cgi"</FONT>&gt;
+               URL: &lt;input type=<FONT COLOR=#115511>"text"</FONT> name=<FONT COLOR=#115511>"source"</FONT> size=40&gt;
+               &lt;input type=<FONT COLOR=#115511>"submit"</FONT> name=<FONT COLOR=#115511>"go"</FONT> value=<FONT COLOR=#115511>"Display!"</FONT>&gt;&lt;/form&gt;
+
+------------------------------------------------------------------------
+Expected input format <FONT COLOR=#3333CC><B>for</B></FONT> [HTML]
+
+  Source HTML <FONT COLOR=#3333CC><B>is</B></FONT> presented unmodified <FONT COLOR=#3333CC><B>except</B></FONT> <FONT COLOR=#3333CC><B>for</B></FONT> the inclusion
+  of the Txt2HTML proxy at the top of each page.
+
+Expected input format <FONT COLOR=#3333CC><B>for</B></FONT> [PYTHON]
+
+   Source Python code <FONT COLOR=#3333CC><B>is</B></FONT> marked up with syntax highlighting, but
+   no other HTML elements are introduced (no headers, no bold, no
+   URLs, etc)
+
+Expected input format <FONT COLOR=#3333CC><B>for</B></FONT> [SMART_ASCII]
+
+      <FONT COLOR=#1111CC>#--- Paragraph rules: ---#</FONT>
+      - Title occurs on first line of document, unindented <FONT COLOR=#3333CC><B>and</B></FONT> <FONT COLOR=#3333CC><B>in</B></FONT>
+        all caps.
+      - Subtitle occurs on second line, unindented <FONT COLOR=#3333CC><B>and</B></FONT> <FONT COLOR=#3333CC><B>in</B></FONT> mixed
+        case.
+      - Name, affiliation, date occur, unindented <FONT COLOR=#3333CC><B>and</B></FONT> <FONT COLOR=#3333CC><B>in</B></FONT> mixed
+        case, on lines 4-6.
+      - Section headings are preceded by two blank lines,
+        unindented, <FONT COLOR=#3333CC><B>in</B></FONT> all caps, followed by one line of 72
+        dashes <FONT COLOR=#3333CC><B>and</B></FONT> one blank line.
+      - Regular text paragraphs are block style, <FONT COLOR=#3333CC><B>and</B></FONT> are indented
+        two spaces.
+      - Block quotations are indented four spaces, rather than
+        the two of original text.
+      - Code samples are indented six spaces (with internal
+        indentation of code lines <FONT COLOR=#3333CC><B>in</B></FONT> the proper relative
+        position).
+      - Code samples may begin with a line indicating a title <FONT COLOR=#3333CC><B>for</B></FONT>
+        that block.  If present, this title <FONT COLOR=#3333CC><B>is</B></FONT> indented the same
+        six spaces as the rest of the block, <FONT COLOR=#3333CC><B>and</B></FONT> begins <FONT COLOR=#3333CC><B>and</B></FONT> ends
+        with a pound sign (<FONT COLOR=#115511>'#'</FONT>).  Dashes are used to fill space
+        within the title <FONT COLOR=#3333CC><B>for</B></FONT> ASCII asthetics.
+-
+      <FONT COLOR=#1111CC>#--- Character rules: ---#</FONT>
+      - All character markup has the pattern:
+            whitespace-symbol-words(s)-symbol-whitespace
+        Examples are given, <FONT COLOR=#3333CC><B>and</B></FONT> this can be searched <FONT COLOR=#3333CC><B>for</B></FONT>
+        programmatically.  The use of character markup applies
+        *only* to text paragraphs, *<FONT COLOR=#3333CC><B>not</B></FONT>* to code samples!
+      - Asterisks are used <FONT COLOR=#3333CC><B>for</B></FONT> an inflectional emphasis.  For
+        example, <FONT COLOR=#115511>"All good boys *deserve* fudge."</FONT>  This would
+        typically be indicated typographically with boldface <FONT COLOR=#3333CC><B>or</B></FONT>
+        italics.
+      - Underscores are used <FONT COLOR=#3333CC><B>for</B></FONT> book/journal citation.  For
+        example, "Knuth's _Art of Computer Programming_ <FONT COLOR=#3333CC><B>is</B></FONT>
+        essential."  This would typically be indicated
+        typographically with italics <FONT COLOR=#3333CC><B>or</B></FONT> underline.
+      - Single-stroke <FONT COLOR=#3333CC><B>is</B></FONT> used to indicate filenames <FONT COLOR=#3333CC><B>and</B></FONT> function
+        names.  For example, "Every C program has a <FONT COLOR=#115511>'main()'</FONT>
+        function."  This might be indicated typographically by a
+        fixed font, by boldface, <FONT COLOR=#3333CC><B>or</B></FONT> simply by single-quotes.
+      - Braces are used to indicate a module, package <FONT COLOR=#3333CC><B>or</B></FONT> library.
+        For example, "The [cre] module will replace [re] <FONT COLOR=#3333CC><B>in</B></FONT>
+        Python 1.6."  This will probably be indicated
+        typographically as a fixed font.
+      - Double-stroke <FONT COLOR=#3333CC><B>is</B></FONT> used as either inline quotation <FONT COLOR=#3333CC><B>or</B></FONT> scare
+        quotes.  For example, <FONT COLOR=#115511>"It may not be as "</FONT>easy" as
+        suggested."  In either case, typographic quotes are
+        probably the best format; italics would make some sense
+        also.
+      - Parenthesis are used, <FONT COLOR=#3333CC><B>and</B></FONT> should be preserved as is.
+      - Angle brackets <FONT COLOR=#3333CC><B>and</B></FONT> curly brackets have no special meaning
+        yet.  I may choose to use those <FONT COLOR=#3333CC><B>if</B></FONT> there <FONT COLOR=#3333CC><B>is</B></FONT> something I
+        think the above forms do <FONT COLOR=#3333CC><B>not</B></FONT> capture.
+      - Em-dashes, diacritics, ligatures, <FONT COLOR=#3333CC><B>and</B></FONT> typographic
+        quotations are <FONT COLOR=#3333CC><B>not</B></FONT> available, <FONT COLOR=#3333CC><B>and</B></FONT> standard ASCII
+        approximations are used.
+-
+      <FONT COLOR=#1111CC>#--- Miscellany: ---#</FONT>
+      - URL's are automatically transformed into a hotlink.
+        Basically, anything that starts with <FONT COLOR=#115511>'http://'</FONT>, <FONT COLOR=#115511>'ftp://'</FONT>,
+        <FONT COLOR=#115511>'file://'</FONT> <FONT COLOR=#3333CC><B>or</B></FONT> <FONT COLOR=#115511>'gopher://'</FONT> looks like a URL to the program.
+
+
+  This script utilizes the services of the Marc-Andre Lemburg's Python
+  Highlighter <FONT COLOR=#3333CC><B>for</B></FONT> HTML (v0.5+) [py2html].  [py2html] <FONT COLOR=#3333CC><B>in</B></FONT> turn relies on
+  Just van Rossum's [PyFontify] (v.0.3.1+) If these are <FONT COLOR=#3333CC><B>not</B></FONT> present,
+  Txt2HTML hopes to degrade gracefully, but will <FONT COLOR=#3333CC><B>not</B></FONT> provide syntax
+  highlighting <FONT COLOR=#3333CC><B>for</B></FONT> Python source code.
+</PRE>

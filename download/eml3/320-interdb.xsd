@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- edited with XMLSPY v5 U (http://www.xmlspy.com) by Paul Spencer (Boynings Consulting) -->
+<xsd:schema targetNamespace="urn:oasis:names:tc:evs:schema:eml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:oasis:names:tc:evs:schema:eml" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0" id="320">
+	<xsd:annotation>
+		<xsd:documentation>
+			Changes from version 0.4 to 1.0 (2002-10-10):
+				None
+			Changes from version 0.3 to 0.4 (2002-09-20)
+				TransactionId removed (now in emlcore)
+			Changes from version 0.2 to 0.3:
+				Data type (xsd:string) added to Action
+			Changes from version 0.1 to 0.2:
+				Source and Destination elements changed from xsd:string to a union of xsd:string and xsd:anyURI
+		</xsd:documentation>
+	</xsd:annotation>
+	<xsd:include schemaLocation="emlcore.xsd"/>
+	<xsd:include schemaLocation="310-voterregistration.xsd"/>
+	<xsd:element name="InterDb">
+		<xsd:complexType>
+			<xsd:choice>
+				<xsd:element name="Request">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="Action" type="xsd:string"/>
+							<xsd:element name="ActionDateTime" type="xsd:dateTime"/>
+							<xsd:element name="Source">
+								<xsd:simpleType>
+									<xsd:union memberTypes="xsd:string xsd:anyURI"/>
+								</xsd:simpleType>
+							</xsd:element>
+							<xsd:element name="Destination">
+								<xsd:simpleType>
+									<xsd:union memberTypes="xsd:string xsd:anyURI"/>
+								</xsd:simpleType>
+							</xsd:element>
+							<xsd:element ref="VoterRegistration" minOccurs="0" maxOccurs="unbounded"/>
+							<xsd:any namespace="##any" minOccurs="0"/>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="Response">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="Action" type="xsd:string" minOccurs="0"/>
+							<xsd:element name="Result">
+								<xsd:complexType>
+									<xsd:choice>
+										<xsd:sequence>
+											<xsd:element name="Success" type="YesNoType"/>
+											<xsd:element name="Remark" type="xsd:string" minOccurs="0"/>
+										</xsd:sequence>
+										<xsd:element name="Remark" type="xsd:string"/>
+									</xsd:choice>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:element name="ActionedDateTime" type="xsd:dateTime" minOccurs="0"/>
+							<xsd:element name="Source">
+								<xsd:simpleType>
+									<xsd:union memberTypes="xsd:string xsd:anyURI"/>
+								</xsd:simpleType>
+							</xsd:element>
+							<xsd:element name="Destination">
+								<xsd:simpleType>
+									<xsd:union memberTypes="xsd:string xsd:anyURI"/>
+								</xsd:simpleType>
+							</xsd:element>
+							<xsd:element ref="VoterRegistration" minOccurs="0" maxOccurs="unbounded"/>
+							<xsd:any namespace="##any" minOccurs="0"/>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:choice>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

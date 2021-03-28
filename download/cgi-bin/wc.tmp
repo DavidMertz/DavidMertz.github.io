@@ -1,0 +1,21 @@
+#!/usr/bin/python
+
+import cgi, sys
+from urllib import urlopen
+
+sys.stderr = sys.stdout
+print "Content-type: text/html\n"
+
+form = cgi.FieldStorage()
+if form.has_key('source'):
+    src = form['source'].value
+    s = urlopen(src).read()
+    wc = len(s), len(s.split()), len(s.split('\n')), len(s.split('\n\n'))
+    print '<html><head><title>Word count for: %s</title></head>' % src
+    print '<body><pre>'
+    print '\t'.join([str(n) for n in wc]), '\t%s' src
+    print '</pre></body></html>'
+else:
+    print '<html><head><title>No specified document source</title></head>'
+    print '<body>No specified document source</body></html>'
+

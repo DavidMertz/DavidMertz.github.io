@@ -1,0 +1,17 @@
+***************
+*** 255,260 ****
+  my ($username, $realname, $comments)
+    = (param('username'), param('realname'), param('comments'));
+  
+  my ($city, $state, $country)
+    = (param('city'), param('state'), param('country'));
+  
+--- 255,262 ----
+  my ($username, $realname, $comments)
+    = (param('username'), param('realname'), param('comments'));
+  
++ form_error('invalid_name') if ( $realname =~ m/\n/ );
++ 
+  my ($city, $state, $country)
+    = (param('city'), param('state'), param('country'));
+  

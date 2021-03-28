@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by Paul Spencer (alphaXML Ltd.) -->
+<xsd:schema targetNamespace="urn:oasis:names:tc:evs:schema:eml" xmlns="urn:oasis:names:tc:evs:schema:eml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0" id="510">
+	<xsd:annotation>
+		<xsd:documentation>
+			Changes from version 0.4 to 1.0 (2002-10-10):
+				None
+			Changes from version 0.3 to 0.4 (2002-10-08):
+				ElectionEventName replaced by Event
+			Changes from version 0.2 to 0.3 (2002-11-07):
+				Multiple elections per message allowed
+				AuditInformation added
+			Changes from version 0.1 to 0.2:
+				Addition of Reporting Units to the count
+		</xsd:documentation>
+	</xsd:annotation>
+	<xsd:include schemaLocation="emlcore.xsd"/>
+	<xsd:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink.xsd"/>
+	<xsd:element name="Count">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="Event"/>
+				<xsd:element name="Election" maxOccurs="unbounded">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element ref="ElectionName"/>
+							<xsd:element ref="ElectionRuleId" minOccurs="0"/>
+							<xsd:element name="Contests">
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element name="Contest" maxOccurs="unbounded">
+											<xsd:complexType>
+												<xsd:sequence>
+													<xsd:element ref="ContestName"/>
+													<xsd:element ref="MaxVotes"/>
+													<xsd:choice>
+														<xsd:sequence>
+															<xsd:element name="TotalVotes">
+																<xsd:complexType>
+																	<xsd:sequence>
+																		<xsd:group ref="VoteGroup"/>
+																	</xsd:sequence>
+																</xsd:complexType>
+															</xsd:element>
+															<xsd:element name="ReportingUnitVotes" minOccurs="0" maxOccurs="unbounded">
+																<xsd:complexType>
+																	<xsd:sequence>
+																		<xsd:element ref="ReportingUnitName"/>
+																		<xsd:group ref="VoteGroup"/>
+																	</xsd:sequence>
+																</xsd:complexType>
+															</xsd:element>
+														</xsd:sequence>
+														<xsd:element name="ReportingUnitVotes">
+															<xsd:complexType>
+																<xsd:sequence>
+																	<xsd:element ref="ReportingUnitName"/>
+																	<xsd:group ref="VoteGroup"/>
+																</xsd:sequence>
+															</xsd:complexType>
+														</xsd:element>
+													</xsd:choice>
+												</xsd:sequence>
+											</xsd:complexType>
+										</xsd:element>
+									</xsd:sequence>
+								</xsd:complexType>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="AuditInformation" minOccurs="0">
+					<xsd:complexType>
+						<xsd:complexContent>
+							<xsd:restriction base="AuditInformationStructure">
+								<xsd:sequence>
+									<xsd:element ref="VotingChannel" minOccurs="0" maxOccurs="0"/>
+									<xsd:element name="ProcessingUnits" minOccurs="0">
+										<xsd:complexType>
+											<xsd:sequence>
+												<xsd:element name="OriginatingDevice" type="ProcessingUnitStructure" minOccurs="0" maxOccurs="0"/>
+												<xsd:element name="Gateway" type="ProcessingUnitStructure" minOccurs="0" maxOccurs="0"/>
+												<xsd:element name="VotingSystem" type="ProcessingUnitStructure" minOccurs="0" maxOccurs="0"/>
+												<xsd:element name="CountingSystem" type="ProcessingUnitStructure" minOccurs="0"/>
+												<xsd:element name="VTokenLoggingSystem" type="ProcessingUnitStructure" minOccurs="0" maxOccurs="0"/>
+												<xsd:element name="SealLoggingSystem" type="ProcessingUnitStructure" minOccurs="0" maxOccurs="0"/>
+												<xsd:element name="Other" minOccurs="0" maxOccurs="unbounded">
+													<xsd:complexType>
+														<xsd:complexContent>
+															<xsd:extension base="ProcessingUnitStructure">
+																<xsd:attribute name="Type" type="xsd:string" use="required"/>
+															</xsd:extension>
+														</xsd:complexContent>
+													</xsd:complexType>
+												</xsd:element>
+											</xsd:sequence>
+										</xsd:complexType>
+									</xsd:element>
+									<xsd:any namespace="##any" minOccurs="0"/>
+								</xsd:sequence>
+							</xsd:restriction>
+						</xsd:complexContent>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:any namespace="##any" minOccurs="0"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:group name="VoteGroup">
+		<xsd:sequence>
+			<xsd:element name="Option" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element ref="OptionName"/>
+						<xsd:element name="Affiliation" type="xsd:string" minOccurs="0"/>
+						<xsd:element name="ValidVotes" type="xsd:nonNegativeInteger"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="Abstentions" type="xsd:nonNegativeInteger" minOccurs="0"/>
+			<xsd:element name="RejectedVotes" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:simpleContent>
+						<xsd:extension base="xsd:nonNegativeInteger">
+							<xsd:attribute name="Reason" type="xsd:string" use="optional"/>
+							<xsd:attribute name="ReasonCode" type="xsd:string" use="required"/>
+						</xsd:extension>
+					</xsd:simpleContent>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:group>
+</xsd:schema>

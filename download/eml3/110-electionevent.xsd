@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- edited with XMLSPY v5 U (http://www.xmlspy.com) by Paul Spencer (Boynings Consulting) -->
+<xsd:schema targetNamespace="urn:oasis:names:tc:evs:schema:eml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:oasis:names:tc:evs:schema:eml" xmlns:xlink="http://www.w3.org/1999/xlink" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0" id="110">
+	<xsd:annotation>
+		<xsd:documentation>
+			Changes from version 0.2 to 1.0 (2002-10-10):
+				None
+			Changes from version 0.1 to 0.2 (2002-10-01):
+				ElectionEventName changed to new Event element
+				DefaultLanguage added
+				An additional Date element has been added for general use for other relevant dates
+				ResponsibleOfficer added with contact details
+				Each channel can now have start and end dates and times. Multiple entries are allowed to show open and close of channel over multiple days
+				EventDate element replaces EventStart and EventEnd
+				Repeateable generic Contact element added
+				PollingPlace added to Contest
+				Messages element added at Election Event, Election and Contest levels
+				MinVotes made optional
+				xsd:any added
+		</xsd:documentation>
+	</xsd:annotation>
+	<xsd:include schemaLocation="emlcore.xsd"/>
+	<xsd:element name="ElectionEvent">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="Event"/>
+				<xsd:element name="Description" type="MessagesStructure" minOccurs="0"/>
+				<xsd:element name="Languages" minOccurs="0">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="Language" type="xsd:language" maxOccurs="unbounded"/>
+							<xsd:element name="DefaultLanguage" minOccurs="0">
+								<xsd:complexType>
+									<xsd:attribute ref="xlink:href" use="required"/>
+								</xsd:complexType>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="Election" maxOccurs="unbounded">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element ref="ElectionName"/>
+							<xsd:element name="Description" type="MessagesStructure" minOccurs="0"/>
+							<xsd:element name="Date" minOccurs="0" maxOccurs="unbounded">
+								<xsd:complexType>
+									<xsd:choice>
+										<xsd:element name="SingleDate" type="DateType"/>
+										<xsd:element name="End" type="DateType"/>
+										<xsd:sequence>
+											<xsd:element name="Start" type="DateType"/>
+											<xsd:element name="End" type="DateType" minOccurs="0"/>
+										</xsd:sequence>
+									</xsd:choice>
+									<xsd:attribute name="Type" type="xsd:string" use="required"/>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:element name="ResponsibleOfficer" minOccurs="0" maxOccurs="unbounded">
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element name="Responsibility" type="xsd:string"/>
+										<xsd:element name="Name" type="NameStructure"/>
+										<xsd:element name="Contact" type="ContactDetailsStructure" minOccurs="0"/>
+									</xsd:sequence>
+									<xsd:attribute name="DisplayOrder" type="xsd:positiveInteger" use="optional"/>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:element name="Contact" minOccurs="0" maxOccurs="unbounded">
+								<xsd:complexType>
+									<xsd:complexContent>
+										<xsd:extension base="ContactDetailsStructure">
+											<xsd:attribute name="Type" type="xsd:string" use="required"/>
+										</xsd:extension>
+									</xsd:complexContent>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:element name="AllowedChannels" minOccurs="0">
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element name="Channel" maxOccurs="unbounded">
+											<xsd:complexType>
+												<xsd:sequence>
+													<xsd:element name="ChannelName" type="VotingChannelType"/>
+													<xsd:element name="ChannelDate" minOccurs="0" maxOccurs="unbounded">
+														<xsd:complexType>
+															<xsd:sequence>
+																<xsd:element name="Start" type="xsd:dateTime"/>
+																<xsd:element name="End" type="xsd:dateTime"/>
+															</xsd:sequence>
+														</xsd:complexType>
+													</xsd:element>
+												</xsd:sequence>
+											</xsd:complexType>
+										</xsd:element>
+									</xsd:sequence>
+									<xsd:attribute name="DisplayOr" type="xsd:positiveInteger" use="optional"/>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:element name="Contest" maxOccurs="unbounded">
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element ref="ContestName"/>
+										<xsd:element name="Description" type="MessagesStructure" minOccurs="0"/>
+										<xsd:element ref="VotingMethod"/>
+										<xsd:element ref="MaxVotes"/>
+										<xsd:element ref="MinVotes" minOccurs="0"/>
+										<xsd:element ref="PollingPlace" minOccurs="0" maxOccurs="unbounded"/>
+										<xsd:element name="Messages" type="MessagesStructure" minOccurs="0"/>
+									</xsd:sequence>
+									<xsd:attribute name="DisplayOrder" type="xsd:positiveInteger" use="optional"/>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:element name="Messages" type="MessagesStructure" minOccurs="0"/>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="EventDate" minOccurs="0">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="Start" type="xsd:dateTime"/>
+							<xsd:element name="End" type="xsd:dateTime"/>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="Messages" type="MessagesStructure" minOccurs="0"/>
+				<xsd:any namespace="##any" minOccurs="0"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

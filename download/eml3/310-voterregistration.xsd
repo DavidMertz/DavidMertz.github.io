@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- edited with XMLSPY v5 U (http://www.xmlspy.com) by Paul Spencer (Boynings Consulting) -->
+<xsd:schema targetNamespace="urn:oasis:names:tc:evs:schema:eml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:oasis:names:tc:evs:schema:eml" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0" id="310">
+	<xsd:annotation>
+		<xsd:documentation>
+			Changes from version 0.5 to 1.0 (2002-10-10):
+				None
+			Changes from version 0.4 to 0.5 (2002-10-02):
+				VoterRegistrationStructure made a global type for use elsewhere
+				VoterInformation made optional
+				element Proxy added
+				element CheckBox added
+				xsd:any added to Voter
+			Changes from version 0.3 to 0.4:
+				VoterIdentification altered to use the new definition of VoterIdentificationStructure in emlcore v0.5
+		</xsd:documentation>
+	</xsd:annotation>
+	<xsd:include schemaLocation="emlcore.xsd"/>
+	<xsd:element name="VoterRegistration" type="VoterRegistrationStructure"/>
+	<xsd:complexType name="VoterRegistrationStructure">
+		<xsd:sequence>
+			<xsd:element name="Voter">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="VoterIdentification">
+							<xsd:complexType>
+								<xsd:complexContent>
+									<xsd:restriction base="VoterIdentificationStructure">
+										<xsd:sequence>
+											<xsd:element ref="VoterName" minOccurs="0"/>
+											<xsd:element name="ElectoralAddress" type="AddressStructure" minOccurs="0">
+												<xsd:annotation>
+													<xsd:documentation>This is the address that gives the voter the right to vote</xsd:documentation>
+												</xsd:annotation>
+											</xsd:element>
+											<xsd:element name="PreviousElectoralAddress" type="AddressStructure" minOccurs="0"/>
+											<xsd:choice minOccurs="0" maxOccurs="0">
+												<xsd:element ref="VToken"/>
+												<xsd:element ref="VTokenQualified"/>
+											</xsd:choice>
+											<xsd:element name="Id" minOccurs="0" maxOccurs="unbounded">
+												<xsd:complexType>
+													<xsd:simpleContent>
+														<xsd:extension base="xsd:string">
+															<xsd:attribute name="Type" type="xsd:string" use="required"/>
+														</xsd:extension>
+													</xsd:simpleContent>
+												</xsd:complexType>
+											</xsd:element>
+										</xsd:sequence>
+									</xsd:restriction>
+								</xsd:complexContent>
+							</xsd:complexType>
+						</xsd:element>
+						<xsd:element name="VoterInformation" type="VoterInformationStructure" minOccurs="0"/>
+						<xsd:element name="ProofOfId" minOccurs="0">
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:any namespace="##other"/>
+								</xsd:sequence>
+							</xsd:complexType>
+						</xsd:element>
+						<xsd:element ref="Proxy" minOccurs="0"/>
+						<xsd:element name="CheckBox" minOccurs="0" maxOccurs="unbounded">
+							<xsd:complexType>
+								<xsd:simpleContent>
+									<xsd:extension base="YesNoType">
+										<xsd:attribute name="Type" type="xsd:string" use="required"/>
+									</xsd:extension>
+								</xsd:simpleContent>
+							</xsd:complexType>
+						</xsd:element>
+						<xsd:any namespace="##any" minOccurs="0"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="DateTimeSubmitted" type="xsd:dateTime" minOccurs="0"/>
+			<xsd:any namespace="##any" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

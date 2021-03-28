@@ -1,0 +1,72 @@
+Subject: [Announce] Gnosis Utils 1.1.0
+
+This release contains enhancements to gnosis.xml.objectify.
+
+    Added _XO_.__repr__ method to make nodes print in a
+    nicer, more compact fashion.
+
+    Added ._seq attribute to node objects to support structure
+    preserving convenience functions.  Specifically, older
+    versions of gnosis.xml.objectify lost information about
+    mixed content and the order of children.  E.g.,
+
+      >>> xml = '<foo>Mixed <i>content</i> is <b>good</b></foo>'
+      >>> obj = XO(xml,EXPAT).make_instance()
+      >>> obj.PCDATA, obj.i.PCDATA, obj.b.PCDATA
+      (u'Mixed is', u'content', u'good')
+
+    We had no way of knowing where inside <foo> the <i> and
+    the <b> occur, nor even which child element occurs first.
+
+    Now we can recover that information:
+
+      >>> from gnosis.xml.objectify import content, children
+      >>> content(obj)
+      [u'Mixed ', <i id="30264c">, u' is ', <b id="30292c">]
+      >>> children(obj)
+      [<i id="30264c">, <b id="30292c">]
+
+    Sequence information and convenience methods are NOT
+    SUPPORTED (yet?) for the DOM parser, only for EXPAT!
+
+    Changed default parser to EXPAT.  If you have relied on
+    the special attribute ._XML that the DOM parser attaches
+    to nodes, you will now need to explicitly specify DOM as
+    the parser used.  However, the new sequence functions
+    pretty well handle the job pyobj._XML used to do (in a
+    different way).
+
+    Some newer versions of PyXML report CDATA as #cdata-section
+    nodes rather than as #text.  We deal with it either way now.
+
+It may be obtained at:
+    http://gnosis.cx/download/Gnosis_Utils-1.1.0.tar.gz
+
+The current release is always available as:
+    http://gnosis.cx/download/Gnosis_Utils-current.tar.gz
+
+Try it out, have fun, send feedback!
+
+David Mertz (mertz@gnosis.cx)
+Frank McIngvale (frankm@hiwaay.net)
+
+------------------------------------------------------------------------
+
+BACKGROUND:  Gnosis Utilities contains a number of Python libraries, most
+(but not all) related to working with XML.  These include:
+
+    gnosis.indexer          (Full-text indexing/searching)
+    gnosis.xml.pickle       (XML pickling of Python objects)
+    gnosis.xml.objectify    (Any XML to "native" Python objects)
+    gnosis.xml.validity     (Enforce validity constraints)
+    gnosis.xml.indexer      (XPATH indexing of XML documents)
+    [...].convert.txt2html  (Convert ASCII source files to HTML)
+    gnosis.util.dtd2sql     (DTD -> SQL 'CREATE TABLE' statements)
+    gnosis.util.sql2dtd     (SQL query -> DTD for query results)
+    gnosis.util.xml2sql     (XML -> SQL 'INSERT INTO' statements)
+    gnosis.util.combinators (Combinatorial higher-order functions)
+    gnosis.util.introspect  (Introspect Python objects)
+    gnosis.magic            (Multimethods, metaclasses, etc)
+
+...and so much more! :-)
+

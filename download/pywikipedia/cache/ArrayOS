@@ -1,0 +1,17 @@
+'''ArrayOS''' is an [[operating system]] developed by [[Array Networks]].
+
+This proprietary operating system designed to be included in the hardware boxes the company produces is able to handle secure web traffic. It uses SSL ([[Secure Sockets Layer]]), cache and [[data compression]] techniques.
+
+Version 6.1 (out in 2005) also has the ability to manage the load between different [[server farm]]s. Previous versions of the OS were limited to a single server. 
+
+==See also==
+*[[Array Networks]]
+*[[SSL acceleration]]
+
+==External link==
+*[http://www.arraynetworks.net/ Array Networks website]
+
+
+{{operating-system-stub}}
+
+[[Category:Operating systems]]

@@ -1,0 +1,20 @@
+Making sense of W3C Schemas
+
+  In a prior review of XML editors, I looked at an early version of
+  oXygen. I continue to be more-and-more impressed with this editor,
+  each time a new version comes out, or even when I merely dig around
+  for new features. Specifically, oXygen 4.2 includes a wonderful tool
+  to create a friendly HTML documentation page for an W3C XML Schema.
+  Included with this page is an automatically generated valid XML
+  Instance. Contrast reading a schema directly, such as:
+
+    http://gnosis.cx/download/eml3/410-ballots.xsd
+
+  with reading oXygen's generated documentation, such as:
+
+    http://gnosis.cx/download/eml3/Ballots.html.
+
+  The homepage for the multi-platform XML editor oXygen is:
+
+    http://www.oxygenxml.com/
+

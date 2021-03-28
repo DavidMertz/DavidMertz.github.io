@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by Paul Spencer (Boynings Consulting) -->
+<xsd:schema targetNamespace="urn:oasis:names:tc:evs:schema:eml" xmlns:apd="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:oasis:names:tc:evs:schema:eml" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0" id="eml-externals">
+	<xsd:annotation>
+		<xsd:documentation>
+This schema references external schemas where the references might be changed for national use. The intention is that these schemas are used internationally.
+</xsd:documentation>
+	</xsd:annotation>
+	<xsd:import namespace="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails" schemaLocation="AddressTypes-v1.xsd"/>
+	<xsd:import namespace="http://www.govtalk.gov.uk/people/AddressAndPersonalDetails" schemaLocation="PersonalDetailsTypes-v1.xsd"/>
+	<xsd:complexType name="AddressStructure">
+		<xsd:complexContent>
+			<xsd:extension base="apd:InternationalAddressStructure"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="NameStructure">
+		<xsd:complexContent>
+			<xsd:extension base="apd:CitizenNameStructure"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+</xsd:schema>

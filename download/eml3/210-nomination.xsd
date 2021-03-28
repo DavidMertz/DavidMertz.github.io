@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- edited with XMLSPY v5 U (http://www.xmlspy.com) by Paul Spencer (Boynings Consulting) -->
+<xsd:schema targetNamespace="urn:oasis:names:tc:evs:schema:eml" xmlns="urn:oasis:names:tc:evs:schema:eml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0" id="210">
+	<xsd:annotation>
+		<xsd:documentation>
+			Changes from version 0.3 to 1.0 (2002-10-10):
+				None
+			Changes from version 0.2 to 0.3:
+				Candidate now uses the expanded version from EML core
+				Choice added between nomination and candidate action. Candidate action can be to consent or withdraw.
+				Only one xsd:any allowed at end
+			Changes from version 0.1 to 0.2:
+				ScrutinyRequirements added
+		</xsd:documentation>
+	</xsd:annotation>
+	<xsd:include schemaLocation="emlcore.xsd"/>
+	<xsd:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink.xsd"/>
+	<xsd:element name="Nomination">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="ElectionName"/>
+				<xsd:element ref="ContestName"/>
+				<xsd:element ref="Candidate"/>
+				<xsd:choice>
+					<xsd:element ref="CandidateAction"/>
+					<xsd:sequence>
+						<xsd:element name="Nominate">
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element ref="Proposer" maxOccurs="unbounded"/>
+								</xsd:sequence>
+							</xsd:complexType>
+						</xsd:element>
+						<xsd:element ref="CandidateAction" minOccurs="0"/>
+						<xsd:any namespace="##any" minOccurs="0" maxOccurs="unbounded"/>
+					</xsd:sequence>
+				</xsd:choice>
+				<xsd:any namespace="##any" minOccurs="0"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="CandidateAction">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Action">
+					<xsd:simpleType>
+						<xsd:restriction base="xsd:string">
+							<xsd:enumeration value="consent"/>
+							<xsd:enumeration value="withdraw"/>
+						</xsd:restriction>
+					</xsd:simpleType>
+				</xsd:element>
+				<xsd:element name="ScrutinyRequirements" minOccurs="0">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element ref="ScrutinyRequirement" maxOccurs="unbounded"/>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:any namespace="##any" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

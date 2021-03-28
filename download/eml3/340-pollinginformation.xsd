@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- edited with XMLSPY v5 U (http://www.xmlspy.com) by Paul Spencer (Boynings Consulting) -->
+<xsd:schema targetNamespace="urn:oasis:names:tc:evs:schema:eml" xmlns="urn:oasis:names:tc:evs:schema:eml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0" id="340">
+	<xsd:annotation>
+		<xsd:documentation>
+			Changes from version 0.5 to 1.0 (2002-10-10):
+				None
+			Changes from version 0.4 to 0.5 (2002-09-20):
+				ElectionEventName replaced by Event
+				LocationName relaced by PollingPlace
+				VotingPeriod allowed per channel and has DisplayOrder added. Unbounded to allow poll opening and closing times. Removed from previous location.
+			Changes from version 0.3 to 0.4:
+				VoterIdentification altered to use the new definition of VoterIdentificationStructure in emlcore v0.5
+				VotingInformation changed to allow a VTokenQualified as an alternative to a VToken
+		</xsd:documentation>
+	</xsd:annotation>
+	<xsd:include schemaLocation="emlcore.xsd"/>
+	<xsd:element name="PollingInformation">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Polling" maxOccurs="unbounded">
+					<xsd:annotation>
+						<xsd:documentation>Multiple sets of polling information allowed to allow transfer to a printer. There has been no attempt to avoid duplication of data - we have gone for simplicity.</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element ref="Event"/>
+							<xsd:element name="Description" type="MessagesStructure" minOccurs="0"/>
+							<xsd:element name="Voter" minOccurs="0">
+								<xsd:complexType>
+									<xsd:complexContent>
+										<xsd:restriction base="VoterIdentificationStructure">
+											<xsd:sequence>
+												<xsd:element ref="VoterName" minOccurs="0"/>
+												<xsd:element name="ElectoralAddress" type="AddressStructure" minOccurs="0" maxOccurs="0">
+													<xsd:annotation>
+														<xsd:documentation>This is the address that gives the voter the right to vote</xsd:documentation>
+													</xsd:annotation>
+												</xsd:element>
+												<xsd:element name="PreviousElectoralAddress" type="AddressStructure" minOccurs="0" maxOccurs="0"/>
+												<xsd:choice minOccurs="0" maxOccurs="0">
+													<xsd:element ref="VToken"/>
+													<xsd:element ref="VTokenQualified"/>
+												</xsd:choice>
+												<xsd:element name="Id" minOccurs="0" maxOccurs="unbounded">
+													<xsd:complexType>
+														<xsd:simpleContent>
+															<xsd:extension base="xsd:string">
+																<xsd:attribute name="Type" type="xsd:string" use="required"/>
+															</xsd:extension>
+														</xsd:simpleContent>
+													</xsd:complexType>
+												</xsd:element>
+											</xsd:sequence>
+										</xsd:restriction>
+									</xsd:complexContent>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:element ref="ElectionRuleId" minOccurs="0"/>
+							<xsd:element name="Contact" type="ContactDetailsStructure" minOccurs="0"/>
+							<xsd:element name="Election" maxOccurs="unbounded">
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element ref="ElectionName"/>
+										<xsd:element name="Description" type="MessagesStructure" minOccurs="0"/>
+										<xsd:element name="Contest">
+											<xsd:complexType>
+												<xsd:sequence>
+													<xsd:element ref="ContestName"/>
+													<xsd:element name="Description" type="MessagesStructure" minOccurs="0"/>
+													<xsd:element name="VotingInformation" maxOccurs="unbounded">
+														<xsd:complexType>
+															<xsd:sequence>
+																<xsd:element ref="VotingChannel"/>
+																<xsd:element name="VotingPeriod" minOccurs="0" maxOccurs="unbounded">
+																	<xsd:complexType>
+																		<xsd:sequence>
+																			<xsd:element name="Start" type="xsd:dateTime"/>
+																			<xsd:element name="End" type="xsd:dateTime"/>
+																		</xsd:sequence>
+																		<xsd:attribute name="DisplayOrder" type="xsd:positiveInteger" use="optional"/>
+																	</xsd:complexType>
+																</xsd:element>
+																<xsd:element ref="PollingPlace"/>
+																<xsd:choice minOccurs="0">
+																	<xsd:element ref="VToken"/>
+																	<xsd:element ref="VTokenQualified"/>
+																</xsd:choice>
+															</xsd:sequence>
+															<xsd:attribute name="DisplayOrder" type="xsd:positiveInteger" use="optional"/>
+														</xsd:complexType>
+													</xsd:element>
+													<xsd:any namespace="##any" minOccurs="0"/>
+												</xsd:sequence>
+											</xsd:complexType>
+										</xsd:element>
+										<xsd:element name="Messages" type="MessagesStructure" minOccurs="0"/>
+									</xsd:sequence>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:element name="Messages" type="MessagesStructure" minOccurs="0"/>
+							<xsd:any namespace="##any" minOccurs="0"/>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

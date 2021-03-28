@@ -1,0 +1,74 @@
+{{drugbox
+| IUPAC_name = 2-(2,4-difluorophenyl)-3- (5-fluoropyrimidin-4-yl)-1- (1H-1,2,4-triazol-1-yl) butan-2- ol
+| image = {{PAGENAME}}.png
+| CAS_number = 137234-62-9
+| ATC_prefix = J02
+| ATC_suffix = AC03
+| ATC_supplemental = 
+| PubChem = 71616
+| DrugBank = APRD00543
+| C=16 | H=14 | F=3 | N=5 | O=1
+| molecular_weight = 349.311 g/mol
+| bioavailability = 96%
+| protein_bound = 58%
+| metabolism = [[Hepatic]] cytochrome P450 enzymes [[CYP2C19]], [[CYP2C9]], [[CYP3A4]]
+| elimination_half-life = Dose-dependent
+| licence_EU = Vfend        <!-- EMEA requires brand name --> 
+| licence_US = Voriconazole <!-- FDA may use generic name -->  
+| pregnancy_category = D
+| legal_status = Rx-only
+| routes_of_administration = IV, oral 
+}}
+
+'''Voriconazole''' (Vfend&reg;, [[Pfizer]]) is a [[triazole]] [[antifungal]] [[medication]] used to treat serious [[fungus|fungal]] [[infection]]s.  It is used to treat invasive fungal infections that are generally seen in patients who are [[immunocompromised]].  These include invasive [[candidiasis]], invasive [[aspergillosis]], and emerging fungal infections.
+
+==Indications==
+===Invasive aspergillosis===
+Voriconazole has become the new standard of care in the treatment of invasive aspergillosis which may occur in immunocompromised patients, including allogeneic BMT, other hematologic cancers, and solid organ transplants. This is based on the results of a large, randomized study in which it proved superior to [[amphotericin B]] with 53% complete or partial response, compared with 32% for amphotericin B.<!--
+  --><ref>{{cite journal | author = Herbrecht R, Denning D, Patterson T, Bennett J, Greene R, Oestmann J, Kern W, Marr K, Ribaud P, Lortholary O, Sylvester R, Rubin R, Wingard J, Stark P, Durand C, Caillot D, Thiel E, Chandrasekar P, Hodges M, Schlamm H, Troke P, de Pauw B; Invasive Fungal Infections Group of the European Organisation for Research and Treatment of Cancer and the Global Aspergillus Study Group. | title = Voriconazole versus amphotericin B for primary therapy of invasive aspergillosis. | journal = N Engl J Med | volume = 347 | issue = 6 | pages = 408-15 | year = 2002 | month = Aug 8 | id = PMID 12167683}}</ref>
+Importantly, voriconazole also offered a 22% greater survival benefit over amphotericin B, with 71% of voriconazole patients still alive at week 12. Only 13% of patients who received initial therapy with voriconazole died from invasive aspergillosis, compared with 29% of patients who initially received amphotericin B. Voriconazole was also better tolerated than amphotericin B, with significantly fewer serious adverse effects and a longer duration of therapy.
+
+With fewer patients having to switch from initial voriconazole than amphotericin B or its lipid formulations because of intolerance or insufficient response, and limited efficacy of salvage therapy with other licensed antifungals, the importance of effective initial therapy has been demonstrated.<!--
+  --><ref>{{cite journal | author = Patterson T, Boucher H, Herbrecht R, Denning D, Lortholary O, Ribaud P, Rubin R, Wingard J, DePauw B, Schlamm H, Troke P, Bennett J | title = Strategy of following voriconazole versus amphotericin B therapy with other licensed antifungal therapy for primary treatment of invasive aspergillosis: impact of other therapies on outcome. | journal = Clin Infect Dis | volume = 41 | issue = 10 | pages = 1448-52 | year = 2005 | month = Nov 15 | id = PMID 16231256}}</ref>
+
+===Candidemia===
+Voriconazole has proven to be as effective as a regimen of IV amphotericin B followed by oral fluconazole in patients with culture-proven candidemia. Voriconazole cleared ''Candida'' from the bloodstream as quickly as amphotericin B (median 2 days) and showed a trend toward better survival. Voriconazole was also associated with fewer serious adverse events and cases of renal toxicity, but a higher incidence of visual disturbances.<!--
+  --><ref>{{cite journal | author = Kullberg B, Sobel J, Ruhnke M, Pappas P, Viscoli C, Rex J, Cleary J, Rubinstein E, Church L, Brown J, Schlamm H, Oborska I, Hilton F, Hodges M | title = Voriconazole versus a regimen of amphotericin B followed by fluconazole for candidaemia in non-neutropenic patients: a randomised non-inferiority trial. | journal = Lancet | volume = 366 | issue = 9495 | pages = 1435-42 | year =  2005 | month = Oct 22-28 | id = PMID 16243088}}</ref>
+
+Voriconazole was also proven to offer similar, near-complete efficacy to fluconazole in the treatment of esophageal candidiasis.<!--
+  --><ref>{{cite journal | author = Ally R, Schürmann D, Kreisel W, Carosi G, Aguirrebengoa K, Dupont B, Hodges M, Troke P, Romero A | title = A randomized, double-blind, double-dummy, multicenter trial of voriconazole and fluconazole in the treatment of esophageal candidiasis in immunocompromised patients. | journal = Clin Infect Dis | volume = 33 | issue = 9 | pages = 1447-54 | year = 2001 | month = Nov 1 | id = PMID 11577374}}</ref>
+
+===Empirical antifungal therapy===
+A study compared Voriconazole use to that of amphotericin B in the treatment of patients with 
+unresolved fever despite broad-spectrum antibiotic therapy who are at risk for breakthrough fungal infections. Whilst overall success rates were 26.0% for voriconazole and 30.6% for liposomal amphotericin B, there were significantly fewer breakthrough infections with voriconazole particularly in the patients at highest risk. This study found similar fewer severe reactions and nephrotoxicity, but more transient visual disturbances and hallucinations. Voriconazole was also associated with a shorter duration of hospitalization. The authors of this study concluded that "''This study demonstrates that voriconazole, a second-generation triazole, is an appropriate agent for empirical antifungal therapy and that its use may reduce the frequency of proven breakthrough fungal infections, preserve renal function, and reduce the frequency of acute infusion-related toxic effects. Formulations of amphotericin B have been the standard of empirical antifungal therapy for nearly 20 years. As this study shows, a second-generation triazole can be used in lieu of amphotericin B for early antifungal therapy''"<!--
+  --><ref>{{cite journal | author = Walsh T, Pappas P, Winston D, Lazarus H, Petersen F, Raffalli J, Yanovich S, Stiff P, Greenberg R, Donowitz G, Schuster M, Reboli A, Wingard J, Arndt C, Reinhardt J, Hadley S, Finberg R, Laverdière M, Perfect J, Garber G, Fioritoni G, Anaissie E, Lee J; National Institute of Allergy and Infectious Diseases Mycoses Study Group. | title = Voriconazole compared with liposomal amphotericin B for empirical antifungal therapy in patients with neutropenia and persistent fever. | journal = N Engl J Med | volume = 346 | issue = 4 | pages = 225-34 | year = 2002 | month = Jan 24 | id = PMID 11807146}}</ref>
+
+===Efficacy against emerging fungal pathogens===
+In collected case studies, voriconazole has also been proven effective against a number of other serious fungal pathogens. This includes infections by ''Fusarium'' spp and ''Scedosporium apiospermum'' (asexual form of ''Pseudallescheria boydii''). Although infrequently seen, these moulds are emerging as more common and deadly causes of fungal infection in seriously immunocompromised patients, and the development of voriconazole has been an important advance in their treatment as they are generally resistant to other antifungal agents (including amphotericin B). Voriconazole is the first and only drug ever specifically indicated for their treatment by the FDA.
+
+==Pharmacology==
+Voriconazole is well absorbed orally with a [[bioavailability]] of 96%, allowing patients to be switched between intravenous and oral administration.
+
+Being metabolized by hepatic cytochrome P450, voriconazole interacts with some drugs. Administration is contraindicated with some drugs (such as sirolimus, rifampin, rifabutin, and ergot alkaloids) and dose adjustments and/or monitoring when coadministered with others (including cyclosporine, tacrolimus, omeprazole, and phenytoin). Voriconazole may be safely administered with cimetidine, ranitidine, indinavir, macrolide antibiotics, mycophenolate, and prednisolone.
+
+Because voriconazole is metabolized by the liver, the dose should be halved in patients with mild to moderate hepatic impairment ([[Child-Pugh score]] A or B).  There is no data available for patients with severe hepatic impairment (Child-Pugh C).
+
+No dose adjustment is necessary for renal impairment or advanced age, but children seem to clear voriconazole faster than adults and drug levels may need monitoring.<!--
+--><ref name="Smith2006">{{cite journal | author = Smith J, Safdar N, Knasinski V, Simmons W, Bhavnani S, Ambrose P, Andes D | title = Voriconazole therapeutic drug monitoring. | journal = Antimicrob Agents Chemother | volume = 50 | issue = 4 | pages = 1570-2 | year = 2006 | month = Apr | id = PMID 16569888 | url=http://aac.asm.org/cgi/content/full/50/4/1570?view=long&pmid=16569888}}</ref>
+
+==Side effects==
+The most common side effects associated with voriconazole include transient visual disturbances, fever, rash, vomiting, nausea, diarrhea, headache, sepsis, peripheral edema, abdominal pain, and respiratory disorder.
+
+Unlike most adverse effects, which are similar to other azole antifungal agents, visual disturbances (such as blurred vision or increased sensitivity to light) are unique to voriconazole. These have been reported by more than 30% of patients in clinical trials. They generally occur approximately one-half hour after administration, and last approximately 30 minutes. In some patients they may go away after continued use. Studies have shown that there is no damage to the eye or long-term effect on vision. However, patients taking voriconazole should be advised against driving at night or other potentially hazardous tasks.
+
+Though rare, there have been cases of serious hepatic reactions during treatment with voriconazole (a class effect of azole antifungal agents). Liver function tests should be evaluated at the start of and during the course of therapy.
+
+==Footnotes==
+<div class="references-small"><references/></div> 
+
+
+{{Antifungals}}
+
+[[Category: Antifungals]]
+
+[[de:Voriconazol]]

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by Paul Spencer (alphaXML Ltd.) -->
+<xsd:schema targetNamespace="urn:oasis:names:tc:evs:schema:eml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:oasis:names:tc:evs:schema:eml" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0" id="480">
+	<xsd:annotation>
+		<xsd:documentation>
+			Changes from version 0.3 to 1.0 (2002-10-10):
+				None
+			Changes from version 0.2 to 0.3 (26/9/2002):
+				Optional Event added
+			Changes from version 0.1 to 0.2 (11/7/2002):
+				AuditInformation added
+		</xsd:documentation>
+	</xsd:annotation>
+	<xsd:include schemaLocation="emlcore.xsd"/>
+	<xsd:element name="SealLog">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="Event" minOccurs="0"/>
+				<xsd:element ref="ElectionName"/>
+				<xsd:element ref="Seal"/>
+				<xsd:element name="AuditInformation" minOccurs="0">
+					<xsd:complexType>
+						<xsd:complexContent>
+							<xsd:restriction base="AuditInformationStructure">
+								<xsd:sequence>
+									<xsd:element ref="VotingChannel" minOccurs="0" maxOccurs="0"/>
+									<xsd:element name="ProcessingUnits" minOccurs="0">
+										<xsd:complexType>
+											<xsd:sequence>
+												<xsd:element name="OriginatingDevice" type="ProcessingUnitStructure" minOccurs="0" maxOccurs="0"/>
+												<xsd:element name="Gateway" type="ProcessingUnitStructure" minOccurs="0" maxOccurs="0"/>
+												<xsd:element name="VotingSystem" type="ProcessingUnitStructure" minOccurs="0" maxOccurs="0"/>
+												<xsd:element name="CountingSystem" type="ProcessingUnitStructure" minOccurs="0" maxOccurs="0"/>
+												<xsd:element name="VTokenLoggingSystem" type="ProcessingUnitStructure" minOccurs="0" maxOccurs="0"/>
+												<xsd:element name="SealLoggingSystem" type="ProcessingUnitStructure" minOccurs="0"/>
+												<xsd:element name="Other" minOccurs="0" maxOccurs="unbounded">
+													<xsd:complexType>
+														<xsd:complexContent>
+															<xsd:extension base="ProcessingUnitStructure">
+																<xsd:attribute name="Type" type="xsd:string" use="required"/>
+															</xsd:extension>
+														</xsd:complexContent>
+													</xsd:complexType>
+												</xsd:element>
+											</xsd:sequence>
+										</xsd:complexType>
+									</xsd:element>
+									<xsd:any namespace="##any" minOccurs="0"/>
+								</xsd:sequence>
+							</xsd:restriction>
+						</xsd:complexContent>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

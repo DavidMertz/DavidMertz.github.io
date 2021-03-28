@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by Paul Spencer (alphaXML Ltd.) -->
+<xsd:schema targetNamespace="urn:oasis:names:tc:evs:schema:eml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:oasis:names:tc:evs:schema:eml" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0" id="450">
+	<xsd:annotation>
+		<xsd:documentation>
+			Changes from version 0.3 to 1.0 (2002-10-10):
+				None
+			Changes from version 0.2 to 0.3 (2002-10-08):
+				ElectionEventName changed to Event
+				xsd:any made optional
+				ConfirmationReference made optional
+				Messages made optional
+			Changes from version 0.1 to 0.2 (11/7/2002):
+				ElectionEventName added
+		</xsd:documentation>
+	</xsd:annotation>
+	<xsd:include schemaLocation="emlcore.xsd"/>
+	<xsd:element name="VoteConfirmation">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="Event" minOccurs="0"/>
+				<xsd:element name="Messages" type="MessagesStructure" minOccurs="0"/>
+				<xsd:choice minOccurs="0">
+					<xsd:element ref="VToken"/>
+					<xsd:element ref="VTokenQualified"/>
+				</xsd:choice>
+				<xsd:element name="ConfirmationReference" type="xsd:string" minOccurs="0"/>
+				<xsd:any namespace="##any" minOccurs="0"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

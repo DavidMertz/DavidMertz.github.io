@@ -1,0 +1,13 @@
+{{lowercase|title=unit++}}
+
+'''unit++''' is a [[Unit_Test|unit testing]] framework module for [[C++]]. The author started it as an alternative to [[CPPunit]], which he felt was insufficiently integrated into the C++ language.
+
+==External links==
+*[http://unitpp.sourceforge.net/ Project's site].
+
+
+{{compu-prog-stub}}
+
+[[Category:Extreme Programming]]
+[[Category:Software testing]]
+[[Category:SourceForge projects]]

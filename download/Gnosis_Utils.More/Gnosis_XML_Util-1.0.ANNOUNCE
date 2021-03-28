@@ -1,0 +1,210 @@
+Subject: [Announce] Update to Gnosis_Utils package [xml_pickle]
+Date: Wed 5-10-2002
+
+After much work, debate, and bugfixing, Gnosis_Utils seems
+quite stable, so at long last we're releasing it as version 1.0.
+(Gnosis_Utils is a growing library of generally handy functions,
+but lately has been focusing on XML and the xml_pickle module.)
+
+It may be obtained at:
+   http://gnosis.cx/download/Gnosis_Utils-1.0.tar.gz
+
+The current release is always available as:
+   http://gnosis.cx/download/Gnosis_Utils-current.tar.gz
+
+This release adds these features/fixes:
+
+    * Handling of new Python 2.2 features:
+
+       . Pickle objects derived from builtins (Python >= 2.2)
+
+       . Handle __slots__, as a superset of the cPickle behavior
+         (we don't require __getstate__ - note that this implementation
+         is somewhat experimental and may change if Python's handling
+         of __slots__ changes)
+
+    * New modules gnosis.util.combinators and gnosis.util.introspect
+      to pull-out/generalize code that is useful outside of xml.pickle
+
+    * Portability fixes in the test cases, and as always, new and
+      more exciting test cases
+
+    * Better handling of unicode vs. "regular" (Python) strings
+
+    * setup_gnosis.py now converts sources to platform-specific
+      text format when installing
+
+The previous announcements are included below, since they contain
+more information about Gnosis_Utils.
+
+Try it out, have fun, send feedback! :-)
+
+David Mertz (mertz@gnosis.cx)
+Frank McIngvale (frankm@hiwaay.net)
+------------------------------------------------------------------------
+
+Date: Wed 04-03-2002
+
+Building on the numerous significant improvements Frank McIngvale and
+David Mertz made to xml_pickle for the 0.9 release of the Gnosis XML
+Utilities package, this release adds some new features and some revised
+packaging.
+
+Obtain the current release at:
+
+   http://gnosis.cx/download/Gnosis_Utils-0.95.tar.gz
+
+Or check its parent directory for any releases that supercede 0.95.
+
+ * For the 0.95 release adds "mutators" and type families to xml_pickle.
+   The documentation at gnosis.xml.pickle.doc provides information on
+   these concepts.  (Mutators replace helpers; if anyone has written
+   custom helpers, they should be easy to convert to mutators.  Email
+   frankm@hiwaay.net with any problems.)
+
+ * Better handling of Numeric.arrays and array.arrays.
+
+ * Added a SAX parser (4-5x the speed of the DOM parser).  The DOM
+   parser is still the default.  Please try the SAX parser and report
+   any issues.
+
+ * Added "binary" flag to dump()/dumps() to create compressed streams.
+
+ * Self-referencing objects correctly handled now.
+
+ * Python builtins can be pickled as toplevel objects.  All builtins
+   should be handled now.
+
+ * Additional software modules have been added to the package, under
+   gnosis.util and gnosis.util.convert (mostly under-documented, for
+   now).
+
+ * Documentation organization improved.  Each level of subpackages
+   should contain a doc/ subdirectory, containing text files that can be
+   viewed in any text viewer easily.  The content of these files is
+   imported into *.doc subpackage names, allowing inspection such as:
+
+      >>> from gnosis.xml.pickle.doc import AUTHOR
+      >>> AUTHOR
+      ['David Mertz <mertz@gnosis.cx>', 'Frank McIngvale <frankm@hiwaay.net>']
+
+    Or also:
+
+      % pydoc.py gnosis.xml.pickle.doc.COPYRIGHT
+
+
+The prior announcement is still generally informative:
+------------------------------------------------------------------------
+
+Subject: [Announce] Major update to xml_pickle package
+
+Hi, I just wanted to send a note to announce a rather large
+update to the xml_pickle package. I started with xml_pickle-0.51
+and (together with David Mertz) added a bunch of things to make
+xml_pickle a functional superset of the standard pickle module.
+
+[Background blurb: xml_pickle is a package that looks, internally
+and externally, like the standard pickle module, but produces XML
+output using a minimalistic encoding.]
+
+New features, compared to xml_pickle-0.51:
+
+  o Can now fully restore class functionality, just like the
+    standard pickle module.
+
+  o Full internal compatibility with the pickle protocol
+    (objects with __getstate__,__setstate__, and __getinitargs__
+     are pickled/unpickled exactly as pickle does).
+
+  o A pickle-compatible API layer
+    (xml_pickle.dump()/dumps()/load()/loads() are drop-in compatible
+     with the standard pickle module.)
+
+  o A type-extension "plugin" system allows you to create "pretty
+    printed" XML representations of objects if so desired.
+
+  o Virtually all objects that can be pickled can be XML-pickled.
+    (The only exception is that builtin types cannot be pickled as
+     *toplevel* objects, since they are not true InstanceTypes.
+     This restriction may be removed in a future version.)
+
+  o Python 2.2 compatibility (Remains compatible with Python 2.0+)
+
+  o Fine-grained security model added. I consider this an improvement
+    over regular pickle, since it allows you to control how classes
+    are created during unpickling. This means you can load pickles
+    from "untrusted" sources and not worry about what you're getting
+    (ie. no one can trick you into loading an EvilList where you
+     expected a UserList). See "pydoc gnosis.xml.pickle.doc" for more
+     information about the security model.
+
+  o DEEPCOPY option added, so you can choose whether or not to have
+    references inserted in the XML stream. References are great for
+    saving space, but deepcopying allows third-party/non-Python parsers
+    to get the entire data set without having to understand references.
+
+  o References now keep the "pointed-to" type in the XML tag.
+    This allows third-party/non-Python parsers to easily tell what the
+    referenced object contains without reconstructing the object tree.
+
+  o A few other bugfixes/improvements:
+      - Corrected refchecking of temporary objects and key/val/items.
+      - Numerical.arrays are now refchecked
+      - SREs are now pickled
+
+Given that there are alternative XML encoding schemes (such as XML-RPC
+and WDDX), a few words to explain the particular purpose and goals of
+xml_pickle seem to be in order:
+
+   o It looks & feels just like the standard pickle module, both
+     internally and externally, so all extension classes that
+     speak the pickle protocol will "just work".
+
+   o Has a minimalistic encoding scheme. All objects are represented
+     using only five tags (<attr>,<entry>,<item>,<key>,and <val>) to
+     simplify parsing by third-party/non-Python code.
+
+   o The XML format is rich enough to enable xml_pickle to restore
+     objects "fully alive", yet simple enough for "dumb" parsers
+     to grab the complete data structures without needing to understand
+     anything about Python classes, pickling, etc.
+
+Despite the numerous changes, xml_pickle remains backward compatible
+with the xml_pickle-0.51 API (and with XML documents created by older
+versions of xml_pickle). The only source-level change you should have
+to make would be to change the "import" line, since xml_pickle is now
+part of a larger package.
+
+For example:
+    import xml_pickle
+Could be rewritten:
+    import gnosis.xml.pickle as xml_pickle
+
+The complete package (Gnosis_XML_Utils), containing xml_pickle and
+other useful components like xml_objectify and xml_indexer, is
+released as public domain software, and is available from:
+
+   http://gnosis.cx/download
+
+Specifically (as of this writing):
+   http://gnosis.cx/download/Gnosis_XML_Utils-0.9.tar.gz
+
+Given the numerous changes, it'd be great to have as many people as
+possible test it. The new package includes a good set of test cases
+that also demonstrate the many new features of xml_pickle. Unpack the
+sources, and look in gnosis/xml/pickle/test. Run "test_all.py" for a
+complete set of tests.
+
+Please send feedback, bug reports, etc., to either myself
+(frankm@hiwaay.net) or David Mertz (mertz@gnosis.cx).
+
+(Development was done on Linux and OS/2, so feedback about successes
+or failures on other platforms would be greatly appreciated!)
+
+Thanks!
+frank
+
+Summary:
+<P><A HREF="http://gnosis.cx/download/Gnosis_XML_Util.ANNOUNCE">
+Gnosis_XML_Util 1.0</A>
+xml_pickle (pickle to XML), xml_objectify and xml_indexer (10-May-02)

@@ -1,0 +1,133 @@
+'''Consequentialism''' refers to those moral theories that hold that the consequences of a particular action form the basis for any valid moral judgment about that action. Thus, on a consequentialist account, a morally right action is an action which produces good consequences. More formally, consequentialism refers to those moral theories  which hold that consequences are more important than any other normative criteria. Consequentialism is usually understood as distinct from [[deontology|deontological ethics]], which emphasizes the type of action instead of its consequences, and [[virtue ethics]], which focuses on the character and motivations of the agent.
+
+==Defining consequentialism==
+[[Image:JohnStuartMill.jpg|thumb|left|John Stuart Mill]]
+The term "consequentialism" was coined by [[G.E.M. Anscombe]] in her essay "Modern Moral Philosophy" in 1958.<ref name="Anscombe">{{cite journal | author = Anscombe, G. E. M. | authorlink = G.E.M. Anscombe | publishyear = 1958 | title = Modern Moral Philosophy | journal = Philosophy | volume = 33 | pages = 1-19}}</ref> It has since become common throughout English-language moral theory. Its historical roots are in [[utilitarianism]], although earlier ethical theories often considered the consequences of actions relevant to ethical deliberation. Because of this historical tie to utilitarianism these two terms are sometimes conflated, which is understandable because utilitarianism has the important formal characteristic of all consequentialist theories: a focus on the consequences of actions.
+
+Apart from this basic outline, there is little else that can be unequivocally said about consequentialism. However, there are some problems that reappear in a number of consequentialist theories, such as:
+
+* What determines the value of consequences? In other words, what counts as a good state of affairs?
+* Who or what is the primary beneficiary of moral action? 
+* Who judges what the consequences of an action are and how?
+
+===What kinds of consequences===
+One way to divide various consequentialisms is by the types of consequences that are taken to matter most, that is, which consequences count as good states of affairs. According to hedonistic [[utilitarianism]], a good action is one that results in an increase in [[pleasure]], and the best action is one that results the most pleasure possible. Closely related is [[eudaimonia|eudaimonic]] consequentialism, according to which a full, flourishing life, which may or may not be the same as enjoying a great deal of pleasure, is the ultimate aim. Similarly, one might adopt an aesthetic consequentialism, in which the ultimate aim is to produce beauty. However, one might fix on non-psychological goods as the relevant effect. Thus, one might pursue an increase in [[Equality of outcome|material equality]] or [[Freedom (political)|political liberty]] instead of something like the more ephemeral "pleasure". Other theories adopt a package of several goods, all to be promoted equally. Since there would be no overarching consequence to aim for, conflicts between goods are to be adjudicated by the fine contextual discernment and intuition of the agent. Even in a consequentialist system that focuses on a single good, though, conflicts and tensions between different good states of affairs are to be expected. One might even take the course advocated by [[G.E. Moore]] and argue that "the good" is unanalyzable, and thus argue that good states of affairs do not necessarily share any other property than "goodness" itself <ref name ="Moore">{{cite book | title = Principia Ethica | year = 1903 | last = Moore | first = G. E. | authorlink = G.E. Moore | publisher = Cambridge University Press | location = Cambridge | id = ISBN 978-0-521-44848-2| url = http://fair-use.org/g-e-moore/principia-ethica}}</ref>.
+
+===Consequences for whom===
+Moral action always has an effect on certain people or things, the consequences. Various kinds of consequentialism can be differentiated by beneficiary of the good consequences. That is, one might ask "Consequences for whom?"
+
+====Agent-focused or agent-neutral====
+A fundamental distinction along these lines is between theories that demand that agents act for ends in which they have some personal interest or [[motivation]] to pursue and theories that demand that agents act for ends perhaps disconnected from their own interests and drives. These are called "agent-focused" and "agent-neutral" theories respectively. Agent-neutral consequentialism ignores the specific value a state of affairs has for any particular agent. Thus, in an agent-neutral theory, my own personal goals do not count any more than anyone else's goals in evaluating what action I should take. Agent-focused consequentialism, on the other hand, focuses on the particular needs of the moral agent. Thus, in an agent-focused account, such as one that Peter Railton outlines, I might be concerned with the general welfare, but I am more concerned with the immediate welfare of myself and my friends and family<ref name="Scheffler">{{cite book | title = Consequentialism and Its Critics | year = 1988 | last = Scheffler | first = Samuel (Ed.) | publisher = Oxford University Press | location = Oxford | id = ISBN 978-0-19-875073-4}}</ref>. These two approaches could be reconciled by acknowledging the tension between an agent's interests as an individual and as a member of various groups, and seeking to somehow optimize among all of these interests.  For example, it may be meaningful to speak of an action as being good for someone as an individual but bad for them as a citizen of their town.
+
+====Human-centered?====
+Many consequentialist theories may seem primarily concerned with human beings and their relationships with other human beings. However, some philosophers argue that we should not limit our ethical consideration to the interests of human beings alone. [[Jeremy Bentham]], who is regarded as the founder of [[Utilitarianism]], regarded non-human animals as a serious object of moral concern, arguing that they can experience pleasure and pain, and thus, the consequences a certain course of action would have on them was directly relevant<ref name="Bentham">{{cite book | title = An Introduction to the Principles of Moral Legislation | year = 1996 | last = Bentham | first = Jeremy | authorlink = Jeremy Bentham |publisher = Oxford University Press | location = Oxford | id = ISBN 978-0-19-820516-6 | url = http://www.la.utexas.edu/research/poltheory/bentham/ipml/ipml.toc.html}}</ref>. More recently, [[Peter Singer]] has argued that it is unreasonable that we do not give equal consideration to the interests of animals as to those of human beings when we choose the way we are to treat them<ref name="Singer">{{cite book | title = Unsanctifying Human Life | last = Singer | first = Peter | authorlink = Peter Singer | editor = Helga Kuhse, ed. | year = 2002 | publisher = Blackwell | location = Oxford | id = ISBN 978-0-631-22507-2}}</ref>. Such equal consideration does not necessarily imply identical treatment of humans and non-humans, no more than it necessarily implies identical treatment of all humans.
+
+===Action guidance===
+One important characteristic of many normative moral theories such as consequentialism is the ability to produce practical moral judgements. At the very least, any moral theory needs to define the standpoint from which the goodness of the consequences are to be determined. What is primarily at stake here is the ''responsibility'' of the agent.
+
+====The ideal observer====
+One common tactic among consequentialists, particularly those committed to an [[Altruism|altruistic]] (selfless) account of consequentialism, is employ an ideal, neutral observer from which moral judgements can be made. [[John Rawls]], a critic of utilitarianism, argues that utilitarianism, in common with other forms of consequentialism, relies on the perspective of such an ideal observer<ref name="Scheffler"/>. The particular characteristics of this ideal observer can vary from an omniscient observer, who would grasp all the consequences of any action, to an ideally informed observer, who knows as much as could reasonably be expected, but not necessarily all the circumstances or all the possible consequences. Consequentialist theories that adopt this paradigm hold that right action is the action that will bring about the best consequences from this ideal observer's perspective.
+
+====The real observer====
+Of course, in practice, it seems very difficult to always adopt the point of view of an ideal observer. An individual moral agent, after all, only knows a certain number of things about the situation they are in, and thus the possible consequences of a particular course of action. Thus, some theorists have argued that consequentialist theories can only require an agent to choose the best action in line with what they know about the situation. However, naïvely adopted, this concept could lead to undesirable results, if the moral agent does not go out of the way to inform themselves about the situation. Acting in a situation without first informing oneself of the circumstances of the situation can lead to even the most well-intended actions yielding miserable consequences. As a result, certain theorists have argued that there is a moral imperative for an agent to inform themselves as much as possible about a situation before judging the appropriate course of action. This imperative, of course, is derived from consequential thinking: a better informed agent is able to bring about better consequences.
+
+==Varieties of consequentialism==
+Consequentialism comes in many forms. However, there are certain consequentialist theories that serve as paradigms of consequentialism.
+
+===Utilitarianism===
+{{main|Utilitarianism}}
+[[Image:Bentham.jpg|thumb|right|Jeremy Bentham]]
+[[Utilitarianism|Hedonistic Utilitarianism]] is, historically, the paradigmatic example of a consequentialist moral theory. It holds that right action produces the most happiness for all agents. "Happiness" on this account is defined as the maximization of pleasure and the minimization of pain. This form of utilitarianism holds that what matters is the aggregate happiness; the happiness of everyone and not the happiness of any particular person. [[John Stuart Mill]], in his exposition of hedonistic utilitarianism, proposed a hierarchy of pleasures, meaning that the pursuit of certain kinds of pleasure is more highly valued than the pursuit of other pleasures.<ref name="Mill">{{cite book | title = Utilitarianism | year = 1998 | last = Mill | first = John Stuart | authorlink = John Stuart Mill | publisher = Oxford University Press | location = Oxford | id = ISBN 978-0-19-875163-2 | url = http://www.utilitarianism.com/mill1.htm}}</ref> However, some contemporary utilitarians, such as [[Peter Singer]] are concerned to maximize the satisfaction of preferences, hence "[[preference utilitarianism]]". Other contemporary forms of utilitarianism mirror the forms of consequentialism outlined below.
+
+===Ethical egoism===
+{{main|Ethical egoism}}
+[[Ethical egoism]] can be understood as a consequentialist theory according to which the consequences for the individual agent are taken to matter more than any other result. Thus, egoism may license actions which are good for the agent, but it is generally seen as detrimental to general welfare.  Some like [[Henry Sidgwick]], however, argue that a certain degree of egoism ''promotes'' general welfare for two reasons: because individuals know how to please themselves best, and because if everyone were an austere altruist then general welfare would inevitably decrease.<ref name="Sidgwick">{{cite book | title = The Method of Ethics | year = 1907 | last = Sidgwick | first = Henry | authorlink = Henry Sidgwick | publisher = Dover (1981) | location = NY | id = ISBN 0915145286  | url = http://www.la.utexas.edu/methsidg/me/}}</ref>
+
+===Rule consequentialism===
+In general, consequentialist theories focus on actions, however, this need not be the case. Rule consequentialism is a theory that is sometimes seen as an attempt to reconcile [[deontology]] and consequentialism. Like deontology, rule consequentialism holds that moral behavior involves following certain rules. However, rule consequentialism chooses rules based on the consequences that the selection of those rules have. 
+
+Various theorists are split as to whether the rules are the only determinant of moral behavior or not. For example, [[Robert Nozick]] holds that a certain set of minimal rules, which he calls "side-constraints", are necessary to ensure appropriate actions.<ref name="Scheffler"/> There are also differences as to how absolute these moral rules are. Thus, while Nozick's side-constraints are absolute restrictions on behavior, [[Amartya Sen]] proposes a theory which recognizes the importance of certain rules, but these rules are not absolute.<ref name="Scheffler"/> That is, they may be violated if strict adherence to the rule would lead to much more undesirable consequences.
+
+===Negative consequentialism===
+Most consequentialist theories focus on ''promoting'' some sort of good consequences. However, one could equally well lay out a consequentialist theory that focuses solely on minimizing bad consequences. Of course, the maximization of good consequences could also involve the minimization of bad consequences, but the promotion of good consequences is usually of primary import. 
+
+One major difference between these two approaches is the agent's responsibility. Positive consequentialism demands that we bring about good states of affairs, whereas negative consequentialism may only require that we avoid bad ones. A more strenuous version of negative consequentialism may actually require active intervention, but only to prevent harm from being done.
+
+==Consequentialism and other moral theories==
+Though many philosophers regard consequentialism as the most commonly held moral theory, it is not the only moral theory. Critiques raised by moral theorists who hold other moral theories have shaped the forms consequentialism takes in recent literature.
+
+===Deontology===
+Consequentialism is often contrasted with [[deontological ethics]]. Deontological theories focus on types of actions rather than the particular consequences of those actions. Thus, deontological theories hold that certain actions are wrong simply because of the nature of that action. Consequently, a deontologist might argue that we should stick to our duty regardless of the consequences. For example, [[Kant]] famously argued that we had a moral duty to always tell the truth, even to a murderer asking where their would-be victim is. 
+
+However, consequentialist and deontological theories are not necessarily mutually exclusive. For example, [[T.M. Scanlon]] advances the idea that human rights, which are commonly considered a "deontological" concept, can only be justified with reference to the consequences of having those rights<ref name="Scheffler"/>. Similarly, [[Robert Nozick]] argues for a theory that is mostly consequentialist, but incorporates inviolable "side-constraints" which restrict the sort of actions agents are permitted to do<ref name="Scheffler"/>.
+
+===Virtue ethics===
+Consequentialism can also be contrasted with aretaic moral theories such as [[virtue ethics]]. In fact, Anscombe's paper which coined the term "consequentialism" also began the discussion of character-based ethical theories in modern philosophy. 
+
+Whereas consequentialist theories, by definition, posit that consequences of action should be the primary focus of moral theories, virtue ethics insists that it is the character rather than the consequences of actions that should be the focal point. Some virtue ethicists hold that consequentialist theories totally disregard the development and importance of moral character. For example, [[Phillipa Foot]] argues that consequences in themselves have no ethical content, unless it has been provided by a virtue such as benevolence<ref name="Scheffler"/>.
+
+However, consequentialism and virtue ethics need not be understood to be entirely antagonistic. Consequentialist theories can consider character in several ways. For example, the effects on the character of the agent or any other people involved in an action may be regarded as a relevant consequence. Similarly, a consequentialist theory may aim at the maximization of a particular virtue or set of virtues. Finally, following Foot's lead, one might adopt a sort of consequentialism which argues that virtuous activity ultimately produces the best consequences.
+
+==Criticisms of consequentialism==
+===General criticisms===
+Consequentialism has been criticized on several counts. According to [[G.E. Moore]] in ''Principia Ethica'', consequentialism (or at least classical utilitarianism) commits "the [[naturalistic fallacy]]" by assuming that "the good" can be adequately defined by some "natural" property or set of natural properties. This, he claims, is demonstrably false because for any X a consequentialist might propose as being innately good we can always ask "But is X good?" Thus we must have a tacit understanding of moral goodness that is different from any possible natural property or set of such properties. If this is the case, then, Moore argued, most forms of consequentialism are incoherent, since this innate sense of moral goodness is all that can be appealed to<ref name="Moore"/>.
+
+In a more extreme tenor, [[William Gass]] argues that moral theories such as consequentialism are unable to adequately explain what is wrong with a wrong action. Gass uses the example of an "obliging stranger" who is so obliging as to allow himself to be baked in an oven. Gass claims that the rationale that any moral theory might attempt to give for this wrongness, e.g. it does not bring about good results, is simply absurd. It is wrong to bake a stranger, however obliging, and nothing more can or need be said about it<ref name="Gass">{{cite journal | author = Gass, William H. | authorlink = William Gass | publish year = 1957 | title = The Case of the Obliging Stranger | journal = The Philosophical Review | volume = 66 | pages = 193-204}}</ref>.
+
+In ''[[A Theory of Justice]]'' John Rawls argues that people would choose Kantian principles over the consequentialism of utilitarianism. To make the argument he constructs a thought experiment where a hypothetical person is placed in an [[original position]] outside of society. This person has no knowledge of what skills or values he will have, nor does he know if he will be wealthy. The person also does not know whether society will accept his values or if he will be in a minority. Rawls argues that in this position everyone would choose a system with deontological values such as freedom of speech and social justice. People, fearing the possibility of low station, would choose to have protections for minorities and human rights instead of a strictly consequentialist society.
+
+===Character-based criticisms===
+As already mentioned, G.E.M. Anscombe coined "consequentialism" in the process of criticizing the theory. She held that consequentialist theories hold moral agents responsible for consequences of their actions that they did not intend, and thus ignores the moral character of the agent involved<ref name="Anscombe"/>. Not all consequentialists would see this as a valid criticism. After all, consequentialism places the strongest value on consequences. 
+[[Image:BernardWilliams.jpg|thumb|left|Bernard Williams]]
+Along the same lines, [[Bernard Williams]] has argued that consequentialism is ''alienating'' because it requires moral agents to put too much distance between themselves and their own projects and commitments. Williams argues that consequentialism requires moral agents to take a strictly ''impersonal'' view of all actions, since it is only the consequences, and not who produces them, that is said to matter. Williams argues that this demands too much of moral agents &mdash; since (he claims) consequentialism demands that they be willing to sacrifice any and all personal projects and commitments in any given circumstance in order to pursue the most beneficent course of action possible. He argues further that consequentialism fails to make sense of intuitions that it ''can'' matter whether or not someone is ''personally'' the author of a particular consequence. For example, that having "dirty hands" by participating in a crime can matter, even if the crime would have been committed anyway, or would even have been worse, without the agent's participation. <!-- This really needs a quick discussion of William's firing-squad example. Maybe I'll add this later; but I wouldn't mind if someone beat me to it, either. --> 
+
+Some consequentialists &mdash; most notably [[Peter Railton]] &mdash; have attempted to develop a form of consequentialism that acknowledges and avoids the objections raised by Williams. Railton argues that Williams's criticisms can be avoided by adopting a form of consequentialism in which moral decisions are to be determined by the ''sort of life'' that they express. On his account, the agent should choose the sort of life that will, on the whole, produce the best overall effects<ref name="Scheffler"/>.
+
+However, more recently, there have been attacks upon consequentialism in a similar vein. For example, [[Thomas Nagel]] holds that consequentialism fails to appropriately take into account the people affected by a particular action. He argues that a consequentialist cannot really criticize human rights abuses in a war, for example, if they ultimately result in a better state of affairs<ref name="Scheffler"/>.
+
+==Bibliography==
+<references/>
+
+==Notable consequentialists==
+*[[Jeremy Bentham]] (1748-1832)
+*[[William Godwin]] (1756-1836)
+*[[John Stuart Mill]] (1806-1873)
+*[[Henry Sidgwick]] (1838-1900)
+*[[G.E. Moore]] (1873-1958)
+*[[Richard B. Brandt]] (1910-1997)
+*[[R.M. Hare]] (1919-2002)
+*[[John Harsanyi]] (1920-2000)
+*[[J. J. C. Smart]] (born 1920)
+*[[Amartya Sen]] (born 1933)
+*[[Robert Merrihew Adams|R. M. Adams]] (born 1937)
+*[[Philip Pettit]] (born 1945)
+*[[Peter Singer]] (born 1946)
+*[[David Brink (philosopher)|David Brink]]
+*[[Julia Driver]]
+*[[Shelly Kagan]]
+*[[David Lyons (philosopher)|David Lyons]]
+*[[Peter Railton]]
+*[[Samuel Scheffler]]
+
+==Further reading==
+*{{cite book | title = Consequentialism | year = 2002 | last = Darwall | first = Stephen (Ed.) | publisher = Blackwell | location = Oxford | id = ISBN 978-0-631-23108-0}}
+*{{cite paper | author = Honderich, Ted | title = Consequentialism, Moralities of Concern and Selfishness | date = 2003 | url = http://www.ucl.ac.uk/~uctytho/ted9.htm}}
+*{{cite book | last = Scheffler | first = Samuel | title = The Rejection of Consequentialism: A Philosophical Investigation of the Considerations Underlying Rival Moral Conceptions | year = 1994 | publisher = Oxford University Press | location = Oxford | id = ISBN 978-0-19-823511-8}}
+
+==External links==
+*Stanford Encyclopedia of Philosophy:
+** [http://plato.stanford.edu/entries/consequentialism/ Consequentialism]
+** [http://plato.stanford.edu/entries/consequentialism-rule/ Rule Consequentialism]
+*[http://www.utilitarianism.com/ Utiliarianism Resources]
+
+[[Category:Meta-ethics]]
+[[Category:Ethical schools and movements]]
+[[Category:Utilitarianism]]
+
+[[de:Konsequentialismus]]
+[[es:Consecuencialismo]]
+[[fr:Conséquentialisme]]
+[[is:Leikslokasiðfræði]]
+[[ja:帰結主義]]
+[[fi:Seurausetiikka]]
+[[sv:Konsekventialism]]

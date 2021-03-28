@@ -1,0 +1,64 @@
+"""
+Loop over all pages in the home wiki, standardizing the interwiki links.
+"""
+#
+# (C) Rob W.W. Hooft, 2003
+#
+# Distributed under the terms of the MIT license.
+#
+__version__='$Id: standardize_interwiki.py,v 1.8 2005/12/21 17:51:26 wikipedian Exp $'
+#
+import os,sys
+
+import wikipedia
+
+options=[]
+start=[]
+file=[]
+hints={}
+
+debug = 0
+forreal = 1
+
+for arg in sys.argv[1:]:
+    start.append(arg)
+
+if start:
+    start='_'.join(start)
+else:
+    start='0'
+
+try:
+    for pl in wikipedia.getSite().allpages(start = start):
+        print pl
+        try:
+            oldtext = pl.get()
+        except wikipedia.IsRedirectPage:
+            print "--->is redirect"
+            continue
+        old = pl.interwiki()
+        new = {}
+        for pl2 in old:
+            new[pl2.site()] = pl2
+        newtext = wikipedia.replaceLanguageLinks(oldtext, new)
+        if new:
+            if newtext != oldtext:
+                # Display the difference
+                wikipedia.showDiff(oldtext, newtext)
+                # Submit changes
+                if forreal:
+                    try:
+                        status, reason, data = pl.put(newtext,
+                                                  comment='robot interwiki standardization')
+                        if str(status) != '302':
+                            print status, reason
+                    except wikipedia.LockedPage:
+                        print "--->is locked"
+                        continue
+
+except:
+    wikipedia.stopme()
+    raise
+else:
+    wikipedia.stopme()
+

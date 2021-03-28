@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<IChing>
+  <title>Some Hexagrams from the I Ching</title>
+
+  <hexagram>
+    <number>1</number>
+    <name>Ch'ien / The Creative</name>
+    <judgement>
+      The Creative works sublime success,
+      Furthering through perseverance.
+    </judgement>
+  </hexagram>
+
+  <hexagram>
+    <number>2</number>
+    <name>K'un / The Receptive</name>
+    <judgement>
+      The Receptive brings about sublime success,
+      Furthering through the perseverance of a mare.
+    </judgement>
+  </hexagram>
+
+  <hexagram>
+    <number>3</number>
+    <name>Chun / Difficulty at the Beginning</name>
+    <judgement>
+      Difficulty at the Beginning works supreme success,
+      Furthering through perseverance.
+    </judgement>
+  </hexagram>
+
+  <hexagram>
+    <number>4</number>
+    <name>Meng / Youthful Folly</name>
+    <judgement>
+      Youthful Folly has success.
+    </judgement>
+  </hexagram>
+
+  <hexagram>
+    <number>5</number>
+    <name>Hsu / Waiting (Nourishment)</name>
+    <judgement>
+      Waiting. If you are sincere,
+      You have light and success.
+    </judgement>
+  </hexagram>
+
+  <hexagram>
+    <number>6</number>
+    <name>Sung / Conflict</name>
+    <judgement>
+      Conflict. You are sincere
+      And are being obstructed.
+    </judgement>
+  </hexagram>
+
+  <hexagram>
+    <number>7</number>
+    <name>Shih / The Army</name>
+    <judgement>
+      The Army. The army needs perseverance
+      And a strong man.
+    </judgement>
+  </hexagram>
+
+  <hexagram>
+    <number>8</number>
+    <name>Pi / Holding Together [Union]</name>
+    <judgement>
+      Holding Together brings good fortune.
+    </judgement>
+  </hexagram>
+
+  <hexagram>
+    <number>9</number>
+    <name>Hsiao Ch'u / The Taming Power of the Small</name>
+    <judgement>
+       The Taming Power of the Small
+       Has success.
+    </judgement>
+  </hexagram>
+
+  <hexagram>
+    <number>10</number>
+    <name>Lu / Treading [Conduct]</name>
+    <judgement>
+      Treading. Treading upon the tail of the tiger.
+    </judgement>
+  </hexagram>
+
+</IChing>
+

@@ -1,0 +1,4 @@
+#!/usr/bin/python
+print "Content-type: text/x-vCard\n"
+print open('david_mertz.vcf','r').read()
+

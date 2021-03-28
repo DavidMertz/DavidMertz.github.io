@@ -1,0 +1,201 @@
+'''Lab''' is the abbreviated name of two different [[color spaces]]. The best known is '''CIELAB''' (strictly '''CIE 1976 L*a*b*''') and the other is '''Hunter Lab''' (strictly, '''Hunter L, a, b'''). ''Lab'' is an informal abbreviation, and without further checking should not be assumed to be one or the other. The color spaces are related in intention and purpose, but are different. 
+
+Both spaces are derived from the "master" space [[CIE 1931 color space|CIE 1931 XYZ color space]]. However, CIELAB is calculated using cube roots, and Hunter Lab is calculated using square roots.<ref name="versus">[http://www.hunterlab.com/appnotes/an02_01.pdf Hunter L,a,b Versus CIE 1976 L*a*b*] (PDF)</ref> Except where data must be compared with existing Hunter L,a,b values, it is recommended that CIELAB be used for new applications.<ref name="versus"/>
+
+The intention of both spaces is to produce a color space that is more perceptually linear than other color spaces. ''Perceptually linear'' means that a change of the same amount in a color value should produce a change of about the same visual importance. When storing colors in limited precision values, this can improve the reproduction of tones. Both are also [[absolute color space|absolute color spaces]], so they define colors exactly, unlike (for example) RGB or CMYK which do not exactly define color, only a mixing recipe for light or ink (respectively).
+
+==Which Lab?==
+
+Some specific uses of the abbreviation in software, literature etc.
+* In [[Adobe Photoshop]], image editing using "Lab" is CIELAB.
+* In [[ICC Profiles]], the Lab color space used as a profile connection space is CIELAB.
+* In [[TIFF]] files, the Lab color space is CIELAB.
+* In [[PDF]] documents, the Lab color space is CIELAB.
+
+{| align="right" style="margin-left: 1em"|
+|[[image:Lab color at luminance 25%.png|thumb|Lightness 25%]]
+|-
+|[[image:Lab color at neutral luminance.png|thumb|Lightness 50%]]
+|-
+|[[image:Lab color at luminance 75%.png|thumb|Lightness 75%]]
+|}
+
+== CIE 1976 L*, a*, b* Color Space (CIELAB) ==
+
+'''CIE L*a*b* (CIELAB)''' is the most complete [[color model]] used conventionally to describe all the colors visible to the human eye. It was developed for this specific purpose by the [[International Commission on Illumination]] (''Commission Internationale d'Eclairage'', hence its ''CIE'' [[initialism]]). ''The * after L, a and b are part of the full name, since they represent L*, a* and b*, derived from L, a and b''. CIELAB is an [[Adams Chromatic Value]] Space.
+
+The three parameters in the model represent the lightness of the color ('''L*''', L*=0 yields black and L*=100 indicates white), its position between magenta and green ('''a*''', negative values indicate green while positive values indicate magenta) and its position between yellow and blue ('''b*''', negative values indicate blue and positive values indicate yellow).
+
+The Lab color model has been created to serve as a device independent, absolute model to be used as a reference. Therefore it is crucial to realize that the visual representations of the full [[gamut]] of colors in this model are never accurate. They are there just to help in understanding the concept, but they are inherently inaccurate.
+
+Since the Lab model is a three dimensional model, it can only be represented properly in a three dimensional space. A useful feature of the model however is that the first parameter is extremely intuitive: changing its value is like changing the brightness setting in a TV set. Therefore only a few representations of some horizontal "slices" in the model are enough to conceptually visualize the whole gamut, assuming that the luminance would be represented on the vertical axis.
+
+CIE 1976 L*a*b* is based directly on the [[CIE 1931 color space|CIE 1931 XYZ color space]] as an attempt to linearize the perceptibility of color differences, using the color difference metric described by the [[MacAdam ellipse]]. The non-linear relations for L*, a*, and b* are intended to mimic the logarithmic response of the eye. Coloring information is referred to the color of the [[white point]] of the system, subscript n.
+
+=== RGB and CMYK conversions ===
+
+Programmers and others often seek a formula for conversion between [[RGB color model|RGB]] or [[CMYK color model|CMYK]] values and L*a*b*, not understanding that RGB and CMYK are not absolute color spaces and so have no precise relation to an [[absolute color space]] such as L*a*b*.  To convert between RGB and L*a*b*, for example, it is necessary to determine or assume an absolute color space for the RGB data, such as [[sRGB color space|sRGB]] or [[Adobe RGB color space|Adobe RGB]]. For each of these absolute spaces, there are standard techniques for converting to and from the XYZ absolute color space (see for example [[SRGB color space#Specification of the transformation]]) which can be combined with the above transformations to convert them to L*a*b*.
+
+
+=== XYZ to CIE L*a*b* (CIELAB) and  CIELAB to XYZ conversions ===
+
+====The forward transformation====
+
+:<math>L^* = 116\,f(Y/Y_n) - 16</math>
+:<math>a^* = 500\,[f(X/X_n) - f(Y/Y_n)]</math>
+:<math>b^* = 200\,[f(Y/Y_n) - f(Z/Z_n)]</math>
+
+where
+:<math>f(t) = t^{1/3}\,</math>      for <math> t > 0.008856\,</math> 
+:<math>f(t) = 7.787\,t + 16/116</math>    otherwise
+
+Here <math>X_n</math>, <math>Y_n</math> and <math>Z_n</math> are the CIE XYZ tristimulus values of the reference [[white point]].
+
+The division of the f(t) function into two domains was done to prevent an infinite slope at t=0. f(t) was assumed to be linear below some t=t<sub>0</sub>, and was assumed to match the t<sup>1/3</sup> part of the function at t<sub>0</sub> in both value and slope. In other words:
+
+:{|
+|-
+|<math>t_0^{1/3}\,</math>
+|<math>=\,</math>
+|<math>a t_0 + b\,</math>
+|     (match in value)
+|-
+|<math>1/(3t_0^{2/3})\,</math>
+|<math>=\,</math>
+|<math>a\,</math>
+|     (match in slope)
+|}
+
+The value of b was chosen to be 16/116. The above two equations can be solved for a and t<sub>0</sub>:
+
+:{|
+|-
+|<math>a\,</math>
+|<math>=\,</math>
+|<math>1/(3\delta^2)\,</math>
+|<math>= 7.787037\cdots</math>
+|-
+|<math>t_0\,</math>
+|<math>=\,</math>
+|<math>\delta^3\,</math>
+|<math>= 0.008856\cdots</math>
+|}
+
+where <math>\delta=6/29</math>. Note that <math>16/116=2\delta/3</math>
+
+==== The reverse transformation====
+
+The reverse transformation is as follows (with <math>\delta=6/29</math> as mentioned above):
+
+# define <math>f_y\equiv (L^*+16)/116</math>
+# define <math>f_x\equiv f_y+a^*/500</math>
+# define <math>f_z\equiv f_y-b^*/200</math>
+# if <math>f_y > \delta\,</math>  then  <math>Y=Y_nf_y^3\,</math>&nbsp;&nbsp;  else  <math>Y=(f_y-16/116)3\delta^2Y_n\,</math>
+# if <math>f_x > \delta\,</math>  then  <math>X=X_nf_x^3\,</math>&nbsp;&nbsp;  else  <math>X=(f_x-16/116)3\delta^2X_n\,</math>
+# if <math>f_z > \delta\,</math>  then  <math>Z=Z_nf_z^3\,</math>&nbsp;&nbsp;  else  <math>Z=(f_z-16/116)3\delta^2Z_n\,</math>
+
+=== XYZ to CIELUV & CIELUV to XYZ conversions ===
+
+====The forward transformation====
+
+CIE 1976 L*u*v* (CIELUV) is based directly on CIE XYZ and is another attempt to linearize the perceptibility of color differences. The non-linear relations for L*, u*, and v* are given below:
+
+:<math>L^* =  116 (Y/Y_n)^{1/3} - 16\,</math>
+:<math>u^* =  13L^* ( u' - u_n' )\,</math>
+:<math>v^* =  13L^* ( v' - v_n' )\,</math>
+
+The quantities <math>u_n'</math> and <math>v_n'</math>  refer to the reference [[white point]] or the light source. (For example, for the 2° observer and illuminant C,  <math>u_n' = 0.2009</math>, <math>v_n' = 0.4610</math>.) Equations for u' and v' are given below:
+
+:<math>u' = 4X / (X + 15Y + 3Z) = 4x / ( -2x + 12y + 3 )\,</math>
+:<math>v' = 9Y / (X + 15Y + 3Z) = 9y / ( -2x + 12y + 3 )\,</math>.
+
+====The reverse transformation====
+
+The transformation from (u',v') to (x,y) is:
+
+:<math>x = 27u' / ( 18u' - 48v' + 36 )\,</math>
+:<math>y = 12v' / ( 18u' - 48v' + 36 )\,</math>.
+
+The transformation from CIELUV to XYZ is performed as following:
+
+:<math>u' = u^* / ( 13L^*) + u_n\,</math>
+:<math>v' = v^* / ( 13L^* ) + v_n\,</math>
+:<math>Y = Y_n(( L^* + 16 ) / 116 )^3\,</math>
+:<math>X = - 9Yu' / (( u' - 4 ) v' - u'v' )\,</math>
+:<math>Z = ( 9Y - 15v'Y - v'X ) / 3v'\,</math>
+
+== Hunter Lab Color Space ==
+
+'''L''' is a correlate of [[Lightness]], and is computed from the Y [[tristimulus]] value using Priest's Approximation to [[Munsell]] Value:
+
+<math>L=100\sqrt{Y/Yn}</math>
+
+where Yn is the Y [[tristimulus]] value of a specified white object. For surface-color applications, the specified white object is usually (though not always) a hypothetical material with unit reflectance and which follows [[Lambert's law.]]. The result will be Ls scaled between 0 (black) and 100 (white); roughly 10 times [[Munsell]] value. Note, however, that a mid-range Lightness of 50 is produced not by a Y of 50, but rather of 25.
+
+'''a''' and '''b''' are termed [[opponent color]] axes. a represents, roughly, Redness (positive) versus Greenness (negative), and is computed:
+
+<math>a=K_a\left(\frac{X/X_n-Y/Y_n}{\sqrt{Y/Y_n}}\right)</math>
+
+where <math>K_a</math> is a coefficient which depends upon the illuminant (for D65, Ka is 172.30; see approximate formula below) and Xn is the X [[tristimulus]] value of the specified white object.
+
+The other opponent color axis, '''b''', is positive for yellow colors and negative for blue colors. It is computed as:
+
+<math>b=K_b\left(\frac{Y/Yn-Z/Zn}{\sqrt{Y/Yn}}\right)</math>
+
+where <math>K_b</math> is a coefficient which depends upon the illuminant (for D65, <math>K_b</math> is 67.20; see approximate formula below) and Zn is the Z [[tristimulus]] value of the specified white object.<ref>Hunter Labs (1996). "Hunter Lab Color Scale". ''Insight on Color'' '''8''' 9 (August 1-15, 1996). Reston, VA, USA: Hunter Associates Laboratories.</ref>
+
+Both a and b will be zero for objects which have the same [[Chromaticity diagram|chromaticity]] coordinates as the specified white objects. Usually this is the case for neutrals.
+
+=== Approximate Formulas for Ka and Kb ===
+
+In the previous version of the Hunter Lab color space, <math>K_a</math> was 175 and <math>K_b</math> was 70. Apparently, Hunter Associates Lab discovered that better agreement could be obtained with other color difference metrics, such as CIELAB (see below) by allowing these coefficients to depend upon the illuminants. Approximate formulae are:
+
+<math>K_a\approx\frac{175}{198.04}(X_n+Y_n)</math>
+
+<math>K_b\approx\frac{70}{218.11}(Y_n+Z_n)</math>
+
+which result in the original values for Illuminant C, the original illuminant with which the Lab color space was used.
+
+=== The Hunter Lab Color Space as an [[Adams Chromatic Valance]] Space ===
+
+[[Adams Chromatic Valance]] spaces are based on two elements: a (relatively) uniform lightness scale, and a (relatively) uniform [[chromaticity diagram]].<ref>Adams, E. Q. (1942). "X-Z planes in the 1931 I.C.I. system of colorimetry". ''JOSA'' '''32''' 3: 168-173.</ref>  If we take as the uniform lightness scale Priest's approximation to the [[Munsell]] Value scale, which would be written in modern notation:
+
+<math>L=100\sqrt{Y/Yn}</math>
+
+and, as the uniform chromaticity coordinates:
+
+<math>c_a=\frac{X/Xn}{Y/Yn}-1=\frac{X/Xn-Y/Yn}{Y/Yn}</math>
+
+<math>c_b=k_e\left(1-\frac{Z/Zn}{Y/Yn}\right)=k_e\frac{Y/Yn-Z/Zn}{Y/Yn}</math>
+
+where <math>k_e</math> is a tuning coefficient, we obtain the two chromatic axes:
+
+<math>a=K\cdot L\cdot c_a=K\cdot 100\sqrt{Y/Yn}\frac{X/Xn-Y/Yn}{Y/Yn}=K\cdot 100\frac{X/Xn-Y/Yn}{\sqrt{Y/Yn}}</math>
+
+and
+
+<math>b=K\cdot L\cdot c_b=K\cdot k_e\cdot 100\sqrt{Y/Yn}\frac{Y/Yn-Z/Zn}{Y/Yn}=K\cdot k_e\cdot 100\frac{Y/Yn-Z/Zn}{\sqrt{Y/Yn}}</math>
+
+which is identical to the Hunter Lab formulae given above if we select <math>K=K_a/100</math> and <math>k_e=K_b/K_a</math>. Therefore, the Hunter Lab color space is an [[Adams Chromatic Valance]] space.
+
+== References ==
+<references/>
+
+==See also==
+*[[Color space]]:
+**[[RGB color space]]s
+**[[CMYK color model]] for color [[printing]]
+**[[HSV color space]]
+**[[HSL color space]]
+**[[RYB color model]] the traditional color model used by artists.
+**[[YUV]] for [[PAL]] [[television]]
+**[[YDbDr]] for [[SECAM]] [[television]]
+**[[YIQ]] for [[NTSC]] [[television]]
+
+[[Category:Color space]]
+[[Category:Color]]
+
+[[de:Lab-Farbraum]]
+[[fr:CIE Lab]]
+[[nl:CIELAB]]
+[[pl:CIELAB]]

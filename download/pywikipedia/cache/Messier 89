@@ -1,0 +1,68 @@
+{{ Galaxy |
+| image = [[Image:M89.jpg|200px]]
+Elliptical Galaxy M89
+| name = M89
+| epoch = [[J2000.0]] 
+| type = E;LINER;HII<ref name="ned">{{cite web
+  | title=NASA/IPAC Extragalactic Database
+  | work=Results for NGC 4552
+  | url=http://nedwww.ipac.caltech.edu/
+  | accessdate=2006-10-24 }}</ref>
+| ra = {{RA|12|35|39.8}}<ref name="ned" />
+| dec = {{DEC|+12|33|23}}<ref name="ned" />
+| dist_ly = [[1 E23 m|50 ± 3 million]] [[light year|ly]] (15.3 ± 1.0 [[parsec|kpc]])<ref name="tonryetal2001">{{cite journal
+  | author=J. L. Tonry, A. Dressler, J. P. Blakeslee, E. A. Ajhar, A. B. Fletcher, G. A. Luppino, M. R. Metzger, C. B. Moore
+  | title=The SBF Survey of Galaxy Distances. IV. SBF Magnitudes, Colors, and Distances
+  | journal=Astrophysical Journal
+  | year=2001
+  | volume=546
+  | pages=681-693
+  | url=http://adsabs.harvard.edu/abs/2001ApJ...546..681T }}</ref>
+| z = 340 ± 4 [[kilometer|km]]/[[second|s]]<ref name="ned" />
+| appmag_v = +10.7<ref name="ned" />
+| size_v = 5&prime;.1 &times; 4&prime;.7<ref name="ned" />
+| constellation name = [[Virgo (constellation)|Virgo]]
+| notes = -
+| names =  [[New General Catalogue|NGC]] 4552, [[Uppsala General Catalogue|UGC]] 7760, [[Principal Galaxies Catalogue|PGC]] 41968<ref name="ned" />
+}}
+
+'''Messier 89''' ('''M89''' for short, also known as '''NGC 4552''') is an [[elliptical galaxy]] in the constellation [[Virgo (constellation)|Virgo]]. It was discovered by [[Charles Messier]] on [[March 18]] [[1781]]. M89 is a member of the [[Virgo Cluster|Virgo Cluster of galaxies]].<ref>[http://www.seds.org/messier/m/m089.html Elliptical Galaxy M89 @ SEDS Messier pages]</ref>
+
+==Unusual Features==
+Current observations indicate that M89 may be nearly perfectly [[sphere|spherical]] in shape. This would be unusual as all other known elliptic galaxies are relatively elongated [[ellipsoids]].{{fact}} However, it is possible that the galaxy is oriented in such a way that it appears spherical to an observer on Earth but is in fact elliptical. 
+
+The galaxy also features a surrounding structure or gas and stardust extending up to 150,000 light years from the galaxy and jets of heated particles that extend 100,000 light years outwards, indications that it may have once been an active [[quasar]] or [[radio galaxy]].<ref>[http://www.seasky.org/astronomy/astronomy_messier_81to90.html Messier Objects 81-90 @ Sea and Sky]</ref>
+
+M89 also has a large population of [[globular cluster]]s as compared to the [[Milky Way]]'s 150-200, a [[2006]] survey out to 10&prime; of its core estimates that there are 2,000 ± 700 globulars within 25&prime; of M89.<ref name="Tamuraetal2006">{{cite journal
+  | author=Tamura, Naoyuki; Sharples, Ray M.; Arimoto, Nobuo; Onodera, Masato; Ohta, Kouji; Yamada, Yoshihiko
+  | title=A Subaru/Suprime-Cam wide-field survey of globular cluster populations around M87 - I. Observation, data analysis and luminosity function
+  | journal=Monthly Notices of the Royal Astronomical Society
+  | volume=Online Early
+  | year=2006
+  | url=http://adsabs.harvard.edu/cgi-bin/nph-bib_query?doi=10.1111%2Fj.1365-2966.2006.11067.x }}</ref>
+
+==References==
+
+<div class="references-small"><references/></div>
+
+<br>
+
+[[Category:Elliptical galaxies]]
+[[Category:NGC objects|4552]]
+[[Category:Messier objects|089]]
+[[Category:UGC objects|07760]]
+[[Category:PGC objects|41968]]
+
+[[Category:Virgo Cluster]]
+[[Category:Virgo constellation]]
+
+[[de:Messier 89]]
+[[es:Galaxia elíptica M89]]
+[[eo:M89]]
+[[fr:M89]]
+[[it:M89]]
+[[nl:Messier 89]]
+[[pl:Messier 89]]
+[[ru:M89]]
+[[sk:Galaxia M89]]
+[[sv:M89]]
