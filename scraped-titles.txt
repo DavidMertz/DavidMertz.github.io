@@ -1,0 +1,258 @@
+GENOTYPE, PHENOTYPE, AND NORMS OF REACTION --
+
+GENOTYPE, PHENOTYPE, AND NORMS OF REACTION --
+BIOLOGICAL DETERMINISM AND SEXUAL ORIENTATION -- Comment to Usenet group soc.feminism --
+
+BODILY DISCIPLINES -- Comment to Usenet group soc.feminism --
+
+REVIEW OF CORNEL WEST _KEEPING FAITH: PHILOSOPHY AND RACE IN AMERICA_. -- New York: Routledge 1993.  Pp. xvii + 319. ISBN 0-415-90486-2. --
+Response to Edward O. Wilson's, -- "The Biological Basis of Morality," _The Atlantic Monthly_ April, 1998 --
+BETWEEN AN EPISTEMOLOGY OF GENDER AND A GENDERED EPISTEMOLOGY. -- A review of Sandra Harding's _The Science Question in Feminism_. --
+COMPARATIVE REVIEW --
+Are There Any Lesbians in Henry and June
+Review of Steve Martinot's The Rule of Racialization.
+CONSPIRACY OF SILENCE
+The Practice of Mathematics: --
+THE APPEAL OF PSEUDO-SCIENCE -- Comment to Radical Philosophy Association mailing-list --
+REASONABLE MEN AND REASONABLE WOMEN -- Comment to Usenet group soc.feminism --
+ADDING INTROSPECTION AND OBJECT PERSISTENCE TO XBASE++ --
+XBase++ Introspection/Persistence Navigation
+#----- Example of working with Python [cgi] module -----# -- import cgi -- form = cgi.FieldStorage()   # FieldStorage object to --
+LINUX ZONE FEATURE: The R Programming Language, Part 2 -- Functional Programming and Data Explorations --
+LINUX ZONE FEATURE: The R Programming Language, Part 3 -- Reusable and Object Oriented Programming --
+LINUX ZONE FEATURE: Ruby on Rails -- Rapid Development of Model/View/Controller Web Applications --
+Evaluation of GNUmed
+LINUX ZONE FEATURE: The R Programming Language -- Dabbling with a wealth of statistical facilities --
+TUTORIAL FOR LPI EXAM 201: part 1 -- Topic 201: Understanding the Linux Kernel --
+Type of file: SMART_ASCII
+TUTORIAL FOR LPI EXAM 201: part 2 -- Topic 202: Understanding System Startup --
+XML ZONE TIP: Asynchronous SAX: -- Simple API for XML as a Long-Running Event Processor --
+TUTORIAL FOR LPI EXAM 201: part 3 -- Topic 203: Understanding Filesystems --
+XML ZONE TIP: Make your CGI scripts available via XML-RPC -- Providing a programmatic interface to web services --
+TUTORIAL FOR LPI EXAM 201: part 4 -- Topic 204: Working with Hardware --
+TUTORIAL FOR LPI EXAM 201: part 5 -- Topic 209: File Sharing Servers --
+CHARMING PYTHON #1 -- An Introduction to XML Tools for Python --
+CHARMING PYTHON #10 (20000097) -- Interviews with Developers of JPython and Python for .NET --
+TUTORIAL FOR LPI EXAM 201: part 6 -- Topic 211: System Maintenance --
+CHARMING PYTHON #11 (20000096) -- What's New in Python 2.0? --
+TUTORIAL FOR LPI EXAM 201: part 7 -- Topic 213: System Customization and Automation --
+CHARMING PYTHON #12 (20000095) -- Book Roundup --
+TUTORIAL FOR LPI EXAM 201: part 8 -- Topic 214: Troubleshooting --
+CHARMING PYTHON #13 (20000155) -- Functional Programming in Python --
+TUTORIAL FOR LPI EXAM 202: part 1 -- Topic 205: Network Configuration --
+CHARMING PYTHON #14 (20000061) -- Text processing in Python with mxTextTools: Advanced Tips --
+TUTORIAL FOR LPI EXAM 202: part 2 -- Topic 206: Mail and News --
+CHARMING PYTHON #15 (20010165) -- Developing a Full-Text Indexer in Python --
+TUTORIAL FOR LPI EXAM 202: part 3 -- Topic 207: Domain Name System (DNS) --
+CHARMING PYTHON #16 (20010163) -- More Functional Programming in Python --
+TUTORIAL FOR LPI EXAM 202: part 4 -- Topic 208: Web Services --
+CHARMING PYTHON #17 (20010156) -- Review of Python IDEs --
+TUTORIAL FOR LPI EXAM 202: part 5 -- Topic 210: Network Client Management --
+CHARMING PYTHON #18: [PyDoc] and [distutils] -- Improving the Social Infrastructure of Python --
+TUTORIAL FOR LPI EXAM 202: part 6 -- Topic 212: System Security --
+CHARMING PYTHON #19 (W-50039) -- Even More Functional Programming in Python --
+TUTORIAL FOR LPI EXAM 202: part 7 -- Topic 214: Network Troubleshooting --
+CHARMING PYTHON (Special Installment) -- Revisiting XML Tools for Python --
+Linux no Mac
+David Mertz covers the 2006 O'Reilly Open Source Convention: -- A Foray into Journalism --
+CHARMING PYTHON #2 -- A Closer Look at Python's [xml.dom] Module --
+CHARMING PYTHON #B1 -- Iterators and Simple Generators --
+Weblog Refresher
+CHARMING PYTHON #3 -- My first web-based filtering proxy --
+CHARMING PYTHON #4 -- State Machines: Algorithms and programming approaches in Python --
+CHARMING PYTHON #B26: Python Elegance, Python Warts, Part 2 -- Properties, attributes, methods and custom access --
+CHARMING PYTHON #5 -- Text Processing in Python: Tips for Beginners --
+CHARMING PYTHON #B3: -- Book Roundup, Part 2 --
+CHARMING PYTHON #6 -- Curses programming in Python: Tips for Beginners --
+CHARMING PYTHON #B4: -- Parsing in Python with [SimpleParse]. --
+CHARMING PYTHON #7 -- Dynamically reloading modules in long-running processes --
+CHARMING PYTHON #B5: -- Generator-based State Machines and Coroutines --
+CHARMING PYTHON #8 (20000053) -- Interviews with Creators of Vyper and Stackless Python --
+CHARMING PYTHON #B6: -- Parsing in Python with [Spark]. --
+CHARMING PYTHON #9 (20000052) -- TK programming in Python: Tips for Beginners --
+CHARMING PYTHON #B7: -- Implementing "weightless threads" with Python generators. --
+CHARMING PYTHON #19 (W-50039) -- Even More Functional Programming in Python --
+CHARMING PYTHON #B1 -- Iterators and Simple Generators --
+CHARMING PYTHON #B8: -- Book Roundup, Part 3 --
+CHARMING PYTHON #B10: The SimPy Simulation Language -- Modelling Discrete Simultaneous Events --
+CHARMING PYTHON #B9: Making Python Run as Fast as C -- Psyco - The Python Specializing Compiler --
+CHARMING PYTHON #B11: Declarative Mini-Languages -- Programming as assertion rather than instruction --
+A DATA COMPRESSION PRIMER --
+CHARMING PYTHON #B12: Multiple Dispatch -- Generalizing Polymorphism with Multimethods --
+CHARMING PYTHON #B13: The [itertools] module -- Functional programming in Python becomes lazy --
+CHARMING 2 PYTHON #B14: Numerical Python -- Working with the [numeric] and [numarray] packages --
+CHARMING PYTHON #B15: -- Review of Python IDEs --
+CHARMING PYTHON #B16: Testing Frameworks in Python. -- Making sure your software does what you think it does --
+Understanding ebXML -- Untangling the Future Business Web --
+CHARMING PYTHON #B17: The Python Enterprise Application Kit. -- A first look at protocols in Python --
+XML ZONE TIP: Subelement contents versus tag attributes -- Design issues in XML formats --
+CHARMING PYTHON #B18: The Natural Language Toolkit -- Using Python in Computational Linguistics --
+CHARMING PYTHON #B19: DParser for Python. -- Exploring Another Python Parser --
+
+CHARMING PYTHON: Installment #B2 -- Anygui: The universal graphical Python interface to come --
+
+CHARMING PYTHON #B21: Pyrex. -- Writing C code in Python syntax --
+XML MATTERS #2 -- On the Pythonic Treatment of XML Documents As Objects (II) --
+CHARMING PYTHON #B22: A New PEAK -- Generic functions and predicative dispatch --
+FEATURE -- Five minutes to a Python CGI --
+CHARMING PYTHON #B23: Hatching Eggs -- A PEAK at improved installation and package management --
+Spam Filtering Techniques: -- Comparing a Half-Dozen Approaches to Eliminating Unwanted Email --
+CHARMING PYTHON #B24: Decorators make magic easy -- A look at the newest Python facility for meta-programming --
+CHARMING PYTHON #B25: Python Elegance, Python Warts -- Sequences and comparisons --
+An Introduction to Quantum Computing -- A Guide to Solving Intractable Problems Simply --
+PRODUCT REVIEW: -- XML Spy 3.0 --
+XML ZONE TIP: Lightweight XML Libraries -- The KISS Principle --
+LINUX ZONE FEATURE: Linux on PowerPC Processors -- Your favorite operating system isn't only for x86 --
+An Introduction to Quantum Computing -- A Guide to Solving Intractable Problems Simply --
+Learning to Use Regular Expressions
+PRODUCT REVIEW: -- Boxer 99 (v 8.01) --
+PRODUCT REVIEW: -- Folding Text Editor (FTE) --
+Metaclass Programming in Python: -- Pushing Object Oriented Programming to the Next Level --
+COMPARATIVE PRODUCT REVIEW: -- HTMLPP (vs. PPWizard) --
+Metaclass Programming in Python, Part 2: -- Understanding the Arcana of Inheritance and Instance Creation --
+PRODUCT REVIEW: -- Idle 0.6 --
+Metaclass programming in Python, Part 3: Cleverness considered harmful -- Or, how to do metaprogramming without metaclasses --
+PRODUCT REVIEW: -- PerlBuilder 2.0 --
+AN INTRODUCTION TO MULTICASTING STRATEGIES --
+PRODUCT REVIEW: -- NEdit 5.1.1 --
+MULTICASTING STRATEGIES: PROTOCOLS AND TOPOLOGIES --
+PRODUCT REVIEW: -- PerlBuilder 2.0 --
+MULTICASTING STRATEGIES: UNDERSTANDING RELIABILITY --
+PRODUCT REVIEW: -- Programmer's File Editor (PFE) --
+LINUX ZONE FEATURE: Regina and NetRexx -- Scripting with Free Software Rexx Implementations --
+PRODUCT REVIEW: -- PPWizard (HTML Preprocessor) --
+The Pyrite Project -- Integrating Your Palm Handheld with Your Linux Desktop --
+PRODUCT REVIEW: -- PythonWorks Pro 1.2 --
+PRODUCT REVIEW: -- TextPad 4.31 --
+
+PRODUCT REVIEW: -- XMetal 2.0 --
+Pippy: Python for the PalmOS --
+XML ZONE TIP: Command-line XML Processing -- Working with XML Documents from the Shell --
+PRODUCT REVIEW: -- XML Instance 1.1 --
+Programming IP Sockets on Linux, Part One
+Programming IP Sockets on Linux, Part Two
+The GNU Text Utilities
+
+LINUX ZONE FEATURE: The Twisted Matrix Framework -- Part One, Understanding Asynchronous Networking --
+LINUX ZONE FEATURE: The Twisted Framework -- Part Two, Implementing Web Servers --
+LINUX ZONE FEATURE: The Twisted Framework -- Part Three, Stateful Web Servers and Templating --
+LINUX ZONE FEATURE: The Twisted Framework -- Part Four, Secure Clients and Servers --
+XML ZONE TIP: The 'txt2dw' utility -- Writing developerWorks content the easy way --
+TECHNICAL TIPS -- Understanding Unicode --
+TECHNICAL TIPS -- Making websites more accessible to persons with disabilities (part I) --
+TECHNICAL TIPS -- Making websites more accessible to persons with disabilities (part II) --
+Web Development with BeOS (R5) -- Diamonds in the Rough --
+Weblog Refresher
+XML MATTERS #21: Roundup of XML Editors -- Revisited Editors (Part I, Java and MacOS) --
+XML MATTERS #22: Roundup of XML Editors -- Revisited Editors (Part II, Windows) --
+Compression and Streaming of XML Documents
+Optimizing xml2struct Processing
+XML MATTERS #1 -- On the Pythonic Treatment of XML Documents As Objects (I) --
+XML MATTERS #10 -- An Indexer for XML Documents --
+XML MATTERS #11: Revisiting [xml_pickle] and [xml_objectify] -- Lessons in Open Source and Common Sense --
+XML MATTERS #12: The [xml2sql] Module -- Generating SQL Statements from DTDs and XML Documents --
+XML MATTERS #13: XML and Compression -- Exploring the entropy of documents --
+XML MATTERS #14: Those awkward limits of DOM, SAX and XSLT -- The HaXml functional programming model for XML --
+XML MATTERS #15: More on XML in Python -- The 4Suite XML Tools --
+XML MATTERS #16:  XML-RPC as Object Model -- A Data Bundle for the Hoi Polloi? --
+XML MATTERS #17: PYX -- A Line-Oriented XML --
+XML MATTERS #18: REXML -- XML Processing in the Ruby Programming Language --
+XML MATTERS #19: More on XML and Compression -- Block-Level Algorithms and Resource Loads --
+XML MATTERS #2 -- On the Pythonic Treatment of XML Documents As Objects (II) --
+XML MATTERS #20: Squeezing OOP data into XML rules -- The gnosis.xml.validity Library --
+XML MATTERS #21: Roundup of XML Editors -- Revisited Editors (Part I, Java and MacOS) --
+XML MATTERS #22: Roundup of XML Editors -- Revisited Editors (Part II, Windows) --
+XML MATTERS #23: Another better XML -- YAML Ain't Markup Language --
+XML MATTERS #24: reStructuredText -- A Light, Powerful Document Markup --
+XML MATTERS #25: RELAX NG -- Doing Better than W3C XML Schemas --
+XML MATTERS #26: More on RELAX NG -- Tools and Special Issues --
+XML MATTERS #27: RELAX NG Forms -- Compact Syntax and XML Syntax --
+XML MATTERS #28: The ElementTree API -- Another Native Python Approach to XML --
+XML MATTERS #29: The RXP Parser -- An extremely fast validating parser with a Python binding --
+XML MATTERS #3 -- Getting Started with the DocBook XML Dialect --
+XML MATTERS #30: The Text Encoding Initiative -- An XML Dialect for Archival and Complex Documents --
+XML MATTERS #31: SXML and SSAX -- Manipulating XML in the Scheme Programming Language --
+XML MATTERS #32: The XOM Java XML API -- A rigorously correct tree-oriented XML model --
+XML MATTERS #33: XML for Word Processors -- Open source embraces XML as native document format --
+XML MATTERS #4 -- Getting Comfortable with the DocBook XML Dialect --
+XML MATTERS #5 -- Transforming DocBook Documents Using XSLT --
+XML MATTERS #6 -- Roundup of XML Editors --
+XML MATTERS #7 -- Comparing W3C XML Schemas and Document Type Definitions (DTD's) --
+XML MATTERS #8 -- XML and Data Models: Hierarchical, Relational and Object-Oriented --
+XML MATTERS #9 -- Generating DTDs and XML Documents from SQL Queries --
+XML Programming Paradigms (part one) -- Object Oriented Programming
+XML Programming Paradigms (part four) -- Functional Programming
+XML Programming Paradigms (part five) -- Miscellaneous special approaches
+XML Programming Paradigms (part two) -- Event Driven Programming
+XML Programming Paradigms (part three) -- Declarative Programming with XML Stylesheet Language Transformations --
+Adding Introspection and Object Persistence to XBase++
+DAVID MERTZ, Ph.D. --
+
+
+REVIEW OF CORNEL WEST _KEEPING FAITH: PHILOSOPHY AND RACE IN AMERICA_. -- New York: Routledge 1993.  Pp. xvii + 319. ISBN 0-415-90486-2. --
+Review of Steve Martinot's The Rule of Racialization.
+COMPARATIVE REVIEW --
+
+
+--------EMPTY PAGES:--------
+
+https://www.gnosis.cx/publish/biology/eowilson.html
+https://www.gnosis.cx/publish/resumes/cv.html (It has the title, but it is empty)
+
+--------NO TITLE:--------
+
+https://www.gnosis.cx/publish/programming/tmp.html 
+
+
+--------CANNOT GET TITLE WITH cURL (written by hand):--------
+
+https://www.gnosis.cx/publish/mertz/tabloids.html   (The Bioethics Tabloids: How professional ethicists have fallen for the myth of heterosexual AIDS)
+https://www.gnosis.cx/publish/mertz/tabloids_fn.html    (Bioethics Tabloids, Notes)
+https://www.gnosis.cx/publish/mertz/sex_and_rights.html     (The essence of sex and rights)
+https://www.gnosis.cx/publish/mertz/whither_romantic_love.html  (Whither Romantic Love)
+https://www.gnosis.cx/publish/mertz/Islamophobia.html   (Islamophobia and the secularism of fools)
+https://www.gnosis.cx/publish/mertz/sex_fn.html (Sex Wars, Notes)
+https://www.gnosis.cx/publish/mertz/Physics_and_phenomenology.html  (Physics and phenomenology)
+https://www.gnosis.cx/publish/mertz/sex_wars.html    (Sex Wars: The New Left's AIDS-Related Scientism)
+https://www.gnosis.cx/publish/mertz/three_economies.html    (Notes on Three Economies: Hyper-real, Real and Hidden)
+https://www.gnosis.cx/publish/mertz/women2.html    (Women and AIDS: The Ethics of Exaggerated Harm)
+https://www.gnosis.cx/publish/mertz/women2_fn.html    (Women and AIDS, Notes)
+https://www.gnosis.cx/publish/mertz/ch_aids.html    (Deathly Doctrine: Christian Churches and AIDS)
+https://www.gnosis.cx/publish/mertz/ch_fn.html     (Deathly Doctorine, Notes)
+https://www.gnosis.cx/publish/mertz/chap5.html  (Hegemony, and Other Passing Fads)
+https://www.gnosis.cx/publish/mertz/cyborg.html    (Cyborg Bodies Revisited)
+https://www.gnosis.cx/publish/mertz/prospect.html    (The Speculum and the Scalpel:The Politics of Impotent Representation and Non-Representational Terrorism) !!!!NEED REVIEW!!!! What title should it have?
+https://www.gnosis.cx/publish/programming/xpp_introspection/docs/ColorScheme.html    (Library - CLASS ColorScheme)   !!!!NEED REVIEW!!!! What title should it have?
+https://www.gnosis.cx/publish/programming/xpp_introspection/docs/ColorScheme_new.html   (Library : ColorScheme:new()) !!!!NEED REVIEW!!!! What title should it have?
+https://www.gnosis.cx/publish/programming/xpp_introspection/docs/Configuration.html    (Library - CLASS Configuration) !!!!NEED REVIEW!!!! What title should it have?
+https://www.gnosis.cx/publish/programming/xpp_introspection/docs/Configuration_new.html (Library - CLASS Configuration:new()) !!!!NEED REVIEW!!!! What title should it have?
+https://www.gnosis.cx/publish/programming/xpp_introspection/docs/Debug.html    (Library - CLASS Debug) !!!!NEED REVIEW!!!! What title should it have?
+https://www.gnosis.cx/publish/programming/xpp_introspection/docs/Persistent.html    (Library - CLASS Persistent (ABSTRACT) ) !!!!NEED REVIEW!!!! What title should it have?
+https://www.gnosis.cx/publish/programming/xpp_introspection/docs/cfg.html    (Library - Cfg()) !!!!NEED REVIEW!!!! What title should it have?
+https://www.gnosis.cx/publish/programming/xpp_introspection/docs/stringify.html   (Library - Stringify()) !!!!NEED REVIEW!!!! What title should it have?
+https://www.gnosis.cx/publish/programming/xpp_introspection/docs.html    (Persistence Library Documenation)
+https://www.gnosis.cx/publish/programming/harbour.html    (A Harbour Project How-To: A gentle introduction to an open-source implementation of the Clipper language)
+https://www.gnosis.cx/publish/programming/exam101.html    (LPI 101 Certification Practice Test)
+https://www.gnosis.cx/publish/programming/exam102.html     (LPI 102 Certification Practice Test)
+https://www.gnosis.cx/publish/programming/palm_languages.html  (PalmOS Hosted Programming Languages: Using the Palm as a Development Environment)
+https://www.gnosis.cx/publish/programming/tiger.html    (The Famous Tiger)  !!!!NEED REVIEW!!!! Should it have a title? There is only a link on an svg image
+https://www.gnosis.cx/publish/resumes/resume-old.html    (David Mertz Resume)
+https://www.gnosis.cx/publish/resumes/resume.html (David Mertz Resume)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
