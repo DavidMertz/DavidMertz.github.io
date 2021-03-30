@@ -1,0 +1,223 @@
+html {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+html * {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+html p {
+  font-family: 'Roboto Slab', serif;
+}
+.content--title {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 1rem 0;
+  font-family: 'Roboto Slab', serif;
+}
+.content--title img {
+  margin-right: 1rem;
+}
+.content--title h2 a {
+  text-decoration: none;
+  color: black;
+}
+.content--title h2 a:hover {
+  color: royalblue;
+}
+.content--title h3 a {
+  text-decoration: none;
+  color: #006eff;
+}
+.content--title h3 a:hover {
+  color: #1539a7;
+}
+.content--text {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+}
+.content--text-container {
+  display: flex;
+  flex-direction: column;
+  width: 95%;
+}
+.content--text img {
+  margin-right: 1rem;
+}
+.content--text div {
+  margin-right: 1rem;
+}
+.content--text p {
+  font-size: 16px;
+  width: 100%;
+}
+.content--text p a {
+  text-decoration: none;
+  color: #006eff;
+}
+.content--text p a:hover {
+  color: #1539a7;
+}
+.content--text ul {
+  list-style-type: disc;
+  margin: 0.8rem;
+  width: 97%;
+}
+.content--text ul li {
+  margin: 0.5rem 0;
+}
+.content--text ul li p {
+  font-size: 16px;
+  width: fit-content;
+}
+.content--text ul li p a {
+  text-decoration: none;
+  color: #006eff;
+}
+.content--text ul li p a:hover {
+  color: #003ef8;
+  text-decoration: underline;
+}
+.code {
+  font-family: 'Inconsolata', monospace;
+  font-size: 16px;
+}
+.line {
+  background: black;
+  margin: 1rem 0;
+  height: 2px;
+  width: 100%;
+}
+.subline {
+  background: black;
+  margin: 1rem 0;
+  height: 1px;
+  width: 100%;
+}
+.container-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 85%;
+  margin: 1rem auto;
+  padding: 1rem;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+.container-header--donations p {
+  font-style: italic;
+  text-align: justify;
+  font-style: 18px;
+}
+.container-header--donations--block {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.container-header--donations-btn {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  color: black;
+  width: fit-content;
+  height: 100%;
+}
+.container-header--donations-btn:hover img {
+  transform: rotate(360deg);
+  transition: 0.5s;
+}
+.container-header--donations-btn img {
+  transform: rotate(0deg);
+  transition: 0.5s;
+  margin: 0 1rem 0 0.2rem;
+}
+.container-header--donations form {
+  display: flex;
+  height: 100%;
+  margin-top: 1rem;
+}
+.container-header--donations form p {
+  color: black;
+  font-style: normal;
+  font-size: 20px;
+  text-decoration-line: underline;
+  margin-right: 0.5rem;
+  cursor: default;
+}
+.container-header--donations form input[type="image"] {
+  transform: scale(1, 1);
+  transition: 0.5s;
+}
+.container-header--donations form input[type="image"]:hover {
+  transform: scale(1.1, 1.1);
+  transition: 0.5s;
+  filter: brightness(110%);
+}
+.container-header--title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 2rem;
+}
+.container-header--title img {
+  margin-right: 0.5rem;
+}
+.container-header--title h1 {
+  font-family: 'Roboto Slab', serif;
+}
+.container-header--title p {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 1rem;
+}
+.container-header--search {
+  margin-top: 1rem;
+  width: 100%;
+}
+.container-header--search form {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.container-header--search form p {
+  font-size: 18px;
+  margin: 0 1rem 0 0.2rem;
+}
+.container-header--search form input[type="text"] {
+  width: 100%;
+  font-size: 18px;
+  padding: 0.3rem;
+}
+.container-header--search form input[type="submit"] {
+  font-size: 18px;
+  padding: 0.3rem;
+  cursor: pointer;
+}
+.container-content {
+  margin-top: 2rem;
+  width: 100%;
+}
+.container-content--topics {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.container-footer {
+  margin-top: 1rem;
+}
+.container-footer p {
+  font-family: ;
+  font-style: italic;
+  text-align: justify;
+  font-style: 18px;
+  margin: 1rem 0;
+}

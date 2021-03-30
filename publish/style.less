@@ -1,0 +1,279 @@
+html {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+
+    & * {
+        box-sizing: border-box;
+        padding: 0;
+        margin: 0;
+    }
+
+    & p {
+        font-family: 'Roboto Slab', serif;
+    }
+}
+
+.content {
+
+    &--title {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 1rem 0;
+        font-family: 'Roboto Slab', serif;
+
+        & img {
+            margin-right: 1rem;
+        }
+
+        & h2 {
+            
+            & a {
+                text-decoration: none;
+                color: black;
+                &:hover {
+                    color: royalblue;
+                }
+            }
+
+        }
+
+        & h3 {
+            
+            & a {
+                text-decoration: none;
+                color: rgb(0, 110, 255);
+                &:hover {
+                    color: rgb(21, 57, 167);
+                }
+            }
+
+        }
+    }
+
+    &--text {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        margin-top: 1rem;
+
+        &-container {
+            display: flex;
+            flex-direction: column;
+            width: 95%;
+        }
+
+        & img {
+            margin-right: 1rem;
+        }
+
+        & div {
+            margin-right: 1rem;
+        }
+
+
+
+        & p {
+            font-size: 16px;
+            width: 100%;
+            & a {
+                text-decoration: none;
+                color: rgb(0, 110, 255);
+                &:hover {
+                    color: rgb(21, 57, 167);
+                }
+            }
+        }
+
+        & ul {
+            list-style-type: disc;
+            margin: .8rem;
+            width: 97%;
+
+            & li {
+                margin: 0.5rem 0;
+                & p {
+                    font-size: 16px;
+                    width: fit-content;
+                    & a {
+                        text-decoration: none;
+                        color: rgb(0, 110, 255);
+                        &:hover {
+                            color: rgb(0, 62, 248);
+                            text-decoration: underline;
+                        }
+                    }
+                }
+            }
+            
+        }
+    }
+}
+
+.code {
+    font-family: 'Inconsolata', monospace;
+    font-size: 16px;
+}
+
+.line {
+    background: black;
+    margin: 1rem 0;
+    height: 2px;
+    width: 100%;
+}
+
+.subline {
+    background: black;
+    margin: 1rem 0;
+    height: 1px;
+    width: 100%;
+}
+
+.container {
+    &-main {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 85%;
+        margin: 1rem auto;
+        padding: 1rem;
+        background: #fff;
+        border: 1px solid rgba(0,0,0, 0.2);
+    }
+
+    &-header {
+        &--donations {
+            & p {
+                font-style: italic;
+                text-align: justify;
+                font-style: 18px;
+            }
+
+            &--block {
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+            }
+
+            &-btn {
+                margin-top: 1rem;
+                display: flex;
+                align-items: center;
+                font-size: 20px;
+                color: black;
+                width: fit-content;
+                height: 100%;
+                &:hover {
+                    & img {
+                        transform: rotate(360deg);
+                        transition: .5s;
+                    }
+                }
+
+                & img {
+                    transform: rotate(0deg);
+                    transition: .5s;
+                    margin: 0 1rem 0 .2rem;
+                }
+                
+            }
+
+            & form {
+                display: flex;
+                height: 100%;
+                margin-top: 1rem;
+                & p {
+                    color: black;
+                    font-style: normal;
+                    font-size: 20px;
+                    text-decoration-line: underline;
+                    margin-right: .5rem;
+                    cursor: default
+                }
+
+                & input[type="image"] {
+                    transform: scale(1, 1);
+                    transition: .5s;
+                    &:hover {
+                            transform: scale(1.1, 1.1);
+                            transition: .5s;
+                            filter: brightness(110%);
+                    }
+
+                }
+            }
+        }
+
+        &--title {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-top: 2rem;
+
+            & img {
+                margin-right: .5rem;
+            }
+
+            & h1 {
+                font-family: 'Roboto Slab', serif;
+            }
+
+            & p {
+                font-family: 'Courier New', Courier, monospace;
+                font-size: 14px;
+                font-weight: 500;
+                margin-top: 1rem;
+            }
+        }
+
+        &--search {
+            margin-top: 1rem;
+            width: 100%;
+
+            & form {
+                display: flex;
+                align-items: center;
+                width: 100%;
+                & p {
+                    font-size: 18px;
+                    margin: 0 1rem 0 .2rem;
+                }
+
+                & input[type="text"] {
+                    width: 100%;
+                    font-size: 18px;
+                    padding: .3rem;
+                }
+                & input[type="submit"] {
+                    font-size: 18px;
+                    padding: .3rem;
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+
+    &-content {
+        margin-top: 2rem;
+        width: 100%;
+        &--topics {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+
+    &-footer {
+        margin-top: 1rem;
+        & p {
+            font-family: ;
+            font-style: italic;
+            text-align: justify;
+            font-style: 18px;
+            margin: 1rem 0;
+        }
+    }
+}
