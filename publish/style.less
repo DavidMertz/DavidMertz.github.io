@@ -20,16 +20,15 @@ html {
         width: 100%;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        margin: 1rem 0;
+        justify-content: flex-start;
         font-family: 'Roboto Slab', serif;
 
         & img {
             margin-right: 1rem;
         }
 
-        & h2 {
-            
+        & h4 {
+            font-size: 18px;
             & a {
                 text-decoration: none;
                 color: black;
@@ -40,8 +39,8 @@ html {
 
         }
 
-        & h3 {
-            
+        & h5 {
+            font-size: 16px;
             & a {
                 text-decoration: none;
                 color: rgb(0, 110, 255);
@@ -57,7 +56,6 @@ html {
         width: 100%;
         display: flex;
         align-items: center;
-        margin-top: 1rem;
 
         &-container {
             display: flex;
@@ -76,8 +74,9 @@ html {
 
 
         & p {
-            font-size: 16px;
+            font-size: 14px;
             width: 100%;
+            text-align: justify;
             & a {
                 text-decoration: none;
                 color: rgb(0, 110, 255);
@@ -89,13 +88,12 @@ html {
 
         & ul {
             list-style-type: disc;
-            margin: .8rem;
             width: 97%;
 
             & li {
-                margin: 0.5rem 0;
+                margin: 1rem 0;
                 & p {
-                    font-size: 16px;
+                    font-size: 14px;
                     width: fit-content;
                     & a {
                         text-decoration: none;
@@ -117,30 +115,28 @@ html {
     font-size: 16px;
 }
 
-.line {
-    background: black;
-    margin: 1rem 0;
-    height: 2px;
-    width: 100%;
+.dropdown-button {
+    border: 10px solid transparent; 
+    background: transparent; 
+    width: 0; 
+    height: 0; 
+    display: inline-block; 
+    border-style: solid;
+    margin: .5rem .5rem 0 0 ;
+    border-top-color: black;
 }
 
-.subline {
-    background: black;
-    margin: 1rem 0;
-    height: 1px;
-    width: 100%;
-}
 
 .container {
     &-main {
         display: flex;
         flex-direction: column;
         align-items: center;
-        width: 85%;
+        width: 100%;
+        height: 100vh;
         margin: 1rem auto;
         padding: 1rem;
         background: #fff;
-        border: 1px solid rgba(0,0,0, 0.2);
     }
 
     &-header {
@@ -258,18 +254,77 @@ html {
     &-content {
         margin-top: 2rem;
         width: 100%;
+        display: flex;
+        justify-content: space-between;
         &--topics {
             width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
+            margin: 1rem 0;
+
+            & .container-content--topics {
+                margin: .5rem 0;
+            }
+            
+            &--container {
+                width: 35%;
+                min-width: 35%;
+                max-width: 35%;
+                height: fit-content;
+            }
+        }
+
+        &--article {
+            &--container {
+                width: 64%;
+                min-width: 64%;
+                max-width: 64%;
+                height: fit-content;
+                display: flex;
+                flex-direction: column;
+                padding: 0 1rem;
+                font-family: 'Roboto Slab', serif;
+
+                & pre {
+                    align-self: center;
+                    white-space: pre-wrap;
+                    text-align: left;
+                    font-family: 'Roboto Slab', serif;
+                }
+
+                & p {
+                    font-family: 'Roboto Slab', serif;
+                    font-style: italic;
+                    text-align: justify;
+                    font-style: 18px;
+                    line-height: 1.5rem;
+                    margin: 1rem 0;
+                }
+
+                & .code-sample {
+                    background: #ececec;
+                    padding: 1rem;
+                    font-family: 'Inconsolata', monospace;
+                }
+                
+                & h3 {
+                    margin: 1rem 0;
+                }
+
+            }
         }
     }
 
     &-footer {
         margin-top: 1rem;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
         & p {
-            font-family: ;
+            font-family: 'Roboto Slab', serif;
             font-style: italic;
             text-align: justify;
             font-style: 18px;

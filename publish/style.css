@@ -15,32 +15,36 @@ html p {
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin: 1rem 0;
+  justify-content: flex-start;
   font-family: 'Roboto Slab', serif;
 }
 .content--title img {
   margin-right: 1rem;
 }
-.content--title h2 a {
+.content--title h4 {
+  font-size: 18px;
+}
+.content--title h4 a {
   text-decoration: none;
   color: black;
 }
-.content--title h2 a:hover {
+.content--title h4 a:hover {
   color: royalblue;
 }
-.content--title h3 a {
+.content--title h5 {
+  font-size: 16px;
+}
+.content--title h5 a {
   text-decoration: none;
   color: #006eff;
 }
-.content--title h3 a:hover {
+.content--title h5 a:hover {
   color: #1539a7;
 }
 .content--text {
   width: 100%;
   display: flex;
   align-items: center;
-  margin-top: 1rem;
 }
 .content--text-container {
   display: flex;
@@ -54,8 +58,9 @@ html p {
   margin-right: 1rem;
 }
 .content--text p {
-  font-size: 16px;
+  font-size: 14px;
   width: 100%;
+  text-align: justify;
 }
 .content--text p a {
   text-decoration: none;
@@ -66,14 +71,13 @@ html p {
 }
 .content--text ul {
   list-style-type: disc;
-  margin: 0.8rem;
   width: 97%;
 }
 .content--text ul li {
-  margin: 0.5rem 0;
+  margin: 1rem 0;
 }
 .content--text ul li p {
-  font-size: 16px;
+  font-size: 14px;
   width: fit-content;
 }
 .content--text ul li p a {
@@ -88,27 +92,25 @@ html p {
   font-family: 'Inconsolata', monospace;
   font-size: 16px;
 }
-.line {
-  background: black;
-  margin: 1rem 0;
-  height: 2px;
-  width: 100%;
-}
-.subline {
-  background: black;
-  margin: 1rem 0;
-  height: 1px;
-  width: 100%;
+.dropdown-button {
+  border: 10px solid transparent;
+  background: transparent;
+  width: 0;
+  height: 0;
+  display: inline-block;
+  border-style: solid;
+  margin: 0.5rem 0.5rem 0 0;
+  border-top-color: black;
 }
 .container-main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 85%;
+  width: 100%;
+  height: 100vh;
   margin: 1rem auto;
   padding: 1rem;
   background: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.2);
 }
 .container-header--donations p {
   font-style: italic;
@@ -204,18 +206,67 @@ html p {
 .container-content {
   margin-top: 2rem;
   width: 100%;
+  display: flex;
+  justify-content: space-between;
 }
 .container-content--topics {
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin: 1rem 0;
+}
+.container-content--topics .container-content--topics {
+  margin: 0.5rem 0;
+}
+.container-content--topics--container {
+  width: 35%;
+  min-width: 35%;
+  max-width: 35%;
+  height: fit-content;
+}
+.container-content--article--container {
+  width: 64%;
+  min-width: 64%;
+  max-width: 64%;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  padding: 0 1rem;
+  font-family: 'Roboto Slab', serif;
+}
+.container-content--article--container pre {
+  align-self: center;
+  white-space: pre-wrap;
+  text-align: left;
+  font-family: 'Roboto Slab', serif;
+}
+.container-content--article--container p {
+  font-family: 'Roboto Slab', serif;
+  font-style: italic;
+  text-align: justify;
+  font-style: 18px;
+  line-height: 1.5rem;
+  margin: 1rem 0;
+}
+.container-content--article--container .code-sample {
+  background: #ececec;
+  padding: 1rem;
+  font-family: 'Inconsolata', monospace;
+}
+.container-content--article--container h3 {
+  margin: 1rem 0;
 }
 .container-footer {
   margin-top: 1rem;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 .container-footer p {
-  font-family: ;
+  font-family: 'Roboto Slab', serif;
   font-style: italic;
   text-align: justify;
   font-style: 18px;
