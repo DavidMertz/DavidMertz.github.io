@@ -1330,8 +1330,12 @@ button.forEach(function(item) {
 
         if(container.style.display === 'flex') {
             container.style.display = 'none'
+            item.style.transform = 'rotate(0deg)';
+            item.style.transition = 'all .3s';
         } else {
             container.style.display = 'flex'
+            item.style.transform = 'rotate(-90deg)';
+            item.style.transition = 'all .3s';
         }
 
     })
@@ -1339,36 +1343,53 @@ button.forEach(function(item) {
 </script>
 
 <script>
-    var links = document.querySelectorAll('.content--text a');
+    document.addEventListener('DOMContentLoaded', function() {
 
-    links.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            getArticle(e);
+        var links = document.querySelectorAll('.content--text li a');
+        var linksTitle = document.querySelectorAll('.content--text-container .container-content--topics .content--title a');
+
+        links.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                getArticle(e);
+            })
         })
-    })
 
-    function getArticle(e) {
-        var linkToFile = e.target.getAttribute('href');
+        linksTitle.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                getArticle(e);
+            })
+        })
 
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                data = this.responseText;
-                if (linkToFile.search('.txt') !== -1) {
-                    document.querySelector('.container-content--article--container').innerHTML = '';
-                    document.querySelector('.container-content--article--container').innerHTML = `<pre>${data}</pre>`;
-                } else if (linkToFile.search('.html') !== -1) {
-                    document.querySelector('.container-content--article--container').innerHTML = '';
-                    document.querySelector('.container-content--article--container').innerHTML = data.substring(data.indexOf("<h1>"), data.indexOf("<h3>Abo"))
-                }
+        function getArticle(e) {
+            var linkToFile = e.target.getAttribute('href');
+
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    data = this.responseText;
+                    dataStart = data.indexOf("<h1>") !== -1 ? data.indexOf("<h1>") : data.indexOf("<body" + 6);
+                    dataEnd = data.indexOf("<h3>Abo") !== -1 ? data.indexOf("<h3>Abo") : data.indexOf("<\/body>");
+                    console.log(data.substring(dataStart, dataEnd));
+                    console.log(linkToFile.search('.txt'), linkToFile.search('.html') );
+                    if (linkToFile.search('.txt') !== -1) {
+                        document.querySelector('.container-content--article--container').innerHTML = '';
+                        document.querySelector('.container-content--article--container').innerHTML = `<pre>${data}</pre>`;
+                    } 
+                    
+                    if (linkToFile.search('.html') !== -1) {
+                        document.querySelector('.container-content--article--container').innerHTML = '';
+                        document.querySelector('.container-content--article--container').innerHTML =  data.substring(dataStart, dataEnd);  
+                    }
+                };
             };
-        };
 
-        
-        xhttp.open("GET", linkToFile, true);
-        xhttp.send();
-    };
+            
+            xhttp.open("GET", linkToFile, true);
+            xhttp.send();
+        };
+    });
 </script>
 </body>
 </html>
