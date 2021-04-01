@@ -257,6 +257,9 @@ html p {
 .container-content--article--container h3 {
   margin: 1rem 0;
 }
+.container-content--article--container code {
+  font-family: 'Inconsolata', monospace;
+}
 .container-footer {
   margin-top: 1rem;
   width: 100%;
