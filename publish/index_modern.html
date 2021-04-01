@@ -102,7 +102,7 @@
                                             </li>
                                             <li>
                                                 <P>
-                                                    <a href="./programming/charming_python_2.html">(#2) A Closer Look at Python's <em><span class="code"> xml.dom</span></em> Module</a>
+                                                    <a href="./programming/charming_python_2.html">(#2) A Closer Look at Python's <em></em><span class="code"> xml.dom</span></em> Module</a>
                                                     <a href="./programming/charming_python_2.txt" style="font-style: italic;">(txt&nbsp;version)</a>
                                                 </P>
                                             </li>
@@ -1363,33 +1363,27 @@ button.forEach(function(item) {
         })
 
         function getArticle(e) {
-            var linkToFile = e.target.getAttribute('href');
+            var linkToFile = e.target.getAttribute('href') !== null ? e.target.getAttribute('href') : e.target.parentNode.getAttribute('href');
 
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    data = this.responseText;
-                    dataStart = data.indexOf("<h1>") !== -1 ? data.indexOf("<h1>") : data.indexOf("<body" + 6);
-                    dataEnd = data.indexOf("<h3>Abo") !== -1 ? data.indexOf("<h3>Abo") : data.indexOf("<\/body>");
-                    console.log(data.substring(dataStart, dataEnd));
-                    console.log(linkToFile.search('.txt'), linkToFile.search('.html') );
-                    if (linkToFile.search('.txt') !== -1) {
-                        document.querySelector('.container-content--article--container').innerHTML = '';
-                        document.querySelector('.container-content--article--container').innerHTML = `<pre>${data}</pre>`;
-                    } 
-                    
-                    if (linkToFile.search('.html') !== -1) {
-                        document.querySelector('.container-content--article--container').innerHTML = '';
-                        document.querySelector('.container-content--article--container').innerHTML =  data.substring(dataStart, dataEnd);  
-                    }
-                };
-            };
-
-            
-            xhttp.open("GET", linkToFile, true);
-            xhttp.send();
+            var iframe = document.createElement('IFRAME');
+            iframe.setAttribute("src", linkToFile);
+            iframe.style.border = "none";
+            iframe.style.height = "100%";
+            iframe.style.width = "100%";
+            iframe.setAttribute("onload", "iframeLoaded()")
+            document.querySelector('.container-content--article--container').innerHTML = '';
+            document.querySelector('.container-content--article--container').appendChild(iframe);
         };
     });
+    function iframeLoaded() {
+            var iframeElem = document.querySelector('IFRAME');
+            if (iframeElem) {
+                iframeElem.style.height = "";
+                console.log(iframeElem.height);
+                iframeElem.style.height = iframeElem.contentWindow.document.body.scrollHeight + 50 +'px';
+                console.log(iframeElem.height);
+            }
+        }
 </script>
 </body>
 </html>
