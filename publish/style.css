@@ -100,7 +100,7 @@ html p {
   display: inline-block;
   border-style: solid;
   margin: 0.5rem 0.5rem 0 0;
-  border-top-color: black;
+  border-left-color: black;
 }
 .container-main {
   display: flex;
