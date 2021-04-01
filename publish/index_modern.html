@@ -1331,11 +1331,11 @@ button.forEach(function(item) {
         if(container.style.display === 'flex') {
             container.style.display = 'none'
             item.style.transform = 'rotate(0deg)';
-            item.style.transition = 'all .3s';
+            item.style.transition = 'all .2s';
         } else {
             container.style.display = 'flex'
             item.style.transform = 'rotate(-90deg)';
-            item.style.transition = 'all .3s';
+            item.style.transition = 'all .2s';
         }
 
     })
@@ -1363,6 +1363,8 @@ button.forEach(function(item) {
         })
 
         function getArticle(e) {
+            //Ajax Version
+
             var linkToFile = e.target.getAttribute('href');
 
             var xhttp = new XMLHttpRequest();
