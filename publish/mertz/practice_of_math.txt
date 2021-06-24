@@ -1,0 +1,308 @@
+The Practice of Mathematics
+
+David Mertz
+Math 696, by Bill Reinhardt
+Fall 1987
+
+  If we were to ask the question, "What is it that mathematicians
+  do?", it would not be entirely trivial to answer, "Mathematics."
+  The next question to ask would have to be, "What is mathematics?"
+  On this matter we can say at least a couple of pretty good
+  things.  Whatever mathematics is, it is a textual activity.
+  Mathematicians write papers, read them, make marks on paper and
+  on blackboards, and perhaps most importantly, talk about mathe-
+  matics.  If we can take seriously the sentiments behind be-
+  haviorism, we can say that mathematics is no more than this tex-
+  tual activity.  The sense of this is not that mathematicians do
+  not undergo various cognitive processes, but merely that their
+  doing mathematics does not depend on it.  It is like, as Wit-
+  tgenstein says, each of us having a black box into which no one
+  else can look.  This black box is the thinking, apprehension, or
+  whatever each of us does before and while doing mathematics.  It
+  makes no difference to the practice of mathematics what the con-
+  tent of this thinking, apprehension, etc. is (or indeed if our
+  minds are empty), just so long as it is mathematics which we are
+  doing.  That is, as long as we are writing the things which get
+  counted as mathematics, saying the things which get counted as
+  mathematics, reading the things which get counted as mathematics,
+  and so on.  The things which get counted as mathematics do so,
+  ultimately, for purley institutional reasons:  because of the or-
+  ganization of journals, faculties, and primary, secondary, ter-
+  tiary education, and so on.
+
+  More than this may be said about mathematics.  We have said that
+  mathematics is entirely constituted by social institutions, which
+  circumscribe its textual activity.  However, it is still worth
+  asking why the practice of mathematics is circumscribed the way
+  it is, rather than in some other manner.  To this we will tend to
+  say things which sound much closer to what mathematicians them-
+  selves say, than were the remarks of the above paragraph.  We
+  will tend to respond with facts about the history of mathematics,
+  about known theorems and structures, about human cognition, and
+  about the behavior of medium sized objects.  We will also have
+  quite a bit to say about the ideological and political organiza-
+  tion of societies which do mathematics.
+
+  A distinction is often made in mathematics and philosophy about
+  mathematics between statements about which one is pretty sure,
+  and those about which one is less sure.  Finitists believe that
+  statements about the natural numbers are the ones (in
+  mathematics) which we are most sure about.  The rest have only
+  figurative or metaphorical meaning, and so we can not be quite
+  sure how to take them.  Intuitionists believe, amongst other
+  things, that the only statements we are sure about are those for
+  which we have a proof.  We cannot say, 'statement P is so or
+  statement not(P) is so' unless we have a proof of one or the
+  other.  They are also concerned with statements involving the ex-
+  istential quantifier.  A classical mathematician feels no qualms
+  about saying an object exists solely on the basis of an
+  hypothetical proof, which does not actually produce the object in
+  question.  For an intuitionist this is problematic.  What seems
+  to be common to all mathematicians is a belief that whatever else
+  we are sure about, we can be pretty sure about statements about
+  the natural numbers; that is, statements of arithmetic.  This may
+  well have a great deal to do with the behavior of medium-sized
+  objects.  The medium-sized objects with which we are well
+  aquainted obey the laws of arithmetic when considered only in
+  terms of their distinctness.  In the case of arithmetic, much
+  more that in set-theory, or topology, or algebra, or even
+  geometries, it seems as if the statements we make must be born
+  out (or refuted) by the very way the world is.  If we claim that
+  a number has a certain property, we can ultimately (according to
+  a certain abstraction) take a collection of objects of that num-
+  ber and actually try and see if it can be chopped up, rearranged,
+  combined with other things, or whatever as purported.  Statements
+  about all the numbers or, what amounts to the same thing, about
+  the existence of certain kinds of numbers may be on somewhat less
+  steady ground; but these are not really statements about collec-
+  tions of things -- rather they are statements about the nature of
+  collections.
+
+  The area of textual activity circumscribed as mathematics has
+  much to do with interests, in both senses of the word.  The par-
+  ticular areas and theorems which a mathematician pursues are of-
+  ten matters of which areas are likely to gain institutional
+  recognition -- and hence express the interests of an individual
+  mathematician, in the sense of "serving her interests."  On the
+  other hand (and this cannot be considered independent), these
+  particular areas are ones which are interesting to a given mathe-
+  matician, for a variety of ill understood reasons.  In my own
+  case, for example, a great deal of what I find interesting in
+  mathematics is that which I learned first, that which is most of-
+  ten written about in philosophy, that which is behind the "new
+  math" taught to me in primary school, and so on.  Perhaps some
+  deeper psychoanalytic or otherwise psychological reasons also ex-
+  ist for why I fancy logic and set-theory over algebra and
+  geometry.
+
+  The interests which mathematicians have tend to link together
+  many areas of mathematics.   It has turned out that many areas of
+  mathematics which started out as the products of seperate inter-
+  ests have come to have more and more connections with one
+  another.  A theorem in one area of mathematics often has
+  ramifications on altogether different portions of mathematics.
+  This is, in fact, often behind our interest in a particular area
+  of mathematics.  For example, our interest in large cardinals in
+  set-theory is motivated, at least in part, by the intuitions (and
+  results) of mathematicians that properties of large cardinals
+  will be used to prove properties of arithmetic.   The inter-
+  connection of different parts of mathematics started with
+  Descartes' unification of algebra and geometry; it has progressed
+  to the point where essentially all mathematics may be modelled in
+  set-theory.  Set-theory, in turn, is shown by the Lowenheim-
+  Skolem results to be modelled in arithmetic (at least if we think
+  of set-theory axiomatically).  The interest exhibited by modern
+  mathematics in unifying the various areas of mathematics is cer-
+  tainly a matter worth examining.  One point which we should
+  notice is that the consequences of other areas on arithmetic
+  seems to be treated as more inherently interesting than con-
+  sequences in other directions.  This is in some way in keeping
+  with the finitists' sentiments.
+
+  Due to the formalization of modern logic by Frege, Peano and
+  others; and due to the axiomization of arithmetic, set-theory,
+  geometry, and so on by many mathematicians (notably, Zermelo,
+  Frankel, Dedekind, Peano, Hilbert, and others), particularly
+  around the start of the twentieth century, we are now generally
+  able to cast the ramifications of areas of mathematics upon one
+  another as purely syntactic facts.  This increased technical
+  rigor is seen by contemporary mathematicians as an advance.  It
+  becomes very easy at this point in time to see the activity of
+  mathematics as the exploration of syntax.  This view may be cast
+  back in time without too great misreading; at least I believe as
+  much.  I believe it fairly plausible that the interest in mathe-
+  matics has long been due to some aspect of human cognition which
+  is fascinated with syntax.  That earlier mathematicians were not
+  so self-conscious of the syntax of their practice as we are of
+  ours no more counts against syntax being the central motivation
+  of mathematics than does the fact that some cultures are not
+  self-conscious about the syntax of their language count against
+  the language having a syntax.  What I am proposing here is that
+  the fact that many cultures do mathematics may show something
+  universal about human cognition.  This universal may be a fas-
+  cination with syntax -- and this is also evidenced by the exist-
+  ence of many formal games in many cultures.  My proposal is
+  analogous to that of Levi-Strauss, who claims that the nature of
+  myth-making, kinship patterns, and other activities shows a fun-
+  demental structural nature to human cognition.
+
+  Many of the remarks which I have made about the practice of math-
+  ematics run counter to traditional views about mathematics, par-
+  ticularly those which claim that the business of mathematics is
+  to discover how things really are.  Kurt Godel is a mathematician
+  who is known, beyond his phenomenal contributions to logic, as a
+  Platonist.  It is this view that in a naive reading would be most
+  opposed to the story I sketch about mathematical practice.
+  However Godel's article, "What is Cantor's continuum problem?",
+  seems in many ways to reflect a similar view of mathematical
+  practice to that which I have.  I should like to discuss this way
+  of looking at Godel's article.  Page references will be from,
+  Philosophy of Mathematics, Benacarraf and Putnam - second edition.
+
+  My main claim might be stated in a somewhat Wittgensteinian way:
+  mathematics is simply the way in which mathematicians "go on".
+  This says that mathematics is not a system, but a practice -- in
+  the sense in which structural linguists after Saussure distin-
+  guish between 'langue' as system, and 'parole' as practice.
+  Godel does not argue for this, as to do so is not his concern
+  here and elsewhere, but this view seems to underlie his article.
+  In a way this picture is forced on us by the mathematics itself:
+  any system of axioms is shown by Godel's incompleteness proof to
+  leave questions undecidable (strictly speaking, any set of axioms
+  which suffice to create a model for arithmetic).  However, more
+  than this underlies Godel's thinking.  We could imagine conceiv-
+  ing of the practice of mathematics as a practice of deciding
+  questions only as they come up and are shown independent of what
+  we have already accepted.  Our system of axioms would merely be
+  seen as one with elastic borders.  For Godel the role of axioms
+  is less than this.  The axioms are merely heuristic in trying to
+  partially schematize the practice of mathematics.  The following
+  is illustrative.
+
+    [Regarding a] new axiom:  a probable decision about its
+    truth is possible also in another way, namely, inductively
+    by studying its "success."  Success here means fruitfulness
+    in consequences, in particular in "verifiable"
+    consequences, i.e., consequences demonstrable without the
+    new axiom, whose proofs with the help of the new axiom,
+    however, are considerably simpler and easier to discover,
+    and make possible to contract into one proof many dif-
+    ferent proofs.  (p.477)
+
+  Godel is also interested in particular areas of mathematics in-
+  sofar as they have connections with and ramifications upon other
+  parts.  I have tried to characterize the practice in this manner,
+  and Godel says as much explicitly.  For example, Godel finds it
+  significant that:
+
+    [T]hese axioms [of large cardinals] have consequences far
+    outside the domain of very great transfinite numbers, which
+    is their im- mediate subject matter.
+
+  And that:
+
+    [T]he axioms of the existence of inaccessible numbers ....
+    implies new theorems about integers (the individual
+    instances of which can be verified by computation).
+    (p.483)
+
+  Or again, Godel says,
+
+    The simplest case of an application of the criterion under
+    discussion arises when some set-theoretic axiom has
+    number-theoretic consequences verifiable by computation up
+    to any given integer.  (p.485)
+
+  These quotes demonstrate not merely an interest in connecting the
+  parts of mathematics, but an assymetric interest in the parts;
+  with the greatest interest being in the natural numbers.  This
+  interest in the natural numbers seems, as I have said, to be con-
+  nected with the possibility of considering the objects of the ac-
+  tual world only in terms of their distinctness.  Godel indicates
+  this,
+
+  Such considerations, it is true, apply directly only to physical
+  objects, but a definition of the concept "number" which would
+  depend on the kind of objects that are numbered could hardly be
+  considered to be satisfactory. (p.471)
+
+  Godel, in some sense, agrees with the finitists that we have the
+  greatest surity about the natural numbers.  Whether we accept a
+  givien axiom hangs on its consequences, and the consequences with
+  which we have the clearest ideas are about natural numbers.
+
+  Let us try again to characterize the way that mathematicians "go
+  on".  The axioms which "force themselves upon us a being true
+  (p.484)" partially characterize our actions in mathematics.  That
+  they do so entails that syntax forces itself on us too.  We do
+  not merely accept axioms, but we accept their consequences also.
+  That these consequences are determinate rests on the fact that
+  our application of syntactic rules is determinate and uniform.
+  Kripke, via Wittgenstein, questions our epistemic certainty about
+  this determinacy; but somehow despite whatever arguments he might
+  have, we know that we will continue to apply syntactic rules "in
+  the same way."  This certainty we have about syntactic uniformity
+  is common to all mathematicians, specifically more so than is the
+  acceptance of given axioms.  Godel recognizes this.
+
+    [T]he axioms underlying the unrestricted use of the concept
+    of set .  .  . have been formulated so precisely in
+    axiomatic set- theory that the question of whether some
+    given proposition fol- lows from them can be transformed,
+    by means of mathematical logic, into a purely combinatorial
+    problem concerning the manipulation of symbols which even
+    the most radical intuitionist must acknowledge as
+    meaningful.  (p.475)
+
+  An intuitionistic mathematician, or some other sort, might doubt
+  the "truth" (or usefulness) of a particular axiom (notably, the
+  axiom of choice), but she could not doubt the syntactic con-
+  sequences of the axiom (i.e. of these being actual consequences).
+  In this sense, mathematicians are concerned with syntax before
+  they are concerned with anything else.
+
+  The certainty of syntax is closely related to Hilbert's
+  "equivalency thesis".  Hilbert believes that we can not be more
+  certain of anything than of the natural numbers, because the
+  natural numbers only need the one basic notion of iteration.  The
+  equivalency thesis says that the metamathematical methods we have
+  are also based on this same basis, merely with symbols rather
+  than numbers as their object.  In either case, iteration is basi-
+  cally a syntactic notion.  It is because of the certainty we have
+  about the regularity and uniformity of syntax that we are certain
+  about both the mathematics and metamathematics generated thus.
+
+  Mathematics, for Godel, essentially comes down to the intuitions
+  which mathematicians have.  We might think of our feeling about
+  the regularity (uniformity) of syntax as an intuition, but it is
+  an intuition on an even deeper level than is the rest of mathe-
+  matics.  This fact might in some way underlie the logicists' sen-
+  timents.  The other intuitions we have concern the truth or fal-
+  sity of certain axioms or statements, and these may be disagreed
+  upon to one extent or another.  These intuitions are seen by
+  Godel to fully determine the practice of mathematics.
+
+  The mere psychological fact of the existence of an intuition
+  which is sufficiently clear to produce the axioms of set-theory
+  and an open series of extensions of them suffices to give meaning
+  to the question of the truth or falsity of propositions like
+  Cantor's continuum hypothosis.  What, however, perhaps more than
+  anything else, justifies the acceptance of this criterion of
+  truth in set-theory is the fact that continued appeals to mathe-
+  matical intuition are necessary not only for obtaining unam-
+  biguous answers to the questions of transfinite set-theory, but
+  also for the solution of the problems of finitary number theory
+  (of the type of Goldbach's conjecture), where the meaningfulness
+  and unambiguity of the concepts entering into them can hardly be
+  doubted. (p.485)
+
+  I must take slight point with Godel here, however.  The existence
+  of mathematical intuitions is not a "mere psychological fact",
+  but is a negotiated fact.  Our intuitions are not fixed; they may
+  be swayed and changed.  On a grand scale, the intuitins of many
+  mathematicians were changed by the discovery of the paradoxes of
+  set-theory.  On a smaller scale, we may argue over, and perhaps
+  convince one another, of the truth or falsity of particular
+  axioms like choice or the existence of certain large cardinals
+  (or for that matter, Euclid's fifth postulate).
+

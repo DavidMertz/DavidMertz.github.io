@@ -1,0 +1,151 @@
+GENOTYPE, PHENOTYPE, AND NORMS OF REACTION
+
+by David Mertz
+No Copyrot
+
+  My previous comment:
+
+    "... and will lead, soner or later, if not to _the_ causes of
+    English-speaking, then at the very least to some biological markers
+    which correlate with English-speaking." (nuff said?)
+
+  A response:
+
+    Not really. Help a stupid interactionist understand the logic of your
+    argument. You're not claiming that my point is merely a tautology,
+    are you? The sentence might be empirically problematic, coz we cannot
+    be absolutely sure that there are any biological causes or correlates
+    with English-speaking. I don't think the same could be said of
+    homosex (and you'd disagree naturally :).
+
+  Well... it's like this:  English-speaking is *entirely* environmental.
+  Beyond a few people with dreadful genetic deformities (causing brain
+  damage, or whatever), *anyone* can learn English.  Same goes for any
+  language, obviously.  English is even a particularly good example of a
+  language that won't even have any accidental widespread correlations
+  with anything genetic.  It might be for Finnish or Khoi-San that the
+  relatively isolated groups which speak them also have some
+  genetic characteristic which is non-causally correlated with speaking
+  that language.  But there are native English speakers (to say nothing
+  of non-native) from India, and Hong Kong, and Europe, and Native
+  Americans, and Africans/African-Americans.  There are just so many
+  different groups (in terms of breeding communities) which maybe had
+  been isolated for a thousand years, but in the last couple hundred
+  have started speaking English, that there certainly isn't any even
+  accidental correlation between *anything* genetic and English-
+  speaking.
+
+  In a general way, I tend to be an "interactionist" as well.  But it
+  must be recognized that *some* things are entirely genetic, or
+  entirely environmental.  I *suspect* sexual orientation isn't either
+  of these, but if it turns out to be entirely environmental, then your
+  language is no good.
+
+  I think it's like this:
+
+      Entirely Environmental    Interactional      Entirely Genetic
+      ----------------------    -------------      ----------------
+        Language                 Height              Blood type
+        Religion                 Weight              Eye color
+        etc.                     Skin color          etc.
+                                 Sexuality (??)
+                                 "IQ"
+
+  I DO NOT think of these columns as a continuum, however.  I think
+  they're just three seperate things.  The reason is that people usually
+  make a mistake of thinking the "genetic-ness" of something determines
+  the range of phenotypic possibilities.  It does, of course, in a
+  sense... but not at all in the way most people think.  The usual
+  conception is something like this (using sexuality as a hypothetical,
+  and that old canard about "domineering mother" as the environmental
+  part [mind you, this is a joke for me, it's just so stupid that it's
+  funny to use]).
+
+      #----- POPULAR CONCEPTION OF GENOTYPE/PHENOTYPE INTERACTION: -----#
+
+       Kinsey Scale:
+      <--6----------5----------4----------3----------2----------1----------0-->
+          ^ (Genotype A) ^                                 ^ (Genotype B) ^
+          |              |                                 |              |
+       Domin <-------> Passive                          Domin <-------> Passive
+        mom             mom                               mom             mom
+
+
+  You see what I mean.  The conception is that each genotype gives a
+  certain range possible phenotypic expression.  In the popular
+  conception, something which is "more genetic" gives a narrower range,
+  while something which is "less genetic (more environmental)" gives a
+  wider range of phenotypic possibilities.
+
+  A more general, and more accurate picture would look like the below.
+  The example I give is an extreme one to highlight the difference with
+  the popular model... but the idea is that ANY curves are possible for
+  some trait across some range of genotypes.  In fact, almost any curves
+  CAN be found for various things (like height of corns in different
+  altitudes, or whatnot):
+
+      #----- MORE ACCURATE "NORM OF REACTION" OF GENOTYPE/PHENOTYPE -----#
+
+           ^
+           |                                                   ____A___A
+      K    6 B                                                A
+      I    |  \_B__                                   ___A___/     Genotype A
+      N    5       \__B__                            A
+      S    |             \___B___          _____A___/
+      E    4                     \_B_     A
+      Y    |                        _\___/
+           3                       A  \__B__
+      S    |                 __A__/         \___B__
+      C    2                A                      \__B__
+      A    |          __A__/                             \__B__    Genotype B
+      L    1         A                                         \__B__
+      E    |  ___A__/                                                \_B__
+           0 A                                                            \
+           +--------------------------------------------------------------->
+             Passive mom                                    Domineering mom
+
+  You see the idea.  If genotypes were like this in terms of "norm of
+  sexuality" it would be impossible to say one genotype was more or less
+  homosexual than another, since each would be "more homosexual" in some
+  environments, but less in others.  I draw more or less linear
+  functions for each genotype, but any other curve could hypothetically
+  be there also.  One curve which is quite common in actual organisms is
+  a normal-type curve, where a phenotype is maximized (or minimized) at
+  a particular environment, but slopes off in both directions from than
+  maximum (minimum).  Of course, some genotypes across some
+  environmental variables have more than one maxima/minima.
+
+  One important thing to notice is that even where different genotypes, or
+  genotypic groups, each have a bell-curve in distribution, each genotype may
+  reach maximal values higher than the other genotype has in the same
+  environment -- while both showing the same general pattern of being
+  maximized at an intermediate environment.  For example, maybe there are
+  different educational styles (i.e.  rote-learning vs.  problem-solving),
+  where everyone does the best with a combination of the two.  But perhaps
+  different genotypic groups do better at a different point in the middle.
+  If you have a socially dominant style of eduction, it could produce as an
+  "artifact" the effect of giving one genotype higher average scores.
+  However, if the socially dominant education style were to change slightly,
+  it might favor the other group.  The picture might look like:
+
+      #-------------------- Norm of Reaction Chart --------------------#
+
+           ^
+           |           Genotype A     Genotype B
+      T    6            _________     _________
+      R    |           /         \   /         \
+      A    5          /           \ /           \
+      I    |         /             X             \
+      T    4        /             / \             \
+           |       /             /   \             \
+           3      /             /     \             \
+      S    |     /             /       \             \
+      C    2    /             /         \             \
+      A    |   /             /           \             \
+      L    1  /             /             \____         \
+      E    | /     ________/                   \_________\________
+           0/ ____/                                       \_______\______
+           +--------------------------------------------------------------->
+             Environment extreme                               Other extreme
+
+

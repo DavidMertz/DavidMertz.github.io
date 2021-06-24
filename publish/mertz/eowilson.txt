@@ -1,0 +1,334 @@
+Response to Edward O. Wilson's,
+"The Biological Basis of Morality," _The Atlantic Monthly_ April, 1998
+
+by David Mertz
+No Copyrot
+April 1998
+
+
+I. NATURALISTIC FALLACIES, REDUX.
+------------------------------------------------------------------------
+
+  The fundamental problem with Wilson is that he can conceive of
+  far too few things.  Explanations and understandings come at a
+  great variety of levels, and in a great variety of guises.  There
+  seem to be two crucial aspects of such plurality which Wilson
+  misses.
+
+  One simple insight of most moderately sophisticated philosophy of
+  science is that sciences explain in myriad orthogonal levels.
+  The true stories told by physics (whether by today's physics, or
+  by some future physics which corrects today's mistakes) neither
+  contradict nor affirm the true stories of sociology, or even
+  chemistry (themselves, of course, subject to the same fallibilist
+  caveats).  One type of truth may speak at one level of
+  explanation, and another truth at quite a different level.  For a
+  long time, the reductionist project epitomized in Lavoisier's
+  remark of "tell me only the position and velocity of each
+  particle in the present, and I can predict all future events"
+  held sway in the hopes of scientists.  That is, it was a common
+  belief of the 18th century (and some of the 19th) that every
+  scientific explanation could be given the solid ground in being a
+  consequence of the fundamental truths of the basic stuff of the
+  universe.  As remarked below, Wilson seems not really much to
+  have left 18th century hopes behind, albeit with biology serving
+  as a higher level proxy for an ultimate physics.
+
+  At a somewhat different level-though still not precisely that at
+  which I will criticize Wilson-philosophers are in the habit of
+  distinguishing between a "context of discovery" and a "context of
+  justification".  In simple language, what historically,
+  psychologically and accidentally leads to a particular scientific
+  hypothesis is not at all the same thing that makes a hypothesis
+  true.  A particular thought process of a scientist, for example,
+  may be interesting to that scientist's biographers, or even
+  generally to historians and philosophers of science, but the
+  hypothesis itself, once committed to concrete enunciation, must
+  still stand by its empirical verifiability.  The frequent subtext
+  of this distinction is a defense of scientific explanations
+  against the critics of scientists.  For example, particular
+  scientists may be nasty and small-minded types who develop their
+  scientific theories out of unpleasant prejudices; but the
+  theories themselves, once they come into this light-of-day no
+  longer carry a taint of their origin.  A simple concrete example
+  is Karl Pearson's pivotal work in statistics (the correlation
+  coefficient or the chi-square, for example).  Pearson himself was
+  motivated in part by a wish to prove the innate inequality of
+  human intelligence (with a bit of a racial bent here).  He was
+  wrong in his motives, and the correlation coefficient is just as
+  sound for that.
+
+  With this digression, let's return to where Wilson goes astray.
+  His wish is to "[search] for an origin of ethical reasoning that
+  can be objectively studied."  All fine and well, as far as it
+  goes.  Wilson's own explanation leans more heavily on biology
+  than I would wish, but the general framework is unassailable:
+  ethical beliefs evolve out of the nature of the human organism,
+  and through the cultural and social development of such
+  biologically specific beings.  Wilson characterizes this,
+
+    Strong innate feeling and historical experience cause certain
+    actions to be preferred; we have experienced them, and have
+    weighed their consequences, and agree to conform with codes
+    that express them.  Let us take an oath upon the codes,
+    invest our personal honor in them, and suffer punishment for
+    their violation.
+
+  Certain romanticist fantasies aside, no one could seriously deny
+  the general outline of this explanation.  The only problem for
+  Wilson is that his explanation has not the slightest relevance to
+  ethics.  The biological or historical origin of ethical belief
+  says nothing one way or another about its veracity or moral
+  weight.  Yes, we believe such-and-such because of our genes (for
+  example), but that doesn't tell us anything about the moral
+  correctness of the belief.
+
+  One can easily enough see the connection (and the differences)
+  here with the context-of-discovery versus
+  context-of-justification distinction.  Humans have discovered
+  ethics, in a sense, because of our evolutionary history; but our
+  first obligation in evaluating ethical systems is to disregard-or
+  at least bracket-this origin.  Contra Wilson, you just can't get
+  an ought from an is!
+
+  An easy way, to my mind, of seeing the problem, is by moving it
+  slightly over.  Let us ask, for a moment, not about ethical
+  beliefs, but about mathematical ones.  There is no question that
+  human's ability to engage in higher mathematics has roots in our
+  particular biological and cultural evolution.  Certain Darwinian
+  demands upon our distant ancestors gave us the kinds of brains
+  which, after a few thousand years of cultural shaping and
+  pressures, would produce the theorems of number-theory, logic and
+  calculus.  A number of interesting stories could be told here,
+  some of them perhaps true, all of them ultimately subject to the
+  weight of empirical testing, about why humans, but not other
+  animals, have written theorems.  Perhaps certain social relations
+  of hominids required a kind of abstraction from individual family
+  relations which ultimately led to a general capability for
+  abstraction.  Or perhaps the manual dexterity of humans, and
+  their early tool use, required an abstract thinking about parts
+  which could make tools.  Within an historical, rather than
+  evolutionary, time frame, we might probably make some remarks
+  about the mathematical requirements of societies which produce
+  and distribute agricultural surpluses.  Whatever the stories
+  Wilson or I initially imagine, some such stories are no doubt
+  true.
+
+  It just is not, however, the causal history of human mathematical
+  thought which makes Wiley's proof of Fermat's Last Theorem true!
+  What makes the proof true, is the soundness of its steps and the
+  coherency of its conceptual objects.  In a Kantian sense, any
+  thinking being able to comprehend Wiley's proof would be equal in
+  establishing the veracity of the proof.  Such beings might be
+  angels or pixies, or they might be the odd life forms evolved on
+  Mars or Ganymede according to quite different evolutionary
+  pressures.  It is the lifestyle of primitive hominids which
+  precipitates the ability of humans to develop the proof, but the
+  proof is equally veridical to any thinking being, whatever its
+  particular evolutionary history.
+
+  Just as much as evolution (biological or cultural) puts humans in
+  the habit of realizing mathematical truths, it also puts us in
+  the habit of believing some mathematical falsities.  Some
+  interesting work on conceptual mistakes (or a very roughly
+  "mathematical" sort) has been done by Tversky and Kaneman.  One
+  fairly good example is a story "problem" like the below (told in
+  rough paraphrase from memory):
+
+    Jane lives in an upper-middle class suburb of Chicago.  She
+    is a board member of the Chicago ACLU, and volunteers on
+    weekends at a drug-rehabilitation center.  By occupation, is
+    Jane more likely to be:
+    - (a) A lawyer
+    - (b) A doctor
+    - (c) A criminal defense lawyer
+    - (d) An accountant
+
+  The punchline to this example is that more respondents respond to
+  such a "problem" with the answer (c) than with the answer (a).
+  However, given that (c) is a strict subset of (a), and the
+  question is of probability of set membership, it is simply a
+  mistake of mathematics to select (c) given the range of options.
+
+  The explanation which Tversky and Kaneman give for this type of
+  thinking concerns humans' tendency to cluster ideas together as
+  part of cognition.  This is sometimes called stereotypic thinking
+  (without the negative connotation the word stereotype has in
+  other contexts).  Individual concepts are not thought
+  individually, but rather in series of relations of proximity with
+  other ideas.  The concepts of "ACLU board member", "volunteer at
+  a drug-rehabilitation center", and "criminal defense lawyer" are
+  ones many people hold fairly close together as part of a
+  stereotype.  Certain attributes we find in an entity (including
+  an hypothetical one) trigger associations with other attributes,
+  and affect our judgments about the likelihood of those other
+  attributes.  At times, this way of thinking leads to plain
+  logical mistakes.  It is easy enough to imagine an evolutionary
+  story of human mental evolution which traces conceptual thinking
+  from cruder to more sophisticated abilities to group and
+  associate like ideas together.  This associative ability might
+  well have served the competitive advantage of hominids the
+  greater its development.  In fact, it might well be this sort of
+  conceptual development which, in a general sense, allows humans
+  to think all the complex thoughts about mathematics, logic and
+  science which we do.  On the other hand, under this scenario, it
+  is this very same developmental history which inclines us to a
+  certain class of conceptual errors.  Still, for all that, however
+  deeply built into our genes such fallacious tendencies might well
+  be, they are still errors.
+
+  And so it is with ethics.  And so also we can see the relevance
+  of orthogonality.  Ethics (or mathematics) just simply explains
+  at a different level than does its causal history.  It is not
+  uninteresting to inquire into the causal history of ethics in
+  humans, but when one does so one is doing something different
+  from ethics.  To remark as I do is to take no stand on the proper
+  basis of ethical thought-or indeed that it has one.  Ethical
+  dictates might have a transcendental basis and thereby operate at
+  an orthogonal level to causal histories of ethics.  On the other
+  hand, ethical dictates might have strictly what Wilson oddly
+  calls an empiricist basis[1] and likewise be orthogonal to their
+  causal histories.  Carrying the matter further, ethics need have
+  no real veridical basis at all to remain orthogonal with the
+  causal history of ethics.  The truths of astrology are few to
+  none, but however few the truths be, the statements of astrology
+  should not be judged by the causal/evolutionary history of
+  astrological thought.  By that standard, we should little be able
+  to distinguish astrology from behavioral psychology, both
+  certainly originating in a facility to generalize and comprehend
+  human behaviors.  Astrology (and perhaps ethics) is false, but
+  Wilson stands in the wrong position from which to make this
+  judgement.
+
+---------------------------------------------------------------------
+  [1] A better word would probably be constructivist', or perhaps
+  'positivist' (in the sense of legal positivism).  Empiricism, to
+  me, always seemed to denote the doctrine that concepts have their
+  whole basis in precepts, and derivatively that empirical
+  scientific inquiry is the best way to go about acquiring
+  knowledge.  It's opposite is rationalism (precepts coming out of
+  concepts), not transcendentalism.  Transcendentalism, at least as
+  Kant has it, would try to walk the line by intoning that
+  "concepts without precepts are empty, but precepts without
+  concepts are blind."  Of course, 'empiricism', with its modern
+  resonances of brass-tacks science, is a word with which Wilson
+  would rather claim an association.  In any event, empiricism
+  proper, as near as I can tell, should be rather agnostic about
+  which side of Wilson's ethical transcendentalism fence to fall.
+
+
+II. JUST-SO STORIES.
+------------------------------------------------------------------------
+
+  Wilson's evolutionary tales always seem to have a bit of Kipling
+  in them.  One feels in reading his human evolutionary scenarios
+  that, yes, the story is possible.  But one never at all feels
+  that Wilson's stories are necessarily true ones.  Wilson's
+  knowledge of anthropology, archaeology, and hominid paleontology
+  are simply that of an amateur with an expertise elsewhere.  He
+  can speculate about hominid evolution, just as I, or anyone, can
+  speculate about hominid evolution.  But outside of the ethology
+  of social insects, Wilson's stories are nothing special.
+
+  Wilson's just-so stories are actually probably forgivable for a
+  popular journal like The Atlantic Monthly.  Here they can be
+  taken as illustration only.  The problem is that Wilson's
+  "scientific" works are just as rife with such imaginings.  Still,
+  let's take a look at a rather crucial story within the article
+  under discussion.  It plays a somewhat pivotal, albeit somewhat
+  covert, role in Wilson's overall argument,
+
+    Imagine a Paleolithic band of five hunters.  One considers
+    breaking away from the others to look for an antelope on his
+    own.  If successful, he will gain a large quantity of meat
+    and hide-five times as much as if he stays with the band and
+    they are successful.  But he knows from experience that his
+    chances of success are very low, much less than the chances
+    of the band of five working together.  In addition, whether
+    successful alone or not, he will suffer animosity from the
+    others for lessening their prospects.
+
+  It's a nice story.  It explains why people should have evolved
+  genes for cooperation and sociability-traits which are sometimes
+  exhibited in humans, and of which I, like Wilson, approve of and
+  would wish to encourage.
+
+  On the other hand, here is another story with about as much
+  evidence from the archeological record,
+
+    Imagine a Paleolithic band of five hunter/gatherers.  They
+    hunt for small animals like rabbits which are relatively
+    plentiful and gather nuts and berries from wild plants.  One
+    considers breaking away from the others to look for food on
+    his own.  He knows from experience that he is above average
+    in his rate of gathering food and resources.  By going on his
+    own, he will no longer have to share his food and resources
+    with those who gather them less well.  In addition, by being
+    successful alone, he will gain the respect and deference of
+    the others for his great abilities.
+
+  This is a less nice story, at least from the point of view of its
+  "ethical" implications.  Under a slightly different, but equally
+  plausible, evolutionary scenario, the best-and-brightest of each
+  generation of hominids will be attracted to solitary activity.
+  The only members attracted to cooperation are those with the
+  worst survival abilities-and this situation will certainly, over
+  thousands or millions of generations, lead to the elimination of
+  the genes of the "cooperationists."
+
+  Neither of these stories is likely to be precisely accurate, nor
+  certainly is either exhaustive.  It is clear from the most basic
+  observation that humans sometimes cooperate and sometimes
+  compete.  We are sometimes sociable and sometimes solitary.  All
+  these variations are certainly within the possible behavioral
+  range of humans.  Either simple story above-or any of the many
+  like them-would conclude by logic that the behaviors we observe
+  everyday could not be within the human bio-behavioral repetoire.
+  So real stories must be a lot more complicated.
+
+  The subtext of Wilson's article, and of his sample evolutionary
+  story, is that humans in our genes have inclinations to act in
+  ways which right-thinking people like Wilson and readers of The
+  Atlantic Monthly find generally "ethical" to start with.
+  Whatever its apparent logical structure, Wilson's article would
+  not have been written or published if there were not supposed a
+  certain consilience between the brand new ethics Wilson is
+  "discovering" and the old-fashioned ethics which most of us
+  educated Westerners generally believe already.  If some
+  biological story-say one with actual evidence behind it-told of
+  the strong evolutionary pressures in favor of early hominids
+  murdering each other at the slightest whims, Wilson would
+  certainly not be claiming that doing as our genes "tell us" is
+  the right way to act.  The "discovery" only works if it tells us
+  pretty much what we always knew.
+
+  This is why Wilson's particular just-so story has to occur within
+  the pages of his article.  Let readers tell whatever story we
+  might imagine ourselves, and who knows what awful conclusions a
+  biological ethics might bring us to.  But as long as the
+  paleolithic hunters are pretty close in their behaviors and
+  motivations to a boy-scout troop, all is well.  The sort of crude
+  Hegelian inversion of saying whatever is (in our genes) is what
+  ought to be (in our moral systems) only seems sensible as long as
+  Wilson provides the proper guidance in describing the is.
+
+
+RESOURCES
+------------------------------------------------------------------------
+
+  The source Wilson article may be found at:
+
+    URL: http://www.theatlantic.com/issues/98apr/biomoral.htm
+
+  Links to a variety of subsequent related discussion is at:
+
+    URL: http://www.theatlantic.com/issues/99nov/9911sciencewars.htm
+
+  An interesting looking article by that I found by accident is,
+  Steve Rosenthal, _How Science is Perverted to Build Fascism_.  If
+  nothing else, it is hosted at my alma mater, so I feel I should
+  reference it.
+
+    URL: http://www-unix.oit.umass.edu/~cscpo/eowilson.htm
+
+

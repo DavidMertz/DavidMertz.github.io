@@ -1,0 +1,3310 @@
+-L-A-N-G-U-A-G-E-
+
+by David Mertz
+
+An Honors Thesis
+University of Colorado, Boulder.
+Fall, 1987
+
+by David Mertz
+_*Table of Contents_*
+*0.0 Introduction. *..........................................  1
+
+*1.0 Saussure.*...............................................  1
+
+*1.0.1 Terminology.*..........................................  2
+
+*1.0.2 Methodology.*..........................................  3
+
+*1.0.3 The negative definition of the sign.*..................  4
+
+*1.0.3.1 Phonetic definition.*................................  4
+
+*1.0.3.2 Semantic definition.*................................  5
+
+*1.0.4 The objectivity of the sign.*..........................  5
+
+*1.0.4.1 The continuity of new generations*...................  7
+
+*1.0.4.2 The multiplicity of signs and complexity of _langue_*  7
+
+*1.0.4.3 Collective inertia or the double-blind predicament*..  7
+
+*1.0.5 Idealism and Teleology.*...............................  7
+
+*1.1 Criticisms of Saussure.*.................................  8
+
+*1.2 Volosinov.*..............................................  9
+
+*1.2.1 The subject.*..........................................  9
+
+*1.2.2 Saussure's Idealism.*.................................. 10
+
+*1.2.3 Volosinov's Semioticity. *............................. 11
+
+*1.2.3.1 Saussure versus Volosinov.*.......................... 12
+
+*1.2.3.2 The absence of langue.*.............................. 12
+
+*1.2.3.3 Economic determinism.*............................... 13
+
+*1.3 Lacan.*.................................................. 13
+
+*1.3.1 The mirror stage.*..................................... 14
+
+*1.3.2 The Other and the Phallus.*............................ 15
+
+*1.3.3 The autonomy of the signifier.*........................ 15
+
+*1.4 Kristeva - Semiotics and Semiology.*..................... 16
+
+*2.0 Sentence-meaning and utterance-meaning.*................. 18
+
+*2.1 Semantic theories.*...................................... 18
+
+*2.1.1 Extensional theories.*................................. 20
+
+*2.1.1.1 Possible-World semantics.*........................... 20
+
+*2.1.1.2 States-of-the-world semantics.*...................... 21
+
+*2.1.1.3 Verification semantics.*............................. 21
+
+*2.1.2 Intensional theories:  Chomsky.*....................... 22
+
+*2.1.2.1 Recursive syntax.*................................... 22
+
+*2.1.2.2 Syntactic structures.*............................... 23
+
+*2.1.2.3 Synonymy and paraphrase.*............................ 23
+
+*2.1.1.4 Entailment.*......................................... 25
+
+*2.1.1.5 Relations of degree.*................................ 26
+
+*2.1.1.6 Presupposition.*..................................... 27
+
+*2.1.1.7 Category agreement.*................................. 29
+
+*2.2 Grice.*.................................................. 32
+
+*2.2.1 Conversational maxims.*................................ 32
+
+*2.2.2 Intentions.*........................................... 33
+
+*2.3 Austin.*................................................. 34
+
+*2.3.1 Infelicities.*......................................... 35
+
+*2.3.2*....................................................... 36
+
+*2.3.3 Performatives:  implicit and explicit.*................ 37
+
+*2.3.4 Constative utterances.*................................ 37
+
+*2.3.5 Truth and falsity.*.................................... 39
+
+*2.3.6 Conclusions.*.......................................... 40
+
+*2.4 Davidson.*............................................... 41
+
+*2.4.1 Prior theory and passing theory.*...................... 42
+
+*2.4.2 Malapropisms.*......................................... 42
+
+*2.4.3 Language?*............................................. 43
+
+*2.4.4 Language revisited.*................................... 44
+
+*3.0 Conclusion.*............................................. 45
+
+*3.0.1 Some "facts".*......................................... 45
+
+*3.0.2 Some claims.*.......................................... 46
+
+*3.1 Once again:  language?*.................................. 47
+
+*3.2 A re-examination.*....................................... 48
+
+*3.2.1 Chomsky revisited.*.................................... 48
+
+*3.2.2 Stereotypes.*.......................................... 49
+
+*3.2.3 Semantics, grammar and pragmatics.*.................... 50
+
+*3.3 Conventions and intentions.*............................. 50
+
+*3.3.1 Conventions.*.......................................... 51
+
+*3.3.2 Intentions.*........................................... 51
+
+*3.4 Lotman.*................................................. 52
+
+*3.4.1 Sameness and difference.*.............................. 52
+
+*3.4.2 Code and content.*..................................... 53
+
+*3.4.3 Diachrony.*............................................ 53
+
+*3.4.4 Language concluded.*................................... 54
+
+*Bibliography and key*........................................ 55
+
+
+
+                   "no entity without identity"
+
+                                        - Quine
+
+
+*0.0 Introduction. *
+     A perennial problem of twentieth century philosophy, linguistics,
+semiotics, and psychology (as well as other fields) has been the
+distinction between language ('langue') and speech ('parole').  This
+distinction is very similar, if not identical, to the distinction
+between semantics and pragmatics.  Or still closer, we may distinguish
+between the entire phonetics-phonemics-morphology-syntagmatics-syntax-
+semantics axis, and pragmatics.  A distinction of this sort arises,
+not only with respect to language and speech, but to any semiotic
+system.  It is the difference between an abstract system of
+oppositional sign elements, and the application of this system by
+actual concrete beings, notably persons.  There are, of course,
+semiotic systems other than those operated (and operated on) by
+persons; particularly those studied by zoosemiotics, cybernetics,
+information theory, and computer science.  In the latter three of the
+fields which we have mentioned there is an obvious, and justified,
+program/implementation split, corresponding to the langue/parole
+distinction.  In all of these fields the object studied is an
+artifact, and one created for specific purposes.  Hence, whenever
+there is a divergence between program and its implementation, our
+highest level classification of this event must be "(machine) error".
+
+     While this "error" classification is most appropriate for
+artificial systems, we should be wary of applying it too quickly to
+natural systems:  the emotive and communicative systems of animals,
+natural (physical) systems when viewed as informational, and most
+importantly, the objects of the human sciences.  With the general
+academic denouncement of normative ('prescriptive') grammars, in favor
+of descriptive ones, linguistics can seem to have freed itself of an
+improper reliance on the "error" classification.  However, linguistics
+- even descriptive - has with philosophical collusion maintained an
+essentially normative and teleological[1] conception of persons qua
+speaking beings.  This tendency, though far from universal, arises
+over and over again in many guises, and in many intellectual
+traditions.  In this paper we shall try to examine several of the
+normative systems which would have one favor language over speaking,
+and semantics over pragmatics.  As we have just indicated, our focus
+shall be primarily on natural languages, and the various fields which
+concern themselves with natural languages.  In the end we shall try to
+present a program for study of natural "languages", for philosophers
+and others, which is fully materialist and optimally nominalist; which
+favors speech over language, and pragmatics over the semantics axis.
+
+*1.0 Saussure.*
+
+     The rift between language and speech in modern linguistics
+originates with Ferdinand de Saussure.  This is not to say that no
+such rift exists prior to Saussure.  It does exist, in linguistics
+with Wilhelm von Humboldt; in philosophy with almost everyone,
+starting with Plato.  But it is Saussure who first brought the fully
+developed conception of a language/speech split to scientific
+linguistics.  Saussure has also had an unquestionably great influence
+on structuralist thinking in all of the human sciences.  It is largely
+because of this influence that these sciences tend towards an idealist
+teleology whenever they examine persons qua speaking beings.  Hence we
+shall start our examination with an analysis of Saussure's
+conceptions, which are still enormously compelling and useful today -
+even to those trying to pursue a materialist or pragmaticist[2]
+program.
+
+     The idealism and teleology which we attribute to Saussure are
+tendencies which he explicitly denies, at least in the form we
+attribute them.  Hence, we shall have to try to draw out some
+consequences of Saussure's thinking which are not made explicit.  This
+is largely a matter of making clear the ontological status of langue,
+langage, and parole; at the same time we must have a critical eye
+towards Saussure's claims about the ontological (and epistemic) status
+of his entities.  However, we shall first try to explain Saussure's
+system of thought in a neutral manner.
+
+*1.0.1 Terminology.*
+
+     To embark on an exposition of Saussure's thought, we must first
+explain the sense of three terms:  'langage', 'langue', and 'parole'.
+The latter two of these, in particular, are crucial to Saussure's
+thought.  The most general of these terms, 'langage', is meant to
+embrace all elements of human speaking.  These elements include the
+physiological construction and reception of sounds by persons' vocal
+and aural apparati; the physical facts about transmission of sounds or
+other media through which language can be carried; and the
+psychological and sociological mechanisms through which understanding
+can occur.  It is the last of these categories which includes
+'langue', i.e. 'language'.  Saussure's first remarks about langue are
+essentially to this effect.  He says,
+
+     "[Langue] is both a social product of the faculty of speech and a
+     collection of necessary conventions that have been adopted by a
+     social body to permit individuals to exercise that faculty
+     (p.9)."
+
+This merely points to the social nature of langue, we have not yet
+provided a rigorous definition of it.  Let us now try to do so.
+Langue, as Saussure conceives it, is the arbitrary[3] matching up of
+"sound-images" with "concepts".
+
+     Although, langue is socially determined, it is essentially a
+psychological entity.  Saussure says, "If we could embrace the sum of
+word-images stored in the minds of all individuals, we could identify
+the social bond that constitutes language [i.e. langue] (p.13)."  We
+are to understand that 'sound-image', as Saussure uses it, stands for
+an exclusively psychological object, not a physical sound.  Saussure
+presupposes some sort of representational theory of mind, in order
+that sound-images are conceived as some actual entities in the brain.
+This is not, however, really crucial.  If we preferred to give some
+functional explanation of the mind as a system of virtual
+representation, this could easily be accommodated to the Saussurian
+conception of language.[4]  For Saussure, the primary fact about
+langue is its arbitrariness.  That is, no logical or natural
+connection exists between the particular sound-images and concepts in
+correspondence.  These correspondences, although contained in the mind
+of each speaker, are determined by social convention.
+
+     Parole is the "executive side (p.13)" of langage, that is, the
+individual and accidental in human speech.  Parole may be divided into
+two parts:
+
+     "(1) the combination by which the speaker uses the language code
+     for expressing his [sic] own thought; and (2) the psychophysical
+     mechanism that allows him to exteriorize those combinations
+     (p.14)."
+
+By 'combinations' Saussure means the links between certain
+sound-images and concepts which define a language [langue].  Saussure
+is only concerned here with the semantic links in language.  We shall
+not try to extend this to the syntactic combinations in language,
+although these should probably play a closely analogous role to those
+played by semantic links.  We can then see already that Saussure's
+distinctions suppose a certain object for linguistics:  namely langue.
+This is because even individual speech [parole] does not exist, by
+definition, without language [langue].
+
+*1.0.2 Methodology.*
+
+     Saussure is quite clear about his methodological preference for
+language over speech.  He says, "[F]rom the very outset we must put
+both feet on the ground of language and use language as the norm of
+all other manifestations of speech [langage] (p.9)"  Hence for
+Saussure, there is no possibility of studying the phonological
+production of persons, as informational messages, except through the
+study of the language [langue] to which they correspond.  It is, of
+course, still possible for the physiologist to study the purely
+acoustic production of sound, but this study is not one embraced by
+semiology, but rather by physics.  In later sections of this paper we
+shall claim it is possible to study this very subject prohibited by
+Saussure.  For convenience, we shall hence continue to use 'parole' in
+the sense defined by Saussure; however we shall use the term 'speech',
+or 'individual speech' to refer the physiological/acoustical aspect of
+langage.  This is contrary to the convention of the translator of
+Saussure's book, who uses 'individual speech' as a synonym for the
+French 'parole'.
+
+     Let us turn to an examination of Saussure's reasons for focussing
+the attention of linguistics on langue, and not parole.  His primary
+reason for this is that parole is an entirely heterogeneous affair, it
+follows the whims and peculiarities of each individual speaker.  This
+mass is far too unsystematic to formulate any laws about.  Langue, by
+contrast, is an homogeneous structure, which is composed of links
+between signifiers (sound-images) and signifieds (concepts).  All the
+objects within langue are of exactly the same sort:  they are
+associations between two different kinds of psychological objects.
+
+*1.0.3 The negative definition of the sign.*
+
+     There is another, even more important, sense in which langue is
+an homogeneous structure.  It is in this respect, which we shall now
+explain, that we must call langue a structure, rather than an object.
+We shall call this 'the negative definition of the signifier and
+signified'.  According to Saussure,
+
+     "[C]oncepts [and sound-images] are purely differential and
+     defined not by their positive content but negatively by their
+     relations with the other terms of the system.  Their most precise
+     characteristic is in being what the others are not (p.117)."
+
+Or again,
+
+     "[I]n language there are only differences without positive terms.
+     Whether we take the signified or the signifier, language has
+     neither ideas nor sounds that existed before the linguistic
+     system, but only conceptual and phonic differences that have
+     issued from the system (p.120)."
+
+This may easily be illustrated, both in the case of the signifier and
+in that of the signified.
+
+*1.0.3.1 Phonetic definition.*
+
+     We may see the negative definition of the signifier by an
+examination of an English phone, e.g. /k/.  What distinguishes /k/
+from the other English phones /m/, /a/, /t/, /p/, /g/, etc. is not any
+positive trait of the sound itself, but merely those features in which
+it differs from the other sounds.  Hence, /k/ is distinguished from
+/m/, /a/, etc. by not being a continuant.  /k/ is distinguished from
+/t/, /p/, etc. by its articulation being behind the velar ridge.  It
+is distinguished from /g/ only by its lack of voicing.  However, /k/
+has no positive quality of its own; any sound which is non-continuant,
+unvoiced, and articulated behind the velar ridge is an English /k/,
+whether it be implosive or explosive, aspirated or non-aspirated,
+palatalized or non-palatalized, or having a palatal-velar, palatal, or
+glottal articulation.  We know that these possibilities do not produce
+a common sound by the fact that they are distinguished in some
+languages.
+
+*1.0.3.2 Semantic definition.*
+
+     The same situation can be shown on the signified side of the sign
+(where a 'sign' is defined as a signifier/signified link).  For
+example, Sanskrit distinguishes three degrees of number, where English
+only distinguishes two.  Conceptually, the Sanskrit plural does not
+have the same value as the English plural.  However, this cannot be
+because of some positive value of the Sanskrit concept ['plural'][5],
+because every group of objects, real or imagined, which would be
+classified in Sanskrit to be plural, would be similarly classified in
+English.  Rather, the difference in conceptual value of the plurals of
+the two languages comes solely through the difference in the
+signifieds to which they are opposed.  In Sanskrit the plural
+classification has two numeric oppositions:  ['singular'] and
+['dual']; whereas in English there is only the opposition
+['singular'].  The example we have given is one of an opposition of
+grammatical morphemes; however, it is clear enough that the same
+applies to lexical oppositions.  An example of this might be the
+English words 'sensual' and 'sensuous', or 'continual' and
+'continuous', (or rather, the signifieds of these words), which once
+had a specific conceptual opposition, but have generally lost it.
+Hence English is left without the means of distinguishing two
+concepts, because the concepts themselves were a product of an
+arbitrary division of thought.
+
+*1.0.4 The objectivity of the sign.*
+
+     Having sketched some of Saussure's thinking, it is now possible
+to bring out the aspect of his schema which is really the important
+one for the purposes of this paper.  We shall call this aspect the
+'objectivity of the sign'.  Since the sign is a psychological entity,
+the objectivity of the sign must be, in essence, a phenomenological
+claim.  That is:  it is claimed that each sign, and the whole
+structure of relations of signs, is present to each speaker as an
+unchangeable, impervious whole.  In Saussure's words, "[Langue] is . .
+. outside the individual who can never create nor modify it by
+himself; it exists only by virtue of a sort of contract signed by the
+members of a community (p.14)."  This contract[6] is, in a phrase of
+Lacan, "always already given."  However, langue is not only outside
+the will of the individual, it is also outside the will of the
+collective.  Saussure says this slightly later, "[Langue] always
+eludes the individual or social will (p.17)."  We see this in the
+various social attempts, such as the French Academy's, to regulate
+language; these never entirely succeed.
+
+     The objectivity of the sign stems, for Saussure, from its very
+arbitrariness.  Even where there is a partial iconic[7] value to a
+sign, this is dominated by element of arbitrariness once it joins the
+system of langue.  This is clear in the case of onomatopoeia.  Even
+where a word originates because of its natural connection with the
+thing it stands for, once the word exists it is subject to the same
+mutations as any other word in the language.  It may seem paradoxical
+that a sign can be both arbitrary and conventional, and yet impervious
+to change by either an individual or the collective will.  Saussure
+acknowledges this,
+
+     "The signifier, though to all appearances freely chosen with
+     respect to the idea that it represents, is fixed, not free, with
+     respect to the linguistic community that uses it.  The masses
+     have no voice in the matter, and the signifier chosen by language
+     [langue] could be replaced by no other.  This fact, which seems
+     to embody a contradiction, might be called colloquially, 'the
+     stacked deck.'  We say to language:  'Choose!' but we add:  'It
+     must be this sign and not other.'  No individual, even if he
+     [sic] willed it, could modify in any way at all the choice that
+     has been made; and what is more, the community itself cannot
+     control so much as a single word; it is bound to the existing
+     language (p.71)."
+
+     This seeming paradox may be reconciled in several ways, as its
+peculiarity is really a conditioned reaction, not a product of the
+logical structure of the two facts about langue.  Some of the facts we
+can point out to quell our reaction to the two "facts" about langue,
+are i) the continuity of new generations of speakers; ii) the
+multiplicity of signs and over-complexity of the system; iii) what
+Saussure calls the 'collective inertia towards innovation, which we
+shall call the 'double-blind predicament of speakers'.  We shall make
+a few remarks about each of these above points, but it should be noted
+that these remarks, in keeping with the nature of the task at hand,
+shall be heuristic rather than rigorous.
+
+*1.0.4.1 The continuity of new generations*
+
+     The continuity of new generations.  Since human generations are
+not, even approximately, divided into distinct generational groups,
+each new speaker is faced by an overwhelming majority of established
+speakers.  This is the same as the fact that every language, at every
+time in history (and prehistory), is already an historical object.
+
+*1.0.4.2 The multiplicity of signs and complexity of _langue_***
+
+     The multiplicity of signs and complexity of langue.  This point
+is certainly not any sort of "in-principle" reason for going along
+with the simultaneous objectivity and arbitrariness of the sign.
+However, the general point here is that since elements of langue are
+relatively motivated (e.g. regularity in declension and combination of
+lexical and grammatical morphemes), any change in a particular sign
+would involve the reworking of a large part of the rest of the
+language.  This task generally exceeds the limits of a particular
+speaker, or even collective.
+
+*1.0.4.3 Collective inertia or the double-blind predicament*
+
+     Collective inertia or the double-blind predicament.  We find this
+to be the strongest point of the three.  Saussure puts it merely that
+no speaker can change a sign unilaterally, and still achieve
+communication with her fellows.  The coordination problems (as well as
+power-structure problems) prohibit simultaneous (i. e. all speakers at
+once) change in a sign, within a collective.  We prefer to think of
+this problem in decision-theoretic terms.  Assuming that communication
+is a desideratum, we may not change our semantic connections without
+hopelessly threatening the achievement of this goal.  This is because
+a given speaker cannot know which new value is given to a sign by
+another, except through the communicative mechanism which depends on
+the system to which this sign in question belongs.  Especially where
+we are concerned with the possible change of many signs, it is the
+most prudent communication-maximization policy to leave the system as
+it is aboriginally agreed upon.  The consequence of this is that even
+where change does occur in language, it must occur item by item, and
+slowly enough so as to assure that all speakers have the means to
+become aware of the change.
+
+*1.0.5 Idealism and Teleology.*
+
+     Now that we have presented Saussure's "objectivity of the sign",
+we shall consider our earlier claims about the nature of langue and
+parole.  We claimed that langue involves us in both idealism and
+teleology.  Saussure explicitly denies the former of these:  "Language
+[langue] is concrete, no less so than speaking; and this is a help in
+our study of it.  Linguistic signs, though basically psychological,
+are not abstractions (p.15)."  If Saussure were to say that langue is
+an abstraction we could stop worrying about its ontological status.
+However, since he does not, we must remain concerned.  We shall not
+examine this here; both because we shall eventually go against
+Saussure's own representation of his project, and because the
+discussion of langue's ontology shall prove useful in discussing the
+thought of several other thinkers.
+     The teleology in Saussure's langue, unlike the idealism, can be
+read directly from his text.  We see several suggestions of this
+teleology in the introductory sections of his book.  Saussure says,
+"language [langue] is not complete in any speaker; it exists perfectly
+only within a collectivity (p.14)."  Or again,
+
+     "Among all the individuals that are linked together by speech,
+     some sort of average will be set up:  all will reproduce - not
+     exactly of course, but approximately - the same signs united with
+     the same concepts (p.13)."
+
+These suggest that some transcendent langue exists, outside of and
+prior to each speaker, and each speaker tends towards this
+transcendent structure.  The notion of tendency which we use, however,
+is not unproblematic.  We might approximate it by saying that, for
+Saussure, some causal force acts to bring each speaker's speech closer
+to the specifications set by langue; as against whatever tendencies
+there are for speakers to speak differently.  Certainly there is not
+the conceptual association of the transcendent langue with the Good
+and the True, which is traditional to teleological thinking, but we
+still must recognize this as teleological.
+     In the fourth part, _Geographical Linguistics_, this teleological
+thinking is expounded on in more length.  Chapter IV as a whole is
+concerned with this, so we shall not bother to reproduce it here.  We
+shall merely say, in brief, how this teleology is explained.  Saussure
+says that if language, as originally learnt were spoken by each person
+throughout her life, then the varieties of speech would be infinitely
+diverse.  However, through the effect of verbal intercourse, speakers
+drop or change those items which differ from those of their fellow
+speakers.  Further, speakers will not be encouraged in their use of an
+innovative item.  This general family of observations may be thought
+of as a product of a decision-theoretic maximization of communication
+by speakers, in much the same way as we presented the collective
+inertia due to the double-blind predicament of speakers.  Here,
+however, the emphasis is not on conservatism but on the
+goal-directedness of the community of speakers.  Every speaker tries
+to use items in such a way as to maximize communication; as a result,
+Saussure claims, the speakers tend toward a common language [langue].
+This is teleology in a respectable scientific outfit, but it is
+unquestionably a teleological theory.
+
+*1.1 Criticisms of Saussure.*
+
+     We should now like to move on to some of the criticisms which
+have been made of Saussure, and his langue/parole distinction, by
+later structuralist writers.  In the process of doing this we hope
+both to illustrate the idealist presuppositions of Saussure's thinking
+and to deny the objectivity of the sign, at least in the sense in
+which Saussure conceives it.  We shall focus on three writers, each
+with her own rather sharply different goal, who level similar
+criticism of Saussure's schema.  These writers are V. N. Volosinov,
+Jacques Lacan, and Julia Kristeva.  There are two aspects present in
+each of them which speak against the langue/parole distinction as cast
+by Saussure.  The first of these aspects is the conception of the
+psyche.  For Saussure it was possible to establish, in a objective
+way, what signifier/signified connections were psychologically made by
+a particular speaker.  This implies a conception of the psyche as a
+closed system.  Neither Volosinov, Lacan, nor Kristeva are comfortable
+with the possibility or coherency of establishing these connections,
+precisely because of their conceptions of the human psyche.  Each of
+these authors tend to drop the subjective consciousness from the
+picture, altogether.  The second aspect of these authors' thought
+which speaks against Saussure's schema is the manner in which
+signifier/signified links are present to speakers.  Where Saussure saw
+these links as being objectively presented to the subjective
+consciousness, Volosinov, Lacan, and Kristeva focus on the
+presentation of speech in its concrete actuality, to the detriment of
+langue in its systematicity.
+
+*1.2 Volosinov.*
+
+     Let us first turn to an examination of Volosinov, who is of the
+three probably the most accessible.  We should like to first discuss
+Volosinov's rejection of the Saussurian relation of a speaker to
+langue.  This point concerns a speaker's own relation to her speech,
+and shall keep us closer to the framework of Saussure than the former
+aspect above.  This former aspect may be said to concern the
+interpretive relation of a hearer to another speaker.  The conclusions
+we shall draw from an examination of this former aspect shall be more
+radical, and by the its nature involve us in more complexity.  Hence,
+we shall defer that discussion momentarily.
+
+*1.2.1 The subject.*
+
+     Volosinov admits, perhaps with more generosity than he need have,
+that it is at least coherent to speak of the manner in which langue is
+presented to the subjective consciousness.  However, even this
+admission is tempered by an immediate rejection of granting langue an
+objective ontological status.  This brings Volosinov into immediate
+conflict with Saussure, at least under one reading of the latter.
+However, this conflict is best left until later for its resolution.
+This is because even if Saussure is read as casting langue as fully
+objective, it is consequently also true that Saussure sees langue as
+being presented objectively.  This is merely the rather banal fact
+that Saussure does not believe langue to be objective, yet unknowable
+- which would be a rather awkward belief.  Volosinov states this
+admission:
+
+          "If we claim that language as a system of incontestable and
+     immutable norms exists objectively, we commit a gross error.  But
+     if we claim that language, with respect to the individual
+     consciousness, is a system of norms, that such is the mode of
+     existence of language for each member of any given language
+     community, then what we are expressing in these terms is a
+     completely objective relationship (p.66)."
+
+He goes on, however:
+
+     "Whether the fact itself is correctly constituted, whether
+     language actually does appear only as a fixed and inert system of
+     norms to the speaker's consciousness - that is another question
+     (p.67)"
+
+The conclusion, when Volosinov asks, "Does language really exist for
+the speaker's subjective consciousness as an objective system of
+incontestable, normatively identical forms (p.67)?", will be that it
+does not.
+     As pointed to above, Volosinov believes that rather than towards
+language as system, "the speaker's focus of attention is brought about
+in line with the particular, concrete utterance he [sic] is making
+(p.67)."  For Volosinov, this must always be the case; because "the
+meaning of a word is determined entirely by its context (p.79)."
+Independently of some particular situation of use, there is no
+underlying meaning to a given signifier.  It is only by reifying some
+finite number of uses of a signifier that dictionaries or descriptive
+grammars can claim to give _the _meaning of a given word.  Volosinov
+claims that these descriptive grammars, which retain the term langue,
+are only a product of linguistics' historical root in philology.
+Where the object under study is a finite corpus in a dead language, it
+is certainly possible (and useful even) to try to isolate what is
+common to all uses of a given word, or given construction.  However,
+when we turn to trying to describe all the possible uses (i.e. the
+"core meaning") of a word in a living language, we lose what is
+essential to the concrete ideological and socioeconomic environment in
+which the word occurs, and which gives it its meaning.
+     Volosinov makes some remarks about the actual presentation of
+language to us.  Volosinov agrees that words seem to have particular
+semantic values in particular situations, but these "words are always
+filled with content and meaning drawn from behavior or ideology
+(p.70)."  Rather than utterances having "only one linguistic
+criterion:  correct versus incorrect (p.54)",
+
+     "the criterion of linguistic correctness is submerged by a purely
+     ideological criterion:  an utterance's correctness is eclipsed by
+     its truthfulness or falsity, its poeticalness or banality, . . .
+     [whether it is] good or bad, important or unimportant, pleasant
+     or unpleasant, and so on (p.70)."
+
+This hints at the program we shall try to pursue in later sections of
+allowing grammaticality judgements to play a part in actual speech,
+but a part that is no different in kind from that played by judgements
+of truthfulness, vulgarity, clarity/unclarity, and the like.  For
+example, ungrammaticality may be met with censure, but so may
+insincerity.  It shall be in these comparisons that it shall
+eventually prove most poignant to turn back to the teleological nature
+of langue.
+
+*1.2.2 Saussure's Idealism.*
+
+     The second part, here, of Volosinov's critique of Saussure's
+langue/parole distinction regards Saussure's conception of the human
+psyche.  Before moving on to Volosinov's conception of the psyche, it
+shall be useful to push on Saussure's conception, particularly as
+regards the ontological status of langue.  Saussure implicitly relies
+on a Rationalist conception of the psyche as a rational system, which
+is radically separated from the world.  This generally goes
+hand-in-hand with an ontological dualism, in which mind is one kind of
+substance, and matter is quite another.
+     We need not be ontological dualists to adopt a Rationalist
+conception of the psyche, however.  An alternative is to be material
+monists, but give a functional explanation of mind which demands a
+sharp distal/proximal split.  The precise sense of this split depends,
+of course, on the particular functional explanation we give.  However,
+in general we may explain it as follows.  The functioning of the mind
+might involve a strict categorization of all cognition into two
+categories:  those which we call distal and proximal.  The distal part
+is that which is regularly consequent upon some external stimulation;
+the proximal is the "internal" portion of cognition, that which only
+stands in relation to other proximal cognition.  If Saussure were to
+rely on an outright ontological dualism, it would follow immediately
+that langue is an ideal, not a material object.  This is by Saussure's
+very own definition of langue (my p.4):  "the sum of word-images
+stored in the minds of all individuals."  According to ontological
+dualism, anything stored in the substance of the mind is an ideal
+object.
+     There is more difficulty in pushing Saussure's conception of
+langue if he is read as a functionalist (of mind).  However, even
+under this reading Saussure cannot maintain his conception of langue.
+The two important things to keep in mind are Saussure's claim that
+"Language [langue] is concrete . . . [and] linguistic signs . . . are
+not an abstraction (my p.11)."; and the objectivity of the Sign.  The
+objectivity of the Sign demands that, under a functional picture, a
+signifier/signified link is presented as a distal object.  This is
+not, of course, to claim that langue must be a distal object, but
+merely that the psyche has the same organization relative to a
+signifier/signified link as it does relative to a distal object.  Once
+we add in that signs are not abstractions, but concrete objects, we
+are, however, forced to call signifier/signified links actual distal
+objects.  We may retreat slightly from this by claiming, not that
+signs are realized outside the speaker, but merely that the mind is a
+modular structure containing a part which contains representations of
+signifier/signified links.  Saussure's claim of the concreteness of
+signs does, at this point, demand a strictly representational system.
+However, now we are faced with Saussure's statement, "[Langue] exists
+perfectly only within a collectivity (my p.11)."  When we take this
+into account is impossible to say any longer that each speaker merely
+stands in relation to a modular representation of her own idiolect.
+For Saussure, the idiolect is always an imperfect copy of the langue.
+However, this excludes the location of the objective langue from a
+modular portion of the mind.  It is also clear, and Saussure says this
+himself, that signifier/signified links are psychological, not
+physical objects.  Hence the only possible "place" left for langue is,
+presumably, some ideal realm.  Perhaps the easiest way to resolve this
+is to make the move which Volosinov points out; namely, allow that
+langue is subjectively presented as objective, but deny it real
+objectivity.  That is, as Volosinov says,
+
+     "Language as a stable system of normatively identical forms is
+     merely a scientific abstraction, productive only in connection
+     with certain particular practical and theoretical goals (p.98)."
+
+One of these goals may be the eminently practical one of
+communication, but the objective langue remains an abstraction.
+
+*1.2.3 Volosinov's Semioticity. *
+
+     Let us now turn to Volosinov's conception of the human psyche.
+For Volosinov, the psyche does not have the radical separation from
+the world which it does in the Rationalist conception.  Rather, "The
+individual consciousness is a socio-ideological fact (p.12), [which]
+can only arise and become a viable fact in the material embodiment of
+signs (p.11)."  We are to understand here that "the sign may not be
+divorced from concrete social forms of intercourse (p.2)."  Hence
+where Volosinov speaks of the 'sign' he means, in Saussure's closest
+approximation, parole.  More neutrally, we may equate Volosinov's use
+of the word 'sign' with 'utterance', where the latter is thought of as
+a purely physical event.  The collection of all the habitual forms of
+utterance within a particular group Volosinov calls 'ideology', or
+more specifically, 'behavioral ideology'.  Keeping this in mind, we
+are to understand that "there is no basic division between the psyche
+and ideology; the difference is one of degree only (p.33)."  And
+further, "[T]he mutual delimitation of the psyche and ideology can be
+solved on the unitary territory of the ideological sign which embraces
+both (p.39)."  The picture which is being drawn here is of the human
+psyche occupying, not some pre-given role in the organism homo
+sapiens, but a particular section of the ideological system of a
+society.
+     Hence as the ideological realm of signs is constitutive of the
+human psyche, there is no part of the mind which can properly be
+called pre-linguistic, or at any rate, no part which is pre-semiotic.
+This is true especially of experience, which to the Rationalists was
+the essence of the subjective mind.  Volosinov says, for example,
+
+     "The experiential, expressible element and its outward
+     objectification are created, as we know, out of one and the same
+     material.  After all, there is no such thing as experience
+     outside of embodiment in signs. . . . It is not experience that
+     organizes expression, but the other way around - expression
+     organizes experience (p.85). . thought and experience,
+     [consciousness] has already constituted a social event on a small
+     scale and is not an inner act on the part of the individual
+     (p.90)."
+
+This complete semioticity of consciousness shall prove very
+threatening to Saussure's objectivity of the Sign.
+
+*1.2.3.1 Saussure versus Volosinov.*
+
+     For Saussure, the sound-image and concept must exist in the mind
+of a speaker, prior to being joined together.  It is admittedly true
+that, for Saussure, neither the mass of phonic representations, nor
+that of concepts is differentiated prior to being divided by language.
+This is clearly a step away from a Rationalist picture of clear and
+distinct ideas, which are differentiated by their individual natures.
+As we have pointed to above, Saussure's concepts, and his
+sound-images, exist purely through their differentiation from one
+another.  Nonetheless, there is a pre-given medium of thought in which
+these concepts and sound-images are placed; and this medium is
+necessarily pre-semiotic.  With Volosinov, even this pre-semiotic
+medium is taken away.  Volosinov's most startling, though subtle,
+phrasing of this is:  "A sign can only be illuminated with the help of
+another sign (p.36)."  Here we are to read sign in the sense in which
+Saussure proposes it, namely as a signifier/signified link; at least
+this is the interpretation we shall push.
+
+*1.2.3.2 The absence of langue.*
+
+     Let us examine some of the consequences of this view of
+Volosinov's.  It first of all insists that a sign is not illuminated
+by an always already given psychological link between signifier and
+signified.  The illumination of a given sign call it 'a', can only
+come through the production or utilization of a second sign, whose
+signifier is the signified of 'a', or whose signified is the signifier
+of 'a', or which signifies 'a' itself.  These signifiers of signifiers
+find no stopping point in the subjective consciousness, and hence no
+already given langue.  Rather, as later Structuralists shall claim,
+the "unending chain of signifiers" must find its ground in something
+which is beyond signification itself.  For Lacan, for example, this
+something is the drive; for Althusser, it is the societal totality,
+and ultimately the means of production.
+
+*1.2.3.3 Economic determinism.*
+
+     The latter view is probably close to Volosinov's belief.
+Volosinov really only points at this economic determinism, but it is
+nonetheless present.  He says, for example, "Production relations and
+the sociopolitical order shaped by those relations determine the full
+range of verbal contacts between people (p.19)"; or again,
+
+          "In order for any item, from whatever domain of reality it
+     may come, to enter the social purview of the group and elicit
+     ideological semiotic reaction, it must be associated with the
+     vital socioeconomic prerequisites of the particular group's
+     existence; it must somehow, even if only obliquely, make contact
+     with the bases of the groups material life (p.22)."
+
+A few other comments to this effect are also in his writing.  The
+importance of this is not to try to find the exact basis of this
+"something" which grounds the signifiers in Volosinov.  This exact
+basis is never given.  The importance of these quotes, immediately
+above, is to show that Volosinov realizes the need for some thing to
+ground the ideological/semiotic system of signs.  In a relatively
+natural extension of Marx, Volosinov identifies semioticity with
+ideology, and hence grounds it in the relations and mode of
+production.
+     The exact ground of the sign in Volosinov is unimportant to
+seeing how Volosinov's conception of the human psyche is incompatible
+with Saussure's notion of a subjectively objective langue.  This
+incompatibility follows very immediately from the explanations we have
+already given.  It is quite simply a matter that, for Volosinov, there
+does not exist any psychological medium in which to represent, prior
+to semioticity, sound-images and concepts and in which to join the
+two.  The consequences of this might, at first glance, seem to be that
+there is simply no way in which speakers can speak.  However, as we
+shall show later, the actual consequence is short of this, though
+still somewhat radical.  The actual result of Volosinov's conception
+of the human psyche, and the ideology to which it belongs, is that the
+signified of the sign drops out, leaving only signifiers connected to
+one another.  This elimination of the signified is largely common to
+all the structuralist thinking which seeks to eliminate the human
+subject from its ontology.
+
+*1.3 Lacan.*
+
+     With the elimination of the signified, we may tie in the thinking
+of the psychoanalyst, Jacques Lacan.  It shall not be possible to give
+a complete, or even a cursory, summary of Lacan's thought, as he is
+perhaps the most enigmatic thinker of the twentieth century.  All that
+we shall attempt in these confines is some sketches of the parts of
+Lacan which are relevant to our rejection of Saussure's langue/parole
+distinction.  Before we begin, however, it should be acknowledged that
+the use to which we shall draw on aspects of Lacan's thought shall be
+contrary to his thinking as a whole.  In particular, Lacan accepts the
+existence of a somewhat Saussurian langue, though not without some
+slight modifications.  Our effort shall not be to show the actual
+train of Lacan's thought, which includes the langue which we shall
+reject; rather, we shall merely try to add some aspects of Lacan's
+thought to the framework we started in the above discussion of
+Volosinov.
+     We started our rejection of the langue/parole distinction with a
+mention of two lines which could lead to these rejection.  These were,
+briefly, firstly, the nature of the psyche; and secondly, the actual
+nature of language in the psyche of a speaker.  It is only the first
+of these with which we shall concern ourselves, as regards Lacan.
+Clearly, with a rejection of the closed, unified nature of the psyche
+comes a rejection of the sort of objective presentation of langue to
+this consciousness which we found in Saussure.  However, our focus
+shall be to merely point out Lacan's conception of the psyche; we
+shall leave the consequences dangling.
+
+*1.3.1 The mirror stage.*
+
+     The chief concept which we shall clarify from Lacan is that of
+the 'mirror stage'.  Lacan takes this term from the phenomenon in
+which an infant presented with its own reflection will be able to
+perform acts requiring more coordination that the infant is able to
+perform at will.  With Lacan, this phenomenon is generalized to
+explain the original creation of the symbolic realm, and with it the
+subject.  This symbolic realm is a term-of-art of Lacan's, which
+stands for what we might call the semiological; it is that which
+concerns the exchange of signifier for signifier.  Lacan describes the
+mirror stage:
+
+     "We have only to understand the mirror stage as an
+     identification, in the full sense that analysis gives to the
+     term:  namely, the transformation that takes place in the subject
+     when he assumes an image (Ecr., p.2)."
+
+Jacqueline Rose makes explicit the linguistic nature of this image,
+
+          "For Lacan the subject is constituted through language - the
+     mirror image represents the moment when the subject is located in
+     an order outside itself to which it will henceforth refer.  The
+     subject is the subject of speech (Fem., p.31)."
+
+This image which appears in language creates a division within the
+speaking subject:  on the one hand, the subject retains her aboriginal
+drive (the imaginary realm); on the other, the subject internalizes
+the contradictory system of signifiers (the symbolic realm).  Rose
+continues,
+
+     "[T]he subject can only operate within language by constantly
+     repeating that moment of fundamental and irreducible division.
+     The subject is therefore constituted in language as this division
+     or splitting (Fem., p.31)."
+
+Hence "for Lacan, men and women are only ever in language.  Men and
+women are signifiers bound to the common usage of language (Fem.,
+p.49)."  Lacan puts this denial of the autonomous subject in an
+eloquent metaphor,
+
+     "A certificate tells me that I was born.  I repudiate this
+     certificate:  I am not a poet, but a poem.  A poem that is being
+     written, even if it looks like a subject (FF, p.viii)."
+
+*1.3.2 The Other and the phallus.*
+
+     We may give a thumbnail sketch of how this denial of the
+autonomous subject, and split in what subject is left, comes about.
+We need to bring to the fore two terms for this sketch.  These are the
+'Other' and the 'phallus'.  The Other is the primary object outside
+the predeveloped speaking subject.  We may think of this primary
+object as the mother, or at least call it by the term 'mother'.  The
+phallus stands beyond the Other, and is, according to the imaginary
+order, the object of the Other's desire.  Lacan explains these terms
+and their relation to the subject:
+
+     "If the phallus is a signifier then it is in the place of the
+     Other that the subject gains access to it.  But in that the
+     signifier is only there veiled and as the ratio of the Other's
+     desire, so it is this desire of the Other as such which the
+     subject has to recognize.then the child wishes to be the phallus
+     so as to satisfy this desire (Fem., p.83)"
+
+Rose echoes this relation, perhaps more comprehensibly,
+
+     "[T]he child's desire for the mother does not refer to her but
+     beyond her, to an object, the phallus, whose status is first
+     imaginary and then symbolic (Fem., p.38)."
+
+     However, "[T]he status of the phallus is a fraud (Fem., p.40)."
+There is no object which stands in the place reserved for the phallus.
+It is when the pre-subject finds the absence of an actual phallus that
+signification begins.  A shift to the symbolic occurs, and the absent
+phallus is made present, though not as the object it claimed to be,
+but rather as a signifier.  In our societies, it is the penis which
+plays this role of signifier; however, in keeping with Saussure's
+arbitrariness of the sign, any signifier could work equally well.  In
+fact, all signs do work just the way the penis fills in for the absent
+phallus:  the signifier is necessary only with the absence of the
+signified.  The phallus does not, however, stand on the same level as
+all signifiers.  As Lacan says, "The phallus is the privileged
+signifier of that mark where the share of the logos is wedded to the
+advent of desire (Fem., p.82)."  That is, the phallus is the signifier
+which bridges the imaginary and the symbolic, and which originates
+signification.
+
+*1.3.3 The autonomy of the signifier.*
+
+     With the advent of the signifier in the psyche comes "the
+incessant sliding of the signified under the signifier (Ecr., p.154)."
+That is, the signified drops out of the determination of the psyche
+when the phallus is seen to be missing.  This process is not confined
+to the occurrence of the privileged signifier of the phallus.  With
+the production of every signifier, a split is recreated in the human
+psyche, in which the signifier is inserted into the place of the
+absent signified.  We spoke of the deletion of the signified at the
+end of the discussion of Volosinov; it is here, with Lacan, that we
+can explain this deletion.  Between the signifier and the signified is
+always a play of presence and absence, with the present terms (the
+signifiers) forming, as a consequence, an autonomous network.  Lacan
+says,
+
+     "[W]e cling to the illusion that the signifier answers to the
+     function of representing the signified, or better, that the
+     signifier has to answer for its existence in the name of any
+     signification whatever (Ecr., p.150)."
+
+But in fact, "The signifier alone guarantees the theoretical coherence
+of the whole as a whole (Ecr., p.126)."  Where the whole in question
+here is both the system of language and the psyche which reflects it.
+     With this autonomy of the signifier we arrive at the conclusion
+we pointed to with Volosinov; namely, that "the meaning of each
+linguistic unit can only be established by reference to another (Fem.,
+p.32)."  That is, there is no subject who may master a sign, and fix
+the signifier/signified links in her mind.  For Lacan, as for
+Volosinov, "the truth of the subject, even when he [sic] in the
+position of master, does not reside in himself, but, as analysis
+shows, in an object that is, of its nature, concealed (FF, p.5)."  The
+truth of the subject may be taken to mean the signification of the
+subject; and the concealed object is in the indefinite signifier links
+which always exceed the subject.  These links must lie in the whole
+practice of the community of speaking beings, that is, in ideology.
+
+*1.4 Kristeva - Semiotics and Semiology.*
+
+     At this point it may seem as if all we have really done is
+substitute the term 'ideology' for the rejected 'langue'.  We do not
+believe this to be so, and this can be shown in the difference in the
+programs of Kristeva's semiotics, and Saussure's semiology.  Kristeva
+herself does not reject the place of semiology (whose key item is
+langue), she merely suggests her semiotics as a supplemental study.
+We shall claim not only that semiotics can edge out semiology, but
+that it must.  Kristeva is well aware of Lacan, and generally works
+within the framework set out by him.  That is, for both Lacan and
+Kristeva, speech exists only at the place of division between the
+imaginary and the symbolic (for Kristeva, between the semiotic and the
+symbolic).  Kristeva puts it,
+
+     "[S]emiotics, by studying language as a discourse enunciated by a
+     speaking subject, grasps its fundamentally heterogeneous nature .
+     . . [it] is at once system and transgression (negativity), a
+     product of both the 'drive-governed basis of sound production'
+     and the social space in which enunciation takes place (Read,
+     p.25)."
+
+     Kristeva's semiotics operates in that space which Saussurian
+linguistics refuses to; namely, the individual 'drive-governed basis
+of sound production'.  Kristeva makes this clear,
+
+     "[S]tructural linguistics could not become a linguistics of
+     speech or discourse; it lacked a grammar, for in order to move
+     from sign to sentence [our utterance] the subject had to be
+     acknowledged and no longer kept vacant (Des., p.128)."
+
+It is the place of the subject which Kristeva wishes to establish for
+linguistics.  However, it is not a Cartesian subject which shall
+occupy this place; rather, it is a split subject which speaks only
+through the internalization of the radical alterity of the symbolic
+realm.  However, this subject is only has one foot in the symbolic;
+the other is still in the imaginary, the pre-linguistic or
+trans-linguistic drive.  It is this second realm, which Kristeva
+labels the semiotic.  She says, "The semiotic is linked to the
+pre-Oedipal primary process (Read, p.12)."  Since this semiotics
+studies just the opposite side of the equation of the speaking subject
+as does Saussure's semiology, it demand a new methodology, a new
+logic.  Kristeva says of this, "[S]emiotic logic [is] of the sociality
+in which the (speaking, historical) subject is embedded (Read, p.25)."
+That is, it is the logic of exactly that which Saussure thought
+unimportant and accidental to language.
+     For Kristeva, it is only where semiotics and semiology come
+together that speech occurs, and these only come together within a
+divided subject.  She says,
+
+     "[P]ractice is taken as meaning the acceptance of a symbolic law
+     together with the transgression of that law for the purpose of
+     renovating it. . . . [W]e can speak of practice wherever there is
+     a transgression of systematicity, i.e., a transgression of the
+     unity proper to the transcendental ego.  The subject of the
+     practice cannot be the transcendental subject, who lacks the
+     shift, the split in logical unity brought about by language which
+     separates out, within the signifying body, the symbolic order
+     from the workings of the libido (this last revealing itself by
+     the semiotic disposition) (Read, p.29)."
+
+However, we are not quite to equate semiotics with the working of the
+drive itself, for this is the domain of psychology.  Rather, semiotics
+studies the processes of the drive as it is specifically shaped by
+linguistic practice.  For Kristeva, semiotics is "talking about
+something other than language - a practice for which any particular
+language is the margin (Des., p.25)."
+     Semiotics thus turns towards each network of signs, not insofar
+as it forms a system, but rather insofar as it creates and constrains
+a practice.  Kristeva says,
+
+     "Semiotics must not be allowed to be a mere application to
+     signifying practices of the linguistic model - or any other
+     model, for that matter.  Its raison d'etre, if it is to have one,
+     must consist in its identifying the systematic constraints within
+     each signifying practice (Read, p.26)."
+
+We should note here that this rejection of semiology for the sake of
+semiotics, is nearly identical to the rejection of semantics for the
+sake of pragmatics which we shall discuss below.  What is crucial to
+Kristeva's project is that she recognizes the heterogeneous nature of
+actual speech, which the formal structure of langue can not capture.
+She does not go so far as to out-and-out reject langue, as we shall,
+but she certainly does point towards the limits of its explanatory
+power.  Kristeva sees that there is something deeply individual about
+speech, which may nonetheless be subject to systematic constraint.
+This systematic constraint is a very different sort of affair from the
+closed rules of Saussure's structural linguistics.  Where the latter
+can decide every sentence as grammatical or ungrammatical, and as
+having some given meaning, the former may only exercise pressure, not
+legislate.  The former is langue, the latter ideology.
+
+*2.0 Sentence-meaning and utterance-meaning.*
+
+     We shall now turn to an issue which stands to analytic philosophy
+as the langue/parole division does to continental philosophy.  This is
+the possibility of a semantic theory of language.  As above, we shall
+largely reject such a theory in favor of pragmatic explanations of
+language use.  However, in analytic philosophy there is no figure
+analogous to Volosinov, in his thoroughgoing rejection of the abstract
+system of langue.  Rather, we are faced with thinkers who try, at
+most, to limit the area in which semantics can explain the meaning or
+force of an utterance; that is, who limit the element of
+sentence-meaning in a particular utterance-meaning.  In analytic
+philosophy no one really thinks that utterance-meaning contains no
+sentence-meaning, nor does anyone believe that sentence-meaning can be
+the whole of utterance-meaning.  Rather, analytic philosophers tend to
+take stands along a continuum of the supposed degree of
+sentence-meaning in utterance-meaning, or perhaps on a continuum of
+the occasions where sentence-meaning is sufficient.
+     Nonetheless, it is possible to separate these philosophers into
+camps over whether they believe that a semantic theory can be expanded
+indefinitely to encompass more and more phenomena.  Some believe that
+this is the case; others that,
+
+     "[N]onlinguistic beliefs, intentions of the speaker, and other
+     factors enter into the interpretation of utterances in so
+     intimate - and perhaps so fluctuating and indefinite - a fashion
+     that it is hopeless and misguided to attempt to represent
+     independently the 'purely grammatical' component of meaning (SGG,
+     p.67)."
+
+The author of this above quote is Noam Chomsky, whom I shall take for
+a fairly typical proponent of the first camp; namely, those who think
+that a semantic explanation is adequate to explain the meanings of
+speech.  However, Chomsky more than most sees his position as an
+entirely empirical one.  We see this, for example, in his
+acknowledgement that it might yet turn out that the assertion which he
+makes above is true.  We choose Chomsky for explication because, in
+addition, he has does some of the most concrete and incontrovertible
+work in syntax.  Although we shall eventually disagree with the status
+granted to syntacticality, we shall agree that humans must have the
+sort of syntax generator proposed by Chomsky.
+     In response to the camp which sees semantics as largely adequate
+to interpreting utterances we shall discuss three authors.  The first
+is Grice, who suggests that an understanding of intentions is
+necessary for understanding the force and meaning of an utterance.
+The second is Austin, who shows a whole class of utterances in which
+the semantic "meaning" of an utterance, if such exists at all, cannot
+suffice to explain the force of the actual issuance.  Lastly we shall
+discuss a recent article by Davidson which directly denies that there
+is anything which a semantic-theory can be a theory of.  In the last
+author it is worth noting that the author is primarily reacting to his
+work.  We find it curious that, within analytic philosophy, the most
+powerful opponents of semantic theories started out as the most
+powerful proponents of the same.
+
+*2.1 Semantic theories.*
+
+     In general, we might divide semantic theories into two sorts:
+intensional and extensional.  This difference corresponds, roughly, to
+Frege's distinction between _sense_ and _reference_.  Intensional
+semantics tries to explain meaning in terms of the relations of
+concepts to one another.  Any theory of truth which is likely to be
+attached to an intensional theory of meaning shall be in terms of the
+logical relations of the terms and predicates.  This theory will
+include the truths of first-order logic, as well as a few others.  For
+example, two predicates, P^1^ and Q^1^ might be conceptually linked in
+a manner such that (A)x[P^1^(x) implies Q^1^(x)].  Then if an
+expression ({?} implies P^1^) is true (i.e. a logical truth), ({?}
+implies Q^1^) is true.  This ability to speak of conceptual links
+commits the intensional semanticist to an essentialist ontology, if
+the words/concepts are to correspond to the world in his theory.  That
+is, if as above, two predicates P^1^ and Q^1^ have some logical
+connection and these two predicates are true of some particular
+objects in the world, then this must be because the objects picked out
+by each predicate have some common essence or property.
+
+     Extensional semantics tries explain meaning in terms of
+reference.  Each term stands for some set of individuals in the world;
+and each predicate is true of some set of individuals.  This is the
+traditional nominalist position, and hence the extensional semanticist
+is not ontologically committed to properties or essences.  The
+extensional theory of truth is in many ways similar to the intensional
+one.  It also starts with the tautologies of first-order logic.
+However, conceptual connections are ruled out.  In their stead, we may
+have predicates (or terms) related in terms of their extensions in the
+world.  For example, it may be that {?}x[x{?} {y| P^1^(y)} implies
+x{?} {y| Q^1^(y)}].  _This ___use of the set notation does not commit
+our ontology to anything besides individuals; in particular, we need
+not believe that such things as sets exist.  Quine points out in _Set
+Theory and Its Logic_ that we may "simplify" an expression of the sort
+'x{?} {y| P^1^(y)}' to the expression 'P^1^(x)'.  Our use of the
+set-theoretic notation may be thought of as only a fanciful way of
+talking about the predicates themselves.  Of course, this is not to
+say that _all_ use of set-theoretic notation is reducible to talk
+about predicates, but only the piece that concerns us here.  Using the
+"simplification" suggested by Quine, we may reduce the extensional
+statement above to the form, '{?}x[P^1^(x) implies Q^1^(x)]'.  One
+immediately notices that this statement is identical in form to the
+intensionalist statement of the previous paragraph.  However, the
+extensionalist's statement is not a statement about the concepts
+linked to P^1^ and Q^1^, but rather a statement about how words map to
+objects in the world.
+
+     Chomsky, who we mentioned above, is a proponent of intensional
+semantic explanation.  This sort of explanation, roughly, originates
+for analytic philosophy with Russell, and perhaps Frege.  Russell's
+theory of definite descriptions, for example, is an intensional
+explanation of the meanings of names.  Extensional explanation of
+semantic meanings owes much of its origin to Tarski's redundancy
+theory of truth.  David Kaplan, Quine, Kripke, Davidson, and
+verificationists are some examples of theorists of extensional
+meaning.  Kaplan and Kripke wish to spell this out in terms of
+possible worlds; Quine, and to an extent, Davidson, wishes for an
+extensional theory of meaning because his behaviorism rules out
+intensional explanation.  We shall start the explication of semantic
+theories in analytic philosophy with a rough sketch of extensional
+theories.  Next, we shall discuss in more detail Chomsky's intensional
+approach to semantics.  No effort shall be made to explicate other
+intensional semantic theories than Chomsky's, as they shall all share
+the aspects which we shall criticize.  Before we discuss these
+theories we should make the caveat that extensional and intensional
+theories are not mutually exclusive.  Each could be used to explain
+some particular class of expressions, but only between the two would
+all expressions be explained.
+
+*2.1.1 Extensional theories.*
+
+     Extensional theories of meaning are, roughly and as a rule,
+theories of truth.  Some retreat has been made from this in the
+proposal to shift the concern from truth to warranted assertability.
+This might be, for example, a move which various of the verification
+oriented logical positivists wish to make.  However, this move does
+not really affect extensional theories in a way which shall interest
+us.  In general, extensional theories of meaning explain meanings by
+states of the world outside of the mind of the speaker of an
+utterance.  This is so both of the "meanings" of singular terms and of
+the "meanings" of propositions.  In the case of singular terms, our
+concern in extensional theories is generally with reference.  Hence we
+encounter such terms-of-art as Donnellan's "reference by false
+description", Kripke's "rigid designators", and Kaplan's "direct
+reference"; all of which are used to point out that often our
+intentions are irrelevant to the reference of our words.  When we turn
+to propositions, the extensional theories direct our attention to the
+circumstances in which a sentence, or utterance, is true; or perhaps
+to the ways in which it may be verified.  For Quine, the meaning of a
+sentence might be the collection of circumstances in which a native
+speaker would utter it.
+
+     All of these cases have the general pattern of explaining
+meaning, in the vocabulary of set theory, as an injection of sentences
+into sets of things other than sentences.  These "_things_" other than
+sentences are states-of-the-world, possible worlds, or perhaps events
+of the right sorts.  Let us examine each of these, briefly.
+
+*2.1.1.1 Possible-World semantics*
+
+     _Possible world semantics_ is an extensional semantic theory
+which maps sentences into the worlds in which they are true.  This is
+a change in the traditional nominalist positions in extensional
+semantics, in that the individual of concern are not the ordinary
+objects like tables and people, but are rather the possible worlds in
+which these things may be.  David Kaplan, in several essays[8],
+develops a detailed set-theoretic model of what this amounts to.
+Kripke, more influentially, uses this framework in an intuitive way to
+make various arguments within analytic philosophy of language.  The
+general idea is that given any sentence, or perhaps a sentence
+together with a situation of utterance, there corresponds a set of
+possible worlds in which the sentence is true.  The "meaning" of the
+sentence is, then, none other than this collection of worlds.  The
+terms and predicates, as in the normal case, pick out sets of objects;
+however, these sets indexed for each possible world.  That is, if we
+let {p/n/}= P  be the set of possible worlds; and {o/m/}= O be the set
+of collections of objects; then the set of "objects" picked out by a
+term is actually a complete function from P into O containing pairs of
+the form <p/n/, o/m/>, for p/n/ {?} P and o/m/ {?} O.  Whether all the
+objects which are the elements of elements of O are real, or whether
+some of them are possible objects, is a version of the problem of
+haecceitism[9].  Either way, a sentence determines a set of possible
+worlds as follows.  The subject(s) (which are terms) in a sentence
+pick out, in each possible world, some particular collection of
+objects o/m/.  Likewise, the predicates pick out, in each possible
+world, some collection o/k/.  The set of worlds picked out by a
+sentence is the set of worlds in which, for the appropriate o/m/,
+o/k/, o/k/ is a subset of o/m/.
+
+     This can be extended, fairly easily, to include non-indicative
+sentences.  For example, the "meaning" of an imperative sentence can
+be equated with the set of possible worlds in which the command is
+correctly carried out, together with an imperative flag.  If we accept
+Quine's assertion that all occasional sentences can be replaced by
+equivalent standing sentences, then we can do so as a first stage
+transformation on every actual utterance in order to eliminate
+utterance situation from the domain of the "meaning" injection.
+
+*2.1.1.2 States-of-the-world semantics***
+
+     _"States-of-the-world"_ semantics is similar to possible world
+semantics, but perhaps more restrained in its ontology.  The "meaning"
+of an indicative sentence is seen to be exactly the state-of-the-world
+it purports.  For example, the stock example, 'snow is white' is
+evaluated as follows.  First we determine the reference of the term
+'snow'; namely, snow.  Then we evaluate the predicate by the
+appropriate property.  We might manage to do this without making our
+ontology too replete by defining a property as the "right" kind of
+resemblance to a paradigm case.  In the nominalist explanation, we
+dispense with properties altogether and speak of sets of things which
+fulfill a predicate. At any rate, the "meaning" of 'snow is white' is
+cast as the stuff, snow, having the property (or fulfilling the
+predicate) of "being white".  In Fregean terms, we may say the
+unfilled predicate together with the term make a true proposition, or
+rather the proposition "True".  The idea here is that the set of
+things referred to by the term is a subset of the set of things
+fulfilling the predicate.  The reference of every sentence as a whole
+is one of the two propositional values, True and False, but each
+sentence purports a subset relation between different collections of
+objects.  Here there is no question of haecceitism, as there is only
+the real world for objects to exist in.
+
+*2.1.1.3 Verification semantics.*
+
+     The events which might found an extensional semantics are
+verifications.  The meaning of an indicative sentence on this account
+is considered to be the claim that certain results have followed, or
+would follow, the "right" sort of experimental procedure.  This is not
+merely a translation from a sentence to an equivalent, which might be
+part of an intensional semantics.  Rather, we cast the verificationist
+semantics in a fully extensional way.  Namely, we are given a partial
+function from pairs of events into sentences.  This is a slight
+modification of our suggested injection of sentences into other
+_things_, in two ways.  Since we have reversed the injection, it is
+now possible for sentences to correspond to multiple pairs of events.
+Also, since we have only set up a partial function, not every pair of
+events need be considered to explain the meaning of some sentence.  It
+should be noted, in addition, that our function is into, not onto;
+hence the verificationist does not claim to necessarily give a meaning
+of every sentence.  We may weaken this mapping slightly more to a
+partial relation between pairs of events and sentences.  This would
+allow for sentences to be true synonyms.  In plainer language, what is
+being done is cashing the "meaning" of (at least some) indicative
+sentences as one or more pairs of events with consequent events.  The
+former events are thought of as the setting up of experimental
+conditions, the latter as the expected, or anyway purported, results.
+For example, one pair of events which may be considered the "meaning"
+(or part of it) of 'snow is white' might be:  1) Taking a snow sample
+and putting it in a properly working spectrometer; 2) The spectrometer
+reading equal amounts of all bands of visual light.
+
+*2.1.2 Intensional theories:  Chomsky.*
+
+     Having sketched a few possible positions in extensional
+semantics, we shall turn to intensional semantics; in particular, that
+of Noam Chomsky.  The basic notion with which intensional semantics
+concerns itself is that of synonymy.  Further ideas which we might
+hope to explain in an intensional semantics are entailment,
+presupposition, relations of degree, and categorical agreement.  All
+of these are dealt with by Chomsky, particularly in his concern for
+the relation between syntax and semantics.  Before showing Chomsky's
+specific treatment of some issues, however, we should make a thumbnail
+sketch of his lines of thought.
+
+*2.1.2.1 Recursive syntax.*
+
+     Chomsky takes it as axiomatic that human language, by virtue of
+the fact that it can be learned, must be generated in a recursive
+fashion.  The sentences in a language are presumed infinite in number,
+and the ability of humans to store information is presumed finite;
+hence the motivation for recursive rules.  This recursive generation
+of natural language will be computationally equivalent to the abstract
+systems of Turing, Church, Kleene, et al.  Given this axiom, Chomsky
+goes on to give some specific proposals about the sort of system which
+is involved in this recursive generation.  Chomsky's system sees
+semantics as being consequent to syntax, or perhaps independent of it
+- but certainly he does not believe syntax to depend on semantics.  He
+says as much,
+
+     "Investigation of proposals [that grammar, i.e. syntax, relies on
+     semantic notions], however, invariably seems to lead to the
+     conclusion that only a purely formal basis can provide a firm and
+     productive foundation for the construction of grammatical theory
+     (SS, p.95)."
+
+This formal basis is the sorts of recursive procedures noted above.
+We may then assume that, for Chomsky, semantics is, so to speak,
+epiphenomenal to the generation of syntactic sentences, or other
+strings.  The alternative - namely, that semantics is wholly dependent
+on utterance-context - is left empirically open, but not pursued.
+
+     The actual theory of syntax-based semantics, proposed by Chomsky,
+has undergone numerous modifications.  The latest version which I
+shall try to explicate is that of the mid-1970's; though no essential
+revisions have followed this.  We may think of a "Chomsky-machine",
+which should include persons as instantiations, as a syntactic machine
+to generate ordered quadruples.  These quadruples consist in:  a
+phonetic representation; a surface structure; a deep structure; and a
+semantic representation.  We may call these elements, 'P', 's', 'd',
+and 'S' respectively.  The Chomsky machine may be realized
+algorithmically in an indefinite number of ways.  Hence, although the
+modelling Chomsky uses does not have the semantic representation, S,
+as its computational starting point, some equivalent procedure might.
+This might best correspond with our intuition that meaning should
+precede grammar in the mind of a speaker.
+
+*2.1.2.2 Syntactic structures.*
+
+     Chomsky's modelling proceeds through a series of syntactic
+structures Z= (P/1/, ..., P/i/, ..., P/n/), where the following are
+true of the sequence:  P/i/ is the deep structure d; P/n/ is the
+surface structure s; for some h< i, lexical insertion occurs between
+the structures P/h/ and P/h+1/.  In the earlier Chomsky it was thought
+that the semantic structure S could be determined solely by the deep
+structure P/i/= d.  However, later Chomsky was led to believe that S
+must depend on some transformation(s) P/j/, for i< j< n+1.  The
+particular concern which motivated this is some differences in the
+presuppositions of active and passive sentences[10]; where these have
+been presumed to differ only in surface structure.  Following the
+computation of the sequence Z, a transformation is made on P/n/= s to
+produce the phonetic representation P.  This, in a general way,
+explains the generation of the quadruples in question.  Let us now
+turn to how this modelling can account for the semantic notions we
+mentioned above.
+
+*2.1.2.3 Synonymy and paraphrase.*
+
+     The first of the notions to be explained is synonymy, and under
+this heading we should also be concerned with paraphrase.  Chomsky
+originally thought that synonyms would be exactly those sentences, or
+other strings, which shared the same deep structure.  This was later
+modified due to the difference in presupposition of some active and
+passive sentences, which are still presumed to share the same deep
+structure.  Nonetheless, we may still recognize that identity of deep
+structure makes two sentences close paraphrases of each other.  Of
+course, strict synonymy is a matter of identity of semantic
+representations; but since no concrete proposals have been properly
+elaborated for the system of semantic representation, this is a fact
+with little bite.  The bite of Chomsky's own explanation comes from
+the relatively complete proposals for generation of the sequence Z
+which have been made.  For the being, we may hence assume that
+identity of deep structure provides us with an adequate notion of
+synonymy.
+
+     Prior, in the sequence Z, to the determination of deep structure,
+lexical insertion was performed.  It is at this stage that we expect
+to find the most of interest to semantic notions, as it is somehow the
+lexicon which seems to determine meaning, over and above grammar.
+Chomsky assumes here that our stock of lexical items is innate.  He
+says this,
+
+     "First, it is important to determine the universal,
+     language-independent constraints on semantic features - in
+     traditional terms, the system of possible concepts.  The very
+     notion of 'lexical entry' presupposes some sort of fixed,
+     universal vocabulary in terms of which these objects are
+     characterized . . . It is surely our ignorance of the relevant
+     psychological and physiological facts that makes possible the
+     widely-held belief that there is little or no _a priori_
+     structure to the system of 'attainable concepts' (ATS, p.161)."
+
+It is still allowable that some lexical entries may be compound forms,
+but the elements of which they are formed must nonetheless be innate.
+Given this innatist bias, Chomsky is freed from the need to explain
+the properties of the lexical entries themselves, except where these
+entries are compound forms.
+
+     Let us look at several manners in which particular synonyms and
+paraphrases may be explained by Chomsky's modelling.  In the case of
+the four sentences,
+
+(1)  The vehicle is green;
+
+(2)  The car is green;
+
+(3)  The automobile is green;
+
+(4)  The truck is green;
+
+we can pick out several different degrees of synonymy and paraphrase.
+Strict synonymy seems to hold between (2) and (3).  We may then assume
+that the phonetic representations 'car' and 'automobile' are in free
+variation.  If so, the deep structures of (2) and (3) are identical,
+and no transformation is made on S after the stage P/i/ in Z.
+
+     The relations between (1) and (2), (1) and (3), and (1) and (4)
+seem to be of the same sort.  That is, (2), (3), and (4) are more
+specific in the information conveyed than is (1).  We might plausibly
+explain this by assuming that the lexical items 'car', 'automobile',
+and 'truck' are compound lexical entries containing the primitive
+semantic notion, [vehicle].  Following the level P/h+1/ of lexical
+insertion, we may postulate that the presence of a compound lexical
+entry forces certain sorts of transformations.  For example, in the
+structure which produces (1) we may assume P/h/ is of the form,
+
+     'Article-Noun-Copula-Adjective'.
+
+Lexical insertion gives us the form,
+
+     'The-Vehicle-Is-Green'.
+
+This is essentially the form of the surface structure also, and merely
+needs be transformed into a phonetic representation.  However, the
+formation of (2), (3) or (4) is more complicated.  Given the same
+syntactic form of P/h/, we may postulate that the lexical insertion of
+the form,
+
+     'The-Vehicle, for Passengers, Four-wheeled-Is-Green'
+
+occurs.  This will, perhaps, then undergo another transformation
+resulting in,
+
+     [The-Vehicle-Is-Green-[It(same thing)-Is-for Passengers, It(same
+     thing)-Is-Four-Wheeled]]
+
+as the semantic representation.  For (4), similarly, we might have the
+semantic representation,
+
+     [The-Vehicle-Is-Green-[It(same thing)-Is-for Materials, It(same
+     thing)-Is-Four-Wheeled]].
+
+These semantic representations are not actually proposed by Chomsky;
+they are our own.  However, we believe these semantic representations
+to be enough in the spirit of Chomsky to demonstrate his approach to
+semantic relations.  Assuming these semantic representations, we can
+see that the relation between (1) and (2), (1) and (3), and (1) and
+(4) are as hoped for:  (2), (3), and (4) each contain the assertion of
+the content of (1), plus some additional information.
+
+     Similarly, we get the intuitively correct semantic connection
+between (2) and (4), or (3) and (4).  There is the same basic type of
+assertion in each case, but with difference in the details of the
+compositional subject.  The intuition we have that the words 'car' and
+'truck' have a semantic connection is born out by the common primitive
+concepts [vehicle] and [four-Wheeled].
+
+*2.1.1.4 Entailment.*
+
+     Similar sense can be made of the other semantic notions we have
+mentioned above.  For example, relations of degree and entailment can
+both be easily accounted for by the idea of compositional lexemes.  We
+probably feel inclined to say that (5i) entails (6).
+
+(5)  (i) John murdered the boy.
+
+(6)  John killed the boy.
+
+This can be explained by the assumption that the lexeme [murder] is
+compositional.  Perhaps it is composed of the lexemes
+[act-intentionally] and [kill].  This might be in conjunction with the
+fact that [kill] is itself composed of [cause-to-die] and
+[play-active-role].  Hence, the p/h+1/ of (5i) might be,
+
+     'John-Cause-to-die, Play-active-role, Act-intentionally-<past
+     tense>-The-Boy'.
+
+After the same sort of transformation suggested above we get the
+semantic representation,
+
+(5)  (ii) [John-Cause-to-die-<past tense>-The-Boy-[John-Play-active-ro
+     le- [John-Act-intentionally]]].
+
+Notice that we have a strict ordering of the compositional elements of
+the lexeme [murder].  Hence we may add (7),
+
+(7)  John caused the boy to die;
+
+and have the entailment of (6), (7) by (5i), and (7) by (6) - but not
+(5i) by (7), (5i) by (6), or (6) by (7).
+
+*2.1.1.5 Relations of degree.*
+
+     Relations of degree are also explained by compositional lexemes.
+Consider,
+
+(8)  Jane was happy; and
+
+(9)  Jane was ecstatic.
+
+We feel that (9) is a stronger form of (8).  If we assume that the
+P/h+1/ of (9) is,
+
+     'Jane-Is-<past tense>-Happy, Extreme-degree',
+
+we might have the semantic representation,
+
+     [Jane-Is-<past tense>-Happy-[Jane(does same in)-Extreme-degree]].
+
+This expresses the relation of degree, as well as the entailment from
+(9) to (8).  In general, we might see the marker, [X(does same
+in)-Extreme-degree], wherever a relation of degree exists between
+sentences.  Perhaps this marker could contain some index to the actual
+degree.  Since as far as we know every natural language contains only
+a finite number of degrees of any attribute, this might well be
+plausible.
+
+*2.1.1.6 Presupposition.*
+
+     Let us now turn to how the modelling proposed by Chomsky can
+handle presupposition.  Much of Chomsky's explanation of
+presupposition relies on focus, which he assumes to exist only in the
+surface structure.  For example, consider the sentence,
+
+(10) It was an ex-convict with a red SHIRT that he was warned to look
+     out for.
+
+Under normal intonation, the emphasis of the sentence falls on
+'shirt'.  If so, the focus may taken to be any of the following:
+
+(11) (i) shirt;
+
+     (ii) a red shirt;
+
+     (iii) with a red shirt;
+
+     (iv) an ex-convict with a red shirt.
+
+The sentence (10) presupposes, in any case, that something fulfills
+the sentence by taking the position of the focus.  We may see this by
+examining natural denials of (10).  Corresponding to each of the
+possible foci in (11) we might deny (10) by saying,
+
+(12) (i) No, he was warned to look out for an ex-convict with a red
+     TIE.
+
+     (ii) No, he was warned to look out for an ex-convict with a
+     CARNATION.
+
+     (iii) No, he was warned to look out for an ex-convict wearing
+     DUNGAREES.
+
+     (iv) No, he was warned to look out for an AUTOMOBILE salesman.
+
+In each case, the denial, like the assertion, (10), holds for some
+value in the place of the focus.  We may see clearly that it is really
+the focus playing this role by looking at natural shortenings of (12).
+These would be,
+
+(13) (i) No, a red TIE.
+
+     (ii) No, with a CARNATION.
+
+     (iii) No, an ex-convict wearing DUNGAREES.
+
+     (iv) No, for an AUTOMOBILE salesman.
+
+In each case, what is given in the denials, (13), is only the segment
+prior to the assumed focus and a new choice for the focus.  The fact
+that these short forms of denials are easily and naturally understood
+suggests that we assume that denial must only be of the proper object
+or word for the focus of an assertion.  The reiteration of the segment
+prior to the new phrase merely serves to demonstrate the assumed
+focus.
+
+     We may observe a similar sort of explanation of presuppositions
+of sentences which do not have the sort of nested surface structure of
+(10)[11].  Sentences which contain a nesting only in the semantic
+representation have similar presuppositions.  Recall our analysis for
+the semantic representation of (5i); namely, (5ii).  If we continue to
+assume this is a correct analysis, we can easily explain the
+presuppositions of (5i).  Using the same method as above, let us
+examine natural denials of (5i).  These are,
+
+(14) (i) No, John killed the boy, unintentionally.
+
+     (ii) No, John caused the boy to die, through inaction.
+
+     (iii) No, John did not cause the boy to die.
+
+     (iv) No such thing happened (i.e. the boy is alive).
+
+The first three of these deny a particular element of the
+compositional lexeme [murder].  The elements of the lexeme must be
+denied in a specific order, so that denial of a less nested element
+entails denial of a more nested one.  Hence, any denial of (5i)
+specifies a particular level of nesting at which the denial occurs,
+while presupposing the other elements of the lexeme, which are less
+nested, to hold.  We should note that (14iv) is something of an
+anomaly here.  It denies a presupposition of (5i) which is not
+expressed in our semantic representation (5ii).  We shall not explore
+how to handle this presupposition, except to suggest that the lexeme
+[cause-to-die] might not, itself, be primitive.  Rather, insertion of
+this lexeme may cause the semantic representation to take the form,
+'(5ii)'-[The-Boy-Is-Dead].
+
+*2.1.1.7 Category agreement.*
+
+     We shall now show how Chomsky's modelling deals with categorical
+agreement.  Chomsky points out that the examples such as (15) are
+anomalous compared with (16).
+
+(15) (i) the boy may frighten sincerity;
+
+     (ii) sincerity may admire the boy;
+
+     (iii) John amazed the injustice of that decision;
+
+     (iv) the boy elapsed;
+
+     (v) the boy was abundant;
+
+     (vi) the harvest was clever to agree;
+
+     (vii) John is owning a house.
+
+(16) (i) sincerity may frighten the boy;
+
+     (ii) the boy may admire sincerity;
+
+     (iii) the injustice of that decision amazed John;
+
+     (iv) a week elapsed;
+
+     (v) the harvest was abundant;
+
+     (vi) the boy was clever to agree;
+
+     (vii) John owns a house.[12]
+
+However, the anomalies of (15) are not the same as purely syntactic
+anomalies such as (17).
+
+(17) (i) sincerity frighten may boy the;
+
+     (ii) boy the frighten may sincerity;
+
+     (iii) injustice the of that John amazed decision;
+
+     (iv) elapsed week a.
+
+Chomsky suggests that this difference may be explained by
+distinguishing between the syntactic anomalies of the sort in (17) and
+_semantic_ anomalies of the sort in (15).  This difference may be
+spelled out as follows.  The sentences (or strings, rather) in (17)
+are already ruled out before the stage P/h+1/ of lexical insertion.
+For example, the P/h/ of (17i) would be of the form,
+
+     'Noun-Verb-Auxiliary Verb-Noun-Article',
+
+which cannot be generated by any Z for English.  However, the
+anomalies of (15) are presumed to occur only subsequent to the stage
+of lexical insertion.  So while the P/h/ of (15i),
+
+     'Article-Noun-Auxiliary Verb-Verb-Noun',
+
+is perfectly allowable, something is wrong with the particular choice
+of lexical insertion.
+
+     We shall find that the particular problem that arises subsequent
+to the lexical insertion in the sequence for the generation of the
+examples in (15) is lack of category agreement.  Chomsky lists some of
+the categories with which we shall be concerned with,
+
+     "The N _boy_ is a Count Noun (as distinct from the Mass Noun
+     _butter_ and the Abstract Noun _sincerity_) and a Common Noun (as
+     distinct from the Proper Noun _John_ and the Pronoun _it_); it
+     is, furthermore, an Animate Noun (as distinct from _book_) and a
+     Human Noun (as distinct from _bee_); _frighten_ is a Transitive
+     Verb (as distinct from _occur_), and one that does not freely
+     permit Object deletion (as distinct from _read_, _eat_); it takes
+     Progressive Aspect freely (as distinct from _know, own_); it
+     allows Abstract Subjects (as distinct from _eat, admire_) and
+     Human Objects (as distinct from _read, wear_) (ATS, p.75)."
+
+Probably, the easiest way to handle category agreement is to assume
+that the categories mentioned by Chomsky, and perhaps a few others,
+are primitive semantic items which are attached to every lexeme.
+These categories, like other compositional elements of lexemes, are
+attached in a particular order.  Hence it might be that every noun is
+either a Count Noun, Mass Noun, or Abstract Noun; amongst Count Nouns
+there are Animate Nouns and Inanimate Nouns; amongst Animate Nouns the
+feature Human Noun is either present of absent.  For example, the
+lexeme [boy] might have the compositional form [male,
+child-[Count-[Animate-[Human]]]].  The lexeme frighten might have the
+compositional form, [frighten-[Animate-object]].  The lexeme
+[sincerity] might be expanded to [sincerity-[Abstract]].  After
+compositional lexemes are inserted into a syntactic structure, we, as
+above, make certain transformations to arrive at the semantic
+representation.  Hence if we assume the P/h/ form of (15i) to be,
+
+(18) 'Article-Noun-Auxiliary Verb-Verb-Noun';
+
+this will give us the P/h+1/ form, after lexical insertion, of,
+
+(19) 'The-Male, Child, [Count [Animate ...]]-May-Frighten,
+     [Animate-object]-Sincerity, [Abstract]'.
+
+Performing the same type of transformation as above we might get a
+semantic representation of,
+
+(20) [The-Male-May-Frighten-Sincerity-[It(subject)-Is-Child-[It(subjec
+     t)-Is-Count-[It(subject)-Is-Animate ...]]],
+     [It(object)-Is-Animate], [It(object)-Is-Abstract]].
+
+This might not be entirely clear, at first glance.  We shall make a
+few remarks on the procedure used to produce it.  The least nested
+portion of the semantic representation is merely the main
+compositional element of each lexeme in (19).  The rest of the
+semantic representation is nested one level.  This consists of the
+secondary elements of each lexeme, arranged in parallel fashion.  That
+is, everything separated by commas within the same square brackets
+should be considered independent of order.  We have arranged these
+secondary elements of each lexeme in the order in which the lexemes
+occur in the un-nested portion of the semantic representation.  Within
+each secondary element of a particular lexeme, there may occur items
+with a greater degree of nesting.  The anomaly of (15i) arises from
+the fact that both (21i) and (21ii) occur within the same square
+brackets in (20).
+
+(21) (i) [It(object)-Is-Animate];
+
+     (ii) [It(object)-Is-Abstract].
+
+(21i) and (21ii) arise as secondary elements of different lexemes, but
+are nonetheless present on the same level within the semantic
+representation (20).  If a similar semantic representation for (16i)
+were worked out we would start with the same P/h/ form (18); however,
+the semantic representation would not contain contradictory elements
+(21i) and (21ii).  Rather the semantic representation of (16i) would
+merely contain the feature (21i), repeated twice on the same level
+(or, if you like, a redundancy elimination transformation might occur
+prior to the semantic representation S).
+
+     We have not explained every sort of semantic analysis which can
+be performed with Chomsky's modelling.  All we hope to have done is to
+provide a feel for how Chomsky can deal with some semantic
+explanation.  This should be sufficient to understand our eventual
+rejection of semantic programs and the weakening of them performed by
+the authors to be discussed below.
+
+*2.2 Grice.*
+
+     Among the several notions that Paul Grice raises in his
+examination, in numerous essays, of communication and conversation is
+one that shall particularly interest us.  This notion is
+_implicature_.  Implicature is unlike the classical logical notion of
+implication.  Where we are said to _imply_ something if it follows as
+a necessary consequence of something we have said, we _implicate_
+something which was already assumed before we started talking.  We may
+not be aware of what is implied by what we say, but we are almost
+certainly already confident that what we implicate is so.  Implicature
+may be thought of as the assumptions or beliefs that must exist for a
+given utterance to really make sense.
+
+     An example of implicature would help here.  Grice gives us this
+answer to an inquiry about some person, C:  "Oh [he is] quite well, I
+think; he likes his colleagues, and he hasn't been to prison yet
+(LC)."  Such an answer is most peculiar if we do not have some
+relevant piece of background knowledge about C; or if we do not, at
+least, know something about the speaker's beliefs about some relevant
+topic.  The answer would be less peculiar if we know, for example,
+that C's colleagues are 'really very unpleasant and treacherous
+people'; or that, at any rate, the speaker believes this.  The
+question arises of what facts or assumptions get implicated, and in
+what circumstances.  Grice gives us a fairly general account of this.
+This account is in Grice's _conversational maxims_.
+
+*2.2.1 Conversational maxims.*
+
+     Grice's conversational maxims are "rules of conversation" which
+are both prescriptive and descriptive.  They are prescriptive in the
+sense that we are expected to obey them, and generally subject to
+censure if we violate them without adequate reason.  The maxims are
+descriptive in the plain sense that people do obey them most of the
+time, at least according to Grice.  We shall not individually examine
+all the maxims, but we may as well present them all.  The maxims are
+of four sorts, each divided into sub-maxims.  They are as follows.
+
+Quantity,
+
+(1)  Make your contribution as informative as is required (for the
+     current purposes of the exchange).
+
+(2)  Do not make your contribution more informative than is required.
+
+Quality - 'Try to make your contribution one that is true.'
+
+(1)  Do not say what you believe to be false.
+
+(2)  Do not say that for which you lack adequate evidence.
+
+Relation - 'Be relevant.'
+
+Manner - 'Be perspicuous.'
+
+(1)  Avoid obscurity of expression.
+
+(2)  Avoid ambiguity.
+
+(3)  Be brief (avoid unnecessary prolixity).
+
+(4)  Be orderly. (LC)
+
+Grice does not claim that these are necessarily exhaustive.
+
+*2.2.2 Intentions.*
+
+     Our purpose in presenting these maxims is to show how
+attributions of intentions figure into our interpretation of the force
+and meaning of utterances.  The particular intentions which we often
+attribute are those in the conversational maxims; we generally assume
+that a speaker intends to fulfill the maxims.  For example, the
+following pair is unexceptionable.  Question:  'My car is out of gas,
+where may I get some?' Answer:  'There is a gas station around the
+corner.'  The answerer may be said to implicate a number of things:
+that the gas station is open; that it has gas; etc.  If, however,
+these are not true and this is known to the answerer we should say
+that she is, if not lying, being deceptive or uncooperative.  This is
+because the answerer is presumed to be obeying the conversational
+maxims.  She has not, let us say, told a literal untruth, but she may
+be violating some other maxims than those of quality.  Chiefly, in
+this case, the answerer is violating the maxim of relation.  What she
+has said is in no way relevant to the conversation at hand if she
+knows the gas station to be closed.
+
+     It is only understandable that the utterance 'there is a gas
+station around the corner' may be taken as meaning 'you may get gas at
+the gas station around the corner' if we assume the answerer to intend
+to obey the conversational maxims.  The hearer of the utterance must
+go through a process, however unconscious, of figuring out what
+relevance this utterance has to the conversation, and what
+conversational goals, intentions and beliefs must exist in the
+speaker.  The same process is also involved where the conversational
+maxims are not explicitly involved.  Other maxims involve aesthetic,
+social, or moral restraints on our speech.  For example, the maxim 'be
+polite' may lead to implicature in much the same manner as do the
+conversational maxims we listed.  It is clear that we reconstruct
+intentions on all levels, and not merely those of broad rules of
+conversation.  When someone slurs a word, or substitutes the "wrong"
+word, or uses ambiguous or unclear syntax, we make hypotheses about
+what it is they are intending to say.  Some of this will come out in
+our discussion of both Austin and Davidson, below.
+
+*2.3 Austin.*
+
+     Let us examine how J. L. Austin can be seen as speaking against a
+semantic, or at least a purely semantic, theory of language.  The
+field of philosophy called speech-act theory, of which Austin is
+perhaps the progenitor, has as its main goal the explanation of that
+in language and speech which cannot be captured under the rubric of a
+semantic theory.  That is: the meaning or force of speech which cannot
+be explained by sentence-meaning.  The speech-act theorists believe
+this portion of the meaning of speech to be a major, if not
+overwhelming, part.  Austin leads us to the meaning in speech which
+cannot be explained through sentence-meaning, in his _How to Do Things
+with Words_, through a discussion of _explicit performatives_[13].
+Austin gives some examples of these explicit performatives.
+
+     "I do (sc. take this woman to be my lawful wedded wife)' - as
+     uttered in the course of the marriage ceremony.
+
+     'I name this ship the _Queen Elizabeth_' - as uttered when
+     smashing the bottle against the stem.
+
+     'I give and bequeath my watch to my brother' - as occurring in a
+     will.
+
+     'I bet you sixpence it will rain tomorrow.' (p.5)"
+
+What Austin notices about these examples, and what we should notice,
+is at least twofold.  The first point is that these performatives are
+not assertions about facts, despite their superficial structure.  We
+shall go into this point below.  The second issue to notice is that
+the force[14], and indeed the meaning, of these utterances depends a
+great deal upon the situation in which they are uttered.  This is not
+the simple form of context dependence which exists, for example, with
+deictic elements.  Rather, it is a situational dependence which
+involves intricate social conventions, intentions of speakers, and the
+interpretation of listeners.  This situational dependence leads us to
+read Austin as demanding a properly pragmatic explanation of language.
+
+*2.3.1 Infelicities.*
+
+     Austin points out that explicit performatives, as well as other
+performatives (we shall see later how broad a class these others are),
+are subject to what he calls _infelicities_.  We shall not detail all
+of these and Austin's descriptions and comments about these.  Rather
+we shall let it suffice to mention the three broad types of
+infelicities.  These are:
+
+     (1) there may not exist a conventional procedure to perform an
+     action, or the procedure may not be used properly;
+
+     (2) if a procedure exists it may not be carried out correctly or
+     completely;
+
+     (3) the action may not be accompanied by the appropriate
+     intentions or emotions, or may not be followed by expected
+     subsequent actions.
+
+In all of these infelicities the normal action associated with the
+utterance is not carried out, and in addition, the utterance does not
+carry its normal force and meaning.
+
+     Austin points out that this is especially true of infelicities of
+the first and second sort.  We may illustrate these in one example to
+clarify this.  In the case mentioned above of the marriage ceremony,
+infelicities of either of the first two kinds void the action, and
+cause the utterance to carry a different force and meaning.  An
+example of the first type of infelicity here, might occur during an
+effort to wed a chimpanzee; of the second kind during a ceremony
+performed by an imposter of a judge.  In neither case has the act of
+marriage been performed; the act which was, in fact, performed depends
+on a great many factors not given by our description.  What is of
+greater interest here is that what was, in fact, _said_ differs in
+these infelicities from what was said in the normal case.  Hence we
+may normally _mean_, 'I do take this woman as my wife', when making
+the same utterance; with the force of marrying her.  However, in the
+infelicitous cases this is not so.  In our first case the meaning of
+the actual utterance may be of the sort, 'I consider the institution
+of marriage a mere mockery to start with'; and either have the force
+of criticizing the institution of marriage or of persuading the
+spectators of one's lunacy.  In our second case, the meaning of the
+actual utterance may be, 'I should like to be married to this woman';
+and carry the force of expressing interest in this marriage.
+
+     One could question the since in which the utterance, 'I do take
+this woman as my wife', could have the meanings ascribed above - or
+indeed, any meaning other than 'I do take this woman as my wife.'  The
+sense in which this may happen is quite straightforward.  If asked,
+'what is the meaning/force of that utterance of yours', we often
+answer with the meanings and forces described above (or these sorts).
+Austin's program is largely to argue that there is utterance-meaning
+which is not captured by sentence-meaning, so it should not surprise
+us to see (in Austin) this notion of the literal meaning of utterances
+depending on the context of utterance.  Of course, everyone would
+acknowledge that in some situations even literal meaning is context
+dependent.  Some obvious cases of this are homonyms and ambiguous
+sentence structures.  The speech-act theorist embraces a much wider
+range of utterances which have context dependent literal meaning.
+
+     Infelicities of the third sort may also change the force and
+meaning of an utterance, though perhaps not quite so broadly (or not
+always so broadly).  Hence when we utter, 'I warn you not to walk near
+that bull', although it is penned and of no danger, we may be said to
+lack an emotion or intention appropriate to the normal issuance of
+this remark.  The possible meaning and force which Austin would likely
+attribute to this case are as follows:  the meaning is the same as in
+the normal case, namely 'I warn you . . .'; however, the force of the
+utterance may be thought of as something like trying to cause
+unnecessary fear in you.  We may propose a reading of this utterance
+which changes not only the force of the normal case, but the meaning
+also.  Hence perhaps, the meaning of the utterance may be, 'I make a
+joke about the danger of the bull'; and its force the making of a
+joke.
+
+*2.3.2*
+
+     The examples and descriptions we have given are largely
+anecdotal, as they shall have to remain.  However, we are now in the
+position to discuss how Austin's general approach to speech-act theory
+detracts from, if not undermines, the semantic projects which we have
+discussed above.  For the case of extensional semantics, we have
+already pointed out some limits in the extent of explanation.  Namely,
+performatives do not have truth values.  Neither do performatives have
+verifications, conditions of warranted assertability, or corresponding
+possible worlds.  In the last of these we gave a possible extensional
+explanation of a particular non-constative type of utterance; namely,
+commands or imperatives.  We said that command could be explained by
+reference to the set of possible worlds in which they are carried out.
+While it may well be that commands are a particular sort of
+performative, this possible worlds extensional explanation clearly
+will not work for performatives in general.  To take out well used
+example of uttering, 'I do' during a marriage ceremony, we may say
+that this utterance corresponds to the possible worlds in which we do,
+in fact, take this woman as our wife; but a cursory examination of the
+situation will reveal that these worlds are coextensive with the set
+of worlds in which we say 'I do'.  To be a bit more particular, we may
+say that the former are coextensive with the worlds in which our
+utterance of 'I do' is, in Austin's term, "happy".  Either way, this
+explanation is trivial, if not absurd.
+
+     However, the problems which speech-act theory presents to
+extensional semantics run deeper that this.  Extensional semantics
+does not even stand on firm ground as regards constative utterances.
+For Austin, constative utterances are only particular cases of
+performatives.  Or more conservatively, since we do distinguish the
+two, both constative and performative utterances are kinds of
+illocutionary acts - in neither case can we restrict our concern, in
+evaluating either force or meaning, to the locutionary act alone[15].
+Before we try to show the deep similarity between constative and
+performative utterances, it would be well to discuss a few of the
+varieties of performative utterances.
+
+*2.3.3 Performatives:  implicit and explicit.*
+
+     The first fact we should notice here is that performatives come
+in at least two varieties:  explicit and implicit.  Not all
+performatives have an explicit version, though presumably all have one
+or several implicit versions.  For example, although such an explicit
+performative as, 'I promise I shall do X' has an implicit equivalent
+(at least as uttered in some situations) of 'I shall do X'; such
+implicit performatives as the insult 'You are scum!' have no explicit
+version.  Austin points our correctly that such an explicit variation
+as, 'I insult you by calling you scum!', it has a meaning at all, has
+only the meaning of a constative in the habitual present.
+
+     Implicit performatives have a sort of ambiguity not found in
+explicit performatives.  That is, implicit performatives may be
+equivalent to any one of a number of explicit performatives.  Hence,
+when we say, 'That bull is dangerous', we may be warning, stating,
+asserting, venturing, joking, promising, expressing condolences, or
+any of a number of other things.  Explicit performatives were not
+subject to quite this kind of ambiguity.  While explicit performatives
+may be used with other meanings and forces than those normally
+associated with them, these other meanings, and especially forces, are
+not _conventionally_ carried by these utterances.  In our above
+outlandish, though by no means inconceivable, example of saying 'I do'
+to a chimpanzee in order tho criticize marriage, the actual meaning
+and force carried by the utterance are non-conventionally carried.  We
+should probably not make too much of this distinction, as it is not at
+all clear what conventions exist and which do not.  However, it does
+at least seem true that the ambiguity described in implicit
+performatives is an ambiguity between several explicit versions; also
+some number of conventionally defined procedure which lack an explicit
+performative to perform may enter in the ambiguity.
+
+*2.3.4 Constative utterances.*
+
+     Austin points out in Lecture XI, that constative utterances
+really share all the properties or performative ones, including the
+explicit/implicit division.  Austin summarizes his earlier discussion
+of performatives.
+
+     (1) [T]he performative should be doing something as opposed to
+     just saying something; and
+
+     (2) the performative is happy or unhappy as opposed to true or
+     false. [i.e. it may either be free from infelicities or suffer
+     from them] (p.132)
+
+Constative utterances also have just these properties ascribed to
+performatives.  To show this we need first point out that constatives
+have the same implicit/explicit division which performatives were
+shown to have.  Some explicit versions of constative utterances are,
+
+     I state that P.
+     I assert that P.
+     I believe that P (in one sense).
+
+and perhaps,
+
+     I argue that P.
+     I suggest that P.
+     I hold/find that P.
+
+and others.
+
+     The first of these is generally taken as a paradigm case of
+constative utterance.  We need not argue that some or all of the other
+examples are real constatives, as long as it is accepted that stating
+(explicitly) is constative.  Austin has us consider this
+unexceptionable remark:
+
+     "In saying that it was raining, I was not betting or arguing or
+     warning:  I was simply stating it as a fact (p.133)."
+
+Austin continues with some similar examples.
+
+     "In saying it was leading to unemployment, I was not warning or
+     protesting:  I was simply stating the facts (p.133)."
+
+Or again, we are to compare
+
+     I state that he did not do it.
+
+with
+
+     I argue that he did not do it,
+     I suggest that he did not do it,
+     I bet that he did not do it, etc.
+
+     All of these simple, and unexceptional, sentences put stating on
+exactly the same level are the various illocutionary act with which it
+is compared.  In the latter comparison which we are asked to make, we
+are to notice that any of the sentences can equally well make explicit
+an utterance of, 'He did not do it.'  We should not then suppose that
+the implicit constative, 'He did not do it' is any less on par with
+various performatives than the explicit with the explicit constative,
+'I state that he did not do it.'  We may see this be turning the issue
+on its head somewhat.  We evaluate the latter explicit constative, and
+indeed such utterances as 'I think he did not do it', in just the same
+manner as we do the implicit constative; that is, by checking its
+truth, not by checking the action performed or the intentions of the
+speaker.  Conversely, the implicit constative is no less performative
+than its explicit counterparts - whether these counterparts be
+so-called constative, or performative in our clearest sense.
+
+     We further notice the performative nature of constatives through
+an examination of infelicities which constatives suffer from.  Having
+shown that some conventional action is carried out by making
+constative utterances (e.g. stating), if we can show that constatives
+suffer from all of our infelicities then we shall have shown them to
+be essentially a particular branch of performatives.  The third sort
+of infelicity most obviously applies to constatives.  Just as when
+promising we are expected to intend to perform the right subsequent
+actions, when stating we are expected to believe what we state and to
+intend to convey the right fact.
+
+     The first two sorts of infelicities, however, also apply to
+constatives.  Austin gives a number of examples of cases where there
+is no convention to make a constative utterance, or where the
+convention is not carried out properly.  One of these is in the
+problem raised by Strawson of presupposing.  One sort of
+presupposition we can make is existential; however, there is no
+convention for imputing properties or traits to non-beings (or at
+least not a general convention - we do talk of unicorns and rational
+roots of 2, in some cases).  We may explain the impropriety of saying
+'The present King of France is bald' by pointing out that there is no
+convention to impute traits to non-beings.  Much more generally, we
+are not always the right person, or in the right place, to state
+anything.  Austin says,
+
+     "Just as we often say, for example, 'You cannot order me', in the
+     sense 'You have not the right to order me', which is equivalent
+     to saying that your are not in the appropriate position to do so:
+     so often there are things you cannot state - have no right to
+     state - are not in a position to state.  You _cannot_ now state
+     how many people there are in the next room; if you say 'There are
+     fifty people in the next room', I can only regard you as guessing
+     or conjecturing (p.137)."
+
+Or again,
+
+     "Just as sometimes we cannot appoint but only confirm an
+     appointment already made, so sometimes we cannot state but only
+     confirm a statement already made (p.137)."
+
+These point to cases where constative acts can and cannot be carried
+out.
+
+*2.3.5 Truth and falsity.*
+
+     One additional example will, we hope, suffice to show the breadth
+of the conventionality of constatives.  This example concerns, in some
+way, the truth or falsity of constatives.  Consider the statement,
+'France is hexagonal.'  Austin says of this, that one
+
+     "can see what you mean by saying that it is true for certain
+     intents and purposes.  It is good enough for a top-ranking
+     general, perhaps, but not for a geographer.  'Naturally it is
+     pretty rough', we should say, 'and pretty good as a pretty rough
+     statement'.  But then someone says:  'But is it true of is it
+     false? I don't mind whether it is rough or not; of course it's
+     rough, but it has to be true or false - it's a statement isn't
+     it?' How can one answer this question, whether it is true or
+     false that France is hexagonal? It is just rough, and that is the
+     right and final answer to the question (p.142)."
+
+
+The point here is that the appropriateness of uttering, 'France is
+hexagonal' is entirely conventional and dependent on the context.
+This statement might be perfectly allowable in a grade school text,
+but a bad joke among geographers.  This sort of utterance, in fact
+constatives in general, may suffer from infelicities of the second (or
+first?) kind anytime that the utterance does not conform to the
+guidelines for statements relevant to the situation of utterance.  The
+relevant aspects of the utterance situation may not, however, always
+be obvious.  Where we believe a certain sort of statement to be
+conventionally allowable, we can be quite wrong.  This goes a little
+way toward explaining our earlier comment about the situational
+dependence of utterances upon social conventions, intentions of
+speakers, and interpretations of listeners.
+
+*2.3.6 Conclusions.*
+
+     Having sketched Austin's program, let us make explicit how this
+program speaks against semantic theories, both extensional and
+intensional.  Semantic theories, of either sort, insist that meanings
+are attached to sentences.  Austin, to the contrary, points out that
+meanings are utterance specific, and dependent on the situation of
+utterance.  Since, as we have said, extensional theories are generally
+theories of truth, Austin's program will be most poignant to these in
+its dealings with the notion of truth.  We should first notice that
+every statement is firstly an act, and only derivatively true or
+false.  Already here we shall have to admit that any semantic theory
+misses the force of an utterance, even if it manages to capture the
+meaning.  If our theory of meaning is a theory of truth, then Austin's
+point, that even some constative utterances can only be 'pretty good'
+and not true, even further limits the explanatory range of our
+semantic theory.  Secondly, we should notice that meaning (including
+literal truth or falsity) is not the sort of thing that tags onto
+sentences, but the sort of thing that tags onto utterances.  Further,
+an utterance's meaning is carried by virtue of social conventions
+about utterance types.  These utterance types correspond to the forces
+which may conventionally be carried by an utterance.  If the same
+sentence is taken as or meant as one utterance type it can have one
+meaning - if taken as a different type, it has a different meaning.
+It turns out that, in a deep sense, any theory of meaning must be a
+theory of social conventions; and hence a pragmatic theory.
+
+     The same criticism is made of intensional theories.  These
+theories also believe it possible to explain meaning without regard
+for social conventions[16].  We shall make some brief remarks here
+about how the specific topics explicated in our discussion of Chomsky
+demand pragmatic explanation.  The first of these topics was synonymy
+and paraphrase.  Just as we earlier said that many constatives are not
+really true or false but only 'pretty good' in some contexts, synonyms
+tend to be not true or false but only 'pretty good' in the right
+context.  For most or all synonyms, the interchangibility of the pair
+is limited to certain contexts, both semantic and pragmatic.  An
+example of synonyms where this is obvious is the two words,
+'gentlemen' and 'guys'.  Although, presumably, gentlemen and guys are
+the same people, we cannot always (or even usually) interchange the
+words in an actual utterance.  When we open a formal address we might
+utter 'Gentlemen!' - and although these same men could well be called
+'guys', we cannot open the address by saying 'Guys!'  The converse
+might be true of trying to draw the attention of a group of friends in
+an informal situation.
+
+     We shall do no more than hint at it, but we believe that the
+differentiation of relations of degree tends to involve the situation
+of utterance.  Hence two words said to differ in degree will be
+sometimes interchangeable, and other times not.  Similarly, entailment
+is only conventionally carried.  That is, even assuming that lexemes
+are compositional, as discussed, a denial of an assertion involving a
+compositional lexeme may turn out to be a denial of any one or several
+of the compositional elements - and which is a pragmatic matter.  We
+have already mentioned presupposition briefly above, and shall not
+bother with any remarks on it here.
+
+     About category agreement we shall suggest that the
+unacceptability of the "semantic" anomalies mentioned can equally be
+explained as pragmatic anomalies.  That is, just as some assertions
+were previously shown to lack a conventional procedure, there are no
+conventional illocutions associated with these "semantic" anomalies.
+This remark does not in any way explain the particular anomalies, but
+it hopefully does point out that there is no necessity that the
+anomalies be explained in semantic terms.
+
+*2.4 Davidson.*
+
+     Donald Davidson ends his essay, "A Nice Derangement of Epitaphs",
+with
+
+     "[T]here is no such thing as a language. not if a language is
+     anything like what many philosophers and linguists have supposed.
+     There is therefore no such thing to be learned, mastered, or born
+     with.  We must give up the idea of a clearly defined shared
+     structure which language-users acquire and then apply to cases
+     (p.174)."
+
+We may begin here.  In particular, what many philosophers and
+linguists have supposed of language is, at least, the following three
+things.  What Davidson here calls '_first meaning_' we might call
+'linguistic meaning' or 'sentence-meaning'.
+
+     "(1) First meaning is systematic.  A competent speaker or
+     interpreter is able to interpret utterances, his [sic] own or
+     those of others, on the basis of the semantic properties of the
+     parts, or words, in the utterance, and the structure of the
+     utterance.  For this to be possible, there must be systematic
+     relations between the meanings of utterances.
+
+     (2) First meanings are shared.  For speaker and interpreter to
+     communicate successfully and regularly, they must share a method
+     of interpretation of the sort described in (1).
+
+     (3) First meanings are governed by learned conventions or
+     regularities.  The systematic knowledge or competence of the
+     speaker is learned in advance of occasions of interpretation and
+     is conventional in character (p.161)."
+
+If this reminds us of a figure from much earlier in this essay, namely
+Saussure, it probably should.
+
+
+*2.4.1 Prior theory and passing theory.*
+
+     Davidson makes a distinction between _prior theory_ and _passing
+theory_, which has some connection with the distinction between
+sentence-meaning and utterance-meaning.  The connection is not,
+perhaps, as direct as we would like, but we shall try to find it
+nonetheless.  Davidson explains his distinction,
+
+     "For the hearer, the prior theory expresses how he is prepared in
+     advance to interpret an utterance of the speaker, while the
+     passing theory is how he _does_ interpret the utterance.  For the
+     speaker, the prior theory is what he _believes_ the interpreter's
+     prior theory to be, while his passing theory is the theory he
+     _intends_ the interpreter to use (p.168)."
+
+A first try at establishing the connection between prior/passing
+theory and sentence/utterance-meaning might be to claim that the prior
+theory applied to an utterance gives us the sentence-meaning; while
+the passing theory applied to the utterance gives us the
+utterance-meaning.  We shall see that this is not quite right, but it
+captures just enough of the two distinctions to proceed with the claim
+in mind.
+
+*2.4.2 Malapropisms.*
+
+     Our next point in order ought to be the motivation for Davidson's
+distinction between prior and passing theories, and so it shall be.
+Davidson begins his essay with a discussion of what may be an
+interesting topic, malapropisms.  The very interesting, and peculiar,
+thing about malapropisms is that we can most often understand them.
+According to standard linguistic theories (semantic theories), this
+fact is inexplicable.  If our theory is as in (1) - (3) and our
+semantic rules give the meaning 'a nice derangement of epitaphs' to
+Mrs. Malaprop's utterance of 'a nice derangement of epitaphs'; how do
+we understand her as meaning 'a nice arrangement of epithets'?[17]
+This is where the distinction between prior theory and passing theory
+comes in.  Prior to conversing with Mrs. Malaprop we are prepared, and
+inclined, to take 'a nice derangement of epitaphs' as just that.
+However, once we have conversed with her, and it is clear that (as we
+say) "she cannot possibly mean that!", we decide we would be better to
+interpret the good woman as meaning 'a nice arrangement of epithets.'
+This is all the more reinforced if an arrangement of epithets is a
+matter we believe Mrs. Malaprop to have an interest in discussing.
+Our latter interpretation is what Davidson calls a passing theory.
+
+     The former interpretation is what Davidson calls our prior
+theory, but this is not identical to the theory which determines
+sentence-meaning.  This is because as we manage to make stereotypes
+about individuals or about groups, our prior theory about how these
+people are likely to talk changes.  Hence, our prior theory in
+entering a conversation with one person may be quite a different
+matter than our prior theory regarding a second person.
+Sentence-meaning is something which floats somewhere around our
+collection of prior theories.  Namely, it is the interpretation we
+would give (according to our prior theory) to an utterance by someone
+we have minimal knowledge (and more crucially, stereotypes) about.
+This is a broad step away from the kind of rigid systematicity of
+semantic rules which we see in traditional semantic theories.  In
+fact, it reverses the order of precedence between sentence-meaning and
+utterance-meaning.  That is:  where semantic theories would explain
+utterance-meaning as, at most, some sort of derivation of
+sentence-meaning; Davidson explains sentence-meaning as a particular
+category of utterance-meaning (namely, uninformed interpretation).
+
+*2.4.3 Language?*
+
+     Let us turn back to the philosopher's characterizations of
+language given at the beginning of our discussion of Davidson.  We
+claimed that the use of 'first meaning' could be translated
+'sentence-meaning'; but now we can point out that this is not quite
+right.  'First meaning' must, rather, be taken as the meaning which is
+given us by our prior theory.  If it were taken as 'sentence-meaning',
+the philosopher's characterizations would not explain _any_ of what
+goes on in our actual interpretation of utterances, except in the
+sharply limited case of uninformed interpretation.  That is, both
+prior theory and passing theory play some role in interpreting an
+utterance, but neither is fixed in the way that sentence-meaning is
+presumed to be fixed.  But if we turn with this caveat to the three
+characterizations we shall find some new problems with these
+characterizations.  Davidson criticizes the second characterization.
+
+     "It is quite clear that in general the prior theory is neither
+     shared by speaker and interpreter nor is it what we would
+     normally call a language.  For the prior theory has in it all the
+     features special to the idiolect of the speaker that the
+     interpreter is in a position to take into account before the
+     utterance begins.  One way to appreciate the difference between
+     the prior theory and our ordinary idea of a person's language is
+     to reflect on the fact that an interpreter must be expected to
+     have quite different prior theories for different speakers
+     (p.171)."
+
+That is, there is no particular reason to suppose that speaker and
+hearer come into an interaction with the same prior theory.  Either
+communication can be achieved by bringing the passing theories into
+line, with or without changing the prior theories correspondingly; or
+communication can fail to a great or small degree.  However, we should
+be careful not to overestimate the degree of accurate theory necessary
+for communication.  If the speaker and hearer share only a small part
+of the same theory (either prior or passing) they are likely to
+communicate a great deal - due to redundancy in ordinary speech,
+conversational cues, reconstruction of speaker intent, and numerous
+other such devices.
+
+     We have already shown the unacceptability of characterization
+(3), but we shall make this explicit.  It was claimed that first
+meanings are governed by learned conventions, which are learned in
+advance of interpretation.  We have pointed out that, in fact, first
+meanings are tailored to our stereotypes about individuals and groups
+- and not candidates for the semanticist's sentence-meaning.  This
+does not really answer the question of whether these first meanings
+are conventional, because we have no clear sense of what conventions
+are and are not.  All that we shall be able to do toward settling this
+issue is point out a couple properties that conventions might have.
+Conventions might need have a certain rather wide circulation - if so,
+then characterization (3) is false.  Since prior theories are often
+differentiated down to the individual, a particular prior theory might
+only exist in one person's evaluation of one other; and this is a most
+narrow circulation.  Conventions might be imposed by social pressure
+rather than deliberately chosen - if so, then again characterization
+(3) is false.  While it is certainly possible that social pressures,
+formal or informal, may sometimes cause us to choose one prior theory
+over another, there is no reason that we know to suppose that this is
+the case as a rule.  At very least it is an empirically contingent
+matter whether such pressures exist, or whether our prior theory
+(which amounts to stereotypes, at the end of the day) is purely an
+expression of preferences and cognitive processes.
+
+*2.4.4 Language revisited.*
+
+     The denial of characterizations (2) and (3) has certainly put a
+crimp on our notion of there being a language.  Davidson's arguments
+have, hopefully, shown that these two characterizations cannot really
+be true of anything, or at least anything which affects how we
+actually interpret real utterances.  Davidson does say, however,
+
+     "Perhaps we can give content to the idea of two people 'having
+     the same language' by saying that they tend to converge on
+     passing theories; degree or relative frequency of convergence
+     would then be a measure of similarity of language (p.173)."
+
+We find there is something to this, and shall discuss this notion in
+the final section of this paper.  A better way of phrasing this, for
+our purposes, might be that two people are able to form the same
+stereotype.  Hence, where Davidson says,
+
+     "If we ask for a cup of coffee, direct a taxi driver, or order a
+     crate of lemons, we may know so little about our intended
+     interpreter that we can do no better than to assume he will
+     interpret our speech along what we take to be standard lines
+     (p.170);"
+
+he is really thinking of some stereotype pattern which just anyone can
+be assumed to possess.  "Standard lines" has much the same status as
+"language"; both say something (and nearly the same thing) about who
+can and will act on which stereotypes.  Now we must notice that this
+matter of who has which stereotypes is a purely contingent one.
+Notice also that these matters are essentially characterization (1).
+To the degree there actually are standard lines and languages,
+characterization (1) holds.  We raise some of these questions again in
+section 3, particularly the status of characterization (1).
+*3.0 Conclusion.*
+
+     Several of the claims we made in our discussion of Davidson were
+empirically contingent, and so it would be well to see how "the facts"
+line up.  The question which is most interesting to us, here, is that
+of whether there are languages and/or standard lines of interpretation
+- given the meaning of there "being languages" which we had Davidson
+give for us.  Linguists have been considerably less sanguine about the
+existence of language than have philosophers - and as the former
+depend on the study of language for their livelihood to a greater
+degree than do the latter, we might pay them some attention.  If we
+stop taking as brute that it is the existence of a single language
+which grounds each idiolect, we might well doubt that any language is
+actually emergent out of the potpourri of idiolects.  We would like to
+point to a couple of quotes from linguists which may support
+Davidson's assertion that there is no such thing as a language.
+
+*3.0.1 Some "facts".*
+
+     In David Decamp's paper, "Introduction:  The Study of Pidgin and
+Creole Languages", he says,
+
+     ". . . there is also a socio-economically oriented linguistic
+     continuum in Jamaica, a continuous spectrum of speech varieties
+     whose extremes are mutually unintelligible but which also
+     includes all possible intermediate varieties.  At one end of this
+     continuum is the speech of highly-educated Jamaican leaders, many
+     of whom claim to be speaking standard British English but who are
+     actually using what seems to be evolving into a standard Jamaican
+     English; it is mutually intelligible with but undeniably
+     different from standard British.  At the other extreme is the so
+     called 'broad creole' or 'broken language', the variety which so
+     far has recieved the most attention from linguists.  Each
+     Jamaican speaker commands a span on this continuum, the breadth
+     of the span depending on the breadth of his [sic] social
+     activities; a labor leader, for example, can command a greater
+     span of varieties than can a sheltered housewife of the suburban
+     middle class.  A housewife may make a limited adjustment downward
+     on the continuum in order to communicate with a market woman, and
+     the market woman may adjust upward when she talks to the
+     housewife.  Each of them may then believe that she is speaking
+     the other's language, for the myth still persists in Jamaica that
+     there are only two varieties of language - standard English and
+     'the dialect' - but the fact is that the housewife's broadest
+     dialect may be closer to the standard end of the spectrum than is
+     the market woman's 'standard'."
+
+Lest we suggest that this arrangement of varieties of speech is
+strictly socio-economic let us use one other quote.  After briefly
+rejecting mutual intelligibility as properly slicing up languages
+(e.g. the "languages" Norwegian and Swedish are mutually
+comprehensible) - and we shall come back to this suggestion - R. A.
+Hudson, in his book _Sociolinguistics_, says,
+
+     "Varieties may be arranged in a _Dialect Continuum_, a chain of
+     adjacent varieties in which each pair of adjacent varieties are
+     mutually intelligible, but pairs taken from opposite ends of the
+     chain are not.  One such continuum is said to strech from
+     Amsterdam through Germany to Vienna, and another from Paris to
+     the south of Italy (p.36)."
+
+It is not only recently that these linguistic transitions have been
+noticed.  No less a figure than Saussure also discusses them.  Not
+only does Saussure realize that dialect continuums exist[18] but he
+gives a precise explanation for them.  Saussure talks of what he calls
+_innovating waves_ - which are the process by which languages evolve.
+He says,
+
+     "(1) Evolution takes the form of successive and precise
+     innovations that include as many partial facts as could be
+     enumerated, described, and classified according to their nature
+     (phonetic, lexicological, morphological, morphological,
+     syntactic, [for our interest, semantic], etc.).
+
+     (2)Each innovation embraces a definite and delimited area.  There
+     are two possibilities:  either the area of innovation embraces
+     the whole territory and creates no dialectal differences (the
+     less usual possibility), or the change affects only a part of the
+     territory, each dialectal fact having its special zone (the more
+     common occurence). (p.200)"
+
+The consequence of a history of such innovations is a dialect
+continuum - the closer two groups are to one another, the more
+dialectal items they are likely to share.  The sense of "close" here
+shold not be taken in the purely geographic terms which Saussure
+emphasizes, but should also be taken to include "closeness" in
+socio-economic factors, ethnicity, gender perhaps, and any number of
+other things.  Two groups which are sufficiently close speak in
+mutually intelligible ways; and this is because they share enough
+stereotypes about "standard lines" of interpretation to come up with
+passable interpretations of each others' meanings.
+
+*3.0.2 Some claims.*
+
+     We are, however, getting somewhat ahead of ourselves - as the
+quotes we have given are not really any more than anecdotal.  What we
+are trying to show in our denial of language is that characterization
+(1), which we gave in our discussion of Davidson, is false.  This
+characterization was, in brief, that language is systematic.  More
+exactly, the characterization was that 'first meaning is systematic'.
+However, the claim - when taken as an empirical one - that there are
+languages amounts to the claim that there is a particular first
+meaning that just any speaker, within some specifiable group, can and
+does use.  For us to claim that, ala Davidson, there is no such thing
+as a language we must be prepared to show that there is no first
+meaning which is within the repertoire of every speaker who we think
+speaks a given language.  To do so is tantamount to showing that
+"language-groups" do not divide up speakers in any way which we would
+find at all acceptable; and to do this is, in turn, to cast doubt
+whether all, or any, speakers are speakers of a "language".  In terms
+of a more traditional epistemological question, we might ask whether
+languages are natural kinds.  We ask here a number of different
+questions in different terminologies, which are nonetheless somehow
+equivalent - and all of which should be open to empirical evidence.
+Not all the notions used in the above family of assertions are
+entirely clear; hence, our effort will have to be to clarify these
+notions at the same time as we argue for the assertions involving
+them.  We should therefore be prepared to revise the notions at the
+same time as we check the assertions.  Most of this project shall not
+be within the bounds of this paper.  Our only goal in the remainder of
+this paper is to suggest that the family of assertions above warrant
+methodological pursuit, and that some of the concepts involved are
+likely to be fruitful.
+
+*3.1 Once again:  language?*
+
+     In the speech communities sketched in the above quotes, there
+seems no natural way to delimit the number of languages spoken.
+Turning to the Jamaican case we notice that "standard" Jamaican is
+intelligible by "standard" British speakers, the latter by midwest
+Americans, and these in turn by some, but not all, African "English"
+speakers.  We commented above that mutual intelligibility did not
+really work as a possible criterion of language membership - but it is
+closely tied with shared first meaning and linguistic stereotypes; any
+possible sense we might hope to make of "language" will be fairly
+closely related to mutual intelligibility.  If we limit ourselves to
+those speakers in this sort of chain who are traditionally called
+"English speakers" (e.g. on your favorite language distribution map),
+we have still included a huge proportion of the world's speakers.  If
+we further realize the banal fact that mutual intelligibility comes in
+degrees (often not symmetrically distributed in a conversational
+pair), the intelligibility relation forms a richly variegated topology
+on the universe of "English" speakers.
+
+     It seems reasonable to ask what the "English" language consists
+in, given the above remarks on mutual intelligibility.  What
+linguistic stereotypes do all English speakers share? What first
+meaning(s) can every English speaker resort to as "standard lines"?
+One presumes that a language must be, in essence, a grammar combined
+with a lexicon - and this is consistent with the semanticists we have
+discussed:  Saussure, and particularly Chomsky.  Let us focus on the
+lexicon, though we do not think that any principled difference exists
+in the grammar (although grammar is more resistant to the kind of
+innovating waves described by Saussure, so somewhat greater
+homogeneity may exist between "distant" speakers).  Unless we make
+cultural imperialism a linguistic principle, we cannot assume that,
+for example, the O.E.D. has the last word on membership in the lexicon
+of "English".  Actually, even if we are cultural imperialists, this
+proposal will not help us if our effort is descriptive linguistics.
+We could claim that the O.E.D. gives the prior theory that one
+_should_ use when entering a discourse (with the right sort of person
+- namely, one we don't know), but this still says nothing about the
+standard lines that speakers _do_ use in such encounters.  As a matter
+of the facts, different speakers use the same words (i.e. sounds,
+phonetic/phonemic strings) to convey different semantic values, and
+this is true even of the circumstance where we are talking to persons
+about whom we have few or no stereotypes.  Further, one speaker will
+often choose different prior theories, of different standard lines,
+for different occasions of speech encounters; in particular, this is
+not only because of the stereotypes we bring to an encounter, but
+because of completely extraneous factors such as our mood, our other
+recent encounters, our conversational goals, and others.  We doubt
+that any one semantic value can be singled out as belonging to
+"English"; particularly given that nearly any such value will never be
+used, nor understood, by some groups of (or individual) "English"
+speakers.
+
+*3.2 A re-examination.*
+
+     Once we examine the actual links that people make in concrete
+situations, between lexical items and semantic values we are compelled
+away, even, from Davidson's prior theory to his passing theory.  That
+is, while we cannot really argue against a prior theory framework on
+theoretical or empirical grounds, we think the idea of a prior theory
+to be largely superfluous.  If we break down the line of analysis of
+speech (and interpretation) which we have been developing, we describe
+speech (and interpretation) as follows.  A person enters a
+conversational context with only her linguistic stereotypes (about
+groups or individuals), knowledge of conventions, conversational
+goals, and hypothoses about other's goals, intentions, beliefs and so
+on.  She does not gain anything else while in a conversation.  Our
+goals and our hypothoses about other's goals were discussed during our
+discussion of Grice; conventions during the discussion of Austin; and
+linguistic stereotypes during the discussion of Davidson.  In the
+latter, we made a distinction between prior theory and passing theory,
+which divided the stereotypes we make into two groups.  However, this
+now seems like a distinction without a difference.  The two groups do
+not divide stereotypes into different kinds, but only into those we
+have with our mouths open and those we have with our mouths shut.
+Hence we will, from this point, not bother with Davidson's
+distinction, but only speak of linguistic stereotypes.  These
+stereotypes are of two general sorts - the same categories which
+language was presumed to have - stereotypes about lexical/semantic
+(signifier/signified) links, and stereotypes about grammaticality.
+
+*3.2.1 Chomsky revisited.*
+
+     It is here that we are able to make some remarks about Chomsky's
+notion of syntax, and to a degree about his ideas of semantics.
+Chomsky presumes that we have syntax and semantics generators in our
+brains.  These are recursive machines which are able to generate the
+infinite number of sentences which we can produce and understand.
+While we cannot really understand or produce an infinite number of
+sentences, we can see the sense in Chomsky claiming we can.  There is
+no clearly defined upperbound on the length of sentences.  Any
+upperbound we might give - such as, "the longest string of phonemes
+utterable in 72 years" - probably gives us more different sentences
+than our brains could hold by rote enumeration.  Hence, there is
+reason to think that we do utilize recursive rules for the generation
+of sentences.  However, there is no immediate reason to suppose that
+each person uses the same recursive rules, or that a single person
+sticks to the same set of rules from utterance to utterance.  We
+shall, in fact, propose that sets of rules are as common as are
+linguistic stereotypes.  More strongly, we shall claim that our
+stereotypes of grammaticality are just simply sets of recursive rules.
+When we enter into a discourse situation we bring the set of recursive
+rules of grammaticality, which we believe the other to hold, into our
+interpretation and construction, just as we bring in our stereotypes
+about the other's lexical/semantic links.  Chomsky's mistake, on this
+picture, is exactly the same as absolutely any other semanticist - he
+believes we have just one set of rules for interpreting or creating
+utterances.
+
+*3.2.2 Stereotypes.*
+
+     Let us turn back to the discussion of stereotypes, perhaps it
+will be illuminating.  Lexical items (and recursive rules) are
+distributed by idiolect, and by register.  This latter may be
+understood as the speech situation, thought of in broad terms such as
+formal/informal, authoritative/subordinate, solidarity/distance, etc.
+We might conceivably enumerate the elements of register.  Let us call
+a particular speaker's idiolect in a particular register at a
+particular time the _"utterance-context"_.  We prefer this
+condensation of speaker and situation into a single variable (though a
+multi-dimensional one), because we concur with Volosinov in thinking
+the person of a speaker to be no different in kind from the other
+situations encompassing utterances.  It seems to be empirically true
+that lexical/semantic links and recursive rlues of grammar, while
+somewhat systematic, are not common to all utterance-contexts (or most
+even), even within fairly narrow social groups.  A particualar string
+of phones/phonemes is used and understood one way by one class, in one
+region, and using one register - and differently elsewhere.  Class,
+region, and register are often dividing lines for different uses of a
+sound, but none of these are often sharply divided.
+
+     It is usually the case that we are unsure about the semantic
+values and recursive rules, to a greater or lesser degree, used by
+others in our conversations.  Symmetrically, we are often unsure how
+our lexicon and syntax will be taken.  Often, prior to a conversation
+we call to mind stereotypes of the other's likely lexical/semantic
+connections, based on her appearance, demeanor, and dress.  In all
+cases, we draw these stereotypes once engaged in conversation.  The
+other's accent, lexical choice, and grammar lead us to further
+stereotypes about her class, region, register, etc. - which we use to
+determine her likely semantic values and intended syntax.  We also use
+all the above items to develop a Gricean "passing theory" about our
+partner's likely appraisal of our own class, region and register.
+Insofar as there is such a thing as a "standard" language, both
+parties may choose the register in their repertoires which most nearly
+conform to the "standard".  What makes one set of lexical/semantic
+connection (or recursive rule) "standard" in not the ontological
+status of languages, it is actual historical facts about invasions,
+immigrations, and power-structures in societies.
+
+     This ability to form stereotypes largely accounts for the success
+and failure of mutual intelligibility.  In DeCamp's description of
+Jamaica above, this is well illustrated.  The housewife and market
+woman are able to communicate just insofar as they form reasonably
+good stereotypes of one anothers' lexical/semantic connections and
+recursive rules (although they may yet believe their stereotypes to be
+much better than they actually are).  These stereotypes may be
+available to whatever degree for a listener.  If the author personally
+hears a Japanes speaker, he will not make any lexical/semantic
+connections; if he hears a Russian or Chicano he will make a few
+(though not many); if he hears a Jamaican creole speaker he will have
+more correct stereotypes; if he hears an American midwesterner, most
+all the stereotypes will fit.  A passing thought here is that it might
+be easier to define languages by mutual unintelligibility than by
+mutual intelligibility.  That is, two speakers may be said to "share a
+language" if they are both incomprehensible by most all the same
+people.  This shall not be pursued herein, but neither is it quite a
+joke.
+
+*3.2.3 Semantics, grammar and pragmatics.*
+
+     We can see that the framework of families of inter-related
+semantic values and recursive rules of grammaticality bring us much
+closer to a pragmatic theory than to a semantic one.  We should also
+notice that stereotypes are no more pre-given than are languages.
+That is, it is not merely that we know some large number of languages
+before entering a discourse situation; and then merely try to choose
+the right one.  Rather it is that, just as new sentences can be
+generated, so can new stereotypes.  The Soviet semiotician Yuri
+Lotman, in his essay "Problems in the Typology of Texts", nicely
+captures something like the picture we are aiming for - albeit his
+concern is for the written, not the spoken word.
+
+     "Our reasoning is not constructed thus, 'Pragmatics, not
+     semantics and syntax determines the character of the text,' but
+     thus:  'A change in the function of a text gives it a new
+     semantics and a new syntax (p.120)."
+
+Lotman's concern is admittedly somewhat different than ours, and so is
+his terminology.  We should best understand, for our purposes, 'text'
+as 'sentence' or 'sound' (i.e. that which stays fixed); and 'function'
+as 'utterance-context'.  This is not rewriting the whole intention of
+Lotman's assertion, but merely shifting the concern from writing to
+speech.  We shall show below that Lotman is most sympathetic with our
+program.
+
+*3.3 Conventions and intentions.*
+
+     Stereotypes, for all the work they do, are not the whole of our
+explanation of speech and interpretation.  At least two other sorts of
+factors enter in.  The first is conventions; the second is intentions.
+We have been and remain very uncomfortable about talk of conventions,
+as it is enormously less that clear what conventions are and which
+conventions exist.  However, there is work to be done which cannot be
+done with stereotypes alone.  This work concerns speech-acts.
+Although our knowledge of conventions is not, perhaps, sharply divided
+off from the stereotypes we have - the paradigm cases of each play
+distinctly different roles.  The conventions we are aware of are of
+what _acts_ can be performed by saying things.  Our stereotypes are
+still, as our quote from Lotman brought our, contextualized semantic
+theories.  Our discussion of Austin should, hopefully, have brought
+out semantic theories' inability to deal with speech-acts.  When we
+say, 'I do take this woman', no possible values we can give to the
+individual lexical items, and no set of recursive rules we can use to
+explain the composition, can explain the meaning or force of the
+utterance, _unless we know that there is a conventional procedure to
+become married_, and that this is it.  In some sense, our explanation
+of speech and interpretation in terms of stereotypes (however much it
+departed from traditional semantic theories) is still a semantic
+theory.  We shall not reject this semantic theory, though we shall
+reject any semantic theory which does not demand _radical_
+contextualization.  However, we do claim that a pragmatic theory of
+speech-acts is necessary on top of our "semantic" theory of
+stereotypes.
+
+*3.3.1 Conventions.*
+
+     Our pragmatic theory, though, must take precedence over our
+"semantic" theory.  Recall from our discussion of Volosinov,
+
+     "[T]he criterion of linguistic correctness is submerged by a
+     purely ideological criterion:  an utterance's correctness is
+     eclipsed by its truthfulness or falsity, its poeticalness or
+     banality, . . . [whether it is] good or bad, important or
+     unimportant, pleasant or unpleasant, and so on."
+
+There are conventions that we say things which are true rather than
+false (for the particular context of utterance); which are important
+rather than unimportant; which are pleasant rather than unpleasant;
+and similarly, which are contextually grammatical rather than
+ungrammatical.  Each of these convention is, or course, breakable and
+often broken.  At the same time, we know that if we break these
+conventions we are subject to censure of a more or less conventional
+nature, which depends largely on more or less enumerable aspects of
+the utterance-context (and do not forget that utterance-context
+includes the person of the speaker).  Since contextual grammaticality
+can be included in these categorical conventions without any strain on
+the framework, it must be subsumed under our pragmatic theory.  We
+have already stated that stereotypes, like utterances, must be
+recursively generable.  When we claim that there are conventions
+(pragmatic objects) about which arrays of stereotypes to bring to a
+particular utterance-context, it follows in an immediate fashion that
+parts of our pragmatic theory must include rules of recursive
+generation.  Whether we include the actual rules for generation of
+sentences in our pragmatic theory, or only include the rules for
+generating new patterns of stereotypes is of little or no matter.
+
+*3.3.2 Intentions.*
+
+     In addition to stereotypes and conventions, the process of speech
+and interpretation involves intentions, in various ways.  These are
+the Gricean kinds of cases.  While Grice's conversational rules are
+indeed conventions of a certain sort, saying this does not quite go
+far enough toward explaining actual utterances.  The thing that is
+left out is the interpretation we actually end up with from assuming
+that speakers are obeying these conversational rules.  So for example,
+when we respond to 'Where can I get some petrol?' with 'There is a gas
+station around the corner,' we must presume certain intentions to
+understand the interchange.  The meaning which we should like to
+assign to the latter utterance is of the sort, 'You may get petrol
+around the corner.'  The linguistic stereotypes we have of the
+utterance (imagine an actual circumstance) are not likely to give us
+this meaning.  Neither are there conventions specific enough to direct
+us to this meaning.  It is conventional to give responses to
+questions, and to tell truths rather than falsities, and so on.  But
+none of these are specific enough to determine the actual meaning
+being given to the utterance above, unless we supplement our
+understanding by certain assumptions about the intentions of the
+speaker.  This point was, hopefully brought out in our discussion of
+Grice.  Hence, we shall let this mention of it suffice herein.
+
+*3.4 Lotman.*
+
+     Lotman, whom we have already mentioned in passing, is interested
+in the abstract study of information.  While speaking is clearly not
+entirely a matter of transmitting information, this element does
+figure in.  Almost as a postscript we wish to consider whether the
+consideration of language in information-theoretic terms will lead us
+to the same framework we reached by other means.  The information
+which is of interest to Lotman is not only of the world outside the
+communicative act, but information about the communicative act itself.
+If we reflect just briefly on the processes of actual speech we will
+realized that communication about communicative acts is a large part
+of our total communication.[19]
+
+*3.4.1 Sameness and difference.*
+
+     When we are concerned with communication about communicative acts
+we are, according to Lotman, driven to an explanation in terms of an
+opposition between sameness and difference of code.  This is a
+structural opposition, which should remind us of the negative
+definition of signifiers and signifieds which we saw in Saussure.
+However, Lotman is not concerned with the individual elements in
+communication, but with communicative systems as a whole - what we
+would call 'stereotypes' or 'systems of stereotypes'.  Lotman makes
+these remarks about the play between sameness and difference of code.
+
+     "Let us imagine two human individuals who still exchange not
+     signs but irregular signals that are involuntary symptoms of
+     their psycho-physiological processes.  The common character of
+     some elementary codes of the 'fear-pleasure' type and the common
+     character of their surrounding situation, which is deciphered by
+     this code set, allow them to distinguish a common feature in
+     mutual signals that they qualify as 'intelligible.'  The
+     possibility arises of the equivalent exchange of identical
+     meanings."
+
+This is the sameness aspect of code.  Lotman continues.
+
+     "However, while the mechanism from which the system of semiotic
+     communication can develop is present here, the content for
+     exchange within it is theoretically not provided.  A participant
+     in communication is operative for me presicely because he is
+     'another person,' and the information obtained from him is
+     valuable precisely insofar as it issues from another person and
+     does not duplicate what is already known to me.  To the extent
+     that participants in communication are united by a common code,
+     they are one person. (both p.95)"
+
+This is the difference aspect of code.
+
+*3.4.2 Code and content.*
+
+     Before we proceed to Lotman's remarks on the precise opposition
+between these, we need to explain parts of the above quotes.  Lotman,
+following his compatriate Volosinov, does not wish to distinguish code
+and content in natural language - at least not in the simplistic way
+which analytic semantics would.  For Volosinov, as we saw, this
+follows from the absolute semioticity of thought.  Every thought and
+every perception is already a semiotic object when it is presented,
+and does not have a pre-semiotic "content".  For Lotman it is the
+same; any information we have in our brains is not merely passively
+realized in an objective code, but is the code itself.  Hence, two
+persons who are not identical in the information they contain think in
+different systems of code.
+
+     A problem arises as to how information can be conveyed between
+two persons with different systems of code (but yet it is only those
+with different systems of code who have any information _to_ convey).
+Lotman describes the situations of similarity and difference of code.
+
+     "Thus two semiotic situations are inherently given:  in one
+     situation, the mechanism of communication is inherently given,
+     but the content of communication is theoretically absent; in the
+     other situation, the content of communication is inherently
+     given, but the mechanism of communication is theoretically
+     absent.  It is apparent that real speech can be assessed as a
+     compromise and oscillation between these systems (p.96)"
+
+This oscillation and compromise appears at a synchronic level as an
+"inherent structural tension" in the pattern of communication.
+However, at a diachronic level the structural tension plays a
+functional role in the maintenence of societies.  Let us examine the
+opposition of sameness and difference at a diachronic level.
+
+*3.4.3 Diachrony.*
+
+     Saussure has rightly pointed out that there is a tendency toward
+sameness of language.  We explained this in terms of the desirability
+of communication, and the rational method of maximizing it, and so on.
+Our explanation was undoubtedly much too intentional.  Persons are not
+nearly so rational as our discussion suggested; which is not to say
+that there is not a societal movement towards standardization of
+language:  there is!  Saussure should be excused from the blame for
+this intentionalism, as it was only our heuristic in explaining the
+tendency he observed.  However, what Saussure observed was only half
+of the picture.  There is also a tendency toward individualization of
+language.  Lotman says this.
+
+     "The development of a linguistic system brings about an ever
+     greater individualization of language.  This is linked to the
+     fact that the personality of both speaker and hearer become
+     increasingly complex in the course of cultural evolution.  There
+     is seldom growth in the number of semiotic systems with which
+     each person encodes his [sic] speech behavior.  But the number of
+     possible combinations of linguistic codes eventually exceeds the
+     number of members in the collective; that is, it becomes
+     individual. (p.97)"
+
+     We should not take too seriously Lotman's implicit claim that
+there was some aboriginal society in which codes were not as common as
+individuals.  Russian linguists and philosophers since Marr have taken
+their metaphors about the origins of language much too seriously.
+Nonetheless, Lotman suggests how real historical people do become
+differentiated in their semiotic systems.
+
+     These two opposing tendencies, for codes to differentiate and to
+generalize, play a functional role in societies.  This we have said.
+It would be premature to claim that this functional role actually
+explains the tendencies; so we shall offer it only as a suggestion,
+not an assertion.  The function that similarity of code plays in
+society is the obvious one of allowing communication.  The function of
+differentiation of code is as follows.
+
+     "Specialization in the structure of individual codes - the
+     possibility of a purely personal representation in text of
+     extralinguistic reality - meets deep needs of the collective as a
+     whole, since a shortage of information typical of any human
+     collective can most effectively be compensated for by the
+     stereoscopic quality, polyglottism, and multi-level character of
+     specialization. (p.97)"
+
+The specialization mentioned here is analogous to what Hilary Putnam
+calls "division of linguistic labor".  That is, different people are
+allowed the final word on different linguistic matters.  The
+'stereoscopic quality' Lotman mentions here is merely the greater
+effectiveness which a multiplicity of perspectives brings do deciding
+an issue - whether it be one of truth, morality, beauty,
+appropriateness, or whatever.
+
+*3.4.4 Language concluded.*
+
+     The diachronic perspective suggested above allows us one final
+chance to conceptualize what language could be, and what it could not
+be.  A language could be a synchronic slice of a group of humans, in
+which the tendency toward commonality of code is predominant.  Whether
+such slices exist is an empirical matter, as have been the other
+suggestions we have made about what languages might be.  This account
+is in keeping with our conceptions in terms of stereotypes, and common
+prior theories, and mutual intelligibility.  However, this perspective
+allows us to see something which the others have not.  If languages
+exist in particular places at particular times this is an entirely
+accidental fact.  Nothing within language (on any of our accounts)
+causes languages to reproduce themselves.  Only particular social
+facts, of a non-linguistic nature, could have the effect of
+reproducing language.  In particular, for a language to be a lasting
+entity there would have to be some outside pressure for the conformity
+of linguistic codes.  We conjecture that this would have to be the
+result of a most peculiar functional demand of a society.
+*Bibliography and key*
+
+Saussure, _Course __in __General __Linguistics_, Philosophical
+Library, 1959.  (all references)
+
+Volosinov, _Marxism __and __the __Philosophy __of __Language, _Harvard
+University Press, 1986.  (all references)
+
+Lacan, _Feminine __Sexuality, _edited with introductions by J.
+Mitchell and J. Rose, W. W. Norton and Co., 1982.  (Fem.)
+
+Lacan, _The __Four __Fundamentals __of __Psychoanalysis, _W. W. Norton
+and Co., 1977.  (FF)
+
+Lacan, _Ecrits: __ __A __Selection, _translated by Alan Sheridan,
+Norton, 1982.  (Ecr.)
+
+Kristeva, _The __Kristeva __Reader, _Columbia University Press, 1986.
+(Read)
+
+Kristeva, _Desire __in __Language, _Columbia University Press, 1980.
+(Des.)
+
+Chomsky, _Studies __on __Semantics __in __Generative __Grammar,
+_Mouton and Co., 1972.  (SGG)
+
+Chomsky, _Aspects __of __the __Theory __of __Syntax, _John Wiley and
+Sons limited, 1965.  (ATS)
+
+Chomsky, _Syntactic __Structures, _M.I.T. Press, 1957.  (SS)
+
+Quine, _Set __Theory __and __Its __Logic, _Belknap Press, revised
+edition, 1969.  (all references)
+
+Kaplan, David"DThat", Syntax and Semantics v.9, 1978.
+               "On the Logic of Demonstratives", ?
+               Manuscript of "Demonstratives", 1977.
+
+Davidson, "A Nice derangement of Epitaphs", in _Philosophical Grounds
+__of __Rationality, _edited by Grandy and Wagner, Academic Press.
+(all references)
+
+Grice, "Presupposition and Conversational Implicature", in _Radical
+Pragmatics, _edited by Peter Cole, Academic Press, 1981.  (PCI)
+
+Grice, "Logic and Conversation", in Syntax and Semantics v.3, edited
+by Cole and Morgan, Academic Press, 1975.  (LC)
+
+Hudson, _Sociolinguistics, _Cambridge University Press, 1980.  (all
+references)
+
+DeCamp, "Introduction:  The Study of Pidgin and Creole Languages", in
+_Pidginization __and __Creolization __of __Language, _edited by D. H.
+Hymes, Cambridge University Press, 1971.  (all references)
+
+Lotman, Yuri.  "Primary and Secondary Communication-Modeling Systems";
+"Two Models of Communication"; "Problems in the Typology of Texts", in
+_Soviet __Semiotics, _ edited and translated by Daniel Lucid, John
+Hopkins
+University Press, 1977. (all references)
+
+Austin, _How __to __Do __Things __with __Words, _Clarendon Press,
+1962.  (all references)
+
+
+
+1. We use 'teleological' and its cognates in a somewhat nonstandard
+sense.  Where the normal use might be only to describe systems which
+through internal laws tend towards some ideal state or equilibrium, we
+use a somewhat broader, though, we believe cohesive sense.  We shall
+use 'teleological' to describe any system or object which either tends
+towards an ideal state, or toward an ideal, and perhaps externally
+defined, regularity in behavior.  Further, we shall allow that this
+tendency might be the consequence, not only of internal laws, but of
+the structure in which the object is placed.  This applies concretely
+to our interest by assuming the object of interest to be persons,
+whose behavior may tend toward e.g. the production of syntactical
+speech due to their position in the structure of society.  We shall
+argue that in this sense, persons, in Saussure's schema, are
+teleologically directed toward langue.  This should also probably be
+the case of Chomsky's 'competence', though we shall not specifically
+deal with this herein.
+
+
+2. We use 'pragmaticist' here not in reference to the term which
+Pierce invented to distinguish his philosophy from James' pragmatism,
+but in the sense found in linguistics.  Pragmaticism in linguistics
+is, roughly, the position that the meaning and force of utterances are
+to be explicated in terms of the pragmatic situation of utterance, not
+by a semantic theory of language.
+
+3.'Arbitrary' is the word normally used in talking about Saussure's
+thought, and the word that occurs in the English version of his
+_Course. __ _However, it is not to be understood in quite the sense
+normally associated with it.  A better word to use in the place of
+'arbitrary' and its cognates might be 'conventional'.  That is, when
+Saussure writes of the "arbitrary matching up of sound-images with
+concepts", he does not mean that it is done at random, or at the whim
+of each individual user at each occasion of use.  Rather Saussure
+merely means that the particular matching that occurs does not follow
+any natural (i.e. asocial) necessity.  This is not to imply, as we
+discuss, that each speaker can do the matching she chooses.  We shall
+retain the use of 'arbitrary' and its cognates, however, in order to
+remain consistent with the English translation of Saussure's work.
+
+4. By a 'system of virtual representation' we mean any sort of
+computational system which, although not actually storing emplates, is
+able to make comparisons between inputs of different times past.  We
+think that it must be generally acknowledged that the mind is a
+virtually representational system, if not an outright representational
+one.
+
+5. I shall use the square brackets around the names of conceptual
+values.  These values are not the same as either the thing named, or
+the word naming (though in Saussure, and elsewhere there is a close
+tie between the word itself and the concept).  Hence, [snow] is to be
+distinguished from both snow (the stuff) and 'snow' (the word).
+
+6. An obvious confusion presents itself at this point in connection
+with the word 'contract'.  This is nearly the same ambiguity that
+arises with many seventeenth and eighteenth century thinkers over the
+so-called 'social contract'.  One reading of 'contract' would be a
+literal one in which some collective actually met and somehow agreed
+on particular conventions.  The conventions of interest to Saussure
+are, of course, the semantic connections in langue.  However, this is
+by no means intended by Saussure (and perhaps not by 'social contract'
+theorists).  Rather, Saussure intends to make a purely
+phenomenological or psychological claim about the way that language
+"appears" to a speaker.  That is, language stands in the same relation
+to the speaker as does a contract she (or her society) has actually
+entered into.  However, we might still be unhappy with this phrasing,
+as an actual contract, unlike the language, is so-to-speak, "made to
+be broken".  But here again, we should do well to think of Saussure's
+"contract" in much the same way as the "social contract".  It is
+something which appears to have been inexorably entered into by some
+previous generation (with the emphasis still on "appears").
+
+7. The word 'iconic' is here used in a somewhat technical sense.
+Pierce originated the tripartite distinction between icon, symbol, and
+sign - and these are fairly common terms in semiotics today.  Ignoring
+the difference between symbol and sign, we may merely contrast
+'iconic' with Saussure's term 'arbitrary'.  An iconic sign is one in
+which some natural fact compels the particular relation which exists
+between a signifier and its signified.  The most obvious example of
+this is an actual icon, which is fashioned in the shape of the figure
+which it is meant to represent.
+
+8. Some essays in which we see this are "DThat", "On the Logic of
+Demonstratives", and "Demonstratives".  See the bibliography for full
+information on these.
+
+9. In particular, haecceitists would maintain that all objects are
+actual objects; while anti-haecceitists think that some objects are
+only potential.
+
+10. The difference in the presupposition of past-perfect active and
+passive is over whether the subject (in active version) is presumed
+living.  The example here is that in 'Einstein has taught me physics',
+Einstein is presumed to be alive.  With, 'I was taught physics by
+Einstein' no such presumption exists.
+
+11. 11. Chomsky reads the structure of (10) as,
+          (10')It was (an ex-convict (with (a red (shirt)))) that he
+               was warned to look out for.
+
+12. 12. The examples are from _Aspects of the Theory of Syntax_.
+
+13. Explicit performatives are speech-acts in which the act being
+performed is named by the utterance by which the act is performed.
+These are to be opposed to _implicit performatives_, in which,
+although the same act may be performed, the act is not named.
+Examples of these might be the explicit performative, 'I make X a gift
+to you'; and the implicit performative, 'Here you go.'  These might
+both be used for the purpose of making a gift, but only the first
+names the act performed.
+
+14. When we use 'force' in this discussion we are really intending to
+refer to the illocutionary act being performed by a given utterance.
+For simplicity we have left Austin's description of locutionary,
+illocutionary, and perlocutionary acts out of our main text.  In
+brief, the distinction is as follows.  Locutionary acts are the
+issuing of certain sounds with the intent and possibility that they be
+taken as sounds in language.  Illocutionary acts are acts which are
+accomplished by or in making a locutionary act.  The prime examples of
+these are explicit performatives, in which "to say something is to do
+something."  Perlocutionary acts are acts which are achieved as
+consequences of performing a locutionary or illocutionary act.  We may
+often think of these as achieved _by_ performing the locutionary or
+illocutionary act, but not normally _in_ performing the latter.  In
+general, perlocutions are non-conventional, though, of course, no
+sharp line exists between conventional and non-conventional actions.
+Hence, our examples of forces may ease into perlocutions.  In our
+discussion of force, we give examples of cases in which the force is
+other than the "normal" force of an utterance.  By this it should be
+understood that a different illocution is being performed than that
+which is normally associated with the given utterance.
+
+15. See the above footnote for a brief discussion of locutionary and
+illocutionary acts.
+
+
+16. The conventions which are not considered by semantic theories are
+not, of course, those conventional semantic links which, on some
+accounts, define language itself.  Rather, these neglected conventions
+are those which concern the performance of illocutions.
+
+17. This example is from Davidson's essay and, I guess, before that
+from a Sheridan character.  The context should make it clear enough
+what is going on.
+
+18. There is no point in demonstrating that Saussure speaks of dialect
+continuums, in the main text; Saussure says almost exactly the same
+sort of thing as the other authors we quoted.  However, to put the
+readers mind at ease we can give this example.
+     "It is impossible, even in our hypothetical examples, to set up
+     boundaries between dialects.  The same applies to related
+     languages.  The size of the territory makes no difference.  We
+     would be unable to say where High German begins and Low German
+     ends, and would find it just as impossible to draw the dividing
+     line between German and Dutch, or between French and Italian.
+     There are extreme points where we may assert, 'Here French
+     predominates, here Italian,' but in the intermediate regions the
+     distinction would disappear. (p.204)"
+
+
+19. As an example of the importance of communication about
+communication we can point to Austin's estimate that there are names
+of speech-acts of a number in the order of 10^3^.  If the vocabulary
+of English is about 200,000 words, then this means that anywhere up to
+5% of our lexicon may be names of communicative acts.  This is
+certainly an important portion.  It is, of course, unclear with this
+information alone how much of our actual speech is about communicative
+acts.  But this is also probably of at least the same order.
+
+
+
+
+
