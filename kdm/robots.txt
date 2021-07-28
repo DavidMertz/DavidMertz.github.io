@@ -1,0 +1,20 @@
+# This site should be indexed by robots
+User-agent: *
+Disallow: /secret/
+Disallow: /PSF-Board/
+Disallow: /norobots/
+Crawl-delay: 1
+
+User-agent: inebot
+User-agent: kdmbot
+Crawl-delay: 10
+
+User-agent: bingbot
+Crawl-delay: 3600
+
+User-agent: YandexBot
+Crawl-delay: 60
+
+User-agent: Acunetix
+Disallow: /
+
