@@ -1,0 +1,77 @@
+@media only screen and (min-width: 1200px) and (max-width: 1366px) {
+    .container {
+        width: 90%;
+    }
+
+}
+
+
+/* Medium Layout: 1280px. */
+
+@media only screen and (min-width: 992px) and (max-width: 1200px) {
+    .container {
+        width: 90%;
+    }
+	ul.course-details-meta li {
+    float: left;
+    border-right: 1px solid #cccccc;
+    padding: 0 15px;
+    color: #666666;
+    font-size: 11px;
+}
+.section-title h2 {
+    font-weight: 600;
+    font-size: 26px;
+}
+
+   
+}
+
+
+/* Tablet Layout: 768px. */
+
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+    .container {
+        width: 90%;
+    }
+    .section-padding {
+        padding: 80px 0;
+        padding-left: 60px;
+    }
+
+}
+
+
+/* Mobile Layout: 320px. */
+
+@media only screen and (max-width: 767px) {
+    .container {
+        width: 96%;
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+
+   
+ 
+}
+
+
+/* Wide Mobile Layout: 480px. */
+
+@media only screen and (min-width: 480px) and (max-width: 767px) {
+    .container {
+        width: 90%;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+   
+    .section-title h2 {
+        margin-bottom: 0;
+    }
+	#mainNav{display:none;}
+	
+}
+@media screen and (max-width: 680px) {
+	#mainNav{display:none;}
+	
+}

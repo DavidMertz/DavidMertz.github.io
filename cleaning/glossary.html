@@ -1,0 +1,1973 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Title -->
+    <title>Cleaning Data for Effective Data Science</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <!-- Font awesome CSS -->
+    <link rel="stylesheet" href="assets/css/font-awesome.min.css">
+    <!-- Animate CSS -->
+    <link rel="stylesheet" href="assets/css/animate.min.css">
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Responsive CSS -->
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <!-- jQuery -->
+    <script src="assets/js/jquery-1.11.3.min.js"></script>
+    <!-- Load mathjax -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-MML-AM_CHTML-full,Safe">
+    </script>
+</head>
+
+<body>
+    <!--left bar area-->
+    <div class="left-bar-area">
+        <div class="logo">
+            <a href="index.html">
+                <img src="img/home.png" alt="Home" width="50px" /></a>
+            <div class="menu-switch">
+                <span class="menu-bar-one"></span>
+                <span class="menu-bar-two"></span>
+                <span class="menu-bar-three"></span>
+            </div>
+        </div>
+
+        <div class="social">
+            <a href="https://www.packtpub.com/product/cleaning-data-for-effective-data-science/9781801071291">
+                <img src="https://media.glassdoor.com/sqll/438946/packt-squarelogo-1474954463150.png"
+                    alt="Buy from Packt"></a>
+            <a href="https://www.amazon.com/Cleaning-Data-Effective-Science-command-line/dp/1801071292">
+                <img src="https://i.pinimg.com/originals/29/f6/41/29f641b507ccb60bb7a62a830b988736.jpg"
+                    alt="Buy from Amazon"></a>
+        </div>
+    </div>
+
+    <!--Nav Menu Start -->
+    <nav class="mainmenu">
+        <ul>
+            <li><a href="preface.html">Preface</a></li>
+            <li><a href="tabular.html">Tabular Formats</a></li>
+            <li><a href="hierarchical.html">Hierarchical Formats</a></li>
+            <li><a href="repurposing.html">Repurposing Data Sources</a></li>
+            <li><a href="anomaly.html">Anomaly Detection</a></li>
+            <li><a href="data-quality.html">Data Quality</a></li>
+            <li><a href="value-imputation.html">Value Imputation</a></li>
+            <li><a href="feature-engineering.html">Feature Engineering</a></li>
+            <li><a href="closure.html">Closure</a></li>
+            <li><a href="glossary.html">Glossary</a></li>
+        </ul>
+    </nav>
+
+    <!--Services Area Start-->
+    <nav class="navigation" id="mainNav">
+        <a class="navigation__link" onclick="bookText('1')">Accuracy</a>
+        <a class="navigation__link" onclick="bookText('2')">ActiveMQ</a>
+        <a class="navigation__link" onclick="bookText('3')">BeautifulSoup</a>
+        <a class="navigation__link" onclick="bookText('4')">Berkeley DB</a>
+        <a class="navigation__link" onclick="bookText('5')">Big Data</a>
+        <a class="navigation__link" onclick="bookText('6')">Big-endian (see Endianness)</a>
+        <a class="navigation__link" onclick="bookText('7')">BSON (Binary JSON)</a>
+        <a class="navigation__link" onclick="bookText('8')">caret (Classification And REgression Training)</a>
+        <a class="navigation__link" onclick="bookText('9')">Cassandra</a>
+        <a class="navigation__link" onclick="bookText('10')">Categorical variable (see NOIR)</a>
+        <a class="navigation__link" onclick="bookText('11')">chardet</a>
+        <a class="navigation__link" onclick="bookText('12')">Chimera</a>
+        <a class="navigation__link" onclick="bookText('13')">Column</a>
+        <a class="navigation__link" onclick="bookText('14')">Comma-separated values (CSV)</a>
+        <a class="navigation__link" onclick="bookText('15')">Continuous variable (see NOIR)</a>
+        <a class="navigation__link" onclick="bookText('16')">Coreutils (GNU Core Utilities)</a>
+        <a class="navigation__link" onclick="bookText('17')">Corpus (pl. corpora)</a>
+        <a class="navigation__link" onclick="bookText('18')">CouchDB</a>
+        <a class="navigation__link" onclick="bookText('19')">CrateDB</a>
+        <a class="navigation__link" onclick="bookText('20')">Curse of dimensionality</a>
+        <a class="navigation__link" onclick="bookText('21')">Data artifact</a>
+        <a class="navigation__link" onclick="bookText('22')">Data frame</a>
+        <a class="navigation__link" onclick="bookText('23')">data.frame</a>
+        <a class="navigation__link" onclick="bookText('24')">data.table</a>
+        <a class="navigation__link" onclick="bookText('25')">Data set</a>
+        <a class="navigation__link" onclick="bookText('26')">Denormalization</a>
+        <a class="navigation__link" onclick="bookText('27')">DMwR (Data Mining with R)</a>
+        <a class="navigation__link" onclick="bookText('28')">DOM (Document Object Model)</a>
+        <a class="navigation__link" onclick="bookText('29')">Domain-specific knowledge</a>
+        <a class="navigation__link" onclick="bookText('30')">Eagerness</a>
+        <a class="navigation__link" onclick="bookText('31')">Elasticsearch</a>
+        <a class="navigation__link" onclick="bookText('32')">Endianness</a>
+        <a class="navigation__link" onclick="bookText('33')">F1 Score</a>
+        <a class="navigation__link" onclick="bookText('34')">Feature (see Column)</a>
+        <a class="navigation__link" onclick="bookText('35')">Field (see Column)</a>
+        <a class="navigation__link" onclick="bookText('36')">Fuzzy</a>
+        <a class="navigation__link" onclick="bookText('37')">GDBM (GNU dbm)</a>
+        <a class="navigation__link" onclick="bookText('38')">General Decimal Arithmetic Specification</a>
+        <a class="navigation__link" onclick="bookText('39')">Gensim</a>
+        <a class="navigation__link" onclick="bookText('40')">Gibibyte (GiB)</a>
+        <a class="navigation__link" onclick="bookText('41')">ggplot2</a>
+        <a class="navigation__link" onclick="bookText('42')">Glob</a>
+        <a class="navigation__link" onclick="bookText('43')">GQL (Graph Query Language)</a>
+        <a class="navigation__link" onclick="bookText('44')">Gremlin</a>
+        <a class="navigation__link" onclick="bookText('45')">Halting problem</a>
+        <a class="navigation__link" onclick="bookText('46')">h5py</a>
+        <a class="navigation__link" onclick="bookText('47')">HDF Compass</a>
+        <a class="navigation__link" onclick="bookText('48')">Hierarchical data format (HDF5)</a>
+        <a class="navigation__link" onclick="bookText('49')">Hyperparameter</a>
+        <a class="navigation__link" onclick="bookText('50')">Idempotent</a>
+        <a class="navigation__link" onclick="bookText('51')">Imager</a>
+        <a class="navigation__link" onclick="bookText('52')">imbalanced-learn</a>
+        <a class="navigation__link" onclick="bookText('53')">Imputation</a>
+        <a class="navigation__link" onclick="bookText('54')">Interval variable (see NOIR)</a>
+        <a class="navigation__link" onclick="bookText('55')">ISO-8601</a>
+        <a class="navigation__link" onclick="bookText('56')">jq</a>
+        <a class="navigation__link" onclick="bookText('57')">JSON (Javascript Object Notation)</a>
+        <a class="navigation__link" onclick="bookText('58')">Jupyter</a>
+        <a class="navigation__link" onclick="bookText('59')">Kafka</a>
+        <a class="navigation__link" onclick="bookText('60')">Kdb+</a>
+        <a class="navigation__link" onclick="bookText('61')">Laziness</a>
+        <a class="navigation__link" onclick="bookText('62')">LDBM (Lightning Memory-Mapped Database)</a>
+        <a class="navigation__link" onclick="bookText('63')">Lemmatization</a>
+        <a class="navigation__link" onclick="bookText('64')">Little-endian (see Endianness)</a>
+        <a class="navigation__link" onclick="bookText('65')">MariaDB</a>
+        <a class="navigation__link" onclick="bookText('66')">Matplotlib</a>
+        <a class="navigation__link" onclick="bookText('67')">Measurement (see Column)</a>
+        <a class="navigation__link" onclick="bookText('68')">Memcached</a>
+        <a class="navigation__link" onclick="bookText('69')">Metaphone</a>
+        <a class="navigation__link" onclick="bookText('70')">Mojibake</a>
+        <a class="navigation__link" onclick="bookText('71')">MonetDB</a>
+        <a class="navigation__link" onclick="bookText('72')">MongoDB</a>
+        <a class="navigation__link" onclick="bookText('73')">MySQL</a>
+        <a class="navigation__link" onclick="bookText('74')">Neo4j</a>
+        <a class="navigation__link" onclick="bookText('75')">netcdf4-python</a>
+        <a class="navigation__link" onclick="bookText('76')">Network Common Data Form (NetCDF)</a>
+        <a class="navigation__link" onclick="bookText('77')">NLTK (Natural Language Toolkit)</a>
+        <a class="navigation__link" onclick="bookText('78')">Node.js</a>
+        <a class="navigation__link" onclick="bookText('79')">Nominal variable (see NOIR)</a>
+        <a class="navigation__link" onclick="bookText('80')">NOIR (Nominal, Ordinal, Interval, Ratio)</a>
+        <a class="navigation__link" onclick="bookText('81')">NumPy</a>
+        <a class="navigation__link" onclick="bookText('82')">Observation (see Row)</a>
+        <a class="navigation__link" onclick="bookText('83')">Ontology</a>
+        <a class="navigation__link" onclick="bookText('84')">Ordinal variable (see NOIR)</a>
+        <a class="navigation__link" onclick="bookText('85')">OrientDB</a>
+        <a class="navigation__link" onclick="bookText('86')">Orthonormal basis</a>
+        <a class="navigation__link" onclick="bookText('87')">Pandas</a>
+        <a class="navigation__link" onclick="bookText('88')">Parameter space</a>
+        <a class="navigation__link" onclick="bookText('89')">Parquet</a>
+        <a class="navigation__link" onclick="bookText('90')">PDF (Portable Document Format)</a>
+        <a class="navigation__link" onclick="bookText('91')">Pillow (forked from PIL)</a>
+        <a class="navigation__link" onclick="bookText('92')">Poppler</a>
+        <a class="navigation__link" onclick="bookText('93')">PostgreSQL</a>
+        <a class="navigation__link" onclick="bookText('94')">Precision</a>
+        <a class="navigation__link" onclick="bookText('95')">PyTables</a>
+        <a class="navigation__link" onclick="bookText('96')">Query planner</a>
+        <a class="navigation__link" onclick="bookText('97')">R Markdown</a>
+        <a class="navigation__link" onclick="bookText('98')">RabbitMQ</a>
+        <a class="navigation__link" onclick="bookText('99')">Ratio variable (see NOIR)</a>
+        <a class="navigation__link" onclick="bookText('100')">Recall</a>
+        <a class="navigation__link" onclick="bookText('101')">Record (see Row)</a>
+        <a class="navigation__link" onclick="bookText('102')">Redis (Remote Dictionary Server)</a>
+        <a class="navigation__link" onclick="bookText('103')">Relational database management system (RDBMS)</a>
+        <a class="navigation__link" onclick="bookText('104')">Requests</a>
+        <a class="navigation__link" onclick="bookText('105')">REST (Representational State Transfer)</a>
+        <a class="navigation__link" onclick="bookText('106')">rhdf5</a>
+        <a class="navigation__link" onclick="bookText('107')">rjson</a>
+        <a class="navigation__link" onclick="bookText('108')">ROSE (Random Over-Sampling Examples)</a>
+        <a class="navigation__link" onclick="bookText('109')">Row</a>
+        <a class="navigation__link" onclick="bookText('110')">rvest</a>
+        <a class="navigation__link" onclick="bookText('111')">Sample (see Row)</a>
+        <a class="navigation__link" onclick="bookText('112')">Scikit-learn</a>
+        <a class="navigation__link" onclick="bookText('113')">Scipy.stats</a>
+        <a class="navigation__link" onclick="bookText('114')">Scrapy</a>
+        <a class="navigation__link" onclick="bookText('115')">Seaborn</a>
+        <a class="navigation__link" onclick="bookText('116')">SeqKit</a>
+        <a class="navigation__link" onclick="bookText('117')">Signed integer</a>
+        <a class="navigation__link" onclick="bookText('118')">Solr</a>
+        <a class="navigation__link" onclick="bookText('119')">spaCy</a>
+        <a class="navigation__link" onclick="bookText('120')">SPARQL Protocol and RDF Query Language</a>
+        <a class="navigation__link" onclick="bookText('121')">Sphering (see whitening)</a>
+        <a class="navigation__link" onclick="bookText('122')">SQLAlchemy</a>
+        <a class="navigation__link" onclick="bookText('123')">SQLite</a>
+        <a class="navigation__link" onclick="bookText('124')">State machine</a>
+        <a class="navigation__link" onclick="bookText('125')">STDOUT / STDERR / STDIN</a>
+        <a class="navigation__link" onclick="bookText('126')">Stemming</a>
+        <a class="navigation__link" onclick="bookText('127')">Structured data</a>
+        <a class="navigation__link" onclick="bookText('128')">Tab-separated values (TSV; see Comma-separated values)</a>
+        <a class="navigation__link" onclick="bookText('129')">Tabula</a>
+        <a class="navigation__link" onclick="bookText('130')">Taxonomy</a>
+        <a class="navigation__link" onclick="bookText('131')">tibble</a>
+        <a class="navigation__link" onclick="bookText('132')">Tidyverse</a>
+        <a class="navigation__link" onclick="bookText('133')">Tuple (see Row)</a>
+        <a class="navigation__link" onclick="bookText('134')">Unsigned integer</a>
+        <a class="navigation__link" onclick="bookText('135')">Variable (see Column)</a>
+        <a class="navigation__link" onclick="bookText('136')">Web 0.5</a>
+        <a class="navigation__link" onclick="bookText('137')">Whitening</a>
+        <a class="navigation__link" onclick="bookText('138')">XML (eXtensible Markup Language)</a>
+        <a class="navigation__link" onclick="bookText('139')">Xpdf</a>
+        <a class="navigation__link" onclick="bookText('140')">YAML</a>
+    </nav>
+    <!-- Service Area End -->
+
+    <div class="container shift-right">
+        <div class="row">
+            <div class="col-md-9" id="book-title"></div>
+            <div class="col-md-9">
+                <h1>Glossary</h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-9">
+                <blockquote>
+                    Ontology recapitulates philology
+                    –Willard Van Orman Quine (c.f. Ernst Haeckel)
+                </blockquote>
+            </div>
+            <div class="col-md-9">
+                <div class="hidden" id="book-text"></div>
+            </div>
+        </div>
+        <footer>
+            <p>© 2021 Packt Publishing</p>
+        </footer>
+    </div>
+
+    <div class="hidden" id="1">
+        <h2>Accuracy</h2>
+        <p>In a classification model, there are numerous <em>metrics</em> that might express the "goodness" of a model.
+            Accuracy is often the default metric used, and is simply the number of right answers divided by the number
+            of
+            data points. For example, consider this hypothetical <em>confusion matrix</em>:</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Predict/Actual</th>
+                    <th>Human</th>
+                    <th>Octopus</th>
+                    <th>Penguin</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Human</td>
+                    <td><strong>5</strong></td>
+                    <td>0</td>
+                    <td>2</td>
+                </tr>
+                <tr>
+                    <td>Octopus</td>
+                    <td>3</td>
+                    <td><strong>3</strong></td>
+                    <td>3</td>
+                </tr>
+                <tr>
+                    <td>Penguin</td>
+                    <td>0</td>
+                    <td>1</td>
+                    <td><strong>11</strong></td>
+                </tr>
+            </tbody>
+        </table>
+        <p>There are 28 observations of organisms, and 19 were classified accurately, hence the accuracy is
+            approximately
+            68%. Other commonly used metrics are precision, recall, and F1 score.</p>
+        <p>Related concepts: <strong>F1 score</strong>, <strong>precision</strong>, <strong>recall</strong></p>
+
+
+    </div>
+    <div class="hidden" id="2">
+        <h2>ActiveMQ</h2>
+        <p>Apache ActiveMQ is an open source message broker. As with other message brokers, the aggregations of messages
+            sent among systems is often a fruitful domain for data science analysis.</p>
+
+
+    </div>
+    <div class="hidden" id="3">
+        <h2>BeautifulSoup</h2>
+        <p>Beautiful Soup is a Python library for parsing and processing HTML and XML documents, and also for handling
+            not-quite-grammatical HTML that often occurs on the World Wide Web. Beautiful Soup is often useful for
+            acquiring
+            data via web scraping.</p>
+
+
+    </div>
+    <div class="hidden" id="4">
+        <h2>Berkeley DB</h2>
+        <p>Berkeley DB is an open source library for providing key/value storage systems.</p>
+
+
+    </div>
+    <div class="hidden" id="5">
+        <h2>Big Data</h2>
+        <p>The concept of "big data" is one that shifts with time, as computing and storage capabilities increase.
+            Generally, big data is simply data that is too large to handle using "traditional" and simple tools. What
+            tools
+            are traditional or simple, in turn, varies with organization, project, and over time. As s rough guideline,
+            data
+            that can fit inside the memory on a single available server or workstation is "small data," or at most
+            "medium-sized data."</p>
+        <p>As of 2021, a reasonably powerful single system might have 256 GiB, so big data is at least tens or hundreds
+            of
+            gigabytes ($10^9$) in size. Within a few years of this writing, the threshhold for big data will be at least
+            terabytes ($10^{12}$), and already today some data sets reach into exabytes ($10^{18}$).</p>
+
+
+    </div>
+    <div class="hidden" id="6">
+        <h2>Big-endian (see Endianness)</h2>
+        <p>Data arranged into "words" (typically 32-bits), or other units, where the largest magnitude component
+            (typically
+            a byte) is stored in the last position.</p>
+
+
+    </div>
+    <div class="hidden" id="7">
+        <h2>BSON (Binary JSON)</h2>
+        <p>BSON is a binary-encoded serialization of JSON-like documents.</p>
+
+
+    </div>
+    <div class="hidden" id="8">
+        <h2>caret (Classification And REgression Training)</h2>
+        <p>The R package caret is a rich collection of functions for data splitting, pre-processing, feature selection,
+            resampling, and variable importance estimation.</p>
+
+
+    </div>
+    <div class="hidden" id="9">
+        <h2>Cassandra</h2>
+        <p>Apache Cassandra is an open source distributed database system that uses the Cassandra Query Language (CQL),
+            rather than standard SQL for queries. CQL and SQL are largely similar, but vary in specific details.</p>
+
+
+    </div>
+    <div class="hidden" id="10">
+        <h2>Categorical variable (see NOIR)</h2>
+        <p>Related concepts: <strong>continuous variable</strong>, <strong>interval variable</strong>, <strong>nominal
+                variable</strong>, <strong>ordinal variable</strong>, <strong>ratio variable</strong></p>
+
+
+    </div>
+    <div class="hidden" id="11">
+        <h2>chardet</h2>
+        <p>The <code>chardet</code> module in Python, and analogous versions in other programming languages, applies a
+            colleciton of heuristics to a sequence of bytes thought likely to encode text. If the protocol or format you
+            encounter explicitly declares an encoding, try that first. As a fallback, <code>chardet</code> can often
+            make
+            reasonable guesses based on letter and n-gram frequencies that occur in a different language, and which byte
+            values are permitted by a given encoding.</p>
+
+
+    </div>
+    <div class="hidden" id="12">
+        <h2>Chimera</h2>
+        <p>In Greek mythology, a chimera is an animal combining elements of several dramatically disparate animals; most
+            commonly these include the head of a lion, the body of a goat, and the tail of a snake. In adapted uses as a
+            generic but evocative adjective, anything that combines surprisingly juxtaposed elements together can be
+            called
+            <em>chimerical</em>; or metaphorically, the thing might be called a <em>chimera</em>.
+        </p>
+
+
+    </div>
+    <div class="hidden" id="13">
+        <h2>Column</h2>
+        <p>A single kind of data item that may have, and usually has, many exemplars, one per <em>row</em> (a.k.a.
+            sample,
+            observation, record, etc.). A column consists of ordered data items of the same data type but varying
+            values. A
+            number of synonyms are used for "columns" with slightly varying focus. <em>Features</em> emphasize the way
+            that
+            columns are used by machine learning algorithms. <em>Field</em> focuses on the data format used to store the
+            data items. <em>Measurement</em> is used most often when a column collects empirical observations, often
+            using
+            some particular instrument. <em>Variable</em> is used when thinking of equational relationships among
+            different
+            columns (e.g. independent versus dependent).</p>
+        <p>Overall, columns and rows form <em>columnar</em> or <em>tabular</em> data.</p>
+        <p>Synonyms: <strong>feature</strong>, <strong>field</strong>, <strong>measurement</strong>,
+            <strong>variable</strong>
+        </p>
+
+
+    </div>
+    <div class="hidden" id="14">
+        <h2>Comma-separated values (CSV)</h2>
+        <p>A representation of columnar data in which each line of text is separated by a newline character (or carriage
+            return, or CR/LF). Within each line, data values are separated by commas. Values separated by other
+            delimiters,
+            such as tab or <code>|</code>, are also often informally called CSV (the acronym, not the full words).</p>
+        <p>Variations on the format use several quoting and escaping conventions. String data items containing commas
+            internally need to be either quoted (usually with quote characters) or escaped (usually with backslash); but
+            if
+            so, those characters in turn need special behaviors.</p>
+
+
+    </div>
+    <div class="hidden" id="15">
+        <h2>Continuous variable (see NOIR)</h2>
+        <p>Related concepts: <strong>categorical variable</strong>, <strong>interval variable</strong>, <strong>nominal
+                variable</strong>, <strong>ordinal variable</strong>, <strong>ratio variable</strong></p>
+
+
+    </div>
+    <div class="hidden" id="16">
+        <h2>Coreutils (GNU Core Utilities)</h2>
+        <p>A collection of shell-oriented utilities for processing text and data. The subset of these tools that was
+            formerly contained in the separate <strong>textutils</strong> package, in particular, are relevant to
+            processing
+            textual data sources. These tools include <code>cat</code>, <code>cut</code>, <code>fmt</code>,
+            <code>fold</code>, <code>head</code>, <code>sort</code>, <code>tail</code>, <code>tee</code>,
+            <code>tr</code>,
+            <code>uniq</code>, <code>wc</code>. Other command-line tools like <code>grep</code>, <code>sed</code>,
+            <code>shuf</code>, and <code>awk</code> are also widely used in interaction with these tools.
+        </p>
+
+
+    </div>
+    <div class="hidden" id="17">
+        <h2>Corpus (pl. corpora)</h2>
+        <p>Corpus is a term from linguistics, but used also in related natural language processing (NLP). It simply
+            refers
+            to a large "body" (the Latin root) of text covering a similar domain, such as a common publisher, genre, or
+            dialect. In general, some sort of modeling or statistical analysis may apply to a particular body of text,
+            and
+            by extension to texts of a similar domain.</p>
+
+
+    </div>
+    <div class="hidden" id="18">
+        <h2>CouchDB</h2>
+        <p>Apache CouchDB is an open-source document-oriented database. Internally, data in CouchDB is represented in
+            JSON
+            format.</p>
+
+
+    </div>
+    <div class="hidden" id="19">
+        <h2>CrateDB</h2>
+        <p>CrateDB is an open-source document-oriented database. CrateDB occupies an overlapping space with MongoDB or
+            CouchDB, but emphasizes real-time performance.</p>
+
+
+    </div>
+    <div class="hidden" id="20">
+        <h2>Curse of dimensionality</h2>
+        <p>The phrase "curse of dimensionality" was coined by Richard E. Bellman in 1957. It applies to a number of
+            different numeric or scientific fields. In relation to machine learning, in particular, the problem is that
+            as
+            the number of dimensions increases, the size of the parameter space they occupy increases even faster. Even
+            very
+            large data sets will occupy only a tiny portion of that parameter space defined by the dimensions. Models
+            are
+            fairly uniformly poor at predicting or characterizing regions of parameter space where they have few or no
+            observations to train on.</p>
+        <p>A very rough rule of thumb is that you wish to have fewer than ⅒ as many dimensions/features as you do
+            observations. However, even very large data sets perform best if feature engineering, dimensionality
+            reduction,
+            and/or feature selection can be used to reduce their parameter space to hundreds of dimensions (i.e. not
+            thousands, often tens are better than hundreds).</p>
+        <p>However, as a flip side of the curse of dimensionality, we also sometimes see a "blessing of dimensionality."
+            Linear models especially can perform very poorly with only a few dimensions to work with. The very same
+            types of
+            models can become very good if it is possible to obtain or construct additional (synthetic) features.
+            Generally,
+            this blessing occurs when models move from, e.g. 5 to 10 features, not when they move from 100 to 200
+            features.
+        </p>
+        <p>As John von Neumann famously quipped: “With four parameters I can fit an elephant, and with five I can make
+            him
+            wiggle his trunk.”</p>
+
+
+    </div>
+    <div class="hidden" id="21">
+        <h2>Data artifact</h2>
+        <p>An unintended alteration of data, generally as a consequence of hardware of software bugs. Some artifact can
+            be
+            caused by flaws in data collection instruments; others result from errors in transcription, collation, or
+            data
+            transfer. Data artifacts are often only detectable as anomolies in a data set.</p>
+
+
+    </div>
+    <div class="hidden" id="22">
+        <h2>Data frame</h2>
+        <p>A data frame (sometimes "dataframe") is an abstraction of tabular data provided by a variety of programming
+            languages and software library. At heart, a data frame bundles together multiple data-type homogeneous
+            series or
+            arrays (columns), enforcing a few regularities:</p>
+        <ul>
+            <li>All <em>columns</em> in a data frame have the same number of data items within them (some might be
+                explicitly a "missing" sentinel).</li>
+            <li>Each column has data items of the same data type.</li>
+            <li>Data may be selected by indicating collections of rows and collections of columns.</li>
+            <li>Predicates may be used to select row sets based on properties of data on a given row.</li>
+            <li>Operations on columns are expressed in a <em>vectorized</em> way, operating conceptually on all elements
+                of
+                a column simultaneously.</li>
+            <li>Both columns and rows may have names; in some libraries rows are only named by index position, but all
+                name
+                columns descriptively.</li>
+        </ul>
+        <p>Popular data frames libraries include Python Pandas and Vaex, R data.table and tibble, Scala DataFrame, and
+            Julia
+            DataFrames.jl.</p>
+
+
+    </div>
+    <div class="hidden" id="23">
+        <h2>data.frame</h2>
+        <p>The data frame library that is included with a standard R distribution. The R standard data.frame is the
+            oldest
+            data frame object for R, and remains widely used. However, either the Tidyverse tibble or the data.table
+            library
+            are generally preferable for new development, having been refined based on experience with data.frame.</p>
+        <p>See also: <strong>data frame</strong>, <strong>data.table</strong>, <strong>tibble</strong></p>
+
+
+    </div>
+    <div class="hidden" id="24">
+        <h2>data.table</h2>
+        <p>A popular data frame library for R. Philosophically, data.table tries to perform filtering, aggregation, and
+            grouping all with standard arguments to its indexing operation. The data.table library has a somewhat
+            different
+            attitude than the Tidyverse, but is generally interoperable with it.</p>
+        <p>See also: <strong>tibble</strong>, <strong>data.frame</strong></p>
+
+
+    </div>
+    <div class="hidden" id="25">
+        <h2>Data set</h2>
+        <p>A data set is simply a collection of related data. Often, if the data is tabular, it will consist of a table;
+            but
+            it may be a number of related tables. In related data that is arranged in hierarchical or other formats, one
+            or
+            more files (in varying formats) may constitute the data set. Often, but not always, a data set is
+            distributed as
+            a single archive file containing all relevant components of it.</p>
+
+
+    </div>
+    <div class="hidden" id="26">
+        <h2>Denormalization</h2>
+        <p>Denormalization is the duplication of data within a database system to allow for more "locality" of data to
+            queries performed. This will result in larger storage size, but in many cases also in faster performance of
+            read
+            queries. Denormalization potentially introduces data integrity problems where data in different locations
+            falls
+            out of sync.</p>
+
+
+    </div>
+    <div class="hidden" id="27">
+        <h2>DMwR (Data Mining with R)</h2>
+        <p>The R package DMwR includes functions and data accompanying the book <u>Data Mining with R, learning with
+                case
+                studies</u> by Luis Torgo, CRC Press 2010. A wide variety of utilities are included, but from the
+            perspective of this book, it is mentioned because of its inclusion of a SMOTE implementation.</p>
+
+
+    </div>
+    <div class="hidden" id="28">
+        <h2>DOM (Document Object Model)</h2>
+        <p>The Document Object Model (DOM) is a language-neutral application programming interface (API) for working
+            with
+            XML or HTML document. While the specification gives a collection of method names that might be implemented
+            in
+            any language, the inspiration and style is especially inspired by JavaScript.</p>
+
+
+    </div>
+    <div class="hidden" id="29">
+        <h2>Domain-specific knowledge</h2>
+        <p>Much of data science, including even that part of it concerning this book topic, cleaning data, can be driven
+            by
+            "the shape of the data itself." Certain data items may follow patterns or stand out as anamolous on a purely
+            numeric or analytic basis. However, in many cases, accurate judgements about which data is important, or
+            which
+            is of greater importance, lies not in the data themselves but in knowledge we have about the domains the
+            data
+            describe.</p>
+        <p>Domain-specific knowledge—or just "domain knowledge"—is what informs us of those distinctions that the data
+            alone
+            cannot reveal. Not all domain knowledge is extremely technical, the term might refer to topics that are more
+            "common sense" as well. For example, it is general knowledge that outdoor temperatures in the northern
+            hemisphere are usually higher in July than in January. A data set that conflicted with this background
+            knowledge
+            would be suspicious even if the individual data values were all, in themselves, in a reasonable numeric
+            range.
+            Bringing that very common domain knowledge to a problem is important, where applicable.</p>
+        <p>Equally, some domain knowledge requires deep subject-area expertise. Data in a psychological survey might
+            show
+            particular population distributions of subscales from the Minnesota Multiphasic Personality Inventory
+            (MMPI).
+            Some distributions might be implausible and indicate likely data integrity or sample bias problems, but a
+            specialized knowledge is needed to judge that. Or radio astronomy data might show particular emission
+            frequency
+            bands from distant objects. A specialized knowledge is needed to determine whether that is consistent with
+            expectations of Hubble red-shift distances or might be data errors. Likewise in many domains.</p>
+
+
+    </div>
+    <div class="hidden" id="30">
+        <h2>Eagerness</h2>
+        <p>In computer programming and computer science, sometimes the words "lazy" and "eager" are used to distinguish
+            approaches to solving a larger problem. Commonly, for example, an algorithm might transform a large data
+            set. An
+            eager program will process all the data at once. In contrast, a lazy program will only perform an individual
+            transformation when that specific result is needed.</p>
+        <p>See also: <strong>Laziness</strong></p>
+
+
+    </div>
+    <div class="hidden" id="31">
+        <h2>Elasticsearch</h2>
+        <p>Elasticsearch is a search engine based on the Lucene library. As a part of implementing a search engine,
+            Elasticsearch contains a document-oriented database or data store.</p>
+
+
+    </div>
+    <div class="hidden" id="32">
+        <h2>Endianness</h2>
+        <p>Endianness in computer representations of numbers is typically either <strong>big-endian</strong> or
+            <strong>little-endian</strong>. This refers to the scaled magnitude of composite values stored in a
+            particular
+            order. Most typically, the composite values are bytes, and they are arranged into "words" of 16-bits,
+            32-bits,
+            64-bits, or 128-bits (i.e. 2, 4, 8, or 16 bytes per word).
+        </p>
+        <p>For example, suppose we wish to store an (unsigned) integer value in a contiguous 32-bit word. Computer
+            systems
+            and filesystems typically have an addressing resolution of one byte, not of individual bits directly, so
+            this is
+            4 such slots in which scaled values may be stored. For example, we wish to store the number 1,908,477,236.
+        </p>
+        <p>First, we can notice that since each byte stores values 0-255, this is a reasonable way to describe that
+            number:
+        </p>
+        $$1,908,477,236 = (52 \times 2^0) + (13 \times 2^8) + (193 \times 2^{16}) + (113 \times 2^{24})$$<p>Storing
+            values
+            in each of the 4 bytes in the word could use either of these approaches:</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Byte-order</th>
+                    <th>Byte 1</th>
+                    <th>Byte 2</th>
+                    <th>Byte 3</th>
+                    <th>Byte 4</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Little-endian</td>
+                    <td>52</td>
+                    <td>13</td>
+                    <td>193</td>
+                    <td>113</td>
+                </tr>
+                <tr>
+                    <td>Big-endian</td>
+                    <td>113</td>
+                    <td>193</td>
+                    <td>13</td>
+                    <td>52 </td>
+                </tr>
+            </tbody>
+        </table>
+        <p>Historically, most CPUs used only one of big-endian and little-endian word representation, but most modern
+            CPUs
+            offer switchable <em>bi-endianess</em>. Likewise, many libraries such as <em>NumPy</em> allow flexibility in
+            reading and writing data of different endianness in storage format.</p>
+        <p>Formats other than computer words used to store numeric values may also be endian. Notably, different date
+            formats can be big-endian, little-endian, or indeed <em>middle-endian</em>. For example, ISO-8601 date
+            format
+            prescribes the big-endianness, e.g. <code>2020-10-31</code>. The year represents the largest magnitude,
+            month
+            next largest, and day number the smallest resolution of a date. The extension to time components is similar.
+        </p>
+        <p>In contrast, a common United States date format can read, e.g. <code>October 31, 2020</code>. A spelled out
+            month
+            name indirectly represents a number here (numbers are also used with the same endianness and different
+            delimiter, e.g. <code>10/31/2020</code>). From an endianness perspective, this is middle-endian. The largest
+            magnitude (year) is placed at the end, the next largest magnitude (month) at the start, and the smallest
+            magnitude (day) in the middle. Clearly, a <em>different</em> middle-endian format is also possible, but is
+            not
+            widely used (e.g. <code>2020 31 Oct</code>).</p>
+        <p>Much of the world outside of the United States uses a little-endian date representation, such as
+            <code>31/10/2020</code>. While the specific values in the representation of October 31 would disambiguate
+            the
+            endianness used, for dates such as October 11 or November 10, this is not the case.
+        </p>
+
+
+    </div>
+    <div class="hidden" id="33">
+        <h2>F1 Score</h2>
+        <p>In a classification model, there are numerous <em>metrics</em> that might express the "goodness" of a model.
+            F1
+            score blends <em>recall</em> and <em>precision</em> avoiding the extremes that occur in certain models, and
+            is
+            often a balanced metric. F1 score is derived as:</p>
+        $$\text{F1} = 2 \times \cfrac{precision \times recall}{precision + recall}$$<p>Related concepts:
+            <strong>accuracy</strong>, <strong>precision</strong>, <strong>recall</strong>
+        </p>
+
+
+    </div>
+    <div class="hidden" id="34">
+        <h2>Feature (see Column)</h2>
+        <p>Synonyms: <em>column</em>, <em>field</em>, <em>measurement</em>, <em>variable</em></p>
+
+
+    </div>
+    <div class="hidden" id="35">
+        <h2>Field (see Column)</h2>
+        <p>Synonyms: <em>column</em>, <em>feature</em>, <em>measurement</em>, <em>variable</em></p>
+
+
+    </div>
+    <div class="hidden" id="36">
+        <h2>Fuzzy</h2>
+        <p>Fuzzy is a Python library for analyzing phonetic similarity in English texts.</p>
+
+
+    </div>
+    <div class="hidden" id="37">
+        <h2>GDBM (GNU dbm)</h2>
+        <p>GDBM is an open source library for providing key/value storage systems.</p>
+
+
+    </div>
+    <div class="hidden" id="38">
+        <h2>General Decimal Arithmetic Specification</h2>
+        <p>The General Decimal Arithmetic Specification is a standard for implementation of arbitrary precision base-10
+            arithmetic and numeric representation. It incorporates configurable "contexts" such as rounding rules in
+            effect.
+            The Python standard library <code>decimal</code> module, in particular, is an implementation of this
+            standard.
+        </p>
+
+
+    </div>
+    <div class="hidden" id="39">
+        <h2>Gensim</h2>
+        <p>Gensim is an open-source Python library for natural language processing (NLP), specifically around
+            unsupervised
+            topic modeling. Gensim contains an implementation of the word2vec algorithm and a few closely related
+            variants
+            of it.</p>
+
+
+    </div>
+    <div class="hidden" id="40">
+        <h2>Gibibyte (GiB)</h2>
+        <p>Metric prefixes are standardized in the International System of Units (SI), by the International Bureau of
+            Weights and Measures (BIPM). Orders of magnitude—powers of 10—are indicated by prefixes ranging from
+            <em>yotta-</em> ($10^{24}$) down to <em>yocto-</em> ($10^{-24}$). In partcular, the multipliers of $10^3$
+            (<em>kilo-</em>), $10^6$ (<em>mega-</em>), and $10^9$ (<em>giga-</em>) are <em>almost</em> right for dealing
+            with typical quantities seen in computer storage.
+        </p>
+        <p>However, for both historical and practical reasons, bytes of memory or storage are typically expressed as
+            multiples of $2^{10}$ (1024) rather than of $10^3$ (1000). These numbers are relatively close, but while it
+            is
+            common to misname $2^{10}$, $2^{20}$, and $2^{30}$ as <em>kilobyte</em>, <em>megabyte</em>, and
+            <em>gigabyte</em>, these are wrong. Since 1998, the International Electrotechnical Commission (IEC) has
+            standardized the use of <em>kibibyte</em> (GiB), <em>mebibyte</em> (MiB), <em>gibibyte</em> (GiB) for
+            accurate
+            description of these powers of 2. For larger sizes, we also have <em>tebibyte</em> (TiB), <em>pebibyte</em>
+            (PiB), <em>exbibyte</em> (EiB), <em>zebibyte</em> (ZiB), and <em>yobibyte</em> (YiB).
+        </p>
+
+
+    </div>
+    <div class="hidden" id="41">
+        <h2>ggplot2</h2>
+        <p>A popular book, <u>The Grammar of Graphics (Statistics and Computing)</u>, by Leland Wilkinson (ISBN:
+            978-0387245447), first published in 2000, introduced a way of thinking about graphs and data visualizations
+            that
+            breaks down a graph into components that can be expressed independently. Changing one such orthogonal
+            component
+            may change the entire appearance of a graph, but will still reflect the same underlying data in a different
+            manner.</p>
+        <p>The R library <code>ggplot2</code> attempts to translate the concepts of that book into concrete APIs, and
+            has
+            been widely adopted by the R community. The Python libraries <strong>ggplot</strong>, to a strong degree,
+            and
+            <strong>Bokeh</strong> and <strong>Altair</strong>, to a somewhat lesser extent, also try to emulate
+            Wilkinson's
+            "grammar." Altair is in turn, built on top of <strong>Vega-Lite</strong> and <strong>Vega</strong> which
+            have a
+            similar goal as JavaScript libraries.
+        </p>
+
+
+    </div>
+    <div class="hidden" id="42">
+        <h2>Glob</h2>
+        <p>A common and simple pattern-matching language that is most frequently used to identify collections of
+            filenames.
+            Both the Bash shell and libraries in many programming languages support this syntax.</p>
+
+
+    </div>
+    <div class="hidden" id="43">
+        <h2>GQL (Graph Query Language)</h2>
+        <p>Graph Query Language is a (pending) standard for querying graph databases, based on the Cypher language
+            developed
+            by Neo4j for their product.</p>
+
+
+    </div>
+    <div class="hidden" id="44">
+        <h2>Gremlin</h2>
+        <p>Gremlin is a graph query language, distinct from GQL. Queries in Gremlin emphasize a "fluent programming" and
+            functional style of description of nodes and classes of interest.</p>
+
+
+    </div>
+    <div class="hidden" id="45">
+        <h2>Halting problem</h2>
+        <p>The halting problem is probably the most famous result in the theory of computation. Alan Turing proved in
+            1936
+            that there cannot exist any general purpose algorithm that answers the question "Will this program ever
+            terminate?" For some programs it is provable, of course, but in the general case it is not. Even running a
+            program for any finite amount of time, N steps, does not answer the question, since it might yet terminate
+            at
+            step N+1.</p>
+        <p>In slightly more informal parlance, saying that a given task is "equivalent to the halting problem" is an
+            idiomatic way of saying that it cannot be solved. At times the phrase is used as a speculation about the
+            difficulty of a problem, but at other times a mathematical proof is known that shows that solving the novel
+            problem would imply a solution to the halting problem. Within this book, the phrase is used only in the
+            strict
+            sense, but with an affection for the jargon of computer science.</p>
+
+
+    </div>
+    <div class="hidden" id="46">
+        <h2>h5py</h2>
+        <p>H5py is a Python library for working with hierarchical data sets stored in the HDF5 format.</p>
+
+
+    </div>
+    <div class="hidden" id="47">
+        <h2>HDF Compass</h2>
+        <p>HDF Compass is an open source GUI tool for examing the content of HDF5 data files.</p>
+
+
+    </div>
+    <div class="hidden" id="48">
+        <h2>Hierarchical data format (HDF5)</h2>
+        <p>The Hierarchical Data Format (HDF5) is an open source file format that supports large, complex, heterogeneous
+            data. HDF5 uses a hierarchical structure that allows you to organize data within a file in nested groups.
+            The
+            "leaf" of a hierarchy is a dataset. An HDF5 file may contain arbitrary and domain-specific metadata about
+            each
+            <em>dataset</em> or <em>group</em>. Since many HDF5 files contain (vastly) more data than will fit in
+            computer
+            memory, tools that work with HDF5 generally provide a means of <em>lazily reading</em> content so that most
+            data
+            remains solely on disk unless or until it is needed.
+        </p>
+
+
+    </div>
+    <div class="hidden" id="49">
+        <h2>Hyperparameter</h2>
+        <p>In machine learning models, a general model type is often pre-configured before it is trained on actual data.
+            Hyperparameters may comprise multipliers, numeric limits, recursion depths, algorithm variations, or other
+            differences that still make up the same kind of model. Models can perform dramatically differently with
+            different hyperparameters.</p>
+
+
+    </div>
+    <div class="hidden" id="50">
+        <h2>Idempotent</h2>
+        <p><em>Idempotence</em> is a useful concept in mathematics, computer science, and generally in programming. It
+            means
+            that calling the same function again on its own output will continue to produce the same answer. This is
+            related
+            to the even fancier concept in mathematics of an <em>attractor</em>.</p>
+
+
+    </div>
+    <div class="hidden" id="51">
+        <h2>Imager</h2>
+        <p>Imager reads and writes many image formats and can perform a variety of analysis processing actions on such
+            images programmatically within R. Images within the library are treated as 4-dimensional vectors with two
+            spatial dimensions, one time dimension, and one color dimension. By including time as a dimension, imager
+            can
+            work with video as well.</p>
+
+
+    </div>
+    <div class="hidden" id="52">
+        <h2>imbalanced-learn</h2>
+        <p>Imbalanced-learn is an open source Python software library for sensitive oversampling data. It implements the
+            SMOTE (Synthetic Minority Oversampling TEchnique), ADASYN (Adaptive Synthetic), variations of those
+            algorithms,
+            as well as undersampling techniques. In the main, imbalanced-learn emulates the APIs of scikit-learn.</p>
+
+
+    </div>
+    <div class="hidden" id="53">
+        <h2>Imputation</h2>
+        <p>The process of replacing missing data points with values that are <em>likely</em>, or at least
+            <em>plausible</em>
+            to allow machine learning or statistical tools to process all observations.
+        </p>
+
+
+    </div>
+    <div class="hidden" id="54">
+        <h2>Interval variable (see NOIR)</h2>
+        <p>Related concepts: <strong>categorical variable</strong>, <strong>continuous variable</strong>,
+            <strong>nominal
+                variable</strong>, <strong>ordinal variable</strong>, <strong>ratio variable</strong>
+        </p>
+
+
+    </div>
+    <div class="hidden" id="55">
+        <h2>ISO-8601</h2>
+        <p>ISO-8601 (Data elements and interchange formats – Information interchange – Representation of dates and
+            times) is
+            an international standard for the representation of dataes and times. For example, generating one while
+            writing
+            this entry, using Python:</p>
+        <pre>&gt;&gt;&gt; from datetime import datetime
+&gt;&gt;&gt; datetime.now().isoformat()
+&#39;2020-11-23T14:43:09.083771&#39;
+</pre>
+
+
+    </div>
+    <div class="hidden" id="56">
+        <h2>jq</h2>
+        <p>jq is a flexible and powerful tool for command-line filtering, searching, and formatting JSON, including JSON
+            Lines.</p>
+
+
+    </div>
+    <div class="hidden" id="57">
+        <h2>JSON (Javascript Object Notation)</h2>
+        <p>JSON is a language-independent and human readable format for representation of the data structures and scalar
+            values typically encountered in programming languages. It is widely used both as a data storage format and
+            as a
+            message format to communicate among services.</p>
+
+
+    </div>
+    <div class="hidden" id="58">
+        <h2>Jupyter</h2>
+        <p>Project Jupyter is an open source library, written primarily in Python, but supporting numerous programming
+            languages, to create, view, run, and edit "notebooks" for <em>literate programming</em>. This book was
+            written
+            using Jupyter Lab, and its notebooks can be obtained at the book's repository. In literate programming, code
+            and
+            documentation are freely interspersed while both rendering as formatted documents and running as executable
+            code. Whereas <strong>R Markdown</strong> achieves similar goals using lightly annotated plain text, Jupyter
+            uses JSON as the storage format for its notebooks.</p>
+        <p>Jupyter supports both the somewhat older "notebook" interface and the more recent "JupyterLab" interface.
+            Both
+            work with the same underlying notebook documents.</p>
+
+
+    </div>
+    <div class="hidden" id="59">
+        <h2>Kafka</h2>
+        <p>Apache Kafka is an open source stream processor. As with other stream processors, and related message
+            brokers,
+            the aggregations of messages sent among systems is often a fruitful domain for data science analysis.</p>
+
+
+    </div>
+    <div class="hidden" id="60">
+        <h2>Kdb+</h2>
+        <p>Kdb+ is a column-store database that was designed for rapid transactions. It is widely used within
+            high-frequency
+            trading.</p>
+
+
+    </div>
+    <div class="hidden" id="61">
+        <h2>Laziness</h2>
+        <p>In computer programming and computer science, sometimes the words "lazy" and "eager" are used to distinguish
+            approaches to solving a larger problem. Commonly, for example, an algorithm might transform a large data
+            set. An
+            eager program will process all the data at once. In contrast, a lazy program will only perform an individual
+            transformation when that specific result is needed.</p>
+        <p>See also: <strong>Eagerness</strong></p>
+
+
+    </div>
+    <div class="hidden" id="62">
+        <h2>LDBM (Lightning Memory-Mapped Database)</h2>
+        <p>LDBM is an open source library for providing key/value storage systems.</p>
+
+
+    </div>
+    <div class="hidden" id="63">
+        <h2>Lemmatization</h2>
+        <p>Canonicalization of words to their grammatical roots for natural language processing purposes. In contrast to
+            stemming, lemmatization will look at the context a word occurs in to try to derive both the simplified form
+            and
+            the part of speech.</p>
+        <p>For example, the English word "dog" is used both as a noun for the animal, and occasionally as a verb meaning
+            "annoy." A lemmatization might produce:</p>
+        <blockquote>
+            <p>we[PRON] dog[VERB] the[DET] dog[NOUN]</p>
+        </blockquote>
+        <p>Related concept: <em>stemming</em></p>
+
+
+    </div>
+    <div class="hidden" id="64">
+        <h2>Little-endian (see Endianness)</h2>
+        <p>Data arranged into "words" (typically 32-bits), or other units, where the largest magnitude component
+            (typically
+            a byte) is stored in the earliest position.</p>
+
+
+    </div>
+    <div class="hidden" id="65">
+        <h2>MariaDB</h2>
+        <p>MariaDB is a popular open source relational database managment system (RDBMS). It uses standard SQL for
+            queries
+            and interaction, and implements a few custom features on top of those required by SQL standards. At a point
+            when
+            the GPL-licensed MySQL was purchased by Oracle, its creator Michael (Monty) Widenius forked the project to
+            create MariaDB. Widenius' elder daughter is named 'My' and his younger daughter 'Maria'.</p>
+        <p>MariaDB is API and ABI compatible with MySQL, but it adds a few features such as additional storage engines.
+        </p>
+        <p>See also: <strong>MySQL</strong></p>
+
+
+    </div>
+    <div class="hidden" id="66">
+        <h2>Matplotlib</h2>
+        <p>Matplotlib is a powerful and versatile open soure plotting library for Python. For historical reasons, its
+            API
+            originally resembled MATLAB's, but a more object oriented approach is now encouraged. Numerous higher-level
+            libraries and abstractions are built on top of Matplotlib, including Basemap, Cartopy, Geoplot, ggplot,
+            holoviews, Seaborn, Pandas, and others.</p>
+
+
+    </div>
+    <div class="hidden" id="67">
+        <h2>Measurement (see Column)</h2>
+        <p>Synonyms: <strong>column</strong>, <strong>feature</strong>, <strong>field</strong>,
+            <strong>variable</strong>
+        </p>
+
+
+    </div>
+    <div class="hidden" id="68">
+        <h2>Memcached</h2>
+        <p>Software that keeps key/value associative arrays in memory for purposes of caching or proxying slower server
+            responses. Although contents of a memcached server are transient, snapshotted contents may be useful to
+            analyze
+            for data science purposes.</p>
+
+
+    </div>
+    <div class="hidden" id="69">
+        <h2>Metaphone</h2>
+        <p>Metaphone is an algorithm for phonetic canonicalization of English word, published by Lawrence Philips in
+            1990.
+            The same author later published Double Metaphone, then Metaphone 3, each of which successively better take
+            advantage of known patterns in words derived from non-English languages. Metaphone, and its followups, are
+            more
+            precise than the early Soundex developed for the same purpose.</p>
+
+
+    </div>
+    <div class="hidden" id="70">
+        <h2>Mojibake</h2>
+        <p>Mojibake is the nonsensical text that generally results from trying to decode text using a character encoding
+            different from that used to encode it. Often this will produce individual characters that belong to a given
+            language or alphabet, but in combinations that make no sense (sometimes to humorous effect). The word comes
+            from
+            Japanese, meaning roughly "character transformation."</p>
+
+
+    </div>
+    <div class="hidden" id="71">
+        <h2>MonetDB</h2>
+        <p>MonetDB is an open source column-oriented database management system that supports SQL and several other
+            query
+            languages or extensions.</p>
+
+
+    </div>
+    <div class="hidden" id="72">
+        <h2>MongoDB</h2>
+        <p>MongoDB is a popular document-oriented database management system. It uses JSON-like storage of its
+            underlying
+            data, and both queries and responses use JSON documents. MongoDB uses a distinct query language that
+            reflects
+            its mostly hierarchical arrangement of data into linked documents.</p>
+
+
+    </div>
+    <div class="hidden" id="73">
+        <h2>MySQL</h2>
+        <p>MySQL is a widely popular open source relational database management system (RDBMS). It uses standard SQL for
+            queries and interaction, and implements a few custom features on top of those required by SQL standards. At
+            a
+            point when the GPL-licensed MySQL was purchased by Oracle, its creator Michael (Monty) Widenius forked the
+            project to create MariaDB. Widenius' elder daughter is named 'My' and his younger daughter 'Maria'.</p>
+        <p>See also: <strong>MariaDB</strong></p>
+
+
+    </div>
+    <div class="hidden" id="74">
+        <h2>Neo4j</h2>
+        <p>Neo4j is an open source graph database and database management system.</p>
+
+
+    </div>
+    <div class="hidden" id="75">
+        <h2>netcdf4-python</h2>
+        <p>netcdf4-python is a Python interface to the netCDF C library.</p>
+
+
+    </div>
+    <div class="hidden" id="76">
+        <h2>Network Common Data Form (NetCDF)</h2>
+        <p>NetCDF (Network Common Data Form) is a set of software libraries and machine-independent data formats that
+            support the creation, access, and sharing of array-oriented scientific data. It is built on top of HDF5.</p>
+
+
+    </div>
+    <div class="hidden" id="77">
+        <h2>NLTK (Natural Language Toolkit)</h2>
+        <p>NLTK is a suite of tools for natural language processing (NLP) in Python. It includes numerous corpora, tools
+            for
+            lexical analysis, for named entity recognition, a part of speech tagger, stemmers and lemmatizers, and a
+            variety
+            of other tools for NLP.</p>
+        <p>See also: <strong>gensim</strong>, <strong>spaCy</strong></p>
+
+
+    </div>
+    <div class="hidden" id="78">
+        <h2>Node.js</h2>
+        <p>Node.js is an open source, standalone JavaScript interpreter that runs outside of embedded JavaScript in web
+            browsers. It can be used at the command line in the manner of scripting languages, with an interactive
+            shell, or
+            as a means to run server processes. The Node.js environment comes with an excellent package manager called
+            npm
+            (Node Package Manager) that allows you to install additional libraries easily (much like pip or conda for
+            Python, RubyGems for Ruby, Cabal for Haskell, Pkg.jl: for Julia, Maven for Java, and so on).</p>
+
+
+    </div>
+    <div class="hidden" id="79">
+        <h2>Nominal variable (see NOIR)</h2>
+        <p>Related concepts: <strong>categorical variable</strong>, <strong>continuous variable</strong>,
+            <strong>interval
+                variable</strong>, <strong>ratio variable</strong>
+        </p>
+
+
+    </div>
+    <div class="hidden" id="80">
+        <h2>NOIR (Nominal, Ordinal, Interval, Ratio)</h2>
+        <p>The acronym NOIR is sometimes used as a mnemonic for different feature types. This is the French word for
+            "black"
+            but is especially associated, in English, with a style of "dark" literature or film. The acronym stands for
+            Nominal / Ordinal / Interval / Ratio.</p>
+        <p><em>Nominal</em> or <em>ordinal</em> variables simply record which of a finite number of possible labels a
+            data
+            item records. This is sometimes called the <em>classes</em> of the variable.</p>
+        <p><em>Ordinal</em> variables express a scale from low to high in the data values, but the spacing in the data
+            may
+            have little to no relationship to the underlying phenomenon. For example, perhaps a foot race records the
+            first
+            place, second place, third place, etc. winners, but not the times taken by each. 1st place crossed the line
+            before 2nd place; but we have no information on whether it was milliseconds sooner or hours sooner. Likewise
+            between 2nd and 3rd position, which might differ significantly from the first gap.</p>
+        <p>The last variable types are <em>continuous</em> variables, but <em>interval</em> and <em>ratio</em> variables
+            are
+            importantly different. The difference is in whether there is a "natural zero" in the data. The domain zero
+            need
+            not always be numeric zero, but commonly it is. Acidity or alkalinity measured on pH scale has a natural
+            zero of
+            7, and generally values between 0 and 14 (although those are not sharp physical limits). If we used pH
+            measure
+            as a feature, we might re-center to numeric zero to express actual ratios (albeit, log ratios for this
+            measure).
+            It is reasonable to treated pH as a ratio variable.</p>
+        <p>As an example of an interval that is not a ratio, a newspaper article claimed that the temperature on a
+            certain
+            winter day, in some city, was <em>twice</em> as hot as in average years based on an artifact of the
+            Fahrenheit
+            scale in which a difference was between 25℉ and 50℉. This is nonsense as a ratio. It is perfectly useful to
+            talk
+            about the <em>mean temperature</em> or the <em>standard deviation</em> in temperature, but the numeric ratio
+            is
+            meaningless (in Celsius or Fahrenheit; in Kelvin or Rankine its minimally meaningful, but rarely used to
+            describe temperatures in the range that occur on the surface of the earth). In contrast, the <em>ratio
+                variable</em> of rainfall has a natural zero which is also numeric zero. Zero inches (or centimeters) of
+            rain means there was none. 2 inches of rain is twice as much water falling as 1 inch of rain is.</p>
+
+
+    </div>
+    <div class="hidden" id="81">
+        <h2>NumPy</h2>
+        <p>NumPy is an open source Python library for fast and vectorized computations on multi-dimensional arrays.
+            Nearly
+            all Python libraries that perform numeric or scientific computation rely on NumPy as an underlying support
+            library. This includes tools in machine learning, modeling, statistics, visualization, and so on.</p>
+
+
+    </div>
+    <div class="hidden" id="82">
+        <h2>Observation (see Row)</h2>
+        <p>Synonyms: <strong>record</strong>, <strong>row</strong>, <strong>sample</strong>, <strong>tuple</strong></p>
+
+
+    </div>
+    <div class="hidden" id="83">
+        <h2>Ontology</h2>
+        <p>Ontology in philosophy is the study of "what there is." In data science an ontology describes not only what
+            class/subclass and class/instance relationship exist among entities, but also the kinds of features an
+            entity
+            has. Perhaps most importantly, an ontology can describe the kinds of relationships that can exist among
+            various
+            entities.</p>
+        <p>When different kinds of observations can be made, describing the particular collection of features that
+            pertain
+            to that observation, and the particular data types and ranges of permissible values each can take on, is an
+            element of the ontology of the data. Different tables, or data subsets, may have different features sets and
+            hence a different ontological role.</p>
+        <p>Ontology can be important for categorical data especially. Some labels may be instances of other labels, for
+            example with varying degrees of specificity. If one categorical variable indicates the entity is "mammal",
+            another that it is "feline", and another that it is "house cat" those are all possibly descriptions of the
+            identical entity under different taxonomic levels, and hence part of the ontology of the domain.</p>
+        <p>The relationships among entities can sometimes be derived from the data themselves, but often requires domain
+            knowledge. These relationships can often inform the kinds of models or statistical analysis that make sense.
+            For
+            example, if the <em>entity</em> underlying a collection of data is a medical patient, parts of the ontology
+            of
+            the domain might concern whether several different features observed were collected with the same
+            instrument, or
+            from the same blood sample, or whether the observations were made on the same day. Even though the features
+            might measure very different quanties, the relationships "same-day" or "same-instrument" can inform
+            analysis.
+        </p>
+        <p>See also: <strong>taxonomy</strong></p>
+
+
+    </div>
+    <div class="hidden" id="84">
+        <h2>Ordinal variable (see NOIR)</h2>
+        <p>Related concepts: <strong>categorical variable</strong>, <strong>continuous variable</strong>,
+            <strong>interval
+                variable</strong>, <strong>ratio variable</strong>
+        </p>
+
+
+    </div>
+    <div class="hidden" id="85">
+        <h2>OrientDB</h2>
+        <p>OrientDB is an open source, multi-model database management system. It supports graph, document, key/value,
+            and
+            object models. Querying may use either Gremlin or SQL.</p>
+
+
+    </div>
+    <div class="hidden" id="86">
+        <h2>Orthonormal basis</h2>
+        <p>Within a highly dimensional space, specifically a parameter space, the location of an observation point is
+            simply
+            a parameterized sum of each of the dimensions. For example, if we measure 3 features in an observation as
+            having
+            values $a$, $b$, and $c$, we can express those measurements in 3-D <strong>parameter space</strong>, with
+            orthogonal unit vectors $\vec{x}$, $\vec{y}$, and $\vec{z}$ as:</p>
+        $$ observation = a\vec{x} + b\vec{y} + c\vec{z} $$<p>However, the choice to represent the observation using
+            those
+            particular unit vectors $\vec{x}$, $\vec{y}$, and $\vec{z}$ is somewhat arbitrary. As long as we choose any
+            orthonormal basis—that is, N mutually perpendicular unit vectors—we can equally well represent all the
+            relationships among observations. For example:</p>
+        $$ a\vec{x} + b\vec{y} + c\vec{z} = a′\vec{x′} + b′\vec{y′} + c′\vec{z′} $$<p>Decompositions are a means of
+            selecting an alternate orthonormal basis that distributes the data within the parameter space in a more
+            useful
+            way. Usually this means in a way concentrating variance within the initial <em>components</em> (lowest
+            numbered
+            axes).</p>
+
+
+    </div>
+    <div class="hidden" id="87">
+        <h2>Pandas</h2>
+        <p>Pandas is a widely popular, open source, Python library for working with data frames. The name derives from
+            the
+            econometrics term "panel data." Pandas is built on top of NumPy, but adds numerous additional capabilities.
+            One
+            of the great strengths of Pandas is working with time-series data. But as with the underlying NumPy array
+            library and other data frame libraries, most operations on columns are fast and vectorized.</p>
+
+
+    </div>
+    <div class="hidden" id="88">
+        <h2>Parameter space</h2>
+        <p>The parameter space of a set of observations with N features is simply an N-dimensional space in which each
+            observation occupies a single point. By default, the vector bases that define the location of a point
+            correspond
+            directly with the features themselves. For example, in analyzing weather data we might define "temperature"
+            as
+            the X-axis, "humidity" as the Y-axis, and "barametric pressure" as the Z-axis. Some portion of that 3-D
+            space
+            has points within it, and they form some pattern or shape that models might analyze and make predictions
+            about.
+        </p>
+        <p>Under decompositions of the features, we might choose a new <strong>orthonormal basis</strong> in which to
+            represent the same data points in a rotated or mirrored N-dimensional space.</p>
+
+
+    </div>
+    <div class="hidden" id="89">
+        <h2>Parquet</h2>
+        <p>Apache Parquet is an open source, column-oriented data storage format that originated in the Hadoop
+            ecosystem,
+            but is widely supported in other programming languages as well.</p>
+
+
+    </div>
+    <div class="hidden" id="90">
+        <h2>PDF (Portable Document Format)</h2>
+        <p>Portable Document Format is a widely used format used to accurately represent the appearance of documents in
+            a
+            cross-platform, cross-device manner. For example, the same document will look nearly identical on a computer
+            monitor, a personal printer, or from a professional press. Fonts, text, images, colors, and lines are some
+            of
+            the elements PDF renders to a page, whether displayed or printed. PDF was developed by Adobe, but is
+            currently
+            governed by the open and freely usable standard ISO 32000-2.</p>
+
+
+    </div>
+    <div class="hidden" id="91">
+        <h2>Pillow (forked from PIL)</h2>
+        <p>The Python Imaging Library reads and writes many image formats and can perform a variety of processing
+            actions on
+            such images programmatically within Python.</p>
+
+
+    </div>
+    <div class="hidden" id="92">
+        <h2>Poppler</h2>
+        <p>An open source viewing and processing library for Portable Document Format (PDF). In particular, Poppler
+            contains
+            numerous command-line tools for converting PDF files to other formats, including text. Poppler is a fork of
+            <strong>Xpdf</strong> that aims to incorporate additional capabilities.
+        </p>
+        <p>See also: <strong>Xpdf</strong></p>
+
+
+    </div>
+    <div class="hidden" id="93">
+        <h2>PostgreSQL</h2>
+        <p>PostgreSQL is a widely popular open source relational database management system (RDBMS). It uses standard
+            SQL
+            for queries and interaction, and implements custom features and numerous custom data types on top of those
+            required by SQL standards.</p>
+
+
+    </div>
+    <div class="hidden" id="94">
+        <h2>Precision</h2>
+        <p>In a classification model, there are numerous <em>metrics</em> that might express the "goodness" of a model.
+            Precision is also called "positive predictive value" and is the fraction of relevant observations among the
+            predicted observations. More informally, precision answers the question "given it was predicted, how likely
+            is
+            the prediction to be accurate?"</p>
+        <p>For example, consider this hypothetical <em>confusion matrix</em>:</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Predict/Actual</th>
+                    <th>Human</th>
+                    <th>Octopus</th>
+                    <th>Penguin</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Human</td>
+                    <td><strong>5</strong></td>
+                    <td>0</td>
+                    <td>2</td>
+                </tr>
+                <tr>
+                    <td>Octopus</td>
+                    <td>3</td>
+                    <td><strong>3</strong></td>
+                    <td>3</td>
+                </tr>
+                <tr>
+                    <td>Penguin</td>
+                    <td>0</td>
+                    <td>1</td>
+                    <td><strong>11</strong></td>
+                </tr>
+            </tbody>
+        </table>
+        <p>In a binary problem, this can be expressed as:</p>
+        $$\text{Precision} = \frac{true\: positive}{true\: positive + false\: positive}$$<p>For a multiclass problem, as
+            in
+            the confusion matrix, each label has its own precision. Given the 8 true humans in the data set, 5 of them
+            were
+            correctly identified. However, 2 non-humans were also so identified. I.e.:</p>
+        $$\text{Precision}_{human} = \frac{5}{5 + 2} \approx 71\%$$<p>An overall precision for a model is often given by
+            averaging (weighted or unweighted) the precision for each label.</p>
+        <p>Related concepts: <strong>accuracy</strong>, <strong>F1 score</strong>, <strong>recall</strong></p>
+
+
+    </div>
+    <div class="hidden" id="95">
+        <h2>PyTables</h2>
+        <p>PyTables is a Python library for working with hierarchical data sets stored in the HDF5 format.</p>
+
+
+    </div>
+    <div class="hidden" id="96">
+        <h2>Query planner</h2>
+        <p>When a query is formulated against a database, whether using SQL or another querying language, the database
+            management system (DBMS) will internally create a set of planned steps involved in executing that query.
+            Many
+            DBMSs can expose these plans prior to executing them; users can use this information to judge the efficiency
+            of
+            database access (and possibly modify queries or refactor the databases themselves).</p>
+        <p>A query planner will make decisions about which indices to use, in what order, the style of search and
+            comparisons across data that may live in many tables or documents, and other aspects of how a query may be
+            executed efficiently. When accessing big data sets, the quality of a query planner can often differentiate
+            different DBMSs.</p>
+
+
+    </div>
+    <div class="hidden" id="97">
+        <h2>R Markdown</h2>
+        <p>R Markdown is a format and technology for <em>literate programming</em>. In literate programming, code and
+            documentation are freely interspersed while both rendering as formatted documents and running as executable
+            code. Whereas <strong>Jupyter</strong> notebooks, which have many of the same qualities, are stored as JSON
+            documents, R Markdown is purely an extension of the easily human readable and editable Markdown format which
+            lightly annotates plain text with regular punctuation characters to describe specific visual and conceptual
+            elements. With R Markdown, code segments are also included as plain text by indicating their sections with a
+            textual annotation.</p>
+
+
+    </div>
+    <div class="hidden" id="98">
+        <h2>RabbitMQ</h2>
+        <p>RabbitMQ is an open source message broker. As with other message brokers, the aggregations of messages sent
+            among
+            systems is often a fruitful domain for data science analysis.</p>
+
+
+    </div>
+    <div class="hidden" id="99">
+        <h2>Ratio variable (see NOIR)</h2>
+        <p>Related concepts: <strong>categorical variable</strong>, <strong>continuous variable</strong>,
+            <strong>interval
+                variable</strong>, <strong>nominal variable</strong>, <strong>ordinal variable</strong>
+        </p>
+
+
+    </div>
+    <div class="hidden" id="100">
+        <h2>Recall</h2>
+        <p>In a classification model, there are numerous <em>metrics</em> that might express the "goodness" of a model.
+            Recall is also called "sensitivity." It is the fraction of true occurences that are identified by a model.
+        </p>
+        <p>For example, consider this hypothetical <em>confusion matrix</em>:</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Predict/Actual</th>
+                    <th>Human</th>
+                    <th>Octopus</th>
+                    <th>Penguin</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Human</td>
+                    <td><strong>5</strong></td>
+                    <td>0</td>
+                    <td>2</td>
+                </tr>
+                <tr>
+                    <td>Octopus</td>
+                    <td>3</td>
+                    <td><strong>3</strong></td>
+                    <td>3</td>
+                </tr>
+                <tr>
+                    <td>Penguin</td>
+                    <td>0</td>
+                    <td>1</td>
+                    <td><strong>11</strong></td>
+                </tr>
+            </tbody>
+        </table>
+        <p>In a binary problem, this can be expressed as:</p>
+        $$\text{Recall} = \frac{true\: positive}{true\: positive + false\: negative}$$<p>For a multiclass problem, as in
+            the
+            confusion matrix, each label has its own recall. There are 8 true humans in the data set, 5 of them were
+            correctly identified. However, 3 humans failed to be identified (in the whimsical example, all were
+            predicted to
+            be octopi). I.e.:</p>
+        $$\text{Recall}_{human} = \frac{5}{5 + 3} \approx 62\%$$<p>An overall recall for a model is often given by
+            averaging
+            (weighted or unweighted) the recall for each label.</p>
+        <p>Related concepts: <strong>accuracy</strong>, <strong>F1 score</strong>, <strong>precision</strong></p>
+
+
+    </div>
+    <div class="hidden" id="101">
+        <h2>Record (see Row)</h2>
+        <p>Synonyms: <strong>observation</strong>, <strong>row</strong>, <strong>sample</strong>, <strong>tuple</strong>
+        </p>
+
+
+    </div>
+    <div class="hidden" id="102">
+        <h2>Redis (Remote Dictionary Server)</h2>
+        <p>Redis is an open source, in-memory key/value database. Redis supports numerous data types and data
+            structures,
+            including strings, lists, maps, sets, sorted sets, HyperLogLogs, bitmaps, streams, and spatial indices.</p>
+
+
+    </div>
+    <div class="hidden" id="103">
+        <h2>Relational database management system (RDBMS)</h2>
+        <p>An RDBMS is a system to store data and implement the relational model developed by E. F. Codd in 1970. Under
+            this
+            relational model, data is stored in tables, with each row constituting a <em>tuple</em> of values, the keys
+            to
+            those values named by the columns of the table. The term "relational" in the name pertains to the fact that
+            data
+            in one table may be <em>related</em> to data in other tables by declaring <em>foreign key</em> relations
+            and/or
+            by performing <em>joins</em> in the query syntax.</p>
+        <p>For several decades, all RDBMSs have supported the SQL querying language, sometimes with optional extension
+            syntax related to their additional features or data types. Often, but not quite always, RDBMSs are used on
+            multi-user distributed servers, with <em>transactions</em> used to orchestrates write actions among those
+            multiple users.</p>
+        <p>Popular RDBMSs include PostgreSQL, MySQL, SQLite, Oracle, Microsoft SQL Server, IBM DB2, and others.</p>
+
+
+    </div>
+    <div class="hidden" id="104">
+        <h2>Requests</h2>
+        <p>Requests is a full-featured, open source HTTP access library for Python. It is not included in the Python
+            standard library, but is ubiquitious and generally preferred to tools included with minimal Python
+            distributions.</p>
+
+
+    </div>
+    <div class="hidden" id="105">
+        <h2>REST (Representational State Transfer)</h2>
+        <p>REST is a software educational style that normatively describes patterns of interactions between HTTP servers
+            and
+            clients. The adjective <em>RESTful</em> is also frequently used. Under this style, the HTTP methods GET,
+            POST,
+            PUT, and DELETE are clearly separated by their intended functions. A main emphasis of the style is
+            <em>statelessness</em>: each request must contain all information needed to elicit a response, and that
+            response
+            should not be dependent on the sequence of prior actions that client made.
+        </p>
+
+
+    </div>
+    <div class="hidden" id="106">
+        <h2>rhdf5</h2>
+        <p>Rhdf5 is an R library for working with hierarchical data sets stored in the HDF5 format.</p>
+
+
+    </div>
+    <div class="hidden" id="107">
+        <h2>rjson</h2>
+        <p>Rjson is an R library for working with JavaScript Object Notation.</p>
+
+
+    </div>
+    <div class="hidden" id="108">
+        <h2>ROSE (Random Over-Sampling Examples)</h2>
+        <p>ROSE is an R package that creates synthetic samplings in the presence of class imbalance. It serves a similar
+            purpose to SMOTE oversampling.</p>
+
+
+    </div>
+    <div class="hidden" id="109">
+        <h2>Row</h2>
+        <p>A collection of data consisting of multiple named data items pertaining to the same <em>entity</em>.
+            Depending on
+            the context, the entity can be defined in various ways. For an object in the physical world, for example, it
+            is
+            common in scientific, and other, procedures to take a number of different measurements of that same object,
+            and
+            a row will describe that object. In simulations or other mathematical modeling, a row may contain the
+            results of
+            synthetic <em>sampling</em> of possible values. Considered from the point of view of the actual storage of
+            the
+            data, a focus on the <em>tuple</em> or <em>record</em> structure of the row are more emphasized.</p>
+        <p>The named data items collected about a single row are generally indicated in the <em>columns</em> of the
+            data.
+            Each column may have a different data type within it, but each different row within that column will share
+            the
+            data type but not generally the data value.</p>
+        <p>Synonyms: <strong>observation</strong>, <strong>record</strong>, <strong>sample</strong>,
+            <strong>tuple</strong>
+        </p>
+
+
+    </div>
+    <div class="hidden" id="110">
+        <h2>rvest</h2>
+        <p>The rvest package for R is used to scrape and extract data from HTML web pages.</p>
+
+
+    </div>
+    <div class="hidden" id="111">
+        <h2>Sample (see Row)</h2>
+        <p>Synonyms: <strong>observation</strong>, <strong>record</strong>, <strong>row</strong>, <strong>tuple</strong>
+        </p>
+
+
+    </div>
+    <div class="hidden" id="112">
+        <h2>Scikit-learn</h2>
+        <p>Scikit-learn is a wide-ranging open source Python library for many machine learning (ML) and data science
+            tasks.
+            It implements a large number of ML models (both supervised and unsupervised), metrics, sampling techniques,
+            decompositions, clustering algorithms, and other tools useful for data science. Throughout its capabilities,
+            scikit-learn maintains a common API; many additional libraries have chosen to implement identical or
+            compatible
+            APIs was well.</p>
+
+
+    </div>
+    <div class="hidden" id="113">
+        <h2>Scipy.stats</h2>
+        <p>Scipy.stats is a Python module in the NumPy ecosystem that implements many probability distributions and
+            statistical functions.</p>
+
+
+    </div>
+    <div class="hidden" id="114">
+        <h2>Scrapy</h2>
+        <p>Scrapy is a Python library for spidering and analyzing collections of web pages, including a high-performance
+            engine to coordinate retrievals of many pages.</p>
+
+
+    </div>
+    <div class="hidden" id="115">
+        <h2>Seaborn</h2>
+        <p>Seaborn is a Python data visualization library based on matplotlib. It provides a high-level interface for
+            drawing attractive and informative statistical graphics.</p>
+
+
+    </div>
+    <div class="hidden" id="116">
+        <h2>SeqKit</h2>
+        <p>SeqKit is a toolkit for maninipulating files in the FASTA and FASTQ formats that are used for storing
+            nucleotide
+            and protein sequences.</p>
+
+
+    </div>
+    <div class="hidden" id="117">
+        <h2>Signed integer</h2>
+        <p>An integer represented in computer bits of some specific length. In signed integers, one bit is reserved to
+            hold
+            the sign (negative or positive) of an integer. The largest integer that can be represented, for N bits
+            storing a
+            number, is $2^{N-1}-1$. The smallest integer that can be represented is $-2^{N-1}$</p>
+        <p>Sizes of integers in many programming languages match sizes of memory units in modern CPUs, and can be 8-bit,
+            16-bit, 32-bit, 64-bit, or 128-bit. Other bit lengths are rarely defined. In data formats and databases,
+            sizes
+            might be defined by a number of decimal digits rather than binary bits. Some programming languages like
+            Python,
+            TCL, and Mathematica in their default integers, and numerous other programming languages using specific
+            libraries, allow for arbitrary-precision integers that have no size bound. They do this by dynamically
+            allocating more bits to store larger numbers as needed.</p>
+        <p>See also: <strong>unsigned integer</strong></p>
+
+
+    </div>
+    <div class="hidden" id="118">
+        <h2>Solr</h2>
+        <p>Apache Solr is a search engine based on the Lucene library. As a part of implementing a search engine, Solr
+            contains a document-oriented database or data store.</p>
+
+
+    </div>
+    <div class="hidden" id="119">
+        <h2>spaCy</h2>
+        <p>SpaCy is an open-source software library for advanced natural language processing. It is focused on
+            production
+            use and integrates with deep-learning frameworks.</p>
+
+
+    </div>
+    <div class="hidden" id="120">
+        <h2>SPARQL Protocol and RDF Query Language</h2>
+        <p>Had J. B. S. Haldane lived later, he might have commented that Free Software developers have "an inordinate
+            fondness for recursive acronyms" (YAML, GNU, etc.). SPARQL is a query language for RDF (Resource Description
+            Framework), or the "semantic web." It has been implemented for a variety of programming languages. SPARQL
+            expresses queries in the form of "subject-predicate-object" triples. This has some similarity to key/value
+            stores, but more to graph databases.</p>
+
+
+    </div>
+    <div class="hidden" id="121">
+        <h2>Sphering (see whitening)</h2>
+        <p>Normalization of data under a decomposition.</p>
+        <p>Synonym: <strong>whitening</strong></p>
+
+
+    </div>
+    <div class="hidden" id="122">
+        <h2>SQLAlchemy</h2>
+        <p>SQLAlchemy is a Python library that provides an "object-relational mapping" between the tabular and
+            relational
+            structure of RDBMS tables and an object-oriented interface. SQLAlchemy can use drivers for all popular SQL
+            databases, and exposes a variety of methods for manipulating their data within Python.</p>
+
+
+    </div>
+    <div class="hidden" id="123">
+        <h2>SQLite</h2>
+        <p>SQLite is a small, fast, self-contained, high-reliability, full-featured, SQL database engine that stores
+            multiple data tables in single files. Binding to access SQLite (version 3) are available for all popular
+            programming languages. The library also comes with a command line tool and shell for manipulation of data
+            using
+            only SQL.</p>
+
+
+    </div>
+    <div class="hidden" id="124">
+        <h2>State machine</h2>
+        <p>A "finite-state machine, "finite automaton", or simply "state machine," is a model of computation in which
+            focus
+            moves among a finite number of states or nodes based on a specific sequence of input.</p>
+
+
+    </div>
+    <div class="hidden" id="125">
+        <h2>STDOUT / STDERR / STDIN</h2>
+        <p>In Unix-like command shells there are three special files/streams called "standard output", "standard error"
+            and
+            "standard input." They are ubiquitously abbreviated as "STDOUT", "STDERR", and "STDIN" respectively.
+            Composed
+            command-line tools treat these streams in special ways, and they are utilized widely. In particular, STDOUT
+            is
+            usually "data" output while STDERR is usually "status" output, even though they may appear interspersed in
+            terminal sessions.</p>
+
+
+    </div>
+    <div class="hidden" id="126">
+        <h2>Stemming</h2>
+        <p>Canonicalization of words to their grammatical roots for natural language processing purposes. In contrast to
+            lemmatization, stemming only treats words individually without their context, and hence can be less
+            accurate.
+        </p>
+        <p>Related concept: <strong>lemmatization</strong></p>
+
+
+    </div>
+    <div class="hidden" id="127">
+        <h2>Structured data</h2>
+        <p>While the term "unstructured data" is often used, it is somewhat of a misnomer. "Loosely structured" or
+            "semi-structured" would be more accurate. For example, the paradigmatic example of textual data is at very
+            least
+            structured by the particular sequence in which words occur. Quite likely it is further organized by
+            sequences
+            belonging to chapters, separate messages, or other such units (themselves likely structured by sequence),
+            and
+            moreover usually a variety of metadata such as author identity, subject line, forum, thread, and so on, also
+            pertain to the text itself.</p>
+
+
+    </div>
+    <div class="hidden" id="128">
+        <h2>Tab-separated values (TSV; see Comma-separated values)</h2>
+        <p>Delimted files where tabs are used as the line delimiter.</p>
+
+
+    </div>
+    <div class="hidden" id="129">
+        <h2>Tabula</h2>
+        <p>Tabula-java is the underlying engine for the GUI tool Tabula. Other bindings include
+            <em>tabula-extractor</em>
+            for Ruby, <em>tabula-py</em> for Python, <em>tabulizer</em> for R, and <em>tabula-js</em> for Node.js. The
+            engine and the tools that utilize it provide interfaces to extract tabular data represented in PDF
+            documents.
+        </p>
+
+
+    </div>
+    <div class="hidden" id="130">
+        <h2>Taxonomy</h2>
+        <p>Taxonomy is, in some sense, a special aspect of ontology, it describes the hierarchical relationships among
+            categories of entities. Some labels may be instances of other labels, for example with varying degrees of
+            specificity. If one categorical variable indicates the entity is "mammal", another that it is "feline", and
+            another that it is "house cat" those are all possibly descriptions of the identical entity under different
+            taxonomic levels, and hence part of the ontology of the domain.</p>
+        <p>While taxonomy is largely narrower than ontology, taxonomy also tends to indicate a focus on the more global
+            level of the domain, not a narrow region of that domain. When one speaks of a taxonomy, it generally
+            indicates
+            an interest in all the relationships among all the classes of entities, and an expectation that those
+            relationships will be tree-like and hierarchical. One might describe <em>ontological</em> features of a
+            single
+            entity, or a small collection of entities, but a taxonomy will normally describe the entire domain of all
+            possible entities.</p>
+        <p>See also: <strong>ontology</strong></p>
+
+
+    </div>
+    <div class="hidden" id="131">
+        <h2>tibble</h2>
+        <p>The R library tibble is an implementation of the data frame abstraction, but one that tries to do
+            <em>less</em>
+            than other libraries. Quoting from the official documentation:
+        </p>
+        <blockquote>
+            <p>Tibbles are data.frames that are lazy and surly: they do less (i.e. they don’t change variable names or
+                types, and don’t do partial matching) and complain more (e.g. when a variable does not exist). This
+                forces
+                you to confront problems earlier, typically leading to cleaner, more expressive code.</p>
+        </blockquote>
+        <p>See also: <strong>data.frame</strong>, <strong>data.table</strong></p>
+
+
+    </div>
+    <div class="hidden" id="132">
+        <h2>Tidyverse</h2>
+        <p>The Tidyverse is a collection of R packages that share a common philosophy of API design and that are
+            designed to
+            work well together. Core libraries of the Tidyverse are ggplot2, dplyr, tidyr, readr, purrr,
+            <strong>tibble</strong>, stringr, forcats. A variety of other optional packages are also designed to work
+            well
+            with the base collection.
+        </p>
+        <p>At core, the Tidyverse has an attitude of making data into "tidy" forms, in the sense discussed at more
+            length in
+            chapter 1. As well, the tools within the Tidyverse lend themselves to composition by piping data between
+            methods
+            in a "fluent programming" style.</p>
+
+
+    </div>
+    <div class="hidden" id="133">
+        <h2>Tuple (see Row)</h2>
+        <p>Synonyms: <strong>observation</strong>, <strong>record</strong>, <strong>row</strong>,
+            <strong>sample</strong>
+        </p>
+
+
+    </div>
+    <div class="hidden" id="134">
+        <h2>Unsigned integer</h2>
+        <p>An integer represented in computer bits of some specific length. In unsigned integers, no bits are reserved
+            to
+            hold the sign (negative or positive) of an integer, and hence only number zero through a maximum size can be
+            represented. For N bits storing a number, the largest number representable is $2^N-1$.</p>
+        <p>Sizes of integers in many programming languages match sizes of memory units in modern CPUs, and can be 8-bit,
+            16-bit, 32-bit, 64-bit, or 128-bit. Other bit lengths are rarely defined. In data formats and databases,
+            sizes
+            might be defined by a number of decimal digits rather than binary bits. Some programming languages like
+            Python,
+            TCL, and Mathematica in their default integers, and numerous other programming languages using specific
+            libraries, allow for arbitrary-precision integers that have no size bound. They do this by dynamically
+            allocating more bits to store larger numbers as needed.</p>
+        <p>See also: <strong>signed integer</strong></p>
+
+
+    </div>
+    <div class="hidden" id="135">
+        <h2>Variable (see Column)</h2>
+        <p>Synonyms: <strong>column</strong>, <strong>feature</strong>, <strong>field</strong>,
+            <strong>measurement</strong>
+        </p>
+
+
+    </div>
+    <div class="hidden" id="136">
+        <h2>Web 0.5</h2>
+        <p>The term "Web 0.5" is a neologism and back-construction from the term "Web 2.0." The latter became popular as
+            a
+            term in the late 2000s. Whereas Web 2.0 was meant as an evolution of the World Wide Web into highly
+            interactive,
+            highly dynamic, visually rich content, Web 0.5 is meant to hearken back to the static, compact, and
+            text-oriented web pages that were developed in the early 1990s. The writer Danny Yee publicized this term,
+            to
+            the minor extent it is used.</p>
+        <p><em>Web 0.5</em> web pages are intended primarily for human readership, in contrast to RESTful web services
+            that
+            are primarily intended to communicate data among computer servers and applications. Their simplicity,
+            however,
+            also makes them easily accessible to web scraping techniques, where relevant.</p>
+
+
+    </div>
+    <div class="hidden" id="137">
+        <h2>Whitening</h2>
+        <p>Normalization of data under a decomposition. Transformations such as Principle Component Analysis (PCA)
+            reduce
+            the variance of each subsequent component successively. Whitening is simply rescaling the data within each
+            component to a common scale and center.</p>
+        <p>Synonym: <strong>sphering</strong></p>
+
+
+    </div>
+    <div class="hidden" id="138">
+        <h2>XML (eXtensible Markup Language)</h2>
+        <p>XML is a markup language that defines a grammar for representing documents and ancillary schema languages for
+            defining dialects within that broad grammar. The content of XML is always text, and is in-principle human
+            readable while also enforcing a strict structure for automated processing. In essence, XML defines a
+            hierarchical format in which arbitrary elements may be arranged.</p>
+        <p>XML is used widely in domains such as internal formats for office applications, for representing geospatial
+            data,
+            for message passing among cooperating services, for scientific data, and for many other application uses.
+        </p>
+
+
+    </div>
+    <div class="hidden" id="139">
+        <h2>Xpdf</h2>
+        <p>An open source viewing and processing library for Portable Document Format. In particular, Xpdf contains
+            several
+            command-line tools for converting PDF files to other formats, including text. The fork
+            <strong>Poppler</strong>
+            aims to incorporate additional capabilities that the Xpdf authors consider out of scope for that project.
+        </p>
+        <p>See also: <strong>Poppler</strong></p>
+
+
+    </div>
+    <div class="hidden" id="140">
+        <h2>YAML</h2>
+        <p>YAML is, light-heartedly, an acronym for either "YAML Ain't Markup Language" or "Yet Another Markup
+            Language." It
+            is intended as a highly human-readable and human-writable format that can represent most of the data
+            structures
+            and data types widely used in programming languages. Libraries supporting reading and writing YAML from or
+            to
+            native data structures are available for numerous programming languages.</p>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/wow-1.3.0.min.js"></script>
+    <script src="assets/js/waypoints.js"></script>
+    <script src="assets/js/jquery.scrollUp.js"></script>
+    <script src="assets/js/active.js"></script>
+</body>
+
+</html>

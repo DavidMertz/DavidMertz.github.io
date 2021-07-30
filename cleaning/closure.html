@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Title -->
+    <title>Cleaning Data for Effective Data Science</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <!-- Font awesome CSS -->
+    <link rel="stylesheet" href="assets/css/font-awesome.min.css">
+    <!-- Animate CSS -->
+    <link rel="stylesheet" href="assets/css/animate.min.css">
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Responsive CSS -->
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <!-- jQuery -->
+    <script src="assets/js/jquery-1.11.3.min.js"></script>
+</head>
+
+<body>
+    <!--left bar area-->
+    <div class="left-bar-area">
+        <div class="logo">
+            <a href="index.html">
+                <img src="img/home.png" alt="Home" width="50px" /></a>
+            <div class="menu-switch">
+                <span class="menu-bar-one"></span>
+                <span class="menu-bar-two"></span>
+                <span class="menu-bar-three"></span>
+            </div>
+        </div>
+
+        <div class="social">
+            <a href="https://www.packtpub.com/product/cleaning-data-for-effective-data-science/9781801071291">
+                <img src="https://media.glassdoor.com/sqll/438946/packt-squarelogo-1474954463150.png"
+                    alt="Buy from Packt"></a>
+            <a href="https://www.amazon.com/Cleaning-Data-Effective-Science-command-line/dp/1801071292">
+                <img src="https://i.pinimg.com/originals/29/f6/41/29f641b507ccb60bb7a62a830b988736.jpg"
+                    alt="Buy from Amazon"></a>
+        </div>
+    </div>
+
+    <!--Nav Menu Start -->
+    <nav class="mainmenu">
+        <ul>
+            <li><a href="preface.html">Preface</a></li>
+            <li><a href="tabular.html">Tabular Formats</a></li>
+            <li><a href="hierarchical.html">Hierarchical Formats</a></li>
+            <li><a href="repurposing.html">Repurposing Data Sources</a></li>
+            <li><a href="anomaly.html">Anomaly Detection</a></li>
+            <li><a href="data-quality.html">Data Quality</a></li>
+            <li><a href="value-imputation.html">Value Imputation</a></li>
+            <li><a href="feature-engineering.html">Feature Engineering</a></li>
+            <li><a href="closure.html">Closure</a></li>
+            <li><a href="glossary.html">Glossary</a></li>
+        </ul>
+    </nav>
+
+    <!--Services Area Start-->
+    <nav class="navigation" id="mainNav">
+        <a class="navigation__link" onclick="bookText('1')">
+            What You Know</a>
+        <a class="navigation__link" onclick="bookText('2')">
+            What You Don't Know (Yet)</a>
+    </nav>
+    <!-- Service Area End -->
+
+    <div class="container shift-right">
+        <div class="row">
+            <div class="col-md-9" id="book-title"></div>
+            <div class="col-md-9">
+                <h1>Closure</h1><br />
+                <img src="img/cover.png" width="30%" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-9">
+                <h2>Buy the book for additional content!</h2>
+            </div>
+            <div class="col-md-9">
+                <div class="hidden" id="book-text"></div>
+            </div>
+        </div>
+        <footer>
+            <p>© 2021 Packt Publishing</p>
+        </footer>
+    </div>
+
+    <div class="hidden" id="1">
+        <h2>What You Know</h2>
+
+        <p>This book hopes to have shown you a good range of the techniques you will need in preparing data for
+            analysis and
+            modeling. We addressed most of the most common data formats that you will encounter in your daily work.
+            Hopefully,
+            even if you use file or data formats this book could not specifically address, or even did not have the
+            opportunity
+            to mention, the general concepts and principles laid out will still apply. Only some libraries and
+            interface details
+            will vary. Particular formats can have particular pitfalls in the ways they facilitate data errors, but,
+            obviously,
+            data can go bad in numerous ways independent of representations and storage technologies.</p>
+
+        <p>Chapters 1, 2, and 3, respectively, looked at tabular, hierarchical, and "special" data sources. We saw
+            specific
+            tools and specific techniques for moving data from each of those sources into the <em>tidy</em> formats
+            that are
+            most useful for data science. Most of the examples shown used Python libraries, or simply its standard
+            library; a
+            smaller number used corresponding tools in R; and from time to time, we looked at other programming
+            languages that
+            one might use to perform similar tasks. Relatively often, I found it relevant to show command-line
+            oriented
+            techniques and tools that I, myself, often use. These are very commonly the simplest ways to perform
+            some initial
+            analysis, summarization, or pre-processing. These are available on nearly any Unix-like system, such as
+            Linux, BSD,
+            OS X, or the Windows Subsystem for Linux. However, I hope to have inspired ideas and conceptual
+            frameworks for
+            readers to utilize in approaching their data, much more than simply to have introduced those specific
+            libraries,
+            APIs, and tools I chose for my examples.</p>
+
+        <p>Past the ingestion stages, with sensitivity to some issues characteristic of their formats, we get into
+            the many
+            stages—ideally pipelined once they reach actual production—of identifying and remediating problems in
+            data. In terms
+            of identification, there are two general types of problems to look for, with many nuances among each. On
+            the one
+            hand, we might look for this or that individual datum—one isolated reading from one particular
+            instrument, for
+            example—that went wrong in some manner (recording, transcription, tabulation, etc). At times, as chapter
+            4 focused
+            on, we can identify—at least with reasonable likelihood—the existence of such problems. On the other
+            hand, we may
+            have more systematic problems with our data which describe the collection of all (or many) observations
+            rather than
+            individual data points. Most of the time, this comes down to <em>bias</em> of one sort or another; at
+            times,
+            however, there are also patterns or trends in data that are real, genuine, and reflect the underlying
+            phenomena, but
+            that are not the "data within the data" that most interest us. In chapter 5 we looked at both bias and
+            at techniques
+            for <em>normalization</em> and <em>detrending</em>.</p>
+
+        <p>Having identified bias and discardable trends, the next stage of your pipeline will be—broadly
+            speaking—<em>making up
+                data</em>. I have emphasized throughout the book that versioning data and writing repeatable scripts
+            or
+            automated workflows is essential to good data science. When you impute values (chapter 6) or engineer
+            features
+            (chapter 7), you should always be conscious of the fact that the data is no longer <em>raw</em> but
+            rather
+            processed; you should be able to recover each significant stage in the pipeline and repeat all
+            transformations. The
+            assumptions you make about what values are <em>reasonable</em> to invent are always subject to later
+            revision, as
+            you learn more. But there are absolutely times when data is missing—either absent in the raw data or
+            determined to
+            be sufficiently unreliable by analysis—that imputing good guesses about the missing data is good
+            practice. Moreover,
+            sometimes fields should be normalized, combined, and/or transformed in deterministic ways before final
+            modeling or
+            analysis.</p>
+
+        <p>The chapters of this book are arranged in something resembling the order of the stages of the pipelines
+            you will
+            develop in your data science practice. Obviously you need to determine which specific formats,
+            techniques, and
+            tools, are relevant for your specific problems. Still, in rough order these stages will be similar to
+            the order of
+            this book. I have drawn examples from numerous different domains, and used data of different "shapes."
+            Nonetheless,
+            of course, your domain and your problem is in many or most ways entirely unlike those in the examples I
+            have
+            presented. I hope and believe you will find conceptual connections and food for thought from these other
+            domains.
+            The tasks facing you are far too broad and diverse to reduce to a small set of recipes, but they
+            nevertheless fit
+            inside a fairly small number of conceptual realms and overall purposes.</p>
+    </div>
+
+    <div class="hidden" id="2">
+        <h2>What You Don't Know (Yet)</h2>
+
+        <p>Almost nothing you have read in this book addresses which statistical tests or which machine learning
+            models you
+            should use. Whether a Support Vector Machine, or a Gradient Boosted Tree, or a Deep Neural Network
+            (DNN), is more
+            applicable to your problem is something I am agnostic about throughout. I have no idea and no opinion
+            about whether
+            a Kolmogorov–Smirnov, Anderson–Darling, or Shapiro–Wilk test better tests for normality of your data set
+            (although
+            from my sample, one might conclude that your test should have two mathematicians in its name). You
+            should read other
+            books to help you with those judgements.</p>
+
+        <p>Juxtaposed with this deliberate limitation is the fact those choices are mostly irrelevant to data
+            cleaning.
+            Regardless of what models you utilize, or what statistics you apply, you want the data that goes into
+            them to be as
+            clean as is possible. The entire pipline this book recommends, and describes the stages of, will be both
+            necessary
+            for every analytic or modeling task, and be also nearly entirely the same, regardless of that final
+            choice for the
+            next stage of your pipelines. However, this paragraph comes with a tentative caveat.</p>
+
+        <p>A spectre is haunting the data science zeitgeist—the spectre of automation. Perhaps a large portion of
+            data cleaning
+            would be better performed by very clever machines—especially deep neural networks that are starting to
+            dominate
+            every domain—than by human data scientists. In fact, my original plan for this book was to include a
+            chapter
+            discussing using machine learning for data cleaning. Perhaps a complex trained model could make a better
+            judgement
+            of "anomaly" versus "reliable data" than can the relatively simple techniques I discuss. Perhaps
+            additional layers
+            in a deep network can implicitly separate signal from noise, or detrend the <em>uninteresting</em> parts
+            of the
+            signal. Perhaps normalization and engineered features are nothing more than much cruder versions of what
+            a few
+            fully-connected, convolutional, or recurrent layers, near the input layer of a DNN, will do
+            automatically.</p>
+
+        <p>These ideas of automation of data cleaning represent intriguing possibilities. As of right now, the
+            contours of that
+            automation are uncertain and in flux. A number of commercial cloud services—as of the middle of
+            2021—offer front
+            ends and "systems" whose superficial descriptions make them sound similar to this spectre of automation,
+            at least at
+            the level of an elevator pitch. However, in my opinion, as of today, these services do far less in
+            reality than
+            their marketers insinuate: they are simply an aggregation of enough clustered machines to try out the
+            same models,
+            hyperparameters, data cleaning pipelines, etc. that you might perform sequentially yourself. You can—and
+            quite
+            likely should—rent massive parallelism for large data and sophisticated modeling pipelines, but this is
+            still
+            somehow ontologically shy of machines genuinely guiding analytic decisions.</p>
+
+        <p>Anything I might have written today on data cleaning automation would be out of date in a year. Still,
+            look for my
+            name, and the names of other data scientists who think about these issues, when you look for future
+            writing,
+            training materials, lectures, and so on. I hope to have much more to say about these ideas elsewhere.
+            And look at
+            the details of what those cloud providers genuinely offer by the time you read this; my caveats may
+            become less
+            relevant over time. I hope my recommendations throughout this text, however, will remain germane.</p>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/wow-1.3.0.min.js"></script>
+    <script src="assets/js/waypoints.js"></script>
+    <script src="assets/js/jquery.scrollUp.js"></script>
+    <script src="assets/js/active.js"></script>
+
+</body>
+
+</html>
