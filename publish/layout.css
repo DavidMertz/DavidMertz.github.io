@@ -31,9 +31,12 @@
 .content-header {
     color: black;
 }
-.vloose li {
-    padding-bottom: 10px;
+dl dt {
+    margin-top: 20px;
     list-style-type: none; 
+}
+img {
+    margin-right: 30px;
 }
 a:link {
     text-decoration: none;
