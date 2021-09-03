@@ -23,10 +23,10 @@ any particular fields or delimiters in 'challenge'.  E.g., you might get:
     '1:16:040922:foo::+ArSrtKd:164b3'
     >>> _mint('foo', bits=16)
     '9591'
-    >>> from sha import sha
-    >>> sha('foo9591').hexdigest()
+    >>> import hashlib
+    >>> hashlib.sha1(('foo9591').encode()).hexdigest()
     '0000de4c9b27cec9b20e2094785c1c58eaf23948'
-    >>> sha('1:16:040922:foo::+ArSrtKd:164b3').hexdigest()
+    >>> hashlib.sha1(('1:16:040922:foo::+ArSrtKd:164b3').encode()).hexdigest()
     '0000a9fe0c6db2efcbcab15157735e77c0877f34'
 
 Notice that '_mint()' behaves deterministically, finding the same suffix
@@ -36,13 +36,14 @@ salt in stamps (as per the hashcash v.1 protocol).
 import sys
 from string import ascii_letters
 from math import ceil, floor
-from sha import sha
+import hashlib
 from random import choice
 from time import strftime, localtime, time
 
 ERR = sys.stderr            # Destination for error messages
 DAYS = 60 * 60 * 24         # Seconds in a day
 tries = [0]                 # Count hashes performed for benchmark
+
 
 def mint(resource, bits=20, now=None, ext='', saltchars=8, stamp_seconds=False):
     """Mint a new hashcash stamp for 'resource' with 'bits' of collision
@@ -88,7 +89,7 @@ def _mint(challenge, bits):
     hex_digits = int(ceil(bits/4.))
     zeros = '0'*hex_digits
     while 1:
-        digest = sha(challenge+hex(counter)[2:]).hexdigest()
+        digest = hashlib.sha1((challenge+hex(counter)[2:]).encode()).hexdigest()
         if digest[:hex_digits] == zeros:
             tries[0] = counter
             return hex(counter)[2:]
@@ -130,7 +131,7 @@ def check(stamp, resource=None, bits=None,
             return True
         else:
             hex_digits = int(floor(bits/4))
-            return sha(stamp).hexdigest().startswith('0'*hex_digits)
+            return hashlib.sha1((stamp).encode()).hexdigest().startswith('0'*hex_digits)
     elif stamp.startswith('1:'):        # Version 1
         try:
             claim, date, res, ext, rand, counter = stamp[2:].split(':')
@@ -149,7 +150,7 @@ def check(stamp, resource=None, bits=None,
             return False
         else:
             hex_digits = int(floor(int(claim)/4))
-            return sha(stamp).hexdigest().startswith('0'*hex_digits)
+            return hashlib.sha1((stamp).encode()).hexdigest().startswith('0'*hex_digits)
     else:                               # Unknown ver or generalized hashcash
         ERR.write("Unknown hashcash version: Minimal authentication!\n")
         if type(bits) is not int:
@@ -158,7 +159,7 @@ def check(stamp, resource=None, bits=None,
             return False
         else:
             hex_digits = int(floor(bits/4))
-            return sha(stamp).hexdigest().startswith('0'*hex_digits)
+            return hashlib.sha1((stamp).encode()).hexdigest().startswith('0'*hex_digits)
 
 def is_doublespent(stamp):
     """Placeholder for double spending callback function
@@ -171,12 +172,6 @@ def is_doublespent(stamp):
     return False
 
 if __name__=='__main__':
-    # Import Psyco if available
-    try:
-        import psyco
-        psyco.bind(_mint)
-    except ImportError:
-        pass
     import optparse
     out, err = sys.stdout.write, sys.stderr.write
     parser = optparse.OptionParser(version="%prog 0.1",
@@ -205,4 +200,3 @@ if __name__=='__main__':
         timer = time()-start
         err("Completed in %0.4f seconds (%d hashes per second)\n" %
             (timer, tries[0]/timer))
-
