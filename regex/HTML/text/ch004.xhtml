@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <title>ch004.xhtml</title>
+  <link rel="stylesheet" type="text/css" href="../styles/stylesheet1.css" />
+</head>
+<body epub:type="bodymatter">
+<div id="toc_container">
+<p class="toc_title"><a href="../../index.html">
+    The Puzzling Quirks of Regular Expressions</a></p>
+
+<ol class="toc_list">
+	<li><a href="ch001.xhtml">Acknowledgments</a></li>
+	<li><a href="ch002.xhtml">Rights of (Wo)Man</a></li>
+	<li><a href="ch003.xhtml">Credits</a></li>
+	<li><a href="ch004.xhtml">Preface</a></li>
+	<li><a href="ch005.xhtml">Quantifiers and Special Sub-Patterns</a>
+	<ol class="toc">
+		<li><a href="ch006.xhtml">Wildcard Scope</a></li>
+		<li><a href="ch007.xhtml">Words and Sequences</a></li>
+		<li><a href="ch008.xhtml">Endpoint Classes</a></li>
+		<li><a href="ch009.xhtml">A Configuration Format</a></li>
+		<li><a href="ch010.xhtml">The Human Genome</a></li></ol></li>
+		<li><a href="ch011.xhtml">Pitfalls and Sand in the Gears</a>
+	<ol class="toc">
+		<li><a href="ch012.xhtml">Catastrophic Backtracking</a></li>
+		<li><a href="ch013.xhtml">Playing Dominoes</a></li>
+		<li><a href="ch014.xhtml">Advanced Dominoes</a></li>
+		<li><a href="ch015.xhtml">Sensor Art</a></li></ol></li>
+		<li><a href="ch016.xhtml">Creating Functions using Regexen</a>
+	<ol class="toc">
+		<li><a href="ch017.xhtml">Reimplementing str.count()</a></li>
+		<li><a href="ch018.xhtml">Reimplementing str.count() (stricter)</a></li>
+		<li><a href="ch019.xhtml">Finding a Name for a Function</a></li>
+		<li><a href="ch020.xhtml">Playing Poker (Part 1)</a></li>
+		<li><a href="ch021.xhtml">Playing Poker (Part 2)</a></li>
+		<li><a href="ch022.xhtml">Playing Poker (Part 3)</a></li>
+		<li><a href="ch023.xhtml">Playing Poker (Part 4)</a></li>
+		<li><a href="ch024.xhtml">Playing Poker (Part 5)</a></li></ol></li>
+		<li><a href="ch025.xhtml">Easy, Difficult, and Impossible Tasks</a>
+	<ol class="toc">
+		<li><a href="ch026.xhtml">Identifying Equal Counts</a></li>
+		<li><a href="ch027.xhtml">Matching Before Duplicate Words</a></li>
+		<li><a href="ch028.xhtml">Testing an IPv4 Address</a></li>
+		<li><a href="ch029.xhtml">Matching a Numeric Sequence</a></li>
+		<li><a href="ch030.xhtml">Matching the Fibonacci Sequence</a></li>
+		<li><a href="ch031.xhtml">Matching the Prime Numbers</a></li>
+		<li><a href="ch032.xhtml">Matching Relative Prime Numbers</a></li>
+	</ol>
+	</li>
+</ol>
+</div>
+
+<script>
+function solution() {
+  var x = document.getElementById("solution");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+</script>
+
+<div id="donation">
+    <p><b>Support the author!</b><br/>
+    <a href="https://www.lulu.com/search?q=Puzzling+Quirks">Lulu Editions</a><br/>
+    <a href="https://www.paypal.com/donate?hosted_button_id=WSUSCPKT5PE9L">
+        Paypal Donation</a><br/>
+    </p>
+</div>
+
+
+<section id="preface" class="level1" data-number="4">
+<h1 data-number="4">Preface</h1>
+<p>Regular expressions—sometimes given the playful back formation <em>regexen</em> or more neurally <em>regex</em>—are a powerful and compact way of describing patterns in text. Many tutorials and “cheat sheets” exist to understand their syntax and semantics in a formally correct manner. I encourage you to read some of those, if you have not already.</p>
+<p>These puzzles begin at a certain point where the formal descriptions leave off. As you work with regexen, you will find subtle pitfalls. A pattern that seems like it should obviously match one thing actually matches something slightly different than you intended. Or perhaps a match pattern has “pathological” behavior and takes far too long. Or sometimes it is simply that a more concise pattern would be clearer in describing what you actually wish to match.</p>
+<p>A great many programming languages, libraries, and tools support regular expressions, with relatively minor variations in the syntax used. Such software includes <code>[efr]?grep</code>, <code>sed</code>, <code>awk</code>, <em>Perl</em>, <em>Java</em>, <em>.NET</em>, <em>JavaScript</em>, <em>Julia</em>, <em>XML Schema</em>, or indeed, pretty much every other programming language via a library.</p>
+<p>For this book, we will use Python to pose these puzzles. In particular, we will use the standard library module <code>re</code>. Often code samples are used in puzzles and in explanation; where I wish to show the output from code, the example emulates the Python shell with lines starting with <code>&gt;&gt;&gt;</code> (or continuing with <code>...</code>). Outputs are echoed without a prompt in this case. Where code defines a function that is not necessarily executed in the mention, only the plain code is shown.</p>
+<p>While you are reading this book, I strongly encourage you to keep open an interactive Python environment. Many tools enable this, such as the Python REPL (read-evaluate-print-loop) itself, or the IPython enhanced REPL, or Jupyter notebooks, or the IDLE editor that comes with Python, or indeed most modern code editors and IDEs (integrated development environments). A number of online regular expression testers are also available, although those will not capture the the Python calling details. Explanations will follow each puzzle, but trying to work it out in code before reading it is worthwhile. C’mon, not thinking about a puzzle before reading the solution is a cop-out.</p>
+</section>
+</body>
+</html>

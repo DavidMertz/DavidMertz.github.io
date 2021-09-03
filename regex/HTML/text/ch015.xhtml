@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <title>ch015.xhtml</title>
+  <style>
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" type="text/css" href="../styles/stylesheet1.css" />
+</head>
+<body onload="solution()">
+<div id="toc_container">
+<p class="toc_title"><a href="../../index.html">
+    The Puzzling Quirks of Regular Expressions</a></p>
+
+<ol class="toc_list">
+	<li><a href="ch001.xhtml">Acknowledgments</a></li>
+	<li><a href="ch002.xhtml">Rights of (Wo)Man</a></li>
+	<li><a href="ch003.xhtml">Credits</a></li>
+	<li><a href="ch004.xhtml">Preface</a></li>
+	<li><a href="ch005.xhtml">Quantifiers and Special Sub-Patterns</a>
+	<ol class="toc">
+		<li><a href="ch006.xhtml">Wildcard Scope</a></li>
+		<li><a href="ch007.xhtml">Words and Sequences</a></li>
+		<li><a href="ch008.xhtml">Endpoint Classes</a></li>
+		<li><a href="ch009.xhtml">A Configuration Format</a></li>
+		<li><a href="ch010.xhtml">The Human Genome</a></li></ol></li>
+		<li><a href="ch011.xhtml">Pitfalls and Sand in the Gears</a>
+	<ol class="toc">
+		<li><a href="ch012.xhtml">Catastrophic Backtracking</a></li>
+		<li><a href="ch013.xhtml">Playing Dominoes</a></li>
+		<li><a href="ch014.xhtml">Advanced Dominoes</a></li>
+		<li><a href="ch015.xhtml">Sensor Art</a></li></ol></li>
+		<li><a href="ch016.xhtml">Creating Functions using Regexen</a>
+	<ol class="toc">
+		<li><a href="ch017.xhtml">Reimplementing str.count()</a></li>
+		<li><a href="ch018.xhtml">Reimplementing str.count() (stricter)</a></li>
+		<li><a href="ch019.xhtml">Finding a Name for a Function</a></li>
+		<li><a href="ch020.xhtml">Playing Poker (Part 1)</a></li>
+		<li><a href="ch021.xhtml">Playing Poker (Part 2)</a></li>
+		<li><a href="ch022.xhtml">Playing Poker (Part 3)</a></li>
+		<li><a href="ch023.xhtml">Playing Poker (Part 4)</a></li>
+		<li><a href="ch024.xhtml">Playing Poker (Part 5)</a></li></ol></li>
+		<li><a href="ch025.xhtml">Easy, Difficult, and Impossible Tasks</a>
+	<ol class="toc">
+		<li><a href="ch026.xhtml">Identifying Equal Counts</a></li>
+		<li><a href="ch027.xhtml">Matching Before Duplicate Words</a></li>
+		<li><a href="ch028.xhtml">Testing an IPv4 Address</a></li>
+		<li><a href="ch029.xhtml">Matching a Numeric Sequence</a></li>
+		<li><a href="ch030.xhtml">Matching the Fibonacci Sequence</a></li>
+		<li><a href="ch031.xhtml">Matching the Prime Numbers</a></li>
+		<li><a href="ch032.xhtml">Matching Relative Prime Numbers</a></li>
+	</ol>
+	</li>
+</ol>
+</div>
+
+<script>
+function solution() {
+  var x = document.getElementById("solution");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+</script>
+
+<div id="donation">
+    <p><b>Support the author!</b><br/>
+    <a href="https://www.lulu.com/search?q=Puzzling+Quirks">Lulu Editions</a><br/>
+    <a href="https://www.paypal.com/donate?hosted_button_id=WSUSCPKT5PE9L">
+        Paypal Donation</a><br/>
+    </p>
+</div>
+
+
+<section id="sensor-art" class="level2" data-number="6.4">
+<h2 data-number="6.4">Sensor Art</h2>
+<p>A hypothetical data format uses a character string to represent state transitions in a two-state system. For example, this might be the status of some sort of electrical sensor. Each string represents a “signal” of some time duration.</p>
+<p>The signal can occupy the “high” state for any duration, and it can occupy the “low” state for any duration. Moreover, the transition between the two can either be “fast” or “slow,” but it must stay in a state for at least one time interval after each transition.</p>
+<p>The format has a mnemonic version that uses simple ASCII art to represent states and transitions. However, it also has a letter-based version you may wish to play with instead, simply because many of the line drawing characters have special meanings in regex syntax. Special characters can be escaped, but it makes the patterns harder to read.</p>
+<p>Some valid and invalid signals are below:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a>valid_1a <span class="op">=</span> <span class="st">&quot;_/^^^\_/^|___|^\____|^^\__/&quot;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>valid_1b <span class="op">=</span> <span class="st">&quot;LuHHHdLuHFLLLFHdLLLLFHHdLLu&quot;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>valid_2a <span class="op">=</span> <span class="st">&quot;____/^^^^^^&quot;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>valid_2b <span class="op">=</span> <span class="st">&quot;LLLLuHHHHHH&quot;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>invalid_1a <span class="op">=</span> <span class="st">&quot;_^/^^^/__\_&quot;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a>invalid_1b <span class="op">=</span> <span class="st">&quot;LHuHHHuLLdL&quot;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a>invalid_2a <span class="op">=</span> <span class="st">&quot;|\/|&quot;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a>invalid_2b <span class="op">=</span> <span class="st">&quot;FduF&quot;</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a>invalid_3a <span class="op">=</span> <span class="st">&quot;__/^^|__X__/&quot;</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a>invalid_3b <span class="op">=</span> <span class="st">&quot;LLuHHFLLXLLu&quot;</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a>invalid_4a <span class="op">=</span> <span class="st">&quot;|_^|__&quot;</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a>invalid_4b <span class="op">=</span> <span class="st">&quot;FLHFLL&quot;</span></span></code></pre></div>
+<p>Signals <code>valid_1a</code> and <code>valid_1b</code> represent the same measurement. In the correspondence, <code>L</code> maps to <code>_</code> (low state), <code>u</code> maps to <code>/</code> (up transition), <code>d</code> maps to \ (down transition), <code>H</code> maps to <code>^</code> (high state), and <code>F</code> maps to <code>|</code> (fast transition). Likewise, <code>valid_2a</code> and <code>valid_2b</code> are equivalent and simpler signals with just one up transition, but a duration in each state.</p>
+<p>The invalid signals are similarly have the different character options. Signals <code>invalid_1a</code> or <code>invalid_1b</code> have <em>several</em> problems. Low and high states are adjacent with no transition (not permitted). An alleged up transition occurs from the high state (also not permitted). Movoer, a down transition occurs from the low state. The chief problem with <code>invalid_2a</code> or <code>invalid_2b</code> are that they have transitions with no states in between, which is also prohibited. In the case of <code>invalid_3a</code> or <code>invalid_3b</code>, the states and transitions are generally fine, but there is an invalid symbol thrown in.</p>
+<p>You wish to define a regular expression that will match <em>all</em> and <em>only</em> valid signal strings. Pick which character set you wish to define—“ASCII” or “linedraw,” but not intermixed—and find the pattern you need.</p>
+<p>That is, find the pattern that will work <em>only if</em> regular expressions are sufficiently powerful to perform this test.</p>
+<p>Before you turn the page…</p>
+<p><strong>Find a matching pattern, if possible.</strong></p>
+<p><img src="../media/file4.svg" /></p>
+<button onclick="solution()">Show/Hide Solution</button>
+<div id="solution">
+
+<p>This puzzle <em>is</em> solvable with regexen. There are a few observations to keep in mind when thinking about it. The rules for a valid signal actually consist of just two constraints:</p>
+<ul>
+<li>All signals must be drawn only from the limited alphabet</li>
+<li>Only a subset of <em>digrams</em> of symbols are valid</li>
+</ul>
+<p>In particular, since the alphabet is 5 symbols, there are 25 possible digrams. However, only 10 of those can occur in a valid signal. You might be tempted simply to match any number of repetitions of valid digrams. However, that would go wrong in examples like <code>invalid_4</code>. Symbols 1 and 2 might form a valid digram, and symbols 3 and 4 might also be a valid digram; but quite possibly symbols 2 and 3 are not a valid digram together.</p>
+<p>What we need to do is <em>lookahead</em> to two symbols, but then only match one symbol. Moreover, we need to consider the special case where the regex engine is currently looking at the final symbol in the signal, since that needs to be included as well. So an alternate lookahead of “anything then end” is used. Notice that we can use the ‘.’ wildcard because the digram was already guaranteed by the <em>prior</em> lookahead in the repetition.</p>
+<p>Shown first is <code>patB</code> which matches the ASCII version of the format, then the much more difficult to read <code>patA</code> which uses several symbols requiring escaping for the pattern definition since they would otherwise have regex meanings.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a>patB <span class="op">=</span>  (<span class="vs">r&#39;^(((?=LL|Lu|LF|HH|Hd|HF|uH|dL|FH|FL)&#39;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>         <span class="vs">r&#39;|(?=.$))[LHudF])+$&#39;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a>patA <span class="op">=</span>  (<span class="vs">r&#39;^(((?=__|_/|_\||\^\^|\^\\|\^\||/\^|\\_|\|\^|\|_)&#39;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a>         <span class="vs">r&#39;|(?=.$))[_\^/\\\|])+$&#39;</span>)</span></code></pre></div>
+</div>
+</section>
+</body>
+</html>

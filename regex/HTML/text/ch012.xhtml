@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <title>ch012.xhtml</title>
+  <link rel="stylesheet" type="text/css" href="../styles/stylesheet1.css" />
+</head>
+<body onload="solution()">
+<div id="toc_container">
+<p class="toc_title"><a href="../../index.html">
+    The Puzzling Quirks of Regular Expressions</a></p>
+
+<ol class="toc_list">
+	<li><a href="ch001.xhtml">Acknowledgments</a></li>
+	<li><a href="ch002.xhtml">Rights of (Wo)Man</a></li>
+	<li><a href="ch003.xhtml">Credits</a></li>
+	<li><a href="ch004.xhtml">Preface</a></li>
+	<li><a href="ch005.xhtml">Quantifiers and Special Sub-Patterns</a>
+	<ol class="toc">
+		<li><a href="ch006.xhtml">Wildcard Scope</a></li>
+		<li><a href="ch007.xhtml">Words and Sequences</a></li>
+		<li><a href="ch008.xhtml">Endpoint Classes</a></li>
+		<li><a href="ch009.xhtml">A Configuration Format</a></li>
+		<li><a href="ch010.xhtml">The Human Genome</a></li></ol></li>
+		<li><a href="ch011.xhtml">Pitfalls and Sand in the Gears</a>
+	<ol class="toc">
+		<li><a href="ch012.xhtml">Catastrophic Backtracking</a></li>
+		<li><a href="ch013.xhtml">Playing Dominoes</a></li>
+		<li><a href="ch014.xhtml">Advanced Dominoes</a></li>
+		<li><a href="ch015.xhtml">Sensor Art</a></li></ol></li>
+		<li><a href="ch016.xhtml">Creating Functions using Regexen</a>
+	<ol class="toc">
+		<li><a href="ch017.xhtml">Reimplementing str.count()</a></li>
+		<li><a href="ch018.xhtml">Reimplementing str.count() (stricter)</a></li>
+		<li><a href="ch019.xhtml">Finding a Name for a Function</a></li>
+		<li><a href="ch020.xhtml">Playing Poker (Part 1)</a></li>
+		<li><a href="ch021.xhtml">Playing Poker (Part 2)</a></li>
+		<li><a href="ch022.xhtml">Playing Poker (Part 3)</a></li>
+		<li><a href="ch023.xhtml">Playing Poker (Part 4)</a></li>
+		<li><a href="ch024.xhtml">Playing Poker (Part 5)</a></li></ol></li>
+		<li><a href="ch025.xhtml">Easy, Difficult, and Impossible Tasks</a>
+	<ol class="toc">
+		<li><a href="ch026.xhtml">Identifying Equal Counts</a></li>
+		<li><a href="ch027.xhtml">Matching Before Duplicate Words</a></li>
+		<li><a href="ch028.xhtml">Testing an IPv4 Address</a></li>
+		<li><a href="ch029.xhtml">Matching a Numeric Sequence</a></li>
+		<li><a href="ch030.xhtml">Matching the Fibonacci Sequence</a></li>
+		<li><a href="ch031.xhtml">Matching the Prime Numbers</a></li>
+		<li><a href="ch032.xhtml">Matching Relative Prime Numbers</a></li>
+	</ol>
+	</li>
+</ol>
+</div>
+
+<script>
+function solution() {
+  var x = document.getElementById("solution");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+</script>
+
+<div id="donation">
+    <p><b>Support the author!</b><br/>
+    <a href="https://www.lulu.com/search?q=Puzzling+Quirks">Lulu Editions</a><br/>
+    <a href="https://www.paypal.com/donate?hosted_button_id=WSUSCPKT5PE9L">
+        Paypal Donation</a><br/>
+    </p>
+</div>
+
+
+<section id="catastrophic-backtracking" class="level2" data-number="6.1">
+<h2 data-number="6.1">Catastrophic Backtracking</h2>
+<p>In this puzzle, we imagine a certain message protocol (as we do in many of the other puzzles). We have an message alphabet that consists of the following symbols:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Codepoint</th>
+<th>Name</th>
+<th>Appearance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>U+25A0</td>
+<td>Black Square</td>
+<td>■</td>
+</tr>
+<tr class="even">
+<td>U+25AA</td>
+<td>Black Small Square</td>
+<td>▪</td>
+</tr>
+<tr class="odd">
+<td>U+25CB</td>
+<td>White Circle</td>
+<td>○</td>
+</tr>
+<tr class="even">
+<td>U+25C9</td>
+<td>Fisheye</td>
+<td>◉</td>
+</tr>
+<tr class="odd">
+<td>U+25A1</td>
+<td>White Square</td>
+<td>□</td>
+</tr>
+<tr class="even">
+<td>U+25AB</td>
+<td>White Small Square</td>
+<td>▫</td>
+</tr>
+<tr class="odd">
+<td>U+25B2</td>
+<td>Black Up Triang</td>
+<td>▲</td>
+</tr>
+<tr class="even">
+<td>U+25CF</td>
+<td>Black Circle</td>
+<td>●</td>
+</tr>
+<tr class="odd">
+<td>U+2404</td>
+<td>End Transmition</td>
+<td><code>!</code> (herein)</td>
+</tr>
+</tbody>
+</table>
+<p>These geometric characters are attractive and are chosen to avoid thinking of matches in terms of natural language words that some other puzzles utilize. However, feel free in solving it to substitute letters or numerals, which are probably easier to type in your shell. As long as the correspondences are one-to-one, it doesn’t matter what symbols are used.</p>
+<p>A message in this protocol consists of alternating blocks, belonging to either “type 1” or “type 2.” Each block has at least one symbol in it, but type 1 can have any of black square, black up triangle, white circle, fisheye, or white square, in any number and order of each. Type 2 blocks, in contrast, may have white small square, white square, black small square, black circle, or black up triangle, in the same way. Optionally, a space may separate blocks, but it is not required.</p>
+<p>The “end of transmission” character indicates the end of a message. An “obvious” pattern to describe a valid message apparently matches appropriately. Some examples are shown below:</p>
+<pre><code>Regex: (^(([■▲○◉□]+) ?([▫□▪●▲]+) ?)+)!
+
+Structure 1/2/1/2  | Message &#39;■▲◉▫■▪▫!&#39; is Valid
+Structure 1 2 1 2  | Message &#39;■▲◉ ▫ ■ ▪▫!&#39; is Valid
+Missing terminator | Message &#39;■▲◉▫■▪▫&#39; is Invalid
+Structure 1 1 2 1  | Message &#39;▲▲▲ ■◉■ ▫▫● ◉○○!&#39; is Invalid</code></pre>
+<p>The regex pattern shown actually <em>is</em> correct in a mathematical sense. However, it can also become unworkably slow when checking some messages. For example:</p>
+<pre><code>Quick match     |
+        &#39;■▲○◉□▫□▪●◉◉▫▪▪●●□□▲▲○○◉■◉■▲▲□□◉▲!&#39; is Valid
+                |  Checked in 0.00 seconds
+Quick failure   |
+        &#39;■▲○◉■▲▫▪●●■◉■▲▲◉◉◉■□□□▫▫▪●●●▫■◉■!&#39; is Invalid
+                |  Checked in 0.00 seconds
+Failure         | &#39;▲□□▲▲□□▲▲▲□□□□□□□□▲▲□▲□▲□▲X&#39; is Invalid
+                |  Checked in 4.42 seconds
+Slow failure    | &#39;▲□□▲▲▲□□▲▲▲□□□□□□□□▲▲□▲□▲□▲X&#39; is Invalid
+                |  Checked in 8.62 seconds
+Exponential     | &#39;▲▲▲▲▲▲□□▲▲▲□□□□□□□□▲▲□▲□▲□▲▲X&#39; is Invalid
+                |  Checked in 17.59 seconds
+One more symbol | &#39;▲▲▲▲□▲□□▲▲□▲□□□□□□□□▲▲□▲□▲□▲▲&#39; is Invalid
+                |  Checked in 31.53 seconds</code></pre>
+<p>Why does this happen? Both the valid and the first invalid pattern timed are longer than those that detect mismatches slowly. You can see that the time to determine the last four messages are invalid approximately doubles with each additional character.</p>
+<p>Before you look at the explanation, both determine why this occurs and come up with a solution using an alternate regular expression that still validates the message format. Your solution should take a small fraction of a second in all cases (even messages that are thousands of symbols long).</p>
+<p>Note that as in other puzzles that use special characters for visual presentation, you may find experimenting easier if you substitute letters or numerals that are easy to type for the symbols used here. It doesn’t change the nature of the puzzle at all; it merely might make it easier to use your keyboard.</p>
+<p>Before you turn the page…</p>
+<p><strong>Try hard to avoid catastrophes.</strong></p>
+<p><img src="../media/file4.svg" /></p>
+<button onclick="solution()">Show/Hide Solution</button>
+<div id="solution">
+
+<p>The reason why the slow-failing messages fail is somewhat obvious to human eyes. None of them end with the “end-of-transmission” character. As you can see, whether they end with an entirely invalid symbol <code>X</code>, or simply with a valid symbol and no terminator, is not significant.</p>
+<p>You may want to think about why the quick-failing message also fails. Pause for a moment.</p>
+<p>But then notice that the final few symbols in that message are “black square” which can only occur in type 1 blocks; in the specification, a type 2 block must always come immediatey before the end-of-transmission terminator. Nonetheless, the regular expression engine figures that out in (significantly) less than 1/100th of a second.</p>
+<p>What you need to notice is that the symbol set overlaps between type 1 blocks and type 2 blocks. Therefore, it is ambiguous whether a given symbol belongs to a given block or the next block. If we simply look for a match, <em>one possible</em> match is found quickly, when it exists. For example, this message that has only the ambiguous “white square” and “black up triangle” validates immediately:</p>
+<pre><code>Ambiguous quick | &#39;▲▲▲▲□▲□□▲▲□▲□□□□□□□□▲▲□▲□▲□▲▲!&#39; is Valid
+                |  Checked in 0.00 seconds</code></pre>
+<p>However we do not know how many blocks of type 1 and how many of type 2 were created in the match (pedantically, I know enough about the internals of the regular expression engine to know that answer, but we are not guaranteed by the API; it could be different in a later version of the library without breaking compatibility).</p>
+<p>Regular expressions are not smart enough to look ahead to the final symbol to make sure it is a terminator, unless we tell it to do so. The produced answer is still <em>eventually</em> correct, but it is not as efficient as we would like.</p>
+<p>The engine tries every possible permutation of “some symbols in this block, some in that”—which is of exponential complexity on the length of the message—before it finally decides that none match.</p>
+<p>Let’s solve that by doing a little extra work for the engine. Specifically, before we try to identify alternating type 1 and type 2 blocks, let’s just make sure that the entire message is made up of valid symbols that end with the terminator symbol. That check will complete almost instantly, and will eliminate very many (but not all) ways of encountering catastrophic backtracking.</p>
+<pre><code>Regex: (^(?=^[■▲○◉□▫▪● ]+!)(([■▲○◉□]+) ?([▫□▪●▲]+) ?)+)!
+
+Structure 1/2/1/2  | Message &#39;■▲◉▫■▪▫!&#39; is Valid
+Structure 1 2 1 2  | Message &#39;■▲◉ ▫ ■ ▪▫!&#39; is Valid
+Missing terminator | Message &#39;■▲◉▫■▪▫&#39; is Invalid
+Structure 1 1 2 1  | Message &#39;▲▲▲ ■■■ ▫▫▫ ○○○!&#39; is Invalid
+
+Quick match     |
+        &#39;■▲○◉□▫□▪●◉◉▫▪▪●●□□▲▲○○◉■◉■▲▲□□◉▲!&#39; is Valid
+                |  Checked in 0.00 seconds
+Quick failure   |
+        &#39;■▲○◉■▲▫▪●●■◉■▲▲◉◉◉■□□□▫▫▪●●●▫■◉■!&#39; is Invalid
+                |  Checked in 0.00 seconds
+Failure         | &#39;▲□□▲▲□□▲▲▲□□□□□□□□▲▲□▲□▲□▲X&#39; is Invalid
+                |  Checked in 0.00 seconds
+Slow failure    | &#39;▲□□▲▲▲□□▲▲▲□□□□□□□□▲▲□▲□▲□▲X&#39; is Invalid
+                |  Checked in 0.00 seconds
+Exponential     | &#39;▲▲▲▲▲▲□□▲▲▲□□□□□□□□▲▲□▲□▲□▲▲X&#39; is Invalid
+                |  Checked in 0.00 seconds
+One more symbol | &#39;▲▲▲▲□▲□□▲▲□▲□□□□□□□□▲▲□▲□▲□▲▲&#39; is Invalid
+                |  Checked in 0.00 seconds
+Ambiguous quick | &#39;▲▲▲▲□▲□□▲▲□▲□□□□□□□□▲▲□▲□▲□▲▲!&#39; is Valid
+                |  Checked in 0.00 seconds</code></pre>
+</div>
+</section>
+</body>
+</html>

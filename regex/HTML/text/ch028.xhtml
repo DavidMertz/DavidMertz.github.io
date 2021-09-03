@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <title>ch028.xhtml</title>
+  <style>
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" type="text/css" href="../styles/stylesheet1.css" />
+</head>
+<body onload="solution()">
+<div id="toc_container">
+<p class="toc_title"><a href="../../index.html">
+    The Puzzling Quirks of Regular Expressions</a></p>
+
+<ol class="toc_list">
+	<li><a href="ch001.xhtml">Acknowledgments</a></li>
+	<li><a href="ch002.xhtml">Rights of (Wo)Man</a></li>
+	<li><a href="ch003.xhtml">Credits</a></li>
+	<li><a href="ch004.xhtml">Preface</a></li>
+	<li><a href="ch005.xhtml">Quantifiers and Special Sub-Patterns</a>
+	<ol class="toc">
+		<li><a href="ch006.xhtml">Wildcard Scope</a></li>
+		<li><a href="ch007.xhtml">Words and Sequences</a></li>
+		<li><a href="ch008.xhtml">Endpoint Classes</a></li>
+		<li><a href="ch009.xhtml">A Configuration Format</a></li>
+		<li><a href="ch010.xhtml">The Human Genome</a></li></ol></li>
+		<li><a href="ch011.xhtml">Pitfalls and Sand in the Gears</a>
+	<ol class="toc">
+		<li><a href="ch012.xhtml">Catastrophic Backtracking</a></li>
+		<li><a href="ch013.xhtml">Playing Dominoes</a></li>
+		<li><a href="ch014.xhtml">Advanced Dominoes</a></li>
+		<li><a href="ch015.xhtml">Sensor Art</a></li></ol></li>
+		<li><a href="ch016.xhtml">Creating Functions using Regexen</a>
+	<ol class="toc">
+		<li><a href="ch017.xhtml">Reimplementing str.count()</a></li>
+		<li><a href="ch018.xhtml">Reimplementing str.count() (stricter)</a></li>
+		<li><a href="ch019.xhtml">Finding a Name for a Function</a></li>
+		<li><a href="ch020.xhtml">Playing Poker (Part 1)</a></li>
+		<li><a href="ch021.xhtml">Playing Poker (Part 2)</a></li>
+		<li><a href="ch022.xhtml">Playing Poker (Part 3)</a></li>
+		<li><a href="ch023.xhtml">Playing Poker (Part 4)</a></li>
+		<li><a href="ch024.xhtml">Playing Poker (Part 5)</a></li></ol></li>
+		<li><a href="ch025.xhtml">Easy, Difficult, and Impossible Tasks</a>
+	<ol class="toc">
+		<li><a href="ch026.xhtml">Identifying Equal Counts</a></li>
+		<li><a href="ch027.xhtml">Matching Before Duplicate Words</a></li>
+		<li><a href="ch028.xhtml">Testing an IPv4 Address</a></li>
+		<li><a href="ch029.xhtml">Matching a Numeric Sequence</a></li>
+		<li><a href="ch030.xhtml">Matching the Fibonacci Sequence</a></li>
+		<li><a href="ch031.xhtml">Matching the Prime Numbers</a></li>
+		<li><a href="ch032.xhtml">Matching Relative Prime Numbers</a></li>
+	</ol>
+	</li>
+</ol>
+<figure>
+<img src="../media/file21.jpg" alt="" /><figcaption>joker-48067975746</figcaption>
+</figure>
+</div>
+
+<script>
+function solution() {
+  var x = document.getElementById("solution");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+</script>
+
+<div id="donation">
+    <p><b>Support the author!</b><br/>
+    <a href="https://www.lulu.com/search?q=Puzzling+Quirks">Lulu Editions</a><br/>
+    <a href="https://www.paypal.com/donate?hosted_button_id=WSUSCPKT5PE9L">
+        Paypal Donation</a><br/>
+    </p>
+</div>
+
+
+<section id="testing-an-ipv4-address" class="level2" data-number="8.3">
+<h2 data-number="8.3">Testing an IPv4 Address</h2>
+<p>“Internet protocol version 4” addresses are prevalent in almost everything we do with computers. “Under the hood” (so to speak), an IPv4 address is just a 32-bit unsigned integer. However, it is universal to write them in a human-memorable way as so-called dotted quads. In that format, each byte of the address is represented as a decimal number between 0 and 255 (the range of an integer byte), and the four bytes are separated by periods.</p>
+<p>Some particular address ranges have special or reserved meanings, but they remain IPv4 addresses, and should be matched for this puzzle. Can you write a regular expression to test if a string is a valid IPv4 address? Some examples:</p>
+<ul>
+<li>Valid: 192.168.20.1</li>
+<li>Invalid: 292.168.10.1</li>
+<li>Invalid: 5.138.0.21.23</li>
+<li>Invalid: 192.AA.20.1</li>
+</ul>
+<p>The first of these is a good address; it happens to be a range reserved for internal addresses within an organization (usually one particular router), and hence exists in many local networks. The others fail for various reasons. The first invalid address contains numbers outside the permitted integer range in one quad. The second invalid address has 5 dotted elements rather than 4. The third invalid address contains characters other than decimal digits in one of the quads.</p>
+<p>Before you turn the page…</p>
+<p><strong>Ask whether regexen are powerful enough for a problem.</strong></p>
+<p><img src="../media/file4.svg" /></p>
+<button onclick="solution()">Show/Hide Solution</button>
+<div id="solution">
+
+<p>It would be very easy to match naive <em>dotted quads</em> that simply consisted of four numbers with up to three digits, separated by dots. You might express that as:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a>pat <span class="op">=</span> <span class="vs">r&#39;^(\d{1-3})</span><span class="sc">{3}</span><span class="vs">\.\d{1-3}$&#39;</span></span></code></pre></div>
+<p>This code will indeed match every IPv4 address. But it will also match many things that are invalid, such as <code>992.0.100.13</code>. Matching three-digit numbers that begin with 3-9 are definitely wrong. We can try to fix that oversight by allowing only acceptable hundreds digits:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a>pat <span class="op">=</span> <span class="vs">r&#39;^([12]?\d{1-2})</span><span class="sc">{3}</span><span class="vs">\.[12]?\d{1-2}$&#39;</span></span></code></pre></div>
+<p>This has far fewer false positives. It says “maybe start with a ‘1’ or a ‘2’, then follow that by one or two more digits” (repeating that for dotted quads). So far, so good: <code>992.0.100.13</code> is ruled out. But we still might accept <code>271.10.199.3</code> which has an invalid first quad.</p>
+<p>To fix the pattern we have to <em>bite the bullet</em> and list all and only quads we can allow. That is, if a quad starts with a ‘25’ and has three digits, the next digit can only be 0-5. And if it starts with a ‘2’ it definitely cannot have a digit more than 5 next.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a>pat <span class="op">=</span> (</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>    <span class="st">&#39;^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.)</span><span class="sc">{3}</span><span class="st">&#39;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>      <span class="st">&#39;(25[0-5]|2[0-4]\d|[01]?\d\d?)$&#39;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a>)</span></code></pre></div>
+<p>The pattern is a bit of a mouthful, but when we see how it is built up, the pattern becomes quite clear and elegant. All the stuff after the number quantifier <code>{3}</code> is just a repetition of the earlier subpattern. This is simply because we match three numbers that are followed by a period, but the final number must not be followed by anything.</p>
+<p>The main subpattern is just an alternation of options. Maybe the quad looks like <code>25[0-5]</code>. Or maybe it looks like <code>2[0-4]\d</code>. These describe all the valid numbers in the 200+ range. For the rest, we get a little clever.</p>
+<p>If the quad isn’t three digits beginning with a ‘2’, it can either be three-digits beginning with ‘1’ or ‘0’. Conventionally, leading zeros are dropped, but that is not required. However, two-digit or one-digit numbers are also common; any such two- or one-digit numbers are permitted. So we make the initial <code>[01]</code> optional, and also make the final digit optional with <code>\d?</code>. This gives all and only the remaining permissible quads.</p>
+<!-- blank recto page -->
+
+</div>
+</section>
+</body>
+</html>

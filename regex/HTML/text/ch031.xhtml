@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <title>ch031.xhtml</title>
+  <style>
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" type="text/css" href="../styles/stylesheet1.css" />
+</head>
+<body onload="solution()">
+<div id="toc_container">
+<p class="toc_title"><a href="../../index.html">
+    The Puzzling Quirks of Regular Expressions</a></p>
+
+<ol class="toc_list">
+	<li><a href="ch001.xhtml">Acknowledgments</a></li>
+	<li><a href="ch002.xhtml">Rights of (Wo)Man</a></li>
+	<li><a href="ch003.xhtml">Credits</a></li>
+	<li><a href="ch004.xhtml">Preface</a></li>
+	<li><a href="ch005.xhtml">Quantifiers and Special Sub-Patterns</a>
+	<ol class="toc">
+		<li><a href="ch006.xhtml">Wildcard Scope</a></li>
+		<li><a href="ch007.xhtml">Words and Sequences</a></li>
+		<li><a href="ch008.xhtml">Endpoint Classes</a></li>
+		<li><a href="ch009.xhtml">A Configuration Format</a></li>
+		<li><a href="ch010.xhtml">The Human Genome</a></li></ol></li>
+		<li><a href="ch011.xhtml">Pitfalls and Sand in the Gears</a>
+	<ol class="toc">
+		<li><a href="ch012.xhtml">Catastrophic Backtracking</a></li>
+		<li><a href="ch013.xhtml">Playing Dominoes</a></li>
+		<li><a href="ch014.xhtml">Advanced Dominoes</a></li>
+		<li><a href="ch015.xhtml">Sensor Art</a></li></ol></li>
+		<li><a href="ch016.xhtml">Creating Functions using Regexen</a>
+	<ol class="toc">
+		<li><a href="ch017.xhtml">Reimplementing str.count()</a></li>
+		<li><a href="ch018.xhtml">Reimplementing str.count() (stricter)</a></li>
+		<li><a href="ch019.xhtml">Finding a Name for a Function</a></li>
+		<li><a href="ch020.xhtml">Playing Poker (Part 1)</a></li>
+		<li><a href="ch021.xhtml">Playing Poker (Part 2)</a></li>
+		<li><a href="ch022.xhtml">Playing Poker (Part 3)</a></li>
+		<li><a href="ch023.xhtml">Playing Poker (Part 4)</a></li>
+		<li><a href="ch024.xhtml">Playing Poker (Part 5)</a></li></ol></li>
+		<li><a href="ch025.xhtml">Easy, Difficult, and Impossible Tasks</a>
+	<ol class="toc">
+		<li><a href="ch026.xhtml">Identifying Equal Counts</a></li>
+		<li><a href="ch027.xhtml">Matching Before Duplicate Words</a></li>
+		<li><a href="ch028.xhtml">Testing an IPv4 Address</a></li>
+		<li><a href="ch029.xhtml">Matching a Numeric Sequence</a></li>
+		<li><a href="ch030.xhtml">Matching the Fibonacci Sequence</a></li>
+		<li><a href="ch031.xhtml">Matching the Prime Numbers</a></li>
+		<li><a href="ch032.xhtml">Matching Relative Prime Numbers</a></li>
+	</ol>
+	</li>
+</ol>
+<figure>
+<img src="../media/file23.png" alt="" /><figcaption>Olives_Recto</figcaption>
+</figure>
+</div>
+
+<script>
+function solution() {
+  var x = document.getElementById("solution");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+</script>
+
+<div id="donation">
+    <p><b>Support the author!</b><br/>
+    <a href="https://www.lulu.com/search?q=Puzzling+Quirks">Lulu Editions</a><br/>
+    <a href="https://www.paypal.com/donate?hosted_button_id=WSUSCPKT5PE9L">
+        Paypal Donation</a><br/>
+    </p>
+</div>
+
+
+<section id="matching-the-prime-numbers" class="level2" data-number="8.6">
+<h2 data-number="8.6">Matching the Prime Numbers</h2>
+<p>Perhaps surprisingly, in the last puzzle we were able to match Fibonacci-like sequences using regular expressions. Let’s turn next to whether we might do the same thing with prime numbers. In particular, if you can find it, your regular expression(s) will only need to match ascending initial sequences of the primes, but all such initial sequences.</p>
+<p>As in the last two puzzles, we encode numeric sequences using a number of contiguous <code>@</code> symbols, with each “number” separated by spaces. For example:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="co"># Match: 2 3 5 7</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>primes4 <span class="op">=</span> <span class="st">&quot;@@ @@@ @@@@@ @@@@@@@ &quot;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="co"># Match: 2 3 5 7 11</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>primes5 <span class="op">=</span> <span class="st">&quot;@@ @@@ @@@@@ @@@@@@@ @@@@@@@@@@@ &quot;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="co"># Fail: 2 3 7 11</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>fail1 <span class="op">=</span> <span class="st">&quot;@@ @@@ @@@@@@@ @@@@@@@@@@@ &quot;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a><span class="co"># Fail: 2 3 4 5 7</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a>fail2 <span class="op">=</span> <span class="st">&quot;@@ @@@ @@@@ @@@@@ @@@@@@@ &quot;</span></span></code></pre></div>
+<p>The Sieve of Eratosthenes is a lovely and ancient algorithm for finding all the prime numbers. It “strikes out” each multiple of a prime as it steps through all the natural numbers, leaving only primes thereby. In a compact Python implementation it can look like the below (this can be made much more efficient, but at the price of more code).</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">def</span> get_primes():</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>    <span class="co">&quot;Simple lazy Sieve of Eratosthenes&quot;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a>    candidate <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a>    found <span class="op">=</span> []</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a>    <span class="cf">while</span> <span class="va">True</span>:</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a>        <span class="cf">if</span> <span class="bu">all</span>(candidate <span class="op">%</span> prime <span class="op">!=</span> <span class="dv">0</span> <span class="cf">for</span> prime <span class="kw">in</span> found):</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a>            <span class="cf">yield</span> candidate</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a>            found.append(candidate)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a>        candidate <span class="op">+=</span> <span class="dv">1</span></span></code></pre></div>
+<p>The form of the Sieve is definitely reminiscent of lookahead assertions which we have used in many of the puzzles. Think about whether you can implement this using regular expressions (don’t think about performance for this puzzle). Before you look at the discussion, try either to find a regular expression to match the valid sequences or to formulate clearly why you cannot.</p>
+<p>Before you turn the page…</p>
+<p><strong>Honor the Fundamental Theorem of Arithmetic.</strong></p>
+<p><img src="../media/file4.svg" /></p>
+<button onclick="solution()">Show/Hide Solution</button>
+<div id="solution">
+
+<p>This puzzle turns out to be another one that exceeds the ability of regular expressions. On the face of it, it might seem like <em>negative lookahead assertions</em> are exactly what you would use to implement the Sieve, or something akin to it. That is, if some group matched, e.g. <code>(@@@)</code> or <code>(@+)</code>, then you should be able to backreference to a repetition of that group.</p>
+<p>Let’s say the hypothetical group was number 7. In that case, a negative lookahead assertion like <code>(?! \7{2,} )</code> would state precisely that no contiguous numbers of <code>@</code> symbols, whose count is a multiple of the number in the prior match group, occur later in the string. That sounds a lot like what the Sieve does.</p>
+<p>Negative lookahead is indeed a powerful and useful technique. In fact, you could perfectly well implement a partial sieve to exclude all the multiples of the first N primes from occurring in a candidate string. The problem is that regular expressions can only have a finite number of match groups by definition. That is, regular expressions are a way of expressing <em>finite state</em> machines. The exact maximum number of groups can vary between regex engines; it is 100 in the Python standard library <code>re</code> module, 500 in the third-party <code>regex</code> module, and various other numbers in other programming languages or libraries. But it is always a finite number.</p>
+<p>To match <em>every</em> string of initial primes, we need to “strike out” indefinitely many primes along the way. This same problem would occur for every other sequential prime-finding algorithm. There do exist direct primality tests that do not iterate through the smaller primes, such as the probabilistic Miller–Rabin test<a href="#fn1" class="footnote-ref" id="fnref1" epub:type="noteref">1</a> or the deterministic Agrawal–Kayal–Saxena test. However, all of those require mathematical calculations that are not possible in regular expressions.</p>
+<!-- blank recto page -->
+
+</div>
+</section>
+<section class="footnotes" epub:type="footnotes">
+<hr />
+<ol>
+<li id="fn1" epub:type="footnote"><p>A version of the Miller-Rabin test can be made deterministic if the Generalized Riemann hypothesis holds.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</body>
+</html>

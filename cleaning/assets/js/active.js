@@ -110,7 +110,7 @@ function footer() {
             Donation Link</a><br/>
             BTC: <a href="bitcoin:1GaxnVtRegebBDUknHL6ZPRLeAa8yfnFQE&label=Cleaning%20Data">
             1GaxnVtRegebBDUknHL6ZPRLeAa8yfnFQE</a><br/>
-            ETH: <a href="etherium:0x300833A83e37a5374d01DfF395988ba287a6d0e1"&label=Cleaning%20Data">
+            ETH: <a href="etherium:0x300833A83e37a5374d01DfF395988ba287a6d0e1&label=Cleaning%20Data">
             0x300833A83e37a5374d01DfF395988ba287a6d0e1</a><br/>
             </p>
         </div>
