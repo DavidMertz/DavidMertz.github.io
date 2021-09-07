@@ -119,7 +119,7 @@ function solution() {
 </tr>
 <tr class="odd">
 <td>U+25B2</td>
-<td>Black Up Triang</td>
+<td>Black Up Triangle</td>
 <td>▲</td>
 </tr>
 <tr class="even">
@@ -169,7 +169,7 @@ One more symbol | &#39;▲▲▲▲□▲□□▲▲□▲□□□□□□□
 
 <p>The reason why the slow-failing messages fail is somewhat obvious to human eyes. None of them end with the “end-of-transmission” character. As you can see, whether they end with an entirely invalid symbol <code>X</code>, or simply with a valid symbol and no terminator, is not significant.</p>
 <p>You may want to think about why the quick-failing message also fails. Pause for a moment.</p>
-<p>But then notice that the final few symbols in that message are “black square” which can only occur in type 1 blocks; in the specification, a type 2 block must always come immediatey before the end-of-transmission terminator. Nonetheless, the regular expression engine figures that out in (significantly) less than 1/100th of a second.</p>
+<p>But then notice that the final symbol in that message is “black square” which can only occur in type 1 blocks; in the specification, a type 2 block must always come immediatey before the end-of-transmission terminator. Nonetheless, the regular expression engine figures that out in (significantly) less than 1/100th of a second.</p>
 <p>What you need to notice is that the symbol set overlaps between type 1 blocks and type 2 blocks. Therefore, it is ambiguous whether a given symbol belongs to a given block or the next block. If we simply look for a match, <em>one possible</em> match is found quickly, when it exists. For example, this message that has only the ambiguous “white square” and “black up triangle” validates immediately:</p>
 <pre><code>Ambiguous quick | &#39;▲▲▲▲□▲□□▲▲□▲□□□□□□□□▲▲□▲□▲□▲▲!&#39; is Valid
                 |  Checked in 0.00 seconds</code></pre>
