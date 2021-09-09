@@ -142,7 +142,7 @@ function solution() {
 <section id="the-human-genome" class="level2" data-number="5.5">
 <h2 data-number="5.5">The Human Genome</h2>
 <p>Genomics commonly uses a format called FASTA to represent genetic sequences. This puzzle uses a subset of the overall format. Let’s provide just a few quick tips. The letters ‘A’, ‘C’, ‘G’, ‘T’ represent nucleotide bases in DNA. FASTA may also contain the symbol ‘N’ for “unknown nucleotide” and ‘-’ for “gap of indeterminate length.”</p>
-<p>As well, in biological organisms, spans of DNA are terminated by “telomeres” which are special sequences indicating that the read mechanism should stop transcription and form a protein. Telomeres are often repeated as much as thousands of times at the ends of sequences. In a gross simplification for this puzzle, let’s suppose that three or more repetitions of a telomere indicate the end of a sequence for a protein. In vertebrates, the telomere used is ‘TTAGGG’.</p>
+<p>As well, in biological organisms, spans of DNA are terminated by “telomeres,” which are special sequences indicating that the read mechanism should stop transcription and form a protein. Telomeres are often repeated as much as thousands of times at the ends of sequences. In a gross simplification for this puzzle, let’s suppose that three or more repetitions of a telomere indicate the end of a sequence for a protein. In vertebrates, the telomere used is ‘TTAGGG’.</p>
 <p>In this puzzle, we will ignore the marking of the start of a protein-encoding region, and just assume that all of our strings begin a potential protein encoding.</p>
 <p>You would like to create a regular expression that represents a “specific protein encoding” from a (simplified) FASTA fragment. In particular, we need to know exactly which nucleotides are present, and gaps or unknown nucleotides will prevent a match. Moreover, even the telomere repetitions at the end are not permitted (for this puzzle) to have gaps or unknowns.</p>
 <p>For this puzzle, assume that all the FASTA symbols are on a single line. Normally as published they have a fixed width less than 80 characters; but newlines are simply ignored. An example of a match:<a href="#fn1" class="footnote-ref" id="fnref1" epub:type="noteref">1</a></p>
@@ -160,7 +160,7 @@ function solution() {
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a>AAAGCCTCTCTGAATCCTGCGCACCGAGATTCTCCCAAGGCAAGGCGAGGGGCTGTATTG</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a>CAGGGTTCAACTGCAGCGTCGCAACTCAAATGCAGCATTCCTAATGCACACATGACACCC</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a>AAAACTATAACAGACATATTACTCATGGAGGGTGAGGGTGGGGGTGAGGG</span></code></pre></div>
-<p>The next two are failures. The first does not have sufficient repetitions. The second has a a non-specific nucleotide symbol:</p>
+<p>The next two are failures. The first does not have sufficient repetitions. The second has a non-specific nucleotide symbol:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">print</span>(<span class="st">&#39;</span><span class="ch">\n</span><span class="st">&#39;</span>.join(wrap(bad_telomere, <span class="dv">60</span>)))</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>CCCTGAATAATCAAGGTCACAGACCAGTTAGAATGGTTTAGTGTGGAAAGCGGGAAACGA</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>AAAGCCTCTCTGAATCCTGCGCACCGAGATTCTCCCAAGGCAAGGCGAGGGGCTGTATTG</span>
