@@ -1,0 +1,19 @@
+name: PiterPy-Mertz
+channels:
+  - intel
+  - conda-forge
+  - pytorch
+dependencies:
+  - python=3
+  - pip
+  - scikit-learn
+  - pytorch
+  - torchvision
+  - pandas
+  - numpy
+  - matplotlib
+  - jupyter
+  - seaborn
+  - pillow
+  - pip:
+      - torchsummary
