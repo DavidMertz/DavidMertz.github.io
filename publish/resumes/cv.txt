@@ -5,223 +5,213 @@ mertz@gnosis.cx
 
 EDUCATION
 
-  University of Massachusetts at Amherst, Department of Philosophy.
-  Doctorate, September 1999.  Dissertation under direction of Professor
-  Ann Ferguson.  Title of Dissertation:  _The Speculum and The Scalpel:
-  The Politics of Impotent Representation and Nonrepresentational
-  Terrorism._
+  University of Massachusetts at Amherst, Department of Philosophy.  Doctorate,
+  September 1999.  Dissertation under direction of Professor Ann Ferguson.
+  Title of Dissertation:  _The Speculum and The Scalpel: The Politics of
+  Impotent Representation and Nonrepresentational Terrorism._
 
-  University of Massachusetts at Amherst, Department of Philosophy.
-  Master of Arts, May 1991.
+  University of Massachusetts at Amherst, Department of Philosophy.  Master of
+  Arts, May 1991.
 
-  University of Colorado at Boulder.  Bachelor of Arts, December 1987.
-  Major in Philosophy; Minor in Mathematics.  Graduated with Honors:
-  Honors Thesis directed by Professor Steve Fuller.
+  University of Colorado at Boulder.  Bachelor of Arts, December 1987.  Major
+  in Philosophy; Minor in Mathematics.  Graduated with Honors: Honors Thesis
+  directed by Professor Steve Fuller.
 
 PUBLICATIONS
 
-  _The Puzzling Quirks of Regular Expressions_. Lulu.com. ISBN 1312160748
-  (2021).
+  _The Puzzling Quirks of Regular Expressions_. Lulu.com publishing.  ISBN
+  1312160748 (2021).
 
-  _Cleaning Data for Effective Data Science: Doing the Other 80% of
-  the Work_.  Packt Publising. ISBN 978-1-801-07129-1 (2021)
+  _Cleaning Data for Effective Data Science: Doing the Other 80% of the Work_.
+  Packt Publising. ISBN 978-1-801-07129-1 (2021)
 
-  _Functional Programming in Python_. O'Reilly Media, Inc. ISBN 
+  _Functional Programming in Python_. O'Reilly Media, Inc. ISBN
   978-1-491-92855-4 (2015).
 
   _From __future__ import Python: Picking a Python Versions—A Manifesto_.
-  ISBN 978-1-491-92697-0 (2015).
+  O'Reilly Media, Inc. ISBN 978-1-491-92697-0 (2015).
 
-  _Picking a Python Version: A Manifesto_. ISBN 978-1-491-92696-3 (2015).
+  _Picking a Python Version: A Manifesto_. O'Reilly Media, Inc.  ISBN
+  978-1-491-92696-3 (2015).
 
-  Note: Approximately 200 articles by me, about computer programming, 
-  computer science, algorithms, and related technical topics, that were 
-  published by IBM developerWorks, Intel, O'Reilly and similar publishers 
-  from 2000-2009 are indexed at http://gnosis.cx/publish/tech_index.html.
+  Note: Approximately 200 articles by me, about computer programming, computer
+  science, algorithms, and related technical topics, that were published by IBM
+  developerWorks, Intel, O'Reilly and similar publishers from 2000-2009 are
+  indexed at http://gnosis.cx/publish/tech_index.html.
 
   "Cyborg" (entry), in _International Encyclopedia of Communication_.
   Wiley-Blackwell. ISBN 978-1-405-13199-5 (2008).
 
-  "Privacy Issues in an Electronic Voting Machine," in Katherine J.
-  Strandburg and Daniela Stan Raicu, _Privacy and Technologies of
-  Identity: A Cross-Disciplinary Conversation_. New York: Springer
-  Science+Business Media. ISBN 0387260501. Coauthored with Arthur M.
-  Keller, Joseph Lorenzo Hall, and Arnold Urken (2006).
+  "Privacy Issues in an Electronic Voting Machine," in Katherine J.  Strandburg
+  and Daniela Stan Raicu, _Privacy and Technologies of Identity: A
+  Cross-Disciplinary Conversation_. New York: Springer Science+Business Media.
+  ISBN 0387260501. Coauthored with Arthur M.  Keller, Joseph Lorenzo Hall, and
+  Arnold Urken (2006).
 
-  "A Voting System with a Modular Voting Architecture and an Electronic
-  Audit Trail," _Threat Analyses for Voting System Categories: A
-  Workshop on Rating Voting Methods_ (VSRW 06), John Kelsey and Poorvi
-  Vora, eds., Washington DC, June 8-9, 2006. Coauthored with Arthur M.
-  Keller, Alan Dechert, Karl Auerbach, David Mertz, and Amy Pearl.
+  "A Voting System with a Modular Voting Architecture and an Electronic Audit
+  Trail," _Threat Analyses for Voting System Categories: A Workshop on Rating
+  Voting Methods_ (VSRW 06), John Kelsey and Poorvi Vora, eds., Washington DC,
+  June 8-9, 2006. Coauthored with Arthur M.  Keller, Alan Dechert, Karl
+  Auerbach, and Amy Pearl.
 
-  "Review of Steve Martinot's _The Rule of Racialization_, for _Socialism 
-  and Democracy_. 18(1), November 2004.
+  "Review of Steve Martinot's _The Rule of Racialization_, for _Socialism and
+  Democracy_. 18(1), November 2004.
 
-  _Text Processing in Python_. Addison-Wesley Professional. ISBN
-  0-321-11254-7 (2003).
+  _Text Processing in Python_. Addison-Wesley Professional. ISBN 0-321-11254-7
+  (2003).
 
-  "Compression and Streaming of XML Documents: The Entropy of
-  Documents". Intel Developer Network, 2001.
-
-  "Optimizing xml2struct Processing for Embedded Applications". Intel
+  "Compression and Streaming of XML Documents: The Entropy of Documents". Intel
   Developer Network, 2001.
 
-  "The Net's New Enclosures," Review of Lawrence Lessig's _Code and
-  Other Laws of Cyberspace_, for _Radical Philosophy Review_.  3(1),
-  February 2000.
+  "Optimizing xml2struct Processing for Embedded Applications". Intel Developer
+  Network, 2001.
 
-  Review of Renata Salecl's _(Per)Versions of Love and Hate_, for _Red
-  Pepper_.  June, 1999.
+  "The Net's New Enclosures," Review of Lawrence Lessig's _Code and Other Laws
+  of Cyberspace_, for _Radical Philosophy Review_.  3(1), February 2000.
+
+  Review of Renata Salecl's _(Per)Versions of Love and Hate_, for _Red Pepper_.
+  June, 1999.
 
   "Women and AIDS:  The Ethics of Exaggerated Harm (reprint)," _Monash
   Bioethics Review_ 16(2), April 1997.
 
-  "Sex Wars:  The New Left's AIDS-related Scientism," _Rethinking
-  Marxism_ 9(1), Spring 1996/1997.
+  "Sex Wars:  The New Left's AIDS-related Scientism," _Rethinking Marxism_
+  9(1), Spring 1996/1997.
 
-  "Women and AIDS:  The Ethics of Exaggerated Harm," _Bioethics_ 10(2),
-  April, 1996.  Primary Author.  Coauthored with Mary Ann Sushinsky and
-  Udo Schueklenk.
+  "Women and AIDS:  The Ethics of Exaggerated Harm," _Bioethics_ 10(2), April,
+  1996.  Primary Author.  Coauthored with Mary Ann Sushinsky and Udo
+  Schueklenk.
 
   "Student Forum-Proposed Federal Gun-Control Amendment," _Update on
-  Law-Related Education_ 19(3), Fall 1995.  American Bar Association
-  Special Committee on Youth Education for Citizenship.  Coauthored
-  with Gayle Mertz.
+  Law-Related Education_ 19(3), Fall 1995.  American Bar Association Special
+  Committee on Youth Education for Citizenship.  Coauthored with Gayle Mertz.
 
-  "The Bioethics Tabloids:  How professional ethicists have fallen for
-  the myth of heterosexual AIDS," _Health Care Analysis_ 3(1), 1995.
-  Coauthored with Udo Schueklenk and Juliet Ricther.
+  "The Bioethics Tabloids:  How professional ethicists have fallen for the myth
+  of heterosexual AIDS," _Health Care Analysis_ 3(1), 1995.  Coauthored with
+  Udo Schueklenk and Juliet Ricther.
 
-  Review of Slavoj Zizek's _Tarrying with the Negative_, and Judith
-  Butler's _Bodies That Matter_, for _Radical Philosophy Review of
-  Books_.  Fall 1994.
+  Review of Slavoj Žižek's _Tarrying with the Negative_, and Judith Butler's
+  _Bodies That Matter_, for _Radical Philosophy Review of Books_.  Fall 1994.
 
   Review of Cornel West's _Keeping Faith_.  In _Canadian Philosophical
   Reviews_.  14(4) August 1994.
 
-  "The Racial Other in Nationalist Subjectivations: A Lacanian
-  Analysis," _Rethinking Marxism_ 8(2) Summer 1995.
+  "The Racial Other in Nationalist Subjectivations: A Lacanian Analysis,"
+  _Rethinking Marxism_ 8(2) Summer 1995.
 
   "Cyborg Bodies from Haraway to Bataille:  Two Ways to Lose a Self,"
   _Alterity, Excess, Community:  Strategies of Critique VII_ conference
   proceedings; York University 1993.  Paper delivered in April, 1992.
 
-  "Christliche Kirchen und AIDS," coauthored with Udo Schueklenk, in
-  _Die Lehren des Unheils_.  Edited by Dahl, Edgar.  Carlsen Verlag:
-  Hamburg 1993. ISBN 3551850127.
+  "Christliche Kirchen und AIDS," coauthored with Udo Schueklenk, in _Die
+  Lehren des Unheils_.  Edited by Dahl, Edgar.  Carlsen Verlag: Hamburg 1993.
+  ISBN 3551850127.
 
-  "Thelma and Louise, Saturation, and The Poverty of Causality,"
-  _Technologies of the Family_.  Edited by Alison Brown and Dianne
-  Rothleder.  Article accepted, volume under review.
+  "Thelma and Louise, Saturation, and The Poverty of Causality," _Technologies
+  of the Family_.  Edited by Alison Brown and Dianne Rothleder.  
 
-  Peer Commentary on Eric Dietrich's "Computationalism," _Social
-  Epistemology_ 4(3), Fall 1990.
+  Peer Commentary on Eric Dietrich's "Computationalism," _Social Epistemology_
+  4(3), Fall 1990.
 
   Review of Kathy Acker's _Empire of the Senseless_, Subject 2, 1989.
 
-  "Hattiangadi's Langue-ing and Ours," _Social Epistemology_ 3(1),
-  Winter 1989.
+  "Hattiangadi's Langue-ing and Ours," _Social Epistemology_ 3(1), Winter 1989.
 
   "Writing, after Bill Burroughs," _The Decline_ 1, October 1988.
 
 PAPERS
 
-  "Open Source Voting," presented at Open Source Convention (OSCON
-  2006). Portland Oregon, July 26, 2006.
+  "Open Source Voting," presented at Open Source Convention (OSCON 2006).
+  Portland Oregon, July 26, 2006.
 
   "Two Lacans and the Immanent Negativity of Gender," delivered at the
-  conference, Politics and Languages of Contemporary Marxism.  December
-  7, 1996.
+  conference, Politics and Languages of Contemporary Marxism.  December 7,
+  1996.
 
-  Commentary on Richard White's "The Future of Romantic Love," delivered
-  at the Eastern Division American Philosophical Association Conference
-  (Boston).  Society for the Philosophy of Sex and Love session.
-  December, 1995.
+  Commentary on Richard White's "The Future of Romantic Love," delivered at the
+  Eastern Division American Philosophical Association Conference (Boston).
+  Society for the Philosophy of Sex and Love session.  December, 1995.
 
-  "Cyborg Bodies Revisited:  The Poststructuralist Remedy to
-  Postmodernism," delivered at the conference, Marxism and the Politics
-  of Anti-Essentialism.  April 21, 1995.
+  "Cyborg Bodies Revisited:  The Poststructuralist Remedy to Postmodernism,"
+  delivered at the conference, Marxism and the Politics of Anti-Essentialism.
+  April 21, 1995.
 
-  "Sex Wars:  The New Left's AIDS-related Scientism," presented with a
-  panel I proposed entitled "AIDS and the Genealogy of New Modes of
-  Social Regulation," at the Radical Philosophy Association First
-  National Conference, Uniting for Social Change:  Setting a Radical
-  Agenda for the Next Decade.  November 3-6, 1994.
+  "Sex Wars:  The New Left's AIDS-related Scientism," presented with a panel I
+  proposed entitled "AIDS and the Genealogy of New Modes of Social Regulation,"
+  at the Radical Philosophy Association First National Conference, Uniting for
+  Social Change:  Setting a Radical Agenda for the Next Decade.  November 3-6,
+  1994.
 
-  "Transgression, Deviance and Knowledge," delivered for the Society of
-  Women in Philosophy Eastern Division meeting.  April 8, 1994.
+  "Transgression, Deviance and Knowledge," delivered for the Society of Women
+  in Philosophy Eastern Division meeting.  April 8, 1994.
 
   "Three Economies:  Hyper-real, Real, and Hidden," delivered for the
   Association for Economic and Social Analysis.  October 5, 1993.
 
-  "Some Remarks on Racism and Nationalism," delivered at the Marxism in
-  the New World Order Conference, sponsored by Rethinking Marxism,
-  November 12-14, 1992.
+  "Some Remarks on Racism and Nationalism," delivered at the Marxism in the New
+  World Order Conference, sponsored by Rethinking Marxism, November 12-14,
+  1992.
 
-  "Sexual Epistemology:  Everything You Always Pretended to Know about
-  Sex," invited speaker at the University of Massachusetts Forum for
-  Gay, Lesbian, and Bisexual Concerns, September 28, 1992.
+  "Sexual Epistemology:  Everything You Always Pretended to Know about Sex,"
+  invited speaker at the University of Massachusetts Forum for Gay, Lesbian,
+  and Bisexual Concerns, September 28, 1992.
 
-  "Are There Any Lesbians in the Film Henry and June?", delivered at the
-  Fifth Annual Lesbian and Gay Studies Conference, Rutgers University,
-  November 1-3, 1991
+  "Are There Any Lesbians in the Film Henry and June?", delivered at the Fifth
+  Annual Lesbian and Gay Studies Conference, Rutgers University, November 1-3,
+  1991
 
-  "Epistemology," delivered at the 1989 Umass Philosophy Alternative
-  Track Spring Dissertation Workshop, Commentary by Steve Fuller,
-  Virginia Polytechnic University.
+  "Epistemology," delivered at the 1989 Umass Philosophy Alternative Track
+  Spring Dissertation Workshop, Commentary by Steve Fuller, Virginia
+  Polytechnic University.
 
 AWARDS
 
   Puryear Fellowship, University of Massachusetts Philosophy Department,
-  1988-1989 Academic Year.  This fellowship, which is awarded to three
-  incoming Ph.D. candidates of exceptional merit per year, carried a
-  stipend, tuition-waiver and the guarantee of three years subsequent
-  departmental funding.
+  1988-1989 Academic Year.  This fellowship, which is awarded to three incoming
+  Ph.D. candidates of exceptional merit per year, carried a stipend,
+  tuition-waiver and the guarantee of three years subsequent departmental
+  funding.
 
-  Graduate School Fellowship, University of Massachusetts, 1989-1990
-  Academic Year.
+  Graduate School Fellowship, University of Massachusetts, 1989-1990 Academic
+  Year.
 
 ACADEMIC EMPLOYMENT
 
-  Visiting Lecturer, North Adams State College - Summer 1994.
-  Instructor for Contemporary Moral Issues.  Topics included areas of
-  sexual harassment and philosophy of biology/medicine.  Responsible for
-  all aspects of the course.
+  Visiting Lecturer, North Adams State College - Summer 1994.  Instructor for
+  Contemporary Moral Issues.  Topics included areas of sexual harassment and
+  philosophy of biology/medicine.  Responsible for all aspects of the course.
 
   Instructor, University of Massachusetts - Winter Intersession, 1994.
-  Instructor for Medical Ethics (catalog title); course title:  AIDS:
-  Ideology and Social Policy.  Responsible for all aspects of the
-  course.
+  Instructor for Medical Ethics (catalog title); course title:  AIDS: Ideology
+  and Social Policy.  Responsible for all aspects of the course.
 
-  Visiting Assistant Professor, University of Hartford, Hartford College
-  for Women - Fall, 1993.  Instructor for an introductory level course:
-  Knowledge and Reality.  Responsible for all aspects of preparation of
-  curriculum, teaching, grading, tutoring a general-education course.
+  Visiting Assistant Professor, University of Hartford, Hartford College for
+  Women - Fall, 1993.  Instructor for an introductory level course: Knowledge
+  and Reality.  Responsible for all aspects of preparation of curriculum,
+  teaching, grading, tutoring a general-education course.
 
-  Teaching Associate, Department of Philosophy, University of
-  Massachusetts - Spring 1993.  Instructor for upper division philosophy
-  course:  Philosophical Approaches to Politics.  Responsible for all
-  aspects of preparation of curriculum, teaching, grading, tutoring for
-  a class of primarily undergraduate philosophy majors.
+  Teaching Associate, Department of Philosophy, University of Massachusetts -
+  Spring 1993.  Instructor for upper division philosophy course:  Philosophical
+  Approaches to Politics.  Responsible for all aspects of preparation of
+  curriculum, teaching, grading, tutoring for a class of primarily
+  undergraduate philosophy majors.
 
-  Research Assistant, Institute for Advanced Studies in the Humanities
-  (IASH), University of Massachusetts - Fall 1992.  Responsible for
-  various research tasks for IASH, under the supervision of Directors
-  Robert Paul Wolff and Esther Terry:  Primarily researching grant
-  funding for several IASH projects, from both private and public
-  funding sources.
+  Research Assistant, Institute for Advanced Studies in the Humanities (IASH),
+  University of Massachusetts - Fall 1992.  Responsible for various research
+  tasks for IASH, under the supervision of Directors Robert Paul Wolff and
+  Esther Terry:  Primarily researching grant funding for several IASH projects,
+  from both private and public funding sources.
 
-  Teaching Assistant, Department of Philosophy, University of
-  Massachusetts - Fall 1991.  Grader for Introductory Logic, and
-  responsible for tutoring students.  Supervised by Professor Edward
-  Gettier.
+  Teaching Assistant, Department of Philosophy, University of Massachusetts -
+  Fall 1991.  Grader for Introductory Logic, and responsible for tutoring
+  students.  Supervised by Professor Edward Gettier.
 
-  Teaching Assistant, Department of Philosophy, University of
-  Massachusetts - Fall 1991.  Lead sections of Introductory Philosophy.
-  Responsible for grading and instruction of approx.  90 students in
-  three discussion sections.  Supervised by Professor Bruce Aune.
+  Teaching Assistant, Department of Philosophy, University of Massachusetts -
+  Fall 1991.  Lead sections of Introductory Philosophy.  Responsible for
+  grading and instruction of approx.  90 students in three discussion sections.
+  Supervised by Professor Bruce Aune.
 
-  Teaching Assistant, Department of Philosophy, University of
-  Massachusetts - Fall 1990.  Lead sections of Introductory Philosophy.
-  Responsible for grading and instruction of approx.  90 students in
-  three discussion sections.  Supervised by Professor Robert Paul Wolff.
+  Teaching Assistant, Department of Philosophy, University of Massachusetts -
+  Fall 1990.  Lead sections of Introductory Philosophy.  Responsible for
+  grading and instruction of approx.  90 students in three discussion sections.
+  Supervised by Professor Robert Paul Wolff.
