@@ -20,13 +20,27 @@ EDUCATION
 
 PUBLICATIONS
 
+  _The Puzzling Quirks of Regular Expressions_. Lulu.com. ISBN 1312160748
+  (2021).
+
+  _Cleaning Data for Effective Data Science: Doing the Other 80% of
+  the Work_.  Packt Publising. ISBN 978-1-801-07129-1 (2021)
+
+  _Functional Programming in Python_. O'Reilly Media, Inc. ISBN 
+  978-1-491-92855-4 (2015).
+
+  _From __future__ import Python: Picking a Python Versions—A Manifesto_.
+  ISBN 978-1-491-92697-0 (2015).
+
+  _Picking a Python Version: A Manifesto_. ISBN 978-1-491-92696-3 (2015).
+
   Note: Approximately 200 articles by me, about computer programming, 
   computer science, algorithms, and related technical topics, that were 
   published by IBM developerWorks, Intel, O'Reilly and similar publishers 
   from 2000-2009 are indexed at http://gnosis.cx/publish/tech_index.html.
 
   "Cyborg" (entry), in _International Encyclopedia of Communication_.
-  Wiley-Blackwell. ISBN 9781405131995 (2008).
+  Wiley-Blackwell. ISBN 978-1-405-13199-5 (2008).
 
   "Privacy Issues in an Electronic Voting Machine," in Katherine J.
   Strandburg and Daniela Stan Raicu, _Privacy and Technologies of
@@ -38,10 +52,10 @@ PUBLICATIONS
   Audit Trail," _Threat Analyses for Voting System Categories: A
   Workshop on Rating Voting Methods_ (VSRW 06), John Kelsey and Poorvi
   Vora, eds., Washington DC, June 8-9, 2006. Coauthored with Arthur M.
-  Keller, Alan Dechert, Karl Auerbach, David Mertz, and Amy Pearl
+  Keller, Alan Dechert, Karl Auerbach, David Mertz, and Amy Pearl.
 
-  "Review of Steve Martinot's _The Rule of Racialization_, for _Socialism and 
-  Democracy_. 18(1), November 2004
+  "Review of Steve Martinot's _The Rule of Racialization_, for _Socialism 
+  and Democracy_. 18(1), November 2004.
 
   _Text Processing in Python_. Addison-Wesley Professional. ISBN
   0-321-11254-7 (2003).
