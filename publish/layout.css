@@ -43,4 +43,8 @@ a:link {
 }
 a:hover {
     text-decoration: underline;
-  }
+}
+
+dt {
+    font-weight: bold;
+}
