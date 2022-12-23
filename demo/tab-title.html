@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head><title>Initial title</title>
+  <script>
+	const colors = ["Red", "Green", "Blue", "Violet", "Chartreuse"];
+	const animals = ["Cat", "Dog", "Horse", "Snake", "Octopus", "Tardigrade"];
+	let intervalId = setInterval(() => {
+		const c = colors[Math.floor(Math.random() * colors.length)];
+		const a = animals[Math.floor(Math.random() * animals.length)];
+		document.title = `${c} ${a}`;
+	}, 10000);
+  </script>
+  </head>
+  <body><p>
+	Lorem ipsum dolor sit amet, at movet detraxit mediocritatem eam, nam iusto
+	abhorreant ne. Ei pro debet adolescens voluptaria, eu minim scaevola conceptam
+	vel. Vim ea torquatos constituto complectitur, usu eu civibus insolens
+	eleifend. Ex ubique quaerendum his.
+  </p></body>
+</html>
