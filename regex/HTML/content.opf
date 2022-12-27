@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <package version="3.0" xmlns="http://www.idpf.org/2007/opf" unique-identifier="epub-id-1" prefix="ibooks: http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/">
   <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
-    <dc:identifier id="epub-id-1">urn:uuid:23b8e263-c1ec-4a76-be9d-011cf83bc22f</dc:identifier>
+    <dc:identifier id="epub-id-1">urn:uuid:b7c7daa8-3f65-48c3-9f55-aae140dfa8d3</dc:identifier>
     <dc:title id="epub-title-1">The Puzzling Quirks of Regular Expressions</dc:title>
     <dc:date id="epub-date">2021-08-15</dc:date>
     <dc:language>en-US</dc:language>
     <dc:creator id="epub-creator-1">David Mertz, Ph.D.</dc:creator>
     <meta refines="#epub-creator-1" property="role" scheme="marc:relators">aut</meta>
-    <meta property="dcterms:modified">2021-09-10T19:15:55Z</meta>
+    <meta property="dcterms:modified">2022-12-23T03:48:34Z</meta>
   </metadata>
   <manifest>
     <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml" />
