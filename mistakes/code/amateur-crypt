@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+import sys
+import hashlib
+
+
+def amateur_encrypt(plaintext: str, key: str) -> bytes:
+    encoded_text = plaintext.encode()
+    m = hashlib.sha256()
+    m.update(key.encode())
+    # Expand length of key to match the full plaintext
+    hashed_key = m.digest() * (1 + len(encoded_text)//32)
+    ciphertext0 = b"".join(
+        (a ^ b).to_bytes()
+        for a, b in zip(encoded_text, hashed_key))
+    ciphertext = b"".join(
+        (a ^ b).to_bytes()
+        for a, b in zip(reversed(ciphertext0), hashed_key))
+    return ciphertext
+
+
+def amateur_decrypt(ciphertext: bytes, key: str) -> str:
+    m = hashlib.sha256()
+    m.update(key.encode())
+    hashed_key = m.digest() * (1 + len(ciphertext)//32)
+    plainbytes0 = b"".join(
+        (a ^ b).to_bytes()
+        for a, b in zip(ciphertext, hashed_key))
+    plainbytes = b"".join(
+        (a ^ b).to_bytes()
+        for a, b in zip(reversed(plainbytes0), hashed_key))
+    return plainbytes.decode()
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: amateur-crypt [-e|-d] < src > dst", file=sys.stderr)
