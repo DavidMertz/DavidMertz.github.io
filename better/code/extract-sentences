@@ -1,0 +1,44 @@
+#!/usr/bin/env python
+
+import sys
+import os
+from pathlib import Path
+
+if len(sys.argv) != 3:
+    print("Usage: extract-sentence min-len max-len", file=sys.stderr)
+    sys.exit(-1)
+
+# NOTE: I'll probably go with 30 70 for the encryption challenge
+min_len = int(sys.argv[1])
+max_len = int(sys.argv[2])
+
+plaintexts = []
+
+for root, dirs, files in os.walk("src", topdown=False):  # noqa: C901
+    for name in files:
+        if not name.endswith('.adoc'):
+            continue
+        fname = os.path.join(root, name)
+        text = Path(fname).read_text()
+        for para in text.split("\n\n"):
+            for sentence in para.split("."):
+                sentence = " ".join(sentence.split())
+
+                # Crude skipping AsciiDoc stuff that is markup
+                if "::" in sentence:
+                    continue
+                if "=+" in sentence:
+                    continue
+                if ":[" in sentence:
+                    continue
+                if ">>>" in sentence:
+                    continue
+                if "----" in sentence:
+                    continue
+                if "***" in sentence:
+                    continue
+                if sentence.startswith(("=", ":", "[", "]")):
+                    continue
+
+                if min_len <= len(sentence) <= max_len:
+                    print(sentence)
