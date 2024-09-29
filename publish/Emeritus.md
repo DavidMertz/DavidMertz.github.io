@@ -31,8 +31,9 @@ Thank you!
 ![Signature](dqm-sig.png)
 
 David Quintyn Mertz, Ph.D.,
-Former Vice-Chair of the Python Software Foundation
-Founding Chair of Outreach and Education Working Group
-Co-author of Python Code of Conduct
+
+- Former Vice-Chair of the Python Software Foundation
+- Founding Chair of Outreach and Education Working Group
+- Co-author of Python Code of Conduct
 
 15 July 2014
