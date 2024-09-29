@@ -6,9 +6,10 @@ cishet, high-income, developed world, members of the Code of Conduct Working
 Group have expressed open and direct hostility to me, my opposition to ballot
 measure 3, to any open discussion of best governance procedures of the PSF; and
 whereas many of these same people have directly shut down meaningful discussion
-of governance issue on discuss.python.org, and on various Python mailing lists,
-I wish to convert my PSF Fellowship to Emeritus status, effective immediately
-(before I am actually kicked out for polite expression of dissenting opinions).
+of governance issues on discuss.python.org, and on various Python mailing
+lists, I wish to convert my PSF Fellowship to Emeritus status, effective
+immediately (before I am actually kicked out for polite expression of
+dissenting opinions).
 
 This request in no way reflects any intention to become less involved in the
 Python community. I fully intend to continue to write books and articles about
