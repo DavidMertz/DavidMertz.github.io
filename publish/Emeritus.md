@@ -28,7 +28,7 @@ Such is not an appropriate role for me to participate in or endorse.
 
 Thank you!
 
-![Signature](dqm-sig.png)
+![](dqm-sig.png)
 
 David Quintyn Mertz, Ph.D.,
 
