@@ -36,4 +36,4 @@ David Quintyn Mertz, Ph.D.,
 - Founding Chair of Outreach and Education Working Group
 - Co-author of Python Code of Conduct
 
-15 July 2014
+15 July 2024
