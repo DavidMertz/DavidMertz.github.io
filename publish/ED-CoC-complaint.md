@@ -118,7 +118,7 @@ wish to resume my role as co-chair of the Trademarks Work Group at this point.
 
   - Ms. Nicholson posts a public and unambigous apology for her described
     action, and acknowledges that I, at no point, indicated or suggested that
-    I would fail in the fiduciary duty I undertook.
+    I would be remiss in the fiduciary duty I undertook.
   - This publication occurs in a permanent and world-readable forum, such as the
     PSF Blog.
 
