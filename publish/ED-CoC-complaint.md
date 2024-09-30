@@ -45,10 +45,8 @@ Director stated to me personally that they believed it to be so to).
 Shortly after conclusion of the PSF election of 2024, Ms. Nicholson wrote me
 with the below text, after first removing my email from the mailing list
 associated with the Trademarks WG, and probably changing the access credentials
-to administer that list.  She in no way communicated with me about concerns she
-might have prior to these univocal actions, since she apparently had "already
-decided that [she] know[s] what is in my mind, and apparently [doesn't] believe
-what I [had] already said on this topic."
+to administer that list.  She in no way communicated to me any concerns she
+might have have prior to taking these incautious actions.
 
     Delivered-To: david.mertz@gmail.com
     Return-Path: <deb.nicholson@pyfound.org>
