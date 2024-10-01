@@ -48,7 +48,7 @@ Shortly after conclusion of the PSF election of 2024, Ms. Nicholson wrote me
 with the below text, after first removing my email from the mailing list
 associated with the Trademarks WG, and probably changing the access credentials
 to administer that list.  She in no way communicated to me any concerns she
-might have have prior to taking these incautious actions.
+might have had prior to taking these incautious actions.
 
     Delivered-To: david.mertz@gmail.com
     Return-Path: <deb.nicholson@pyfound.org>
