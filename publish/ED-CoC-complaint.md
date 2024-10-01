@@ -40,7 +40,7 @@ of co-chair of the Trademarks Work Group, which role I had performed
 continuously for over 15 years.  I was (or am) nominally co-chair of the
 Scientific Python Work Group, but that committee has been quiescent, and may
 or may not have been dissolved by the Board (no motion supports this, but one
-Director stated to me personally that they believed it to be so to).
+Director stated to me personally that they believed it to be so).
 
 Shortly after conclusion of the PSF election of 2024, Ms. Nicholson wrote me
 with the below text, after first removing my email from the mailing list
