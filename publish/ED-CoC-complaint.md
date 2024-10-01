@@ -1,4 +1,4 @@
-# Fiduciary and CoC violations for the Executive Director of PSF
+# Fiduciary and CoC violations by the Executive Director of PSF
 
 DATE: 2024-10-01
 
