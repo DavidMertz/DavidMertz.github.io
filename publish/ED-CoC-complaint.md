@@ -82,7 +82,7 @@ since, stated in any forum (nor in any private communication), that I would
 fail to follow my own fiduciary duties in enforcing the Foundation trademarks,
 as I had done diligently for more than 15 years.  My intention to do so had not
 changed; if I had felt it would, I would have resigned my position on that Work
-Group; in actuality, I continue to intellectionally and morally support the
+Group. In actuality, I continue to intellectionally and morally support the
 enforcement of Foundation trademarks.
 
 I absolutely *did not*, in fact, resign, but was summarily removed by Ms.
