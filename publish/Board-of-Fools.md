@@ -1,7 +1,8 @@
-My loyal followers will remember my recent complaint to the Python Software
-Foundation Directors and its Code of Conduct Working Group:
+Date: 2024-10-15
 
->  https://gnosis.cx/publish/ED-CoC-complaint
+My loyal followers will remember my [recent complaint to the Python Software
+Foundation](https://gnosis.cx/publish/ED-CoC-complaint) Directors and its Code
+of Conduct Working Group.
 
 I have to say that while I might have been a bit peeved at the people involved
 before, now I'm ONLY disappointed. It's like a clown car, and I have genuine
