@@ -4,10 +4,10 @@ I was honored to have known and loved Michael, at both some of his best and
 worst times.  I knew him in Python context, but also personally, before and
 after the following anecdote.  
 
-I spoke with him regularly over video, over the last year or two, and 
-He and I co-organized (advised technically) PyCon MEA in Dubai, in 2021 and
-2022.  In that first year, I spent much of the trip with him individually,
-including a lovely dinner at the foot of Burj Khalifa.
+I spoke with him regularly over video, over the last year or two, and he and I
+co-organized (advised technically) PyCon MEA in Dubai, in 2021 and 2022.  In 
+that first year, I spent much of the trip with him individually, including a 
+lovely dinner at the foot of Burj Khalifa.
 
 In that conversation, as always, he was strident and opinionated, but had the
 deepest respect for his friends, even in the moments of our disagreement.  His
