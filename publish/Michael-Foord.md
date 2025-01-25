@@ -24,7 +24,7 @@ As my pedagogical effort, I challenged Michael to explain, e.g. Python
 metaclasses in a sentence. His admirable offering was "The class of an object
 is object."
 
-This is indeed true, and once you unpack it indeed explains metaclasses. I
+This is indeed true, and once you unpack it, it indeed explains metaclasses. I
 think the unpacking takes rather more sentences. And also that my
 condensation of Historical Marxism as "History is the history of class
 struggle" had the same quality.
