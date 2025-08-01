@@ -1,0 +1,6 @@
+#!/bin/bash
+while true; do 
+    clear
+    echo "$((($(date +%s) - $(date --date="211102" +%s) )/(60*60*24))) days" | toilet -f future
+    sleep 3600
+done

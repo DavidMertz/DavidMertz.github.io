@@ -1,7 +1,12 @@
 function Config()
     edit ~/.config/nvim/init.lua
+    edit ~/.config/nvim/lua/devicons.lua
+    edit ~/.config/nvim/lua/pyright.lua
+    edit ~/.config/nvim/lua/tabnine-setup.lua
+    edit ~/.config/nvim/lua/treesitter.lua
     edit ~/.config/nvim/keymap.vim
     edit ~/.config/nvim/plugins.vim
+    edit ~/.config/nvim/scripts.vim
 endfunction
 
 " Keyboard mappings
@@ -25,9 +30,6 @@ map ,p :set syntax=python<CR>              " hack when Python syntax not recogni
 map ,r :FzfLua live_grep<CR>
 map ,u :source ~/.config/nvim/init.lua<CR> " update the settings from init.lua
 map ,w :wa!<CR>                            " write all buffers (force)
-" Home row version of escape
-inoremap jk <Esc>
-inoremap ,z <Esc>
 
 " text width for current wrap
 map <C-j> :set tw=

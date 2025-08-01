@@ -1,0 +1,5 @@
+#!/bin/bash
+rsync -av --delete $HOME/.config/nvim $HOME/git/DavidMertz.github.io/config/ --exclude='*pack/*'
+rsync -av --delete $HOME/bin $HOME/git/DavidMertz.github.io/config/
+$HOME/bin/package-installs > $HOME/git/DavidMertz.github.io/config/package-installs.txt
+cp -v $HOME/.bashrc $HOME/git/DavidMertz.github.io/config

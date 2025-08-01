@@ -1,9 +1,0 @@
-[credential]
-	helper = store
-[user]
-	email = mertz@gnosis.cx
-	name = David Mertz, Ph.D.
-[checkout]
-	workers = 0
-[init]
-    defaultBranch = main

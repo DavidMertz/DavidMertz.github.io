@@ -1,0 +1,22 @@
+#!/bin/bash
+if [ "$1" == "" ]; then
+    echo "USAGE: print <filename>"
+    echo
+    echo "  For filetypes recognized on macOS, copy to BossBot and print the file"
+    echo
+    exit
+fi
+
+if ! [ -f "$1" ]; then 
+    echo "File $1 does not exist."
+    exit
+fi
+
+FPATH="$1"
+FNAME=$(basename "$FPATH")
+CLEAN=$(printf %q "$FNAME")
+OPTIONS="-o media=letter -o sides=two-sided-long-edge -o print-quality=5"
+REMOTE='bossbot@70.105.237.83'
+scp -p443 "$FPATH" "$REMOTE:/Users/bossbot/printjobs/"
+ssh -p443 $REMOTE "lpr $OPTIONS /Users/bossbot/printjobs/$CLEAN"
+ssh -p443 $REMOTE "rm /Users/bossbot/printjobs/$CLEAN"

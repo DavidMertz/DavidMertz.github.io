@@ -28,7 +28,7 @@ export PATH="$PATH:$HOME/bin"
 export PATH="$PATH:$HOME/.local/bin/env"
 
 # Neovim
-export PATH="$PATH:/opt/nvim-linux64/bin"
+export PATH="$PATH:/opt/nvim"
 
 # Rust
 export PATH="$PATH:$HOME/.cargo/bin"
@@ -56,20 +56,24 @@ export UV_CACHE_DIR="/media/dmertz/DQM-Backup/uv-cache"
 # Use like so: `sleep 10; alert`
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 alias clear-scrollback="printf '\033[3J'"
-alias clip='kitten clipboard'
+alias clip='copyq add -'
 alias cloc='cloc --exclude-list-file=.clocignore'
 alias egrep='egrep --color=auto'
 alias fd='fdfind'
 alias fgrep='fgrep --color=auto'
 alias g='grep -P --color=always'
 alias grep='grep --color=auto'
-alias ll='ls -laG --color=always'
-alias ls='ls --color=auto'
+alias l='exa'
+alias lh='exa -laGh --time-style=long-iso --no-user'
+alias ll='exa -laB'
 alias nv='nvim'
+alias nvs='nv -S'
 alias public-ip='dig +short myip.opendns.com @resolver1.opendns.com'
 alias py='ipython --classic'
 alias pytest='uv run pytest -W ignore'
 alias speedtest='speedtest --secure'
+alias tree-bin='/usr/bin/tree'
+alias tree='exa -T -L2'
 alias v='xdg-open'
 alias venv='. .venv/bin/activate; export PYTHONPATH=$(pwd)'
 alias vim='NO_AI=Y nvim'
@@ -78,16 +82,16 @@ alias y=yazi
 # Interactive DB connections
 alias adacat='catalist-rds-ada'
 alias postcat='catalist-rds-postgres'
-alias redcat='catalist-redshift-sql'
+alias redcat='ssh ubuntu@52.39.136.106'
 
 # SSH shortcuts
-alias ada-prod='kitten ssh ubuntu@instance.ada.seiu.org'
-alias ada-test='kitten ssh ubuntu@instance.test.ada.dsa.seiu.org'
-alias ada-staging='kitten ssh ubuntu@instance.staging.ada.dsa.seiu.org'
-alias ada-runner='kitten ssh ubuntu@ec2-35-166-221-187.us-west-2.compute.amazonaws.com'
-alias dsa-runner='kitten ssh ubuntu@ec2-52-26-78-240.us-west-2.compute.amazonaws.com'
-alias bot-ui='kitten ssh ec2-user@44.239.233.71'
-alias bot-infer='kitten ssh -p443 bossbot@70.105.237.83'
+alias ada-prod='ssh ubuntu@instance.ada.seiu.org'
+alias ada-test='ssh ubuntu@instance.test.ada.dsa.seiu.org'
+alias ada-staging='ssh ubuntu@instance.staging.ada.dsa.seiu.org'
+alias ada-runner='ssh ubuntu@ec2-35-166-221-187.us-west-2.compute.amazonaws.com'
+alias dsa-runner='ssh ubuntu@ec2-52-26-78-240.us-west-2.compute.amazonaws.com'
+alias bot-ui='ssh ec2-user@44.239.233.71'
+alias bot-infer='ssh -p443 bossbot@70.105.237.83'
 export ContractBot="70.105.237.83"
 
 # -------------------- General functions/commands -----------------------------
@@ -103,9 +107,9 @@ view() {
   elif [[ $1 == *.tsv ]]; then
     csvlens -t "$1"
   elif [[ $1 == *.png ]]; then
-    kitten icat "$1"
+    xdg-open "$1"
   elif [[ $1 == *.jpg ]]; then
-    kitten icat "$1"
+    xdg-open "$1"
   elif [[ $1 == *.html ]]; then
     lynx "$1"
   elif [[ $1 == *.htm ]]; then
@@ -115,9 +119,9 @@ view() {
   elif [[ $1 == *.xls ]]; then
     in2csv $1 | csvlens --
   elif [[ $1 == *.png ]]; then
-    kitten icat "$1"
+    xdg-open "$1"
   elif [[ $1 == *.jpg ]]; then
-    kitten icat "$1"
+    xdg-open icat "$1"
   else
     batcat "$@"
   fi
@@ -146,15 +150,6 @@ jwth() {
 }
 
 # -------------------- SEIU functions/commands --------------------------------
-catalist-redshift-sql() {
-    _USER=${REDSHIFT_USER:-dmertz}
-    _PORT=${REDSHIFT_PORT:-5439}
-    _HOST=${REDSHIFT_HOST:-vananalytics.seiu.org}
-    _DB=${REDSHIFT_DATABASE:-seiu_dsa}
-    _PW=${REDSHIFT_PASSWORD:-$(pass dmertz:vananalytics.seiu.org)}
-    _OPT='--search_path=catalist_periodic_install'
-    PGOPTIONS=$_OPT PGPASSWORD=$_PW psql -h $_HOST -p $_PORT -d $_DB -U $_USER $@
-}
 catalist-rds-ada() {
     _USER=${ADACAT_USER:-ada}
     _PORT=${ADACAT_PORT:-5432}

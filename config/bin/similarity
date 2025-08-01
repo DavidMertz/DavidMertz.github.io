@@ -1,0 +1,17 @@
+#!/usr/bin/env -S uvx --with editdistpy python@3.13
+"Quick measure of string similarity"
+
+from editdistpy import damerau_osa  # type: ignore
+from sys import argv, maxsize
+
+if len(argv) != 3:
+    print("Please specify two strings to compare")
+else:
+    A, B = map(str.lower, argv[1:])
+    damlev = damerau_osa.distance(A, B, max_distance=maxsize)
+    simrat = 1 - 1.*damlev/max(len(A),len(B))
+    print(f"Damerau-Levenshtein: {damlev:,}")
+    print(f"Similarity ratio: {simrat:0.2f}")
+
+
+
