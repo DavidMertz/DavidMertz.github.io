@@ -266,14 +266,3 @@
       profile = Analytics
       uuid = 7deebed7-866c-448e-8e1a-66c1d034ab15
 [plugins]
-  [[HostWatch]]
-    # Matches PS1. The first regex group is treated as the hostname and used to match the 
-    # profile name or the profile_patterns.
-    # patterns = [^@]+@([-\d\w]+)
-    patterns = (ubuntu@ip-10-0-.*):SSH
-    
-    # Matches a hostname regex to a Terminator profile, format: <pattern>:<profile>,...
-    # profile_patterns = ([\w\d]+-mysql-prd-\d+|swift-prod-\d+):prod
-    profile_patterns = (ubuntu@ip-10-0-.*):SSH
-
-    failback_profile = greenscreen                                           
