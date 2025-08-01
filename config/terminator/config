@@ -1,0 +1,279 @@
+[global_config]
+  focus = system
+  window_state = maximise
+  borderless = True
+  tab_position = hidden
+  broadcast_default = off
+  scroll_tabbar = True
+  homogeneous_tabbar = False
+  title_transmit_bg_color = "#613583"
+  title_receive_fg_color = "#8ff0a4"
+  title_receive_bg_color = "#000000"
+  title_inactive_fg_color = "#f9f06b"
+  title_inactive_bg_color = "#000000"
+  inactive_color_offset = 0.9061032863849765
+  suppress_multiple_term_dialog = True
+  always_split_with_profile = True
+  title_use_system_font = False
+  title_font = Roboto Slab 11
+  putty_paste_style_source_clipboard = True
+[keybindings]
+  next_tab = <Primary>Right
+  prev_tab = <Primary>Left
+  insert_number = ""
+  insert_padded = ""
+  preferences = F2
+[profiles]
+  [[default]]
+    visible_bell = True
+    cursor_color = "#aaaaaa"
+    font = JetBrains Mono 15
+    foreground_color = "#ffffff"
+    show_titlebar = False
+    scrollbar_position = hidden
+    scrollback_infinite = True
+    palette = "#000000:#aa0000:#00aa00:#aa5500:#3584e4:#c061cb:#00aaaa:#aaaaaa:#555555:#ff5555:#55ff55:#ffff55:#99c1f1:#ff55ff:#55ffff:#ffffff"
+    use_system_font = False
+    bold_is_bright = True
+  [[Greenscreen]]
+    visible_bell = True
+    cursor_color = "#aaaaaa"
+    font = JetBrains Mono Light 15
+    foreground_color = "#82f83a"
+    show_titlebar = False
+    scrollbar_position = hidden
+    scrollback_infinite = True
+    palette = "#000000:#aa0000:#00aa00:#aa5500:#3584e4:#aa00aa:#00aaaa:#aaaaaa:#555555:#ff5555:#55ff55:#ffff55:#5555ff:#ff55ff:#55ffff:#ffffff"
+    use_system_font = False
+    bold_is_bright = True
+  [[SSH]]
+    visible_bell = True
+    background_color = "#001111"
+    cursor_color = "#aaaaaa"
+    font = FreeMono 18
+    foreground_color = "#f9f06b"
+    scrollbar_position = hidden
+    scrollback_infinite = True
+    use_system_font = False
+    bold_is_bright = True
+    copy_on_selection = True
+  [[Analytics]]
+    visible_bell = True
+    background_color = "#010411"
+    cursor_color = "#aaaaaa"
+    font = JetBrains Mono 15
+    foreground_color = "#f8e45c"
+    show_titlebar = False
+    scrollbar_position = hidden
+    use_system_font = False
+    bold_is_bright = True
+  [[System Setup]]
+    background_color = "#101010"
+    cursor_color = "#aaaaaa"
+    font = JetBrains Mono 15
+    foreground_color = "#eeecc0"
+    show_titlebar = False
+    scrollbar_position = hidden
+    use_system_font = False
+    bold_is_bright = True
+[layouts]
+  [[default]]
+    [[[child0]]]
+      type = Window
+      parent = ""
+      order = 0
+      position = 0:0
+      maximised = False
+      fullscreen = True
+      size = 3840, 2160
+      title = " ~/SEIU/ada-unified (dmertz)"
+      last_active_window = True
+    [[[child1]]]
+      type = Notebook
+      parent = child0
+      order = 0
+      labels = None, None
+      last_active_term = 5bc67617-fc0b-4b81-969e-71da14aca7b6, 0f966fc4-2232-44cd-bd22-8b9b3761bfd1
+      active_page = 1
+    [[[child2]]]
+      type = HPaned
+      parent = child1
+      order = 0
+      position = 1919
+      ratio = 0.5006522306287503
+    [[[terminal3]]]
+      type = Terminal
+      parent = child2
+      order = 0
+      group = Ada Development
+      profile = Greenscreen
+      uuid = 5bc67617-fc0b-4b81-969e-71da14aca7b6
+    [[[child4]]]
+      type = VPaned
+      parent = child2
+      order = 1
+      position = 1078
+      ratio = 0.5006967022758941
+    [[[terminal5]]]
+      type = Terminal
+      parent = child4
+      order = 0
+      group = Ada Development
+      profile = Greenscreen
+      uuid = 5a9526ec-05d0-432d-922f-69bb17b5f585
+    [[[terminal6]]]
+      type = Terminal
+      parent = child4
+      order = 1
+      group = Ada Development
+      profile = Greenscreen
+      uuid = 3278e7e3-5d39-4cf6-9fe5-31b26cb0f160
+    [[[child7]]]
+      type = HPaned
+      parent = child1
+      order = 1
+      position = 1916
+      ratio = 0.4998695538742499
+    [[[terminal8]]]
+      type = Terminal
+      parent = child7
+      order = 0
+      group = System Setup
+      profile = Greenscreen
+      uuid = 1928bd9d-6cce-4efd-af91-403a445a0588
+    [[[terminal9]]]
+      type = Terminal
+      parent = child7
+      order = 1
+      group = System Setup
+      profile = Greenscreen
+      uuid = 0f966fc4-2232-44cd-bd22-8b9b3761bfd1
+  [[Development]]
+    [[[child0]]]
+      type = Window
+      parent = ""
+      order = 0
+      position = 0:0
+      maximised = False
+      fullscreen = True
+      size = 3840, 2160
+      title = " ~/SEIU/ada-unified (dmertz)"
+      last_active_window = True
+    [[[child1]]]
+      type = Notebook
+      parent = child0
+      order = 0
+      labels = None, None, None
+      last_active_term = 5a9526ec-05d0-432d-922f-69bb17b5f585, 4a4c0992-ac29-4912-ab1d-6bfd158b92b2, 7deebed7-866c-448e-8e1a-66c1d034ab15
+      active_page = 2
+    [[[child2]]]
+      type = HPaned
+      parent = child1
+      order = 0
+      position = 1917
+      ratio = 0.5001304461257501
+    [[[terminal3]]]
+      type = Terminal
+      parent = child2
+      order = 0
+      group = Ada Development
+      profile = Greenscreen
+      uuid = 5bc67617-fc0b-4b81-969e-71da14aca7b6
+    [[[child4]]]
+      type = VPaned
+      parent = child2
+      order = 1
+      position = 1349
+      ratio = 0.6265675801207617
+    [[[terminal5]]]
+      type = Terminal
+      parent = child4
+      order = 0
+      group = Ada Development
+      profile = Greenscreen
+      uuid = 5a9526ec-05d0-432d-922f-69bb17b5f585
+    [[[terminal6]]]
+      type = Terminal
+      parent = child4
+      order = 1
+      group = Ada Development
+      profile = Greenscreen
+      uuid = 3278e7e3-5d39-4cf6-9fe5-31b26cb0f160
+    [[[child7]]]
+      type = HPaned
+      parent = child1
+      order = 1
+      position = 1915
+      ratio = 0.4996086616227498
+    [[[terminal8]]]
+      type = Terminal
+      parent = child7
+      order = 0
+      group = System Setup
+      profile = System Setup
+      uuid = 1928bd9d-6cce-4efd-af91-403a445a0588
+    [[[child9]]]
+      type = VPaned
+      parent = child7
+      order = 1
+      position = 600
+      ratio = 0.2786809103576405
+    [[[terminal10]]]
+      type = Terminal
+      parent = child9
+      order = 0
+      group = System Setup
+      profile = System Setup
+      uuid = 0f966fc4-2232-44cd-bd22-8b9b3761bfd1
+    [[[terminal11]]]
+      type = Terminal
+      parent = child9
+      order = 1
+      group = System Setup
+      profile = System Setup
+      uuid = 4a4c0992-ac29-4912-ab1d-6bfd158b92b2
+    [[[child12]]]
+      type = HPaned
+      parent = child1
+      order = 2
+      position = 1915
+      ratio = 0.4996086616227498
+    [[[terminal13]]]
+      type = Terminal
+      parent = child12
+      order = 0
+      group = Analytics
+      profile = Analytics
+      uuid = 89510b0b-d533-4fc7-b024-46045f74c3d2
+    [[[child14]]]
+      type = VPaned
+      parent = child12
+      order = 1
+      position = 1450
+      ratio = 0.6734788666976312
+    [[[terminal15]]]
+      type = Terminal
+      parent = child14
+      order = 0
+      group = Analytics
+      profile = Analytics
+      uuid = 5848ba81-b0b0-480c-b78f-d90a9eab4ed4
+    [[[terminal16]]]
+      type = Terminal
+      parent = child14
+      order = 1
+      group = Analytics
+      profile = Analytics
+      uuid = 7deebed7-866c-448e-8e1a-66c1d034ab15
+[plugins]
+  [[HostWatch]]
+    # Matches PS1. The first regex group is treated as the hostname and used to match the 
+    # profile name or the profile_patterns.
+    # patterns = [^@]+@([-\d\w]+)
+    patterns = (ubuntu@ip-10-0-.*):SSH
+    
+    # Matches a hostname regex to a Terminator profile, format: <pattern>:<profile>,...
+    # profile_patterns = ([\w\d]+-mysql-prd-\d+|swift-prod-\d+):prod
+    profile_patterns = (ubuntu@ip-10-0-.*):SSH
+
+    failback_profile = greenscreen                                           
