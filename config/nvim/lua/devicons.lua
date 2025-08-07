@@ -36,39 +36,39 @@ require("nvim-web-devicons").setup({
 	-- same as `override` but specifically for overrides by extension
 	-- takes effect when `strict` is true
 	override_by_extension = {
-        ["csv"] = {
-            icon = "📈",
-            name = "CSV",
-        },
-        ["db"] = {
-            icon = "Σ",
-            name = "Sqlite3",
-        },
-        ["html"] = {
-            icon = "🕸",
-            name = "HTML",
-        },
-        ["js"] = {
-            icon = "☕",
-            name = "JavaScript",
-        },
+		["csv"] = {
+			icon = "📈",
+			name = "CSV",
+		},
+		["db"] = {
+			icon = "Σ",
+			name = "Sqlite3",
+		},
+		["html"] = {
+			icon = "🕸",
+			name = "HTML",
+		},
+		["js"] = {
+			icon = "☕",
+			name = "JavaScript",
+		},
 		["json"] = {
 			icon = "Ｊ",
 			name = "JSON",
 		},
-        ["lock"] = {
-            icon = "🔏",
-            name = "Lock",
-        },
+		["lock"] = {
+			icon = "🔏",
+			name = "Lock",
+		},
 		["log"] = {
 			icon = "㏒",
 			color = "#81e043",
 			name = "Log",
 		},
-        ["lua"] = {
-            icon = "𝓵",
-            name = "Lua",
-        },
+		["lua"] = {
+			icon = "𝓵",
+			name = "Lua",
+		},
 		["md"] = {
 			icon = "Ⓜ",
 			name = "Markdown",
@@ -81,28 +81,28 @@ require("nvim-web-devicons").setup({
 			icon = "⏵",
 			name = "Shell",
 		},
-        ["sqlite"] = {
-            icon = "Σ",
-            name = "Sqlite3",
-        },
+		["sqlite"] = {
+			icon = "Σ",
+			name = "Sqlite3",
+		},
 		["toml"] = {
 			icon = "🅃",
 			color = "#428850",
 			cterm_color = "65",
 			name = "TOML",
 		},
-        ["text"] = {
-            icon = "📝",
-            name = "Text",
-        },
-        ["txt"] = {
-            icon = "📝",
-            name = "Text",
-        },
-        ["vim"] = {
-            icon = "㏞",
-            name = "Vim",
-        },
+		["text"] = {
+			icon = "📝",
+			name = "Text",
+		},
+		["txt"] = {
+			icon = "📝",
+			name = "Text",
+		},
+		["vim"] = {
+			icon = "㏞",
+			name = "Vim",
+		},
 		["yaml"] = {
 			icon = "Ｙ",
 			name = "YAML",

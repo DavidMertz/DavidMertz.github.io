@@ -1,6 +1,9 @@
 local vim = vim
 local Plug = vim.fn["plug#"]
 
+-- Set the Leader key to comma
+vim.g.mapleader = ","
+
 -- Load keymaps from convenient (and prior) vim format
 vim.cmd("source /home/dmertz/.config/nvim/keymap.vim")
 
@@ -26,3 +29,8 @@ require("devicons")
 
 -- Share clipboard with system
 vim.api.nvim_set_option("clipboard", "unnamed")
+
+-- Visual chrome
+vim.opt.winborder = "rounded"
+
+

@@ -1,10 +1,10 @@
 function Config()
     edit ~/.config/nvim/init.lua
+    edit ~/.config/nvim/keymap.vim
     edit ~/.config/nvim/lua/devicons.lua
     edit ~/.config/nvim/lua/pyright.lua
     edit ~/.config/nvim/lua/tabnine-setup.lua
     edit ~/.config/nvim/lua/treesitter.lua
-    edit ~/.config/nvim/keymap.vim
     edit ~/.config/nvim/plugins.vim
     edit ~/.config/nvim/scripts.vim
 endfunction
@@ -12,24 +12,27 @@ endfunction
 " Keyboard mappings
 " allow unshifted colon
 nmap ; :
-map ,b :FzfLua buffers<CR>
-map ,c +y                                  " copy to system clipboard
-map ,e :call Config()<CR>                  " edit initialization files
-map ,f :FzfLua files<CR>
+map <Leader>b :FzfLua buffers<CR>
+map <Leader>c +y                                  " copy to system clipboard
+map <Leader>e :call Config()<CR>                  " edit initialization files
+map <Leader>f :FzfLua files<CR>
 " Shortcut to force treesitter folding
-map ,F :set foldmethod=expr<CR>:set foldexpr=nvim_treesitter#foldexpr()<CR>
-map ,g :FzfLua git_blame<CR>
-map ,i :set invlist<CR>                    " toggle visible tabs
-map ,j gqip                                " format current paragraph
-map ,k :!ruff format %<CR>:e<CR>           " format current Python file
-map ,K :!prettier -w %<CR>:e<CR>           " format current JS file
-map ,l :set invnumber<CR>                  " toggle line number
-map ,n :bn<CR>                             " next buffer
-map ,N :bp<CR>                             " previous buffer
-map ,p :set syntax=python<CR>              " hack when Python syntax not recognized
-map ,r :FzfLua live_grep<CR>
-map ,u :source ~/.config/nvim/init.lua<CR> " update the settings from init.lua
-map ,w :wa!<CR>                            " write all buffers (force)
+map <Leader>F :set foldmethod=expr<CR>:set foldexpr=nvim_treesitter#foldexpr()<CR>
+map <Leader>g :FzfLua git_blame<CR>
+" Warning popup
+map <Leader>i <C-w>d
+map <F10> <C-w>d
+map <Leader>I :set invlist<CR>                    " toggle visible tabs
+map <Leader>j gqip                                " format current paragraph
+map <Leader>k :!ruff format %<CR>:e<CR>           " format current Python file
+map <Leader>K :!prettier -w %<CR>:e<CR>           " format current JS file
+map <Leader>l :set invnumber<CR>                  " toggle line number
+map <Leader>n :bn<CR>                             " next buffer
+map <Leader>N :bp<CR>                             " previous buffer
+map <Leader>p :set syntax=python<CR>              " hack when Python syntax not recognized
+map <Leader>r :FzfLua live_grep<CR>
+map <Leader>u :source ~/.config/nvim/init.lua<CR> " update the settings from init.lua
+map <Leader>w :wa!<CR>                            " write all buffers (force)
 
 " text width for current wrap
 map <C-j> :set tw=

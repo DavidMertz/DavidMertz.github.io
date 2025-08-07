@@ -22,7 +22,7 @@ bind '"\e[24~":"rofi -show\r"'
 
 # -------------------- Configure paths ----------------------------------------
 # My personal scripts
-export PATH="$PATH:$HOME/bin"
+export PATH="$HOME/bin:$PATH"
 
 # uv (and possibly other binaries)
 export PATH="$PATH:$HOME/.local/bin/env"
@@ -75,6 +75,7 @@ alias speedtest='speedtest --secure'
 alias tree-bin='/usr/bin/tree'
 alias tree='exa -T -L2'
 alias v='xdg-open'
+alias view='$HOME/bin/view'
 alias venv='. .venv/bin/activate; export PYTHONPATH=$(pwd)'
 alias vim='NO_AI=Y nvim'
 alias y=yazi
@@ -95,47 +96,6 @@ alias bot-infer='ssh -p443 bossbot@70.105.237.83'
 export ContractBot="70.105.237.83"
 
 # -------------------- General functions/commands -----------------------------
-view() {
-  if [[ $1 == *.md ]]; then
-    glow -p "$1"
-  elif [[ $1 == *.pdf ]]; then
-    fancy-cat "$1"
-  elif [[ $1 == *.zip ]]; then
-    unzip -l "$1" | command less
-  elif [[ $1 == *.csv ]]; then
-    csvlens "$1"
-  elif [[ $1 == *.tsv ]]; then
-    csvlens -t "$1"
-  elif [[ $1 == *.png ]]; then
-    xdg-open "$1"
-  elif [[ $1 == *.jpg ]]; then
-    xdg-open "$1"
-  elif [[ $1 == *.html ]]; then
-    lynx "$1"
-  elif [[ $1 == *.htm ]]; then
-    lynx "$1"
-  elif [[ $1 == *.xlsx ]]; then
-    in2csv $1 | csvlens --
-  elif [[ $1 == *.xls ]]; then
-    in2csv $1 | csvlens --
-  elif [[ $1 == *.png ]]; then
-    xdg-open "$1"
-  elif [[ $1 == *.jpg ]]; then
-    xdg-open icat "$1"
-  else
-    batcat "$@"
-  fi
-}
-goto () {
-    start=$PWD
-    cd $HOME
-    dest=$(fd -L | fzy -q "$1")
-    if [[ -n "$dest" ]]; then
-        cd "$(dirname $dest)"
-    else
-        cd "$start"
-    fi
-}
 gd() {
     git diff "$@" | diff-so-fancy | less -r
 }
@@ -211,6 +171,7 @@ export FZF_DEFAULT_COMMAND='ag -l --hidden -g ""'
 [ -s "$HOME/.config/glow.sh" ] && source "$HOME/.config/glow.sh"
 
 # Miscellaneous shell enhancements
+# TODO: look at `source /usr/share/doc/fzf/examples/key-bindings.bash`
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
 # Prompt always starts on new line
@@ -226,6 +187,7 @@ get_column() {
 }
 __configure_prompt() { if [ "$(get_column)" != 0 ]; then echo; fi }
 PROMPT_COMMAND="__configure_prompt;$PROMPT_COMMAND"
+export PROMPT_COMMAND=$(ruby -e "print ARGV[0].split(';').uniq.join(';')" $PROMPT_COMMAND)
 
 # -------------------- Remove duplicate path entries --------------------------
 #export PATH=$(ruby -e "print ARGV[0].split(':').uniq.join(':')" $PATH)
