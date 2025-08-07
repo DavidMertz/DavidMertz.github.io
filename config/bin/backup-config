@@ -8,7 +8,8 @@ $HOME/bin/package-installs > $HOME/git/DavidMertz.github.io/config/package-insta
 HERE=$PWD
 cd $HOME/git/DavidMertz.github.io
 git switch main
-/usr/bin/tree -H config config > config/index.html
+cd config
+/usr/bin/tree -H . . > index.html
 git add -A
 git commit -m "Automated config sync $(date)"
 git push
