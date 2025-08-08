@@ -1,0 +1,16 @@
+#!/bin/bash
+rsync -av --delete $HOME/.config/nvim $HOME/git/DavidMertz.github.io/config/ --exclude='*pack/*'
+rsync -av --delete $HOME/.config/terminator $HOME/git/DavidMertz.github.io/config/
+rsync -av --delete $HOME/bin $HOME/git/DavidMertz.github.io/config/
+cp -v $HOME/.bashrc $HOME/git/DavidMertz.github.io/config
+$HOME/bin/package-installs > $HOME/git/DavidMertz.github.io/config/package-installs.txt
+
+HERE=$PWD
+cd $HOME/git/DavidMertz.github.io
+git switch main
+cd config
+/usr/bin/tree -H . . > index.html
+git add -A
+git commit -m "Automated config sync $(date)"
+git push
+cd $HERE

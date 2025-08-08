@@ -83,7 +83,7 @@ pinta
 Brave                                  1.81.131
 Audacity                               3.7.5
 Codecs                                 
-Chromium Web Browser                   139.0.7258.66
+Chromium Web Browser                   138.0.7204.183
 Codecs                                 
 Contour Terminal Emulator              0.4.3
 Freedesktop Platform                   freedesktop-sdk-24.08.22

@@ -1,0 +1,25 @@
+Tabs
+  - SEIU Development
+    - Layout tall
+    - Left: full height
+      - cd ~/git/SEIU/ada-etl
+    - Right: 25% / 75%
+      - cd ~/git/SEIU/ada-etl
+      - cd ~/git/SEIU/ada-etl
+  - System Setup
+    - Layout tall (side-by-side)
+  - Various Servers
+    - Layout tall
+    - Left: full height
+    - Right: 5 stacked
+      - cd ~/git/SEIU/ada-etl/
+        mkdir -p /tmp/ada
+        export ADA_PSEUDO_S3=/tmp/ada
+        uv run uvicorn app.main:app --reload
+      - cd ~/git/SEIU/ada-fe
+        npm install
+        npm start
+      - tclock
+      - cd ~/.getmail/ && ./keep-getting
+      - htop
+

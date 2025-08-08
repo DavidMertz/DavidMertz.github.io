@@ -5,7 +5,6 @@ Plug 'tpope/vim-sensible'
 
 " fzf-lua and some icons
 Plug 'ibhagwan/fzf-lua', {'branch': 'main'}
-Plug 'nvim-tree/nvim-web-devicons'
 
 " Tabnine AI code assistant
 Plug 'codota/tabnine-nvim', { 'do': './dl_binaries.sh' }

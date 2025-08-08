@@ -1,0 +1,38 @@
+#!/usr/bin/env -S uvx python@3.13
+"""Analyze one of more text-like files to identify hapax legomena.
+
+A hapax legomenon is a word that occurs only once in a document or corpus.
+
+Formats that should work fine as plain filenames include plain text, HTML,
+Markdown, AsciiDoc, and XML.
+
+Using a slight bit of shell magic, non-text files can be converted to text
+within the command line.  For example:
+
+    $ hapax <(docx2txt foo.docx) \\
+            <(lynx -dump bar.html) \\
+            <(pdftotext -layout baz.pdf -)
+"""
+
+import re
+import sys
+from collections import Counter
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print(f"Usage: {__file__} <filenames>")
+        print()
+        print(__doc__)
+        sys.exit(1)
+
+    counts = Counter()
+
+    for filename in sys.argv[1:]:
+        with open(filename) as f:
+            lower = f.read().lower()
+            nodigits = re.sub(r"[_\d]+", "", lower)
+            cleaned = re.sub(r"[^\w]", " ", nodigits)
+            counts.update(cleaned.split())
+
+    hapax = sorted(word for word, count in counts.items() if count == 1)
+    print("\n".join(hapax))

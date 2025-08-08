@@ -1,0 +1,40 @@
+#!/usr/bin/env -S uvx python@3.13
+from os.path import basename
+import sys
+from unicodedata import normalize
+
+
+def turkish_delight(s1, s2):
+    s1 = normalize("NFKC", s1)
+    s2 = normalize("NFKC", s2)
+    s1 = (
+        s1.replace("İ", "<dotted>")
+        .replace("i", "<dotted>")
+        .replace("I", "<nodot>")
+        .replace("ı", "<nodot>")
+    )
+    s2 = (
+        s2.replace("İ", "<dotted>")
+        .replace("i", "<dotted>")
+        .replace("I", "<nodot>")
+        .replace("ı", "<nodot>")
+    )
+    return s1.casefold() == s2.casefold()
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        prog = basename(__file__)
+        print(f"Usage: {prog} <string1> <string2>")
+        print()
+        print("Case-insensitive Turkish comparison (NFKC and NVKD are wrong!)")
+        print()
+        print(f"  {prog} Istanbul istanbul # --> False")
+        print(f"  {prog} İstanbul istanbul # --> True")
+        print(f"  {prog} İstanbul Istanbul # --> False")
+        print(f"  {prog} istanbul ıstanbul # --> False")
+        print(f"  {prog} Istanbul ıstanbul # --> True")
+        sys.exit(1)
+    string1 = sys.argv[1]
+    string2 = sys.argv[2]
+    print(turkish_delight(string1, string2))

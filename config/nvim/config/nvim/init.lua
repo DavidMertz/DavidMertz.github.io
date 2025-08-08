@@ -18,14 +18,19 @@ require("pyright")
 
 -- Tabnine configuration
 if os.getenv("NO_AI") == nil then
-	require("tabnine-setup")
+    require("tabnine-setup")
 end
 
 -- Treesitter configuration
 require("treesitter")
+
+-- Update some devicons
+require("devicons")
 
 -- Share clipboard with system
 vim.api.nvim_set_option("clipboard", "unnamed")
 
 -- Visual chrome
 vim.opt.winborder = "rounded"
+
+

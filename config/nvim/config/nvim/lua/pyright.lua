@@ -1,4 +1,4 @@
--- Require the language server fo, Pyright
+-- Require the language server for Pyright
 local pyright_opts = {
 	single_file_support = false,
 	settings = {
