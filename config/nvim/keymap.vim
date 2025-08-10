@@ -48,33 +48,5 @@ digraph _l 8970
 digraph _r 8971
 
 " Some elements of appearance and behavior to someday implement in Lua
-set autoindent     " always set autoindenting on
-set autowrite      " auto saves changes when quitting and swiching buffer
-set cindent        " cindent
-set cursorline
-set expandtab      " tabs are converted to spaces, use only when required
-set foldmethod=indent
-set hlsearch        " highlight searches
-set incsearch       " do incremental searching
 set listchars=tab:\ \ ·,nbsp:¦,eol:↲,space:␣
-set modeline        " document can set vim mode
-set modelines=3     " number lines checked for modelines
-set mouse=a        " enable mouse movement
-set nobackup        " do not keep a backup file
-set noignorecase    " don't ignore case
-set nolinebreak     " Visual break at window width not tw setting
-set nonumber        " do not show line numbers
-set nostartofline   " don't jump to first character when paging
-set ruler           " show the cursor position all the time
-set scrolloff=3     " keep 3 lines when scrolling
-set shiftwidth=4    " numbers of spaces to (auto)indent
-set shortmess=atI   " Abbreviate messages
-set showbreak=›››\  " Continuation line indicator
-set showcmd         " display incomplete commands
-set smartindent    " smart indent
-set sm             " show matching braces
 set statusline=[%n:%Y]\ %f%m%r%h%w%=(%v:0x%02.2B)\ %l/%L
-set synmaxcol=0     " highlight very long lines
-set tabstop=4       " numbers of spaces of tab character
-set visualbell      " turn on visual bell
-set whichwrap=b,s,h,l,<,>,[,]   " move freely between files
