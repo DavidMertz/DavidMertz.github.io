@@ -1,0 +1,72 @@
+#!/usr/bin/env -S uvx --with pyyaml python@3.13
+from os.path import dirname
+from pathlib import Path
+import yaml
+
+INFO = {
+    "Artist": None,
+    "Culture": None,
+    "Description": None,
+    "Height (frame)": None,
+    "Height (work)": None,
+    "Sequence": None,
+    "Source": None,
+    "Title": None,
+    "Type": None,
+    "Width (frame)": None,
+    "Width (work)": None,
+    "Year": None,
+}
+
+header = """
+"""
+
+
+def htmlify(data):
+    print(
+        "<html>"
+        "<head>"
+        "<title>Artwork Collection: Constant/Mertz/Sushinsky</title>"
+        "</head>"
+    )
+    print("<body><dl>")
+    for work, info in data.items():
+        print(f"<h1>{work}</h1>")
+        print("<dl compact>")
+        for key, value in info.items():
+            if key != "images":
+                print(f"  <dt>{key}</dt><dd>{value}</dd>")
+            else:
+                for n, image in enumerate(info["images"]):
+                    print(f"  <dt>Image {n+1}</dt>")
+                    print(
+                        f"  <dd><a href='{image}'>"
+                        f"<a href='{image}'>"
+                        f"<img src='{image}' width='400em' alt='{work}'>"
+                        "</a></dd>",
+                    )
+        print("</dl><hr/>")
+    print("</dl></body></html>")
+
+
+def crawl_tree(start):
+    data = {}
+    # Populate the metadata from the info.yaml files
+    for p in Path(start).rglob("*"):
+        if p.name == "info.yaml":
+            work = p.parent.name
+            info = yaml.safe_load(p.read_text())
+            data[work] = {"images": [], **info}
+
+    # Crawn a second time to populate the images
+    for p in Path(start).rglob("*"):
+        work = p.parent.name
+        if p.suffix in (".jpg", ".png"):
+            data[work]["images"].append(f"{work}/{p.name}")
+
+    return data
+
+
+if __name__ == "__main__":
+    data = crawl_tree(f"{dirname(__file__)}")
+    htmlify(data)
