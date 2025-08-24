@@ -4,21 +4,6 @@ from os.path import dirname
 from pathlib import Path
 import yaml
 
-INFO = {
-    "Artist": None,
-    "Culture": None,
-    "Description": None,
-    "Height (frame)": None,
-    "Height (work)": None,
-    "Medium": None,
-    "Sequence": None,
-    "Source": None,
-    "Title": None,
-    "Width (frame)": None,
-    "Width (work)": None,
-    "Year": None,
-}
-
 style = """
 dl {
     border: 0px;
