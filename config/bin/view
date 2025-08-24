@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ $1 == *.md ]]; then
-    glow -p "$1"
+    glow -t "$1"
 elif [[ $1 == *.pdf ]]; then
     fancy-cat "$1"
 elif [[ $1 == *.zip ]]; then

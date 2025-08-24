@@ -79,35 +79,37 @@ speedtest-cli
 meld
 mc
 pinta
+ttf-mscorefonts-installer
+gum
 ====================== Flatpak Installed Packages ======================
-Brave                                  1.81.131
+Brave                                  1.81.136
 Audacity                               3.7.5
 Codecs                                 
-Chromium Web Browser                   139.0.7258.66
+Chromium Web Browser                   139.0.7258.138
 Codecs                                 
 Contour Terminal Emulator              0.4.3
-Freedesktop Platform                   freedesktop-sdk-24.08.22
+Freedesktop Platform                   freedesktop-sdk-24.08.23
 Mesa                                   25.0.7
 Mesa (Extra)                           25.0.7
-Mesa                                   25.1.3
-Mesa (Extra)                           25.1.3
+Mesa                                   25.1.7
+Mesa (Extra)                           25.1.7
 openh264                               2.5.1
 GNOME Application Platform version 47  
 Pop Gtk theme                          
 KDE Application Platform               
 KDE Application Platform               
 QAdwaitaDecorations                    
-Konsole                                25.04.3
-KTorrent                               25.04.3
-Okular                                 25.04.3
-Signal Desktop                         7.65.0
+Konsole                                25.08.0
+KTorrent                               25.08.0
+Okular                                 25.08.0
+Signal Desktop                         7.67.0
 ====================== Snap Installed Packages =========================
 bare                1.0         
 btop                1.4.4       
 core                16-2.61.4-20
 core18              20250701    
 core20              20250526    
-core22              20250612    
+core22              20250708    
 core24              20250618    
 dust                v1.1.1      
 gtk-common-themes   0.1-81-g442e
@@ -115,8 +117,8 @@ gtk2-common-themes  0.1
 hello-world         6.4         
 julia               1.11.5      
 p7zip-desktop       16.02.2     
-snapd               2.70        
-zig                 0.14.1      
+snapd               2.71        
+zig                 0.15.1      
 ====================== Cargo Installed Packages ========================
 csvlens v0.10.1:
 mdcat v2.5.0:
