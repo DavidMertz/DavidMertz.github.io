@@ -4,6 +4,21 @@ from os.path import dirname
 from pathlib import Path
 import yaml
 
+INFO = {
+    "Artist": None,
+    "Culture": None,
+    "Description": None,
+    "Height (frame)": None,
+    "Height (work)": None,
+    "Medium": None,
+    "Sequence": None,
+    "Source": None,
+    "Title": None,
+    "Width (frame)": None,
+    "Width (work)": None,
+    "Year": None,
+}
+
 style = """
 dl {
     border: 0px;
@@ -121,7 +136,7 @@ def crawl_tree(start):
             info = yaml.safe_load(p.read_text())
             data[work] = {"images": [], **info}
 
-    # Crawn a second time to populate the images
+    # Crawl a second time to populate the images
     for p in Path(start).rglob("*"):
         work = p.parent.name
         if p.suffix in (".jpg", ".png"):
