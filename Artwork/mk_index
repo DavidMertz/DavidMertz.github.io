@@ -18,35 +18,58 @@ INFO = {
     "Year": None,
 }
 
-header = """
+style = """
+dl {
+    border: 0px;
+    padding: 0.5em;
+}
+dt {
+    float: left;
+    clear: left;
+    width: 10em;
+    text-align: right;
+    font-weight: bold;
+    color: green;
+    margin-right: 0.5em;
+}
+dt::after {
+    content: ":";
+}
+dd {
+    margin: 0 0 0 110px;
+    padding: 0 0 0.5em 0;
+}
+"""
+
+head = f"""<html>
+<head>
+<style>{style}</style>
+<title>Artwork Collection: Constant/Mertz/Sushinsky</title>
+</head>
 """
 
 
 def htmlify(data):
-    print(
-        "<html>"
-        "<head>"
-        "<title>Artwork Collection: Constant/Mertz/Sushinsky</title>"
-        "</head>"
-    )
-    print("<body><dl>")
+    print(head)
+    print("<body>")
+    print("<h1>Artwork Collection: Constant/Mertz/Sushinsky</h1>")
     for work, info in data.items():
-        print(f"<h1>{work}</h1>")
-        print("<dl compact>")
+        print(f"<h2>{work}</h2><dl>")
+        # Metadata first
         for key, value in info.items():
             if key != "images":
                 print(f"  <dt>{key}</dt><dd>{value}</dd>")
-            else:
-                for n, image in enumerate(info["images"]):
-                    print(f"  <dt>Image {n+1}</dt>")
-                    print(
-                        f"  <dd><a href='{image}'>"
-                        f"<a href='{image}'>"
-                        f"<img src='{image}' width='400em' alt='{work}'>"
-                        "</a></dd>",
-                    )
+        # Images at end
+        for n, image in enumerate(info["images"]):
+            print(f"  <dt>Image {n+1}</dt>")
+            print(
+                f"  <dd><a href='{image}'>"
+                f"<a href='{image}'>"
+                f"<img src='{image}' width='400em' alt='{work}'>"
+                "</a></dd>",
+            )
         print("</dl><hr/>")
-    print("</dl></body></html>")
+    print("</body></html>")
 
 
 def crawl_tree(start):
