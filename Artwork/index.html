@@ -22,21 +22,46 @@ dd {
     padding: 0 0 0.5em 0;
 }
 </style>
+<script type="text/javascript">
+function filter() {
+  const term = document.getElementById('filter-picker').value;
+  const works = document.getElementsByClassName('ITEM');
+  for (var i = 0; i < works.length; i++) {
+    const filters = works[i].getAttribute('filters');
+    if (term === "ALL") {
+      works[i].style.display = "block";
+    } else if (works[i].getAttribute('filters').includes(term)) {
+      works[i].style.display = "block";
+    } else {
+      works[i].style.display = "none";
+    }
+  }
+}
+</script>
 <title>Artwork Collection: Constant/Mertz/Sushinsky</title>
 </head>
 
 <body>
 <h1>Artwork Collection: Constant/Mertz/Sushinsky</h1>
+
+<form>
+<select name="list" id="filter-picker" onchange="filter()">
+    <option value="ALL">All Artworks</option>
+    <option value='Freda Diesing'>Freda Diesing (Artist)</option><option value='Hindu'>Hindu (Culture)</option><option value='Lithograph'>Lithograph (Medium)</option><option value='Pacific Northwest'>Pacific Northwest (Culture)</option><option value='Tom Speer'>Tom Speer (Artist)</option><option value='Unknown'>Unknown (Artist)</option><option value='Wood'>Wood (Medium)</option>
+</select>
+</form>
+
+<div class='ITEM' filters='Tom Speer Pacific Northwest Lithograph'>
 <h2>Wolf-Mother-with-Pup</h2><dl>
   <dt>Artist</dt><dd>Tom Speer</dd>
-  <dt>Culture</dt><dd>Salish (Haida?)</dd>
+  <dt>Culture</dt><dd>Pacific Northwest</dd>
   <dt>Description</dt><dd>N/A</dd>
   <dt>Height (frame)</dt><dd>26"</dd>
   <dt>Height (work)</dt><dd>19"</dd>
+  <dt>Medium</dt><dd>Lithograph</dd>
   <dt>Sequence</dt><dd>221/250</dd>
   <dt>Source</dt><dd>Gayle</dd>
   <dt>Title</dt><dd>Wolf Mother with Pup</dd>
-  <dt>Type</dt><dd>Lithograph (?)</dd>
   <dt>Width (frame)</dt><dd>25"</dd>
   <dt>Width (work)</dt><dd>19"</dd>
   <dt>Year</dt><dd>1977</dd>
@@ -46,33 +71,35 @@ dd {
   <dd><a href='Wolf-Mother-with-Pup/PXL_20250823_191822151.jpg'><a href='Wolf-Mother-with-Pup/PXL_20250823_191822151.jpg'><img src='Wolf-Mother-with-Pup/PXL_20250823_191822151.jpg' width='400em' alt='Wolf-Mother-with-Pup'></a></dd>
   <dt>Image 3</dt>
   <dd><a href='Wolf-Mother-with-Pup/PXL_20250823_191817556.jpg'><a href='Wolf-Mother-with-Pup/PXL_20250823_191817556.jpg'><img src='Wolf-Mother-with-Pup/PXL_20250823_191817556.jpg' width='400em' alt='Wolf-Mother-with-Pup'></a></dd>
-</dl><hr/>
+</dl><hr/></div>
+<div class='ITEM' filters='Unknown Hindu Wood'>
 <h2>Ganesha-Mask-Red-Gold</h2><dl>
   <dt>Artist</dt><dd>Unknown</dd>
   <dt>Culture</dt><dd>Hindu</dd>
   <dt>Description</dt><dd>Ganesha mask; carved and painted wood with mirror pieces</dd>
   <dt>Height (frame)</dt><dd>N/A</dd>
   <dt>Height (work)</dt><dd>11"</dd>
+  <dt>Medium</dt><dd>Wood</dd>
   <dt>Sequence</dt><dd>Handmade</dd>
   <dt>Source</dt><dd>Gayle (?)</dd>
   <dt>Title</dt><dd>Ganesha Mask</dd>
-  <dt>Type</dt><dd>Mask; wood</dd>
   <dt>Width (frame)</dt><dd>N/A</dd>
   <dt>Width (work)</dt><dd>9"</dd>
   <dt>Year</dt><dd>Unknown</dd>
   <dt>Image 1</dt>
   <dd><a href='Ganesha-Mask-Red-Gold/PXL_20250823_191856290.jpg'><a href='Ganesha-Mask-Red-Gold/PXL_20250823_191856290.jpg'><img src='Ganesha-Mask-Red-Gold/PXL_20250823_191856290.jpg' width='400em' alt='Ganesha-Mask-Red-Gold'></a></dd>
-</dl><hr/>
+</dl><hr/></div>
+<div class='ITEM' filters='Freda Diesing Pacific Northwest Lithograph'>
 <h2>Shark-or-Dogfish-design</h2><dl>
   <dt>Artist</dt><dd>Freda Diesing</dd>
-  <dt>Culture</dt><dd>Salish (Haida?)</dd>
+  <dt>Culture</dt><dd>Pacific Northwest</dd>
   <dt>Description</dt><dd>N/A</dd>
   <dt>Height (frame)</dt><dd>28"</dd>
   <dt>Height (work)</dt><dd>21"</dd>
+  <dt>Medium</dt><dd>Lithograph</dd>
   <dt>Sequence</dt><dd>23/200</dd>
   <dt>Source</dt><dd>Gayle</dd>
   <dt>Title</dt><dd>Shark or Dogfish design</dd>
-  <dt>Type</dt><dd>Lithograph (?)</dd>
   <dt>Width (frame)</dt><dd>24"</dd>
   <dt>Width (work)</dt><dd>17"</dd>
   <dt>Year</dt><dd>1978</dd>
@@ -82,5 +109,6 @@ dd {
   <dd><a href='Shark-or-Dogfish-design/PXL_20250823_191832384.jpg'><a href='Shark-or-Dogfish-design/PXL_20250823_191832384.jpg'><img src='Shark-or-Dogfish-design/PXL_20250823_191832384.jpg' width='400em' alt='Shark-or-Dogfish-design'></a></dd>
   <dt>Image 3</dt>
   <dd><a href='Shark-or-Dogfish-design/PXL_20250823_191843238.jpg'><a href='Shark-or-Dogfish-design/PXL_20250823_191843238.jpg'><img src='Shark-or-Dogfish-design/PXL_20250823_191843238.jpg' width='400em' alt='Shark-or-Dogfish-design'></a></dd>
-</dl><hr/>
+</dl><hr/></div>
 </body></html>
+

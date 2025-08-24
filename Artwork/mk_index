@@ -1,4 +1,5 @@
 #!/usr/bin/env -S uvx --with pyyaml python@3.13
+import io
 from os.path import dirname
 from pathlib import Path
 import yaml
@@ -9,10 +10,10 @@ INFO = {
     "Description": None,
     "Height (frame)": None,
     "Height (work)": None,
+    "Medium": None,
     "Sequence": None,
     "Source": None,
     "Title": None,
-    "Type": None,
     "Width (frame)": None,
     "Width (work)": None,
     "Year": None,
@@ -41,35 +42,89 @@ dd {
 }
 """
 
+filter = """
+function filter() {
+  const term = document.getElementById('filter-picker').value;
+  const works = document.getElementsByClassName('ITEM');
+  for (var i = 0; i < works.length; i++) {
+    const filters = works[i].getAttribute('filters');
+    if (term === "ALL") {
+      works[i].style.display = "block";
+    } else if (works[i].getAttribute('filters').includes(term)) {
+      works[i].style.display = "block";
+    } else {
+      works[i].style.display = "none";
+    }
+  }
+}
+"""
+
 head = f"""<html>
 <head>
 <style>{style}</style>
+<script type="text/javascript">{filter}</script>
 <title>Artwork Collection: Constant/Mertz/Sushinsky</title>
 </head>
 """
 
+picker = """
+<form>
+<select name="list" id="filter-picker" onchange="filter()">
+    <option value="ALL">All Artworks</option>
+    [[SELECTORS]]
+</select>
+</form>
+"""
+
+
+def add_selectors(selectors, html):
+    options = ""
+    for value, text in sorted(selectors.items()):
+        if value:  # Skip empty values
+            options += f"<option value='{value}'>{text}</option>"
+
+    return html.replace("[[SELECTORS]]", options)
+
 
 def htmlify(data):
-    print(head)
-    print("<body>")
-    print("<h1>Artwork Collection: Constant/Mertz/Sushinsky</h1>")
+    out = io.StringIO()
+    print(head, file=out)
+    print("<body>", file=out)
+    print("<h1>Artwork Collection: Constant/Mertz/Sushinsky</h1>", file=out)
+    print(picker, file=out)
+    selectors = {}
+    # Print each work's metadata and images in separate <dl> elements
+    # Images are displayed as links to the full-sized image file.
     for work, info in data.items():
-        print(f"<h2>{work}</h2><dl>")
+        artist, culture, medium = (
+            info.get("Artist", ""),
+            info.get("Culture"),
+            info.get("Medium"),
+        )
+        selectors[artist] = f"{artist} (Artist)"
+        selectors[culture] = f"{culture} (Culture)"
+        selectors[medium] = f"{medium} (Medium)"
+        filters = f"{artist} {culture} {medium}"
+        print(f"<div class='ITEM' filters='{filters}'>", file=out)
+        print(f"<h2>{work}</h2><dl>", file=out)
         # Metadata first
         for key, value in info.items():
             if key != "images":
-                print(f"  <dt>{key}</dt><dd>{value}</dd>")
+                print(f"  <dt>{key}</dt><dd>{value}</dd>", file=out)
         # Images at end
         for n, image in enumerate(info["images"]):
-            print(f"  <dt>Image {n+1}</dt>")
+            print(f"  <dt>Image {n+1}</dt>", file=out)
             print(
                 f"  <dd><a href='{image}'>"
                 f"<a href='{image}'>"
                 f"<img src='{image}' width='400em' alt='{work}'>"
                 "</a></dd>",
+                file=out,
             )
-        print("</dl><hr/>")
-    print("</body></html>")
+        print("</dl><hr/></div>", file=out)
+    print("</body></html>", file=out)
+
+    return add_selectors(selectors, out.getvalue())
 
 
 def crawl_tree(start):
@@ -92,4 +147,4 @@ def crawl_tree(start):
 
 if __name__ == "__main__":
     data = crawl_tree(f"{dirname(__file__)}")
-    htmlify(data)
+    print(htmlify(data))
