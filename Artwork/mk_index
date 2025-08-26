@@ -102,8 +102,12 @@ def htmlify(data):
             info.get("Medium"),
         )
         selectors[artist] = f"{artist} (Artist)"
-        selectors[culture] = f"{culture} (Culture)"
-        selectors[medium] = f"{medium} (Medium)"
+        for c in culture.split("/"):
+            c = c.strip()  # Remove leading/trailing whitespace
+            selectors[c] = f"{c} (Culture)"
+        for m in medium.split("/"):
+            m = m.strip()  # Remove leading/trailing whitespace
+            selectors[m] = f"{m} (Medium)"
         filters = f"{artist} {culture} {medium}"
         print(f"<div class='ITEM' filters='{filters}'>", file=out)
         print(f"<h2>{work}</h2><dl>", file=out)
