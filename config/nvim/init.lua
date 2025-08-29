@@ -57,3 +57,20 @@ vim.opt.synmaxcol = 0     -- highlight very long lines
 vim.opt.tabstop = 4       -- numbers of spaces of tab character
 vim.opt.visualbell = true      -- turn on visual bell
 vim.opt.whichwrap = 'b,s,h,l,<,>,[,]'   -- move freely between files
+
+
+-- TODO: this is an experiment (should go in some other file)
+vim.diagnostic.config({
+  virtual_text = {
+    -- source = "always",  -- Or "if_many"
+    prefix = '×', -- Could be '●', '■', '▎', 'x'
+  },
+  severity_sort = true,
+  float = {
+    source = "always",  -- Or "if_many"
+  },
+})
+vim.keymap.set("n", "<leader>de", "<cmd>lua vim.diagnostic.enable()<cr>")
+vim.keymap.set("n", "<leader>dd", "<cmd>lua vim.diagnostic.disable()<cr>")
+vim.keymap.set("n", "<leader>dn", "<cmd>lua vim.diagnostic.jump({count = 1})<cr>")
+vim.keymap.set("n", "<leader>dp", "<cmd>lua vim.diagnostic.jump({count = -1})<cr>")

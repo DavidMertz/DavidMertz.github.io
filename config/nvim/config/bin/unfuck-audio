@@ -1,6 +1,0 @@
-#!/bin/bash
-echo "Within AlsaMixer, press F6 to select audio device (OROW S203);"
-echo "use the arrow keys to move output level up from zero (e.g. to 79)"
-echo
-read  -n 1 -p "<press key>" mainmenuinput
-alsamixer

@@ -1,3 +1,0 @@
-#!/bin/sh
-# An alias would seem cleaner, but is not found within NeoVim/FZF
-batcat "$@"

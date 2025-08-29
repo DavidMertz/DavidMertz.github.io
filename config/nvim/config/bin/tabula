@@ -1,6 +1,0 @@
-#!/bin/bash
-
-TPATH='/usr/share'
-JAR='tabula-1.0.5-jar-with-dependencies.jar'
-echo "$@"
-java -jar "$TPATH/$JAR" $@
