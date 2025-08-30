@@ -108,7 +108,7 @@ def htmlify(data):
         for m in medium.split("/"):
             m = m.strip()  # Remove leading/trailing whitespace
             selectors[m] = f"{m} (Medium)"
-        filters = f"{artist} {culture} {medium}"
+        filters = f"{artist} / {culture} / {medium}"
         print(f"<div class='ITEM' filters='{filters}'>", file=out)
         print(f"<h2>{work}</h2><dl>", file=out)
         # Metadata first
