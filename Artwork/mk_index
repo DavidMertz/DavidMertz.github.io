@@ -92,9 +92,9 @@ def htmlify(data):
     print("<body>", file=out)
     print("<h1>Artwork Collection: Constant/Mertz/Sushinsky</h1>", file=out)
     print(
-        "<h2>You can look at overview pictures of most of the "
+        "<h2>Overview pictures of "
         "<a href='https://photos.app.goo.gl/uLnLSAucoSLrv6hJA'> "
-        "artwork as displayed."
+        "most of the artwork."
         "</a></h2>",
         file=out,
     )
