@@ -4,6 +4,7 @@ rsync -av --delete $HOME/.config/zellij $HOME/git/DavidMertz.github.io/config/
 rsync -av --delete $HOME/.config/cloc $HOME/git/DavidMertz.github.io/config/ 
 rsync -av --delete $HOME/.config/mc $HOME/git/DavidMertz.github.io/config/ 
 rsync -av --delete $HOME/bin $HOME/git/DavidMertz.github.io/config/
+rsync -av --delete $HOME/.bash-git-prompt $HOME/git/DavidMertz.github.io/config/
 cp -v $HOME/.bashrc $HOME/git/DavidMertz.github.io/config
 $HOME/bin/package-installs > $HOME/git/DavidMertz.github.io/config/package-installs.txt
 

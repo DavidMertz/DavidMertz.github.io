@@ -56,8 +56,6 @@ export UV_CACHE_DIR="/media/dmertz/DQM-Backup/uv-cache"
 
 # -------------------- Aliases ------------------------------------------------
 # Some aliases to functions defined herein below
-# Use like so: `sleep 10; alert`
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 alias cd='z'
 alias clear-scrollback="printf '\033[3J'"
 alias clip='copyq add -'
@@ -67,6 +65,7 @@ alias fd='fdfind'
 alias fgrep='fgrep --color=auto'
 alias g='grep -P --color=always'
 alias grep='grep --color=auto'
+alias load='source ~/.bashrc'
 alias ls='exa'
 alias lh='exa -laGh --time-style=long-iso --no-user'
 alias ll='exa -laB'
