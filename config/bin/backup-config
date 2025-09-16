@@ -1,6 +1,6 @@
 #!/bin/bash
 rsync -av --delete $HOME/.config/nvim $HOME/git/DavidMertz.github.io/config/ --exclude='*pack/*'
-rsync -av --delete $HOME/.config/terminator $HOME/git/DavidMertz.github.io/config/
+rsync -av --delete $HOME/.config/zellij $HOME/git/DavidMertz.github.io/config/ 
 rsync -av --delete $HOME/bin $HOME/git/DavidMertz.github.io/config/
 cp -v $HOME/.bashrc $HOME/git/DavidMertz.github.io/config
 $HOME/bin/package-installs > $HOME/git/DavidMertz.github.io/config/package-installs.txt

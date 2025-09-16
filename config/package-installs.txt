@@ -1,10 +1,51 @@
 ====================== Apt Installed Packages ==========================
+libnotify-bin
+thefuck
+fortune-mod
+cloc
+copyq
+glow
+pass
+pandoc
+lynx
+links
+make
+colordiff
+toilet
+plocate
+libssl-dev
+asciidoctor
+libyaml-dev
+postgresql-client-common
+tig
+snapd
+./slack-desktop-4.38.125-amd64.deb
+htop
+python3-venv
+python3-pip
+ripgrep
+getmail6
+pv
+libgtk-3-dev
+libsoup-3.0-0
+libwebkit2gtk-4.1-dev
+./torguard-latest-amd64.deb
+wireguard
+build-essential
+sqlite3
+speedtest-cli
+meld
+mc
+pinta
 imagemagick
 alacarte
 tree
 inxi
 bat
 silversearcher-ag
+ttf-mscorefonts-installer
+gum
+terminator
 unicode
 ppa-purge
 exa
@@ -39,65 +80,25 @@ libopenblas-dev
 ncat
 libpoppler-cpp-dev
 libmupdf-dev
-libnotify-bin
-thefuck
-fortune-mod
-cloc
-copyq
-glow
-pass
-pandoc
-lynx
-links
-make
-colordiff
-toilet
-plocate
-libssl-dev
-asciidoctor
-libyaml-dev
-postgresql-client-common
-tig
-signal-desktop
-snapd
-./slack-desktop-4.38.125-amd64.deb
-htop
-python3-venv
-python3-pip
-ripgrep
-getmail6
-pv
-libgtk-3-dev
-libsoup-3.0-0
-libwebkit2gtk-4.1-dev
-./torguard-latest-amd64.deb
-wireguard
-build-essential
-sqlite3
-speedtest-cli
-meld
-mc
-pinta
-ttf-mscorefonts-installer
-gum
 ====================== Flatpak Installed Packages ======================
-Brave                                  1.81.137
+Brave                                  1.82.166
 Slack                                  4.45.69
 Audacity                               3.7.5
 Codecs                                 
-Chromium Web Browser                   139.0.7258.154
+Chromium Web Browser                   140.0.7339.127
 Codecs                                 
-Freedesktop Platform                   freedesktop-sdk-24.08.24
-Mesa                                   25.2.1
-Mesa (Extra)                           25.2.1
+Freedesktop Platform                   freedesktop-sdk-24.08.25
+Mesa                                   25.2.2
+Mesa (Extra)                           25.2.2
 openh264                               2.5.1
 GNOME Application Platform version 47  
 Pop Gtk theme                          
 KDE Application Platform               
-Konsole                                25.08.0
-KTorrent                               25.08.0
-Okular                                 25.08.0
-Signal Desktop                         7.68.0
+Konsole                                25.08.1
+KTorrent                               25.08.1
+Okular                                 25.08.1
+Firefox                                142.0.1
+Signal Desktop                         7.70.0
 ====================== Snap Installed Packages =========================
 bare                1.0         
 btop                1.4.4       
@@ -105,7 +106,7 @@ core                16-2.61.4-20
 core18              20250730    
 core20              20250526    
 core22              20250730    
-core24              20250618    
+core24              20250729    
 dust                v1.1.1      
 gtk-common-themes   0.1-81-g442e
 gtk2-common-themes  0.1         
@@ -123,6 +124,8 @@ tree-sitter-cli v0.25.0:
 viu v1.5.1:
 yazi-cli v0.4.3 (https://github.com/sxyazi/yazi.git#2770e025):
 yazi-fm v0.4.3 (https://github.com/sxyazi/yazi.git#2770e025):
+zellij v0.43.1:
+zoxide v0.9.8:
 ====================== Podman Installed Images =========================
 localhost/automated-security-helper 
 <none>                              

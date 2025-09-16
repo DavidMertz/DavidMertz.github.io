@@ -21,8 +21,11 @@ export MANPAGER="less -R --use-color -Dd+r -Du+b"
 bind '"\e[24~":"rofi -show\r"'
 
 # -------------------- Configure paths ----------------------------------------
-# My personal scripts
+# My personal scripts come first in search order
 export PATH="$HOME/bin:$PATH"
+
+# Various local tools come after personal scripts
+export PATH="$HOME/.local/bin:$PATH"
 
 # uv (and possibly other binaries)
 export PATH="$PATH:$HOME/.local/bin/env"
@@ -55,6 +58,7 @@ export UV_CACHE_DIR="/media/dmertz/DQM-Backup/uv-cache"
 # Some aliases to functions defined herein below
 # Use like so: `sleep 10; alert`
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+alias cd='z'
 alias clear-scrollback="printf '\033[3J'"
 alias clip='copyq add -'
 alias cloc='cloc --exclude-list-file=.clocignore'
@@ -63,7 +67,7 @@ alias fd='fdfind'
 alias fgrep='fgrep --color=auto'
 alias g='grep -P --color=always'
 alias grep='grep --color=auto'
-alias l='exa'
+alias ls='exa'
 alias lh='exa -laGh --time-style=long-iso --no-user'
 alias ll='exa -laB'
 alias nv='nvim'
@@ -83,12 +87,14 @@ alias y=yazi
 # Interactive DB connections
 alias adacat='catalist-rds-ada'
 alias postcat='catalist-rds-postgres'
-alias redcat='ssh ubuntu@52.39.136.106'
+alias redshift='ssh ubuntu@52.39.136.106'
 
 # SSH shortcuts
 alias ada-prod='ssh ubuntu@instance.ada.seiu.org'
+alias ada-grav-prod='ssh ubuntu@34.212.87.14'
 alias ada-test='ssh ubuntu@instance.test.ada.dsa.seiu.org'
 alias ada-staging='ssh ubuntu@instance.staging.ada.dsa.seiu.org'
+alias ada-grav-stag='ssh ubuntu@35.80.161.215'
 alias ada-runner='ssh ubuntu@ec2-35-166-221-187.us-west-2.compute.amazonaws.com'
 alias dsa-runner='ssh ubuntu@ec2-52-26-78-240.us-west-2.compute.amazonaws.com'
 alias bot-ui='ssh ec2-user@44.239.233.71'
@@ -170,6 +176,9 @@ export FZF_DEFAULT_COMMAND='ag -l --hidden -g ""'
 # Glow for markdown preview
 [ -s "$HOME/.config/glow.sh" ] && source "$HOME/.config/glow.sh"
 
+# Initialize zoxide
+eval "$(zoxide init bash)"
+
 # Miscellaneous shell enhancements
 # TODO: look at `source /usr/share/doc/fzf/examples/key-bindings.bash`
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
@@ -190,9 +199,12 @@ PROMPT_COMMAND="__configure_prompt;$PROMPT_COMMAND"
 export PROMPT_COMMAND=$(ruby -e "print ARGV[0].split(';').uniq.join(';')" $PROMPT_COMMAND)
 
 # -------------------- Remove duplicate path entries --------------------------
-#export PATH=$(ruby -e "print ARGV[0].split(':').uniq.join(':')" $PATH)
-export PATH=$(echo -n $PATH | awk -v RS=: '!($0 in a) {a[$0]; printf("%s%s", length(a) > 1 ? ":" : "", $0)}')
-export PYTHONPATH=$(echo -n $PYTHONPATH | awk -v RS=: '!($0 in a) {a[$0]; printf("%s%s", length(a) > 1 ? ":" : "", $0)}')
+# The Ruby version is much more concise, but leave the longer awk as comment
+# in case someone wants to use this on a system without Ruby installed.
+export PATH=$(ruby -e "print ARGV[0].split(':').uniq.join(':')" $PATH)
+export PYTHONPATH=$(ruby -e "print ARGV[0].split(':').uniq.join(':')" $PYTHONPATH)
+# export PATH=$(echo -n $PATH | awk -v RS=: '!($0 in a) {a[$0]; printf("%s%s", length(a) > 1 ? ":" : "", $0)}')
+# export PYTHONPATH=$(echo -n $PYTHONPATH | awk -v RS=: '!($0 in a) {a[$0]; printf("%s%s", length(a) > 1 ? ":" : "", $0)}')
 
 # -------------------- History settings ---------------------------------------
 # don't put duplicate lines or lines starting with space in the history.
@@ -258,7 +270,4 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
-
-
-. "$HOME/.local/bin/env"
 
