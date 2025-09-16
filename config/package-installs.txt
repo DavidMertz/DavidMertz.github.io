@@ -80,6 +80,7 @@ libopenblas-dev
 ncat
 libpoppler-cpp-dev
 libmupdf-dev
+htop
 ====================== Flatpak Installed Packages ======================
 Brave                                  1.82.166
 Slack                                  4.45.69

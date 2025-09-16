@@ -288,12 +288,50 @@ web_client {
 // Choose the theme that is specified in the themes section.
 // Default: default
 // 
+// --- Dark Themes ---
+// theme "ansi"
+// theme "ao"
+// theme "atelier-sulphurpool"
+// theme "ayu_mirage"
+// theme "ayu_dark"
+// theme "catppuccin-frappe"
+// theme "catppuccin-macchiato"
+// theme "cyber-noir"
+// theme "blade-runner"
+// theme "retro-wave"
 // theme "dracula"
+// theme "everforest-dark"
+// theme "gruvbox-dark"
+// theme "iceberg-dark"
+// theme "kanagawa"
+// theme "lucario"
+// theme "menace"
+// theme "molokai-dark"
+// theme "night-owl"
+// theme "nightfox"
+// theme "nord"
+// theme "one-half-dark"
+// theme "onedark"
+// theme "solarized-dark"
+theme "tokyo-night-dark"
+// theme "tokyo-night-storm"
+// theme "tokyo-night"
+// theme "vesper"
+// --- Light Themes ---
+// theme "ayu_light"
+// theme "catppuccin-latte"
+// theme "everforest-light"
+// theme "gruvbox-light"
+// theme "iceberg-light"
+// theme "dayfox"
+// theme "pencil-light"
+// theme "solarized-light"
+// theme "tokyo-night-light"
  
 // Choose the base input mode of zellij.
 // Default: normal
 // 
-default_mode "locked"
+// default_mode "locked"
  
 // Choose the path to the default shell that zellij will use for opening new panes
 // Default: $SHELL
