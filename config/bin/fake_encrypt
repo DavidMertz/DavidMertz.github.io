@@ -1,0 +1,4 @@
+#!/bin/bash
+name="$1"
+echo "Encrypting $name"
+sleep $((1 + RANDOM % 10))

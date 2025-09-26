@@ -27,6 +27,10 @@ export PATH="$HOME/bin:$PATH"
 # Various local tools come after personal scripts
 export PATH="$HOME/.local/bin:$PATH"
 
+# Mamba installed updates are relatively early (e.g. g++)
+# Activating conda environment would also expose these
+export PATH="$HOME/miniforge3/bin:$PATH"
+
 # uv (and possibly other binaries)
 export PATH="$PATH:$HOME/.local/bin/env"
 
@@ -93,7 +97,6 @@ alias ada-prod='ssh ubuntu@instance.ada.seiu.org'
 alias ada-grav-prod='ssh ubuntu@34.212.87.14'
 alias ada-test='ssh ubuntu@instance.test.ada.dsa.seiu.org'
 alias ada-staging='ssh ubuntu@instance.staging.ada.dsa.seiu.org'
-alias ada-grav-stag='ssh ubuntu@35.80.161.215'
 alias ada-runner='ssh ubuntu@ec2-35-166-221-187.us-west-2.compute.amazonaws.com'
 alias dsa-runner='ssh ubuntu@ec2-52-26-78-240.us-west-2.compute.amazonaws.com'
 alias bot-ui='ssh ec2-user@44.239.233.71'
@@ -116,22 +119,26 @@ jwth() {
 
 # -------------------- SEIU functions/commands --------------------------------
 catalist-rds-ada() {
+    local psql
     _USER=${ADACAT_USER:-ada}
     _PORT=${ADACAT_PORT:-5432}
     _HOST=${ADA_HOST:-app-ada-db-test.c7efsggzq3du.us-west-2.rds.amazonaws.com}
     _DB=${ADACAT_DATABASE:-ada}
     _PW=${ADACAT_PASSWORD:-$(pass ada:app-ada-db-test.c7efsggzq3du.us-west-2.rds.amazonaws.com)}
     _OPT='--search_path=catalist_periodic_install'
-    PGOPTIONS=$_OPT PGPASSWORD=$_PW psql -h $_HOST -p $_PORT -d $_DB -U $_USER $@
+    psql='uvx --with pgcli pgcli'
+    PGOPTIONS=$_OPT PGPASSWORD=$_PW $psql -h $_HOST -p $_PORT -d $_DB -U $_USER $@
 }
 catalist-rds-postgres() {
+    local psql
     _USER=${ADACAT_USER:-postgres}
     _PORT=${ADACAT_PORT:-5432}
     _HOST=${ADACAT_HOST:-app-ada-db-test.c7efsggzq3du.us-west-2.rds.amazonaws.com}
     _DB=${ADACAT_DATABASE:-ada}
     _PW=${ADACAT_PASSWORD:-$(pass postgres:app-ada-db-test.c7efsggzq3du.us-west-2.rds.amazonaws.com)}
     _OPT='--search_path=catalist_periodic_install'
-    PGOPTIONS=$_OPT PGPASSWORD=$_PW psql -h $_HOST -p $_PORT -d $_DB -U $_USER $@
+    psql='uvx --with pgcli pgcli'
+    PGOPTIONS=$_OPT PGPASSWORD=$_PW $psql -h $_HOST -p $_PORT -d $_DB -U $_USER $@
 }
 ada-env() {
     source $HOME/.bashrc
@@ -270,3 +277,32 @@ if ! shopt -oq posix; then
   fi
 fi
 
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+# __conda_setup="$('/home/dmertz/miniforge3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+# if [ $? -eq 0 ]; then
+#     eval "$__conda_setup"
+# else
+#     if [ -f "/home/dmertz/miniforge3/etc/profile.d/conda.sh" ]; then
+#         . "/home/dmertz/miniforge3/etc/profile.d/conda.sh"
+#     else
+#         export PATH="/home/dmertz/miniforge3/bin:$PATH"
+#     fi
+# fi
+# unset __conda_setup
+# <<< conda initialize <<<
+
+
+# >>> mamba initialize >>>
+# !! Contents within this block are managed by 'mamba shell init' !!
+# export MAMBA_EXE='/home/dmertz/miniforge3/bin/mamba';
+# export MAMBA_ROOT_PREFIX='/home/dmertz/miniforge3';
+# __mamba_setup="$("$MAMBA_EXE" shell hook --shell bash --root-prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
+# if [ $? -eq 0 ]; then
+#     eval "$__mamba_setup"
+# else
+#     alias mamba="$MAMBA_EXE"  # Fallback on help from mamba activate
+# fi
+# unset __mamba_setup
+# <<< mamba initialize <<<

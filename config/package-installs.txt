@@ -81,38 +81,47 @@ ncat
 libpoppler-cpp-dev
 libmupdf-dev
 htop
+ghc
+pinentry-tty
 ====================== Flatpak Installed Packages ======================
-Brave                                  1.82.166
+Brave                                  1.82.172
 Slack                                  4.45.69
 Audacity                               3.7.5
 Codecs                                 
-Chromium Web Browser                   140.0.7339.127
+Chromium Web Browser                   140.0.7339.207
 Codecs                                 
 Freedesktop Platform                   freedesktop-sdk-24.08.25
 Mesa                                   25.2.2
 Mesa (Extra)                           25.2.2
+Mesa                                   25.2.1
+Mesa (Extra)                           25.2.1
+Codecs Extra Extension                 
 openh264                               2.5.1
-GNOME Application Platform version 47  
+GNOME Application Platform version 49  
 Pop Gtk theme                          
 KDE Application Platform               
+KDE Application Platform               
+QGnomePlatform                         
+QAdwaitaDecorations                    
 Konsole                                25.08.1
 KTorrent                               25.08.1
 Okular                                 25.08.1
-Firefox                                142.0.1
-Signal Desktop                         7.70.0
+Firefox                                143.0.1
+Signal Desktop                         7.72.1
+VLC                                    3.0.21
 ====================== Snap Installed Packages =========================
 bare                1.0         
 btop                1.4.4       
 core                16-2.61.4-20
-core18              20250730    
+core18              20250910    
 core20              20250526    
-core22              20250730    
+core22              20250822    
 core24              20250729    
 dust                v1.1.1      
 gtk-common-themes   0.1-81-g442e
 gtk2-common-themes  0.1         
 hello-world         6.4         
-julia               1.11.6      
+julia               1.11.7      
 p7zip-desktop       16.02.2     
 snapd               2.71        
 zig                 0.15.1      
