@@ -31,6 +31,6 @@ elif [[ $1 == *.png ]]; then
 elif [[ $1 == *.jpg ]]; then
     xdg-open icat "$1"
 else
-    batcat "$@"
+    bat "$@"
 fi
 

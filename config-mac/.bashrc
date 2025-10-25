@@ -78,7 +78,7 @@ alias nv='nvim'
 alias nvs='nv -S'
 alias public-ip='dig +short myip.opendns.com @resolver1.opendns.com'
 alias py='ipython --classic'
-alias pytest='uv run pytest -W ignore'
+alias pytest='uv run pytest -n auto -W ignore'
 alias speedtest='speedtest --secure'
 alias tree-bin='/usr/bin/tree'
 alias tree='exa -T -L2'
@@ -102,6 +102,7 @@ alias ada-runner='ssh ubuntu@ec2-35-166-221-187.us-west-2.compute.amazonaws.com'
 alias dsa-runner='ssh ubuntu@ec2-52-26-78-240.us-west-2.compute.amazonaws.com'
 alias bot-ui='ssh ec2-user@44.239.233.71'
 alias bot-infer='ssh -p443 bossbot@70.105.237.83'
+alias bitdrop='ssh ubuntu@44.228.185.80'
 export ContractBot="70.105.237.83"
 
 # -------------------- General functions/commands -----------------------------
@@ -307,3 +308,5 @@ fi
 # fi
 # unset __mamba_setup
 # <<< mamba initialize <<<
+
+. "$HOME/.local/bin/env"

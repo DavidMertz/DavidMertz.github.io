@@ -8,3 +8,5 @@ export EDITOR='nvim'
 
 export PATH="$HOME/bin:/opt/homebrew/opt/ruby/bin:$PATH"
 export PATH=$(ruby -e "print ARGV[0].split(':').uniq.join(':')" $PATH)
+
+. "$HOME/.local/bin/env"
