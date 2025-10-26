@@ -1,0 +1,13 @@
+#!/bin/bash
+
+while true; do
+    clear
+    date '+ %a %F %X' | toilet -f future --gay; sleep 7
+    clear
+    date '+ %a %F %X' | toilet -f future; sleep 49
+    clear
+    date '+ %a %F %X' | toilet -f future --metal; sleep 11
+    clear
+    date '+ %a %F %X' | toilet -f future; sleep 23
+    # tmux resize-pane -U $(expr $(tput lines) - 4) 2>/dev/null
+done
