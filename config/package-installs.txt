@@ -1,4 +1,11 @@
 ====================== Apt Installed Packages ==========================
+gfortran
+cmake
+libxsimd-dev
+libopenblas-dev
+ncat
+libpoppler-cpp-dev
+libmupdf-dev
 libnotify-bin
 thefuck
 fortune-mod
@@ -43,6 +50,9 @@ tree
 inxi
 bat
 silversearcher-ag
+htop
+ghc
+pinentry-tty
 ttf-mscorefonts-installer
 gum
 terminator
@@ -73,28 +83,19 @@ bashtop
 gawk-doc
 default-jre
 awscli
-gfortran
-cmake
-libxsimd-dev
-libopenblas-dev
-ncat
-libpoppler-cpp-dev
-libmupdf-dev
-htop
-ghc
-pinentry-tty
 ====================== Flatpak Installed Packages ======================
-Brave                                  1.82.172
-Slack                                  4.45.69
+Brave                                  1.83.120
+Slack                                  4.46.99
 Audacity                               3.7.5
 Codecs                                 
-Chromium Web Browser                   140.0.7339.207
+Chromium Web Browser                   141.0.7390.107
 Codecs                                 
-Freedesktop Platform                   freedesktop-sdk-24.08.25
-Mesa                                   25.2.2
-Mesa (Extra)                           25.2.2
-Mesa                                   25.2.1
-Mesa (Extra)                           25.2.1
+Freedesktop Platform                   freedesktop-sdk-24.08.27
+Freedesktop Platform                   freedesktop-sdk-25.08.2
+Mesa                                   25.2.4
+Mesa (Extra)                           25.2.4
+Mesa                                   25.2.4
+Mesa (Extra)                           25.2.4
 Codecs Extra Extension                 
 openh264                               2.5.1
 GNOME Application Platform version 49  
@@ -103,28 +104,28 @@ KDE Application Platform
 KDE Application Platform               
 QGnomePlatform                         
 QAdwaitaDecorations                    
-Konsole                                25.08.1
-KTorrent                               25.08.1
-Okular                                 25.08.1
-Firefox                                143.0.1
-Signal Desktop                         7.72.1
+Konsole                                25.08.2
+KTorrent                               25.08.2
+Okular                                 25.08.2
+Firefox                                144.0
+Signal Desktop                         7.76.0
 VLC                                    3.0.21
 ====================== Snap Installed Packages =========================
 bare                1.0         
-btop                1.4.4       
+btop                1.4.5       
 core                16-2.61.4-20
 core18              20250910    
-core20              20250526    
-core22              20250822    
-core24              20250729    
+core20              20250730    
+core22              20250923    
+core24              20251001    
 dust                v1.1.1      
 gtk-common-themes   0.1-81-g442e
 gtk2-common-themes  0.1         
 hello-world         6.4         
-julia               1.11.7      
+julia               1.12.0      
 p7zip-desktop       16.02.2     
-snapd               2.71        
-zig                 0.15.1      
+snapd               2.72        
+zig                 0.15.2      
 ====================== Cargo Installed Packages ========================
 csvlens v0.10.1:
 mdcat v2.5.0:
