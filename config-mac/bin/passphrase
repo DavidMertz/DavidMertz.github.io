@@ -3,5 +3,5 @@ if [ ! -f $HOME/bin/wordlist.10000.gz ]; then
     wget -qc https://www.mit.edu/~ecprice/wordlist.10000 -O $HOME/bin/wordlist.10000
     gzip $HOME/bin/wordlist.10000
 fi
-zcat $HOME/bin/wordlist.10000.gz | shuf | head -${1:-4} | fmt | sed 's/ /-/g'
+gzcat $HOME/bin/wordlist.10000.gz | shuf | head -${1:-4} | fmt | sed 's/ /-/g'
 

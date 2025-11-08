@@ -84,7 +84,7 @@ alias tree-bin='/usr/bin/tree'
 alias tree='exa -T -L2'
 alias v='xdg-open'
 alias view='$HOME/bin/view'
-alias venv='. .venv/bin/activate; export PYTHONPATH=$(pwd)'
+alias venv='. .venv/bin/activate; export PYTHONPATH="$PWD:$PWD/server"'
 alias vim='NO_AI=Y nvim'
 alias y=yazi
 
