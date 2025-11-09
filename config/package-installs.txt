@@ -1,151 +1,64 @@
 ====================== Apt Installed Packages ==========================
-gfortran
-cmake
-libxsimd-dev
-libopenblas-dev
-ncat
-libpoppler-cpp-dev
-libmupdf-dev
-libnotify-bin
-thefuck
-fortune-mod
+gh
+mc
+ruby
+fzf
+zoxide
+cargo
+python3-dev
+golang
+silversearcher-ag
 cloc
-copyq
-glow
-pass
 pandoc
+pass
+fortune-mod
 lynx
 links
-make
-colordiff
 toilet
-plocate
-libssl-dev
-asciidoctor
-libyaml-dev
-postgresql-client-common
 tig
+eza
 snapd
-./slack-desktop-4.38.125-amd64.deb
+ffmpeg
+ueberzugpp
+luarocks
+cmake
 htop
-python3-venv
-python3-pip
-ripgrep
-getmail6
-pv
-libgtk-3-dev
-libsoup-3.0-0
-libwebkit2gtk-4.1-dev
-./torguard-latest-amd64.deb
-wireguard
-build-essential
-sqlite3
-speedtest-cli
-meld
-mc
-pinta
-imagemagick
-alacarte
-tree
-inxi
-bat
-silversearcher-ag
-htop
-ghc
-pinentry-tty
-ttf-mscorefonts-installer
-gum
-terminator
-unicode
-ppa-purge
-exa
-software-properties-common
-swaks
-ansilove
-hexedit
-rar
-diff-so-fancy
-rofi
-glances
-gh
-node-typescript
-sshfs
-clang
-unrar
-sharutils
-whois
-p7zip-full
-7zip
-/home/dmertz/Downloads/Bitwarden-2025.2.0-amd64.deb
-neofetch
-atop
-bashtop
-gawk-doc
-default-jre
-awscli
+libxkbcommon-dev
 ====================== Flatpak Installed Packages ======================
-Brave                                  1.83.120
+Brave                                  1.84.135
 Slack                                  4.46.99
-Audacity                               3.7.5
-Codecs                                 
-Chromium Web Browser                   141.0.7390.107
-Codecs                                 
+System Monitor                         0.2.6
+Tweaks                                 0.2.1
+Bodev                                  25.09
+Examine                                1.0.0
+Weather                                
+Embellish                              v0.5.1
 Freedesktop Platform                   freedesktop-sdk-24.08.27
-Freedesktop Platform                   freedesktop-sdk-25.08.2
+Freedesktop Platform                   freedesktop-sdk-25.08.3
 Mesa                                   25.2.4
 Mesa (Extra)                           25.2.4
-Mesa                                   25.2.4
-Mesa (Extra)                           25.2.4
+Mesa                                   25.2.6
+Mesa (Extra)                           25.2.6
 Codecs Extra Extension                 
 openh264                               2.5.1
-GNOME Application Platform version 49  
-Pop Gtk theme                          
+Freedesktop SDK                        freedesktop-sdk-24.08.27
+GNOME Application Platform version 47  
+GNOME Application Platform version 48  
+adw-gtk3 GTK Theme                     6.4
+adw-gtk3 GTK Theme                     6.4
+Font Downloader                        8.0.0
 KDE Application Platform               
-KDE Application Platform               
-QGnomePlatform                         
-QAdwaitaDecorations                    
-Konsole                                25.08.2
-KTorrent                               25.08.2
-Okular                                 25.08.2
-Firefox                                144.0
-Signal Desktop                         7.76.0
-VLC                                    3.0.21
+Signal Desktop                         7.78.0
 ====================== Snap Installed Packages =========================
-bare                1.0         
-btop                1.4.5       
-core                16-2.61.4-20
-core18              20250910    
-core20              20250730    
-core22              20250923    
-core24              20251001    
-dust                v1.1.1      
-gtk-common-themes   0.1-81-g442e
-gtk2-common-themes  0.1         
-hello-world         6.4         
-julia               1.12.0      
-p7zip-desktop       16.02.2     
-snapd               2.72        
-zig                 0.15.2      
+core24   20251001  1225   latest
+just     1.43.0    17     latest
+pyright  1.1.406   934    latest
+snapd    2.72      25577  latest
 ====================== Cargo Installed Packages ========================
-csvlens v0.10.1:
-mdcat v2.5.0:
-stylua v2.1.0:
-tealdeer v1.7.2:
-tree-sitter-cli v0.25.0:
-viu v1.5.1:
-yazi-cli v0.4.3 (https://github.com/sxyazi/yazi.git#2770e025):
-yazi-fm v0.4.3 (https://github.com/sxyazi/yazi.git#2770e025):
-zellij v0.43.1:
-zoxide v0.9.8:
+bat v0.26.0:
+yazi-build v0.1.8:
+yazi-cli v25.5.31:
+yazi-fm v25.5.31:
 ====================== Podman Installed Images =========================
-localhost/automated-security-helper 
-<none>                              
-<none>                              
-public.ecr.aws/docker/library/python
-localhost/alpine-uv                 
-docker.io/library/debian            
-docker.io/library/node              
-docker.io/library/alpine            
-docker.io/library/hello-world       
 ====================== AppImages and Git Repos =========================
 Neovim                https://github.com/neovim/neovim/releases 

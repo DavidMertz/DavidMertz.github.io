@@ -8,6 +8,7 @@ from pathlib import Path
 from random import choice
 import sys
 
+# Define font alternatives
 variations = {
     "plain": "_0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
     "serif": "_0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",

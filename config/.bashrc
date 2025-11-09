@@ -41,7 +41,7 @@ export PATH="$PATH:/opt/nvim"
 export PATH="$PATH:$HOME/.cargo/bin"
 
 # Configure cargo and Rust binaries
-. "$HOME/.cargo/env"
+# . "$HOME/.cargo/env"
 
 # Golang
 export PATH="$PATH:$HOME/go/bin:/usr/local/go/bin"
@@ -73,6 +73,7 @@ alias load='source ~/.bashrc'
 alias ls='exa'
 alias lh='exa -laGh --time-style=long-iso --no-user'
 alias ll='exa -laB'
+alias mc='mc --nosubshell'
 alias nv='nvim'
 alias nvs='nv -S'
 alias public-ip='dig +short myip.opendns.com @resolver1.opendns.com'
@@ -155,8 +156,8 @@ ada-env() {
 
 # -------------------- Shell usability aids -----------------------------------
 # Install thefuck
-eval $(thefuck --alias fuck)
-alias fix=fuck
+# eval $(thefuck --alias fuck)
+# alias fix=fuck
 
 # git stuff
 export GIT_PAGER='batcat -p'
