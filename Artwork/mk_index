@@ -151,7 +151,7 @@ def crawl_tree(start):
     # Crawl a second time to populate the images
     for p in Path(start).rglob("*"):
         work = p.parent.name
-        if p.suffix in (".jpg", ".png"):
+        if p.suffix in (".jpg", ".png", ".jpeg"):
             data[work]["images"].append(f"{work}/{p.name}")
 
     return data
