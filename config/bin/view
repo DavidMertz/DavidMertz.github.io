@@ -30,6 +30,10 @@ elif [[ $1 == *.png ]]; then
     xdg-open "$1"
 elif [[ $1 == *.jpg ]]; then
     xdg-open icat "$1"
+elif [[ $1 == *.parq ]]; then
+    view-parquet "$1"
+elif [[ $1 == *.parquet ]]; then
+    view-parquet "$1"
 else
     batcat "$@"
 fi

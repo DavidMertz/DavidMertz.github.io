@@ -1,0 +1,77 @@
+#!/usr/bin/env -S uvx --with click python@3.14
+from pathlib import Path
+import sqlite3
+import sys
+
+import click
+
+CLIPBOARD = Path.home() / "bin" / "clip.sqlite"
+
+
+@click.group()
+def cli():
+    pass
+
+
+@cli.command()
+def create_table():
+    "Create the history table"
+    conn = sqlite3.connect(CLIPBOARD)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS history (
+            id INTEGER PRIMARY KEY, 
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, 
+            value TEXT
+            );
+        """)
+    conn.commit()
+    conn.close()
+
+
+@cli.command()
+def show():
+    "Show the history"
+    conn = sqlite3.connect(CLIPBOARD)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT index, value, timestamp FROM history ORDER BY timestamp")
+    rows = cursor.fetchall()
+    for row in rows:
+        click.echo(
+            click.style(f"{row[0]:>4} ", fg="bright_yellow", bold=True)
+            + click.style(f"({row[2]}) ")
+            + click.style(f"{row[1]}", fg="bright_cyan", bold=True)
+        )
+    conn.close()
+
+
+@cli.command()
+def add():
+    "Add a value to the history"
+    value = sys.stdin.read().strip()
+    conn = sqlite3.connect(CLIPBOARD)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM history WHERE value =?", (value,))
+    if not cursor.fetchone():
+        cursor.execute("INSERT INTO history (value) VALUES (?)", (value,))
+    conn.commit()
+    conn.close()
+
+@cli.command()
+def clear():
+    "Clear the history"
+    conn = sqlite3.connect(CLIPBOARD)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM history")
+    conn.commit()
+
+@cli.command()
+@click.argument("index")
+def echo(index):
+    pass
+
+
+if __name__ == "__main__":
+    cli()

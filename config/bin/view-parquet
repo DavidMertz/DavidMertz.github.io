@@ -1,0 +1,18 @@
+#!/usr/bin/env -S uvx --with polars python@3.14
+import subprocess
+import sys
+from tempfile import NamedTemporaryFile
+
+import polars as pl
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print(f"Usage: {__file__} <parqet_file>")
+        sys.exit(1)
+
+    df = pl.read_parquet(sys.argv[1])
+    with NamedTemporaryFile(mode="w", suffix=".csv") as f:
+        df.write_csv(f.name)
+        subprocess.run(["csvlens", f.name]) 
+   
+

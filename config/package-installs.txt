@@ -24,38 +24,50 @@ luarocks
 cmake
 htop
 libxkbcommon-dev
+cpuinfo
+csvkit
+postgresql
+tealdeer
+cht.sh
+pv
+parallel
+sqlite3
 ====================== Flatpak Installed Packages ======================
-Brave                                  1.84.135
+Brave                                  1.84.141
 Slack                                  4.46.99
-System Monitor                         0.2.6
+System Monitor                         0.2.7
 Tweaks                                 0.2.1
-Bodev                                  25.09
+Bodev                                  25.11
 Examine                                1.0.0
 Weather                                
 Embellish                              v0.5.1
-Freedesktop Platform                   freedesktop-sdk-24.08.27
-Freedesktop Platform                   freedesktop-sdk-25.08.3
-Mesa                                   25.2.4
-Mesa (Extra)                           25.2.4
+Freedesktop Platform                   freedesktop-sdk-24.08.28
+Freedesktop Platform                   freedesktop-sdk-25.08.5
+Mesa                                   25.2.6
+Mesa (Extra)                           25.2.6
 Mesa                                   25.2.6
 Mesa (Extra)                           25.2.6
 Codecs Extra Extension                 
 openh264                               2.5.1
-Freedesktop SDK                        freedesktop-sdk-24.08.27
+Freedesktop SDK                        freedesktop-sdk-24.08.28
+Calculator                             49.2
 GNOME Application Platform version 47  
 GNOME Application Platform version 48  
+GNOME Application Platform version 49  
 adw-gtk3 GTK Theme                     6.4
 adw-gtk3 GTK Theme                     6.4
 Font Downloader                        8.0.0
 KDE Application Platform               
-Signal Desktop                         7.78.0
+Signal Desktop                         7.80.1
 ====================== Snap Installed Packages =========================
+core20   20250822  2682   latest
 core24   20251001  1225   latest
 just     1.43.0    17     latest
 pyright  1.1.406   934    latest
 snapd    2.72      25577  latest
 ====================== Cargo Installed Packages ========================
 bat v0.26.0:
+csvlens v0.14.0:
 yazi-build v0.1.8:
 yazi-cli v25.5.31:
 yazi-fm v25.5.31:
