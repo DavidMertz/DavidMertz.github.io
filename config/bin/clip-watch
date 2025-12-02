@@ -1,0 +1,14 @@
+#!/bin/bash
+# Check if another process is already running
+procs=$(pgrep "clip-watch")
+if [ ${#procs} -gt 6 ]; then # length of proc string
+    echo
+    echo "Another clip-watch process is already running." >&2
+else
+    # Run the watcher in the background
+    while true; do
+        wl-paste | clip add >/dev/null 2>&1
+        sleep 30
+    done
+fi
+

@@ -17,8 +17,10 @@ export PS1="\[\e]2; \w (\u)\a\]\!-\[\e[1;38m\]\W\[\e[0m\e[1;37m\] %\[\e[0m\] "
 export EDITOR=nvim
 export MANPAGER="less -R --use-color -Dd+r -Du+b"
 
-# F12 for Rofi menu
-bind '"\e[24~":"rofi -show\r"'
+# F12 for clipboard selection
+bind '"\e[24~":"clip-select\r"'
+# F8 for clipboard pruning
+bind '"\e[19~":"clip-prune\r"'
 
 # -------------------- Configure paths ----------------------------------------
 # My personal scripts come first in search order
@@ -308,3 +310,5 @@ fi
 # fi
 # unset __mamba_setup
 # <<< mamba initialize <<<
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash

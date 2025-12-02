@@ -2,7 +2,6 @@
 gh
 mc
 ruby
-fzf
 zoxide
 cargo
 python3-dev
@@ -34,6 +33,7 @@ parallel
 sqlite3
 ====================== Flatpak Installed Packages ======================
 Brave                                  1.84.141
+PDF Arranger                           1.12.1
 Slack                                  4.46.99
 System Monitor                         0.2.7
 Tweaks                                 0.2.1
