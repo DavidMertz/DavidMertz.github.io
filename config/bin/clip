@@ -1,0 +1,113 @@
+#!/usr/bin/env -S uvx --with click python@3.14
+from pathlib import Path
+import sqlite3
+import sys
+from textwrap import indent
+
+import click
+
+CLIPBOARD = Path.home() / "tmp" / "clip.sqlite"
+
+
+@click.group()
+def cli():
+    pass
+
+
+@cli.command()
+def create_table():
+    "Create the history table"
+    conn = sqlite3.connect(CLIPBOARD)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS history (
+            row INTEGER PRIMARY KEY, 
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, 
+            value TEXT
+            );
+        """)
+    conn.commit()
+    conn.close()
+
+
+@cli.command()
+@click.option("-b", "--bare", default=False, is_flag=True, help="Show only row and value")
+def show(bare):
+    "Show the history"
+    conn = sqlite3.connect(CLIPBOARD)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT row, value, timestamp FROM history ORDER BY timestamp")
+    rows = cursor.fetchall()
+    for row in rows:
+        if bare:
+            value = row[1].replace("\n", "¶")
+            click.echo(f"{row[0]:<4} {value}")
+        else:
+            value = row[1] if "\n" not in row[1] else f"\n{indent(row[1], ' ' * 6)}"
+            click.echo(
+                click.style(f"{row[0]:>4} ", fg="bright_yellow", bold=True)
+                + click.style(f"({row[2]}) ")
+                + click.style(f"{value}", fg="bright_cyan", bold=True)
+            )
+    conn.close()
+
+
+@cli.command()
+def add():
+    "Add a value to the history from STDIN"
+    value = sys.stdin.read().strip()
+    conn = sqlite3.connect(CLIPBOARD)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM history WHERE value =?", (value,))
+    if not cursor.fetchone() and value:
+        cursor.execute("INSERT INTO history (value) VALUES (?)", (value,))
+    conn.commit()
+    conn.close()
+
+
+@cli.command()
+def clear():
+    "Clear the history"
+    conn = sqlite3.connect(CLIPBOARD)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM history")
+    conn.commit()
+
+
+@cli.command()
+@click.argument("row")
+def echo(row):
+    "Echo the value at the specified row"
+    conn = sqlite3.connect(CLIPBOARD)
+    cursor = conn.cursor()
+    cursor.execute("SELECT value FROM history WHERE row =?", (row,))
+    value = cursor.fetchone()
+    if value:
+        click.echo(click.style(f"{value[0]}", fg="bright_cyan", bold=True))
+
+
+@cli.command()
+@click.argument("rows", nargs=-1, type=str)
+def remove(rows):
+    """Remove the specified rows (by number)
+
+    In pipes/scripts, we might get odd quoting of arguments
+    """
+    _rows: list[int] = []
+    for row in rows:
+        _rows.extend(int(row) for row in row.split() if row.isdigit())
+    conn = sqlite3.connect(CLIPBOARD)
+    cursor = conn.cursor()
+    for row in _rows:
+        cursor.execute("DELETE FROM history WHERE row =?", (row,))
+    conn.commit()
+    conn.close()
+
+
+if __name__ == "__main__":
+    cli()
+
+if __name__ == "__main__":
+    cli()

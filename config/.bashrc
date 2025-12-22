@@ -17,8 +17,10 @@ export PS1="\[\e]2; \w (\u)\a\]\!-\[\e[1;38m\]\W\[\e[0m\e[1;37m\] %\[\e[0m\] "
 export EDITOR=nvim
 export MANPAGER="less -R --use-color -Dd+r -Du+b"
 
-# F12 for Rofi menu
-bind '"\e[24~":"rofi -show\r"'
+# F12 for clipboard selection
+bind '"\e[24~":"clip-select\r"'
+# F8 for clipboard pruning
+bind '"\e[19~":"clip-prune\r"'
 
 # -------------------- Configure paths ----------------------------------------
 # My personal scripts come first in search order
@@ -41,7 +43,7 @@ export PATH="$PATH:/opt/nvim"
 export PATH="$PATH:$HOME/.cargo/bin"
 
 # Configure cargo and Rust binaries
-. "$HOME/.cargo/env"
+# . "$HOME/.cargo/env"
 
 # Golang
 export PATH="$PATH:$HOME/go/bin:/usr/local/go/bin"
@@ -62,7 +64,7 @@ export UV_CACHE_DIR="/media/dmertz/DQM-Backup/uv-cache"
 # Some aliases to functions defined herein below
 alias cd='z'
 alias clear-scrollback="printf '\033[3J'"
-alias clip='copyq add -'
+# alias clip='copyq add -'
 alias cloc='cloc --exclude-list-file=.clocignore'
 alias egrep='egrep --color=auto'
 alias fd='fdfind'
@@ -73,11 +75,12 @@ alias load='source ~/.bashrc'
 alias ls='exa'
 alias lh='exa -laGh --time-style=long-iso --no-user'
 alias ll='exa -laB'
+alias mc='mc --nosubshell'
 alias nv='nvim'
 alias nvs='nv -S'
 alias public-ip='dig +short myip.opendns.com @resolver1.opendns.com'
 alias py='ipython --classic'
-alias pytest='uv run pytest -W ignore'
+alias pytest='uv run pytest -n auto -W ignore'
 alias speedtest='speedtest --secure'
 alias tree-bin='/usr/bin/tree'
 alias tree='exa -T -L2'
@@ -99,6 +102,7 @@ alias ada-test='ssh ubuntu@instance.test.ada.dsa.seiu.org'
 alias ada-staging='ssh ubuntu@instance.staging.ada.dsa.seiu.org'
 alias ada-runner='ssh ubuntu@ec2-35-166-221-187.us-west-2.compute.amazonaws.com'
 alias dsa-runner='ssh ubuntu@ec2-52-26-78-240.us-west-2.compute.amazonaws.com'
+alias bitdrop='ssh ubuntu@44.228.185.80'
 alias bot-ui='ssh ec2-user@44.239.233.71'
 alias bot-infer='ssh -p443 bossbot@70.105.237.83'
 export ContractBot="70.105.237.83"
@@ -150,13 +154,14 @@ ada-env() {
     export PYTHONPATH="$PYTHONPATH:$PWD/server"
     export PYTHONPATH=$(ruby -e "print ARGV[0].split(':').uniq.join(':')" $PYTHONPATH)
     export ADA_PSEUDO_S3=/tmp/ada
+    export ADA_EVENTS_PSEUDO_S3=/tmp/ada-events
     export ADA_HOME=$HOME/SEIU/ada-unified/server
 }
 
 # -------------------- Shell usability aids -----------------------------------
 # Install thefuck
-eval $(thefuck --alias fuck)
-alias fix=fuck
+# eval $(thefuck --alias fuck)
+# alias fix=fuck
 
 # git stuff
 export GIT_PAGER='batcat -p'
@@ -186,8 +191,7 @@ export FZF_DEFAULT_COMMAND='ag -l --hidden -g ""'
 eval "$(zoxide init bash)"
 
 # Miscellaneous shell enhancements
-# TODO: look at `source /usr/share/doc/fzf/examples/key-bindings.bash`
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+# Make ctrl-R work
 
 # Prompt always starts on new line
 get_column() {
@@ -306,3 +310,5 @@ fi
 # fi
 # unset __mamba_setup
 # <<< mamba initialize <<<
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash

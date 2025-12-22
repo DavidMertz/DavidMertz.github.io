@@ -1,0 +1,22 @@
+#!/bin/bash
+# This is the temporary macOS config stuff
+rsync -av --delete $HOME/.config/nvim $HOME/git/DavidMertz.github.io/config-mac/ --exclude='*pack/*'
+rsync -av --delete $HOME/.config/cloc $HOME/git/DavidMertz.github.io/config-mac/ 
+rsync -av --delete $HOME/.config/mc $HOME/git/DavidMertz.github.io/config-mac/ 
+rsync -av --delete $HOME/.config/htop $HOME/git/DavidMertz.github.io/config-mac/ 
+rsync -av --delete $HOME/bin $HOME/git/DavidMertz.github.io/config-mac/
+rsync -av --delete $HOME/.bash-git-prompt $HOME/git/DavidMertz.github.io/config-mac/
+
+cp -v $HOME/.bashrc $HOME/git/DavidMertz.github.io/config-mac
+cp -v $HOME/.zshrc $HOME/git/DavidMertz.github.io/config-mac
+cp -v $HOME/.zprofile $HOME/git/DavidMertz.github.io/config-mac
+
+HERE=$PWD
+cd $HOME/git/DavidMertz.github.io
+git switch main
+cd config-mac
+/usr/bin/tree -H . . > index.html
+git add -A
+git commit -m "Automated config sync $(date)"
+git push
+cd $HERE

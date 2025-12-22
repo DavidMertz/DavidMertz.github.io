@@ -1,0 +1,4 @@
+#!/bin/bash
+for repo in $(gh repo list DavidMertz --json name | jq -r '.[].name'); do 
+    git clone git@github.com:DavidMertz/$repo
+done

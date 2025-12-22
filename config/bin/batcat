@@ -1,0 +1,3 @@
+#!/bin/sh
+# TODO: This shouldn't be needed, temporarily fixing git
+bat "$@"

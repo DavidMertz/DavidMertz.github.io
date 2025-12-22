@@ -1,0 +1,14 @@
+#!/bin/bash
+
+clip show -b | 
+    fzf --preview-window=:hidden \
+        --no-sort \
+        --style=full \
+        --reverse \
+        --prompt='Select item to activate: ' |
+    cut -c6- |
+    tr '¶' '\n' |
+    tr -s '\n' '\n' |
+    wl-copy
+
+

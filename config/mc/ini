@@ -20,18 +20,18 @@ use_8th_bit_as_meta=false
 mouse_move_pages_viewer=true
 mouse_close_dialog=false
 fast_refresh=false
-drop_menus=true
+drop_menus=false
 wrap_mode=true
 old_esc_mode=true
 cd_symlinks=true
-show_all_if_ambiguous=true
+show_all_if_ambiguous=false
 use_file_to_guess_type=true
 alternate_plus_minus=false
 only_leading_plus_minus=true
 show_output_starts_shell=false
 xtree_mode=false
 file_op_compute_totals=true
-classic_progressbar=true
+classic_progressbar=false
 use_netrc=true
 ftpfs_always_use_proxy=false
 ftpfs_use_passive_connections=true
@@ -83,11 +83,11 @@ editor_backup_extension=~
 editor_filesize_threshold=64M
 editor_stop_format_chars=-+*\\,.;:&>
 mcview_eof=
-skin=julia256
+skin=modarin256
 
 [Layout]
 output_lines=0
-left_panel_size=67
+left_panel_size=60
 top_panel_size=0
 message_visible=true
 keybar_visible=true
@@ -113,10 +113,8 @@ clipboard_paste=
 
 [Colors]
 base_color=
-xterm-kitty=
-color_terminals=
-
 xterm-256color=
+color_terminals=
 
 [Panels]
 show_mini_info=true
@@ -128,7 +126,7 @@ fast_reload=false
 fast_reload_msg_shown=false
 mark_moves_down=true
 reverse_files_only=true
-auto_save_setup_panels=true
+auto_save_setup_panels=false
 navigate_with_arrows=false
 panel_scroll_pages=true
 panel_scroll_center=false
@@ -138,10 +136,9 @@ permission_mode=false
 torben_fj_mode=false
 quick_search_mode=2
 select_flags=6
-simple_swap=true
 
 [Panelize]
-Find *.orig after patching=find . -name \\*.orig -print
-Find SUID and SGID programs=find . \\( \\( -perm -04000 -a -perm /011 \\) -o \\( -perm -02000 -a -perm /01 \\) \\) -print
-Find rejects after patching=find . -name \\*.rej -print
 Modified git files=git ls-files --modified
+Find rejects after patching=find . -name \\*.rej -print
+Find SUID and SGID programs=find . \\( \\( -perm -04000 -a -perm /011 \\) -o \\( -perm -02000 -a -perm /01 \\) \\) -print
+Find *.orig after patching=find . -name \\*.orig -print

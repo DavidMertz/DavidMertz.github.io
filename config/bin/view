@@ -3,7 +3,7 @@
 if [[ $1 == *.md ]]; then
     glow -t "$1"
 elif [[ $1 == *.pdf ]]; then
-    xdg-open "$1"
+    lynx -force-html <(pdftohtml -stdout "$1")
 elif [[ $1 == *.zip ]]; then
     unzip -l "$1" | command less
 elif [[ $1 == *.csv ]]; then
@@ -30,6 +30,10 @@ elif [[ $1 == *.png ]]; then
     xdg-open "$1"
 elif [[ $1 == *.jpg ]]; then
     xdg-open icat "$1"
+elif [[ $1 == *.parq ]]; then
+    view-parquet "$1"
+elif [[ $1 == *.parquet ]]; then
+    view-parquet "$1"
 else
     batcat "$@"
 fi

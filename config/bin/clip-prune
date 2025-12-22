@@ -1,0 +1,15 @@
+#!/bin/bash
+
+rows=$(
+    clip show -b | 
+    fzf --preview-window=:hidden \
+        --multi \
+        --style=full \
+        --reverse \
+        --prompt='Select items to remove: ' |
+    cut -c-4 | 
+    tr '\n' ' '
+)
+clip remove "$rows"
+    
+

@@ -1,0 +1,2 @@
+#!/bin/bash
+java -jar /usr/local/bin/bfg-1.15.0.jar $@
