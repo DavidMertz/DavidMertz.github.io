@@ -59,6 +59,7 @@ export PYTHONPATH="$PYTHONPATH:$HOME/SEIU/ada-unified/server"
 # allow for more efficient access (same physical drive is needed), use
 # `--cache-dir=blah` to override
 export UV_CACHE_DIR="/media/dmertz/DQM-Backup/uv-cache"
+export BITDROP_NO_EMAIL=1
 
 # -------------------- Aliases ------------------------------------------------
 # Some aliases to functions defined herein below
