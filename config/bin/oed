@@ -1,0 +1,3 @@
+#!/bin/bash
+word=${1:-word}
+sdcv -n -2 /usr/share/oed $word | lynx -stdin

@@ -1,0 +1,24 @@
+#!/bin/bash
+
+while true; do
+    if [ "$1" == "--help" ]; then
+        man notmuch-search-terms
+        exit
+    fi
+
+    notmuch search --limit=500 "$@" | 
+        fzf --preview-window=:hidden \
+            --no-sort \
+            --style=full \
+            --reverse \
+            --prompt='Select Email Thread: ' |
+            cut -d' ' -f1 > /tmp/notmuch.thread 
+
+    if [ -s /tmp/notmuch.thread ]; then
+        notmuch show --format=mbox $(cat /tmp/notmuch.thread) > /tmp/notmuch.mbox
+        mutt -R -f /tmp/notmuch.mbox
+        rm -f /tmp/notmuch.*
+    else
+        exit 0
+    fi
+done

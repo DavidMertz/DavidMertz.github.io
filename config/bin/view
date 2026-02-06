@@ -31,9 +31,9 @@ elif [[ $1 == *.png ]]; then
 elif [[ $1 == *.jpg ]]; then
     xdg-open icat "$1"
 elif [[ $1 == *.parq ]]; then
-    view-parquet "$1"
+    parquet-tools cat -f csv $1 | csvlens    
 elif [[ $1 == *.parquet ]]; then
-    view-parquet "$1"
+    parquet-tools cat -f csv $1 | csvlens    
 else
     batcat "$@"
 fi

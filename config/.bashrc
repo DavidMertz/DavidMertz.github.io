@@ -69,6 +69,7 @@ alias clear-scrollback="printf '\033[3J'"
 alias cloc='cloc --exclude-list-file=.clocignore'
 alias egrep='egrep --color=auto'
 alias fd='fdfind'
+alias fetch='fastfetch'
 alias fgrep='fgrep --color=auto'
 alias g='grep -P --color=always'
 alias grep='grep --color=auto'
@@ -81,7 +82,7 @@ alias nv='nvim'
 alias nvs='nv -S'
 alias public-ip='dig +short myip.opendns.com @resolver1.opendns.com'
 alias py='ipython --classic'
-alias pytest='uv run pytest -n auto -W ignore'
+alias pytest='uv run pytest -W ignore'
 alias speedtest='speedtest --secure'
 alias tree-bin='/usr/bin/tree'
 alias tree='exa -T -L2'
@@ -89,6 +90,7 @@ alias v='xdg-open'
 alias view='$HOME/bin/view'
 alias venv='. .venv/bin/activate; export PYTHONPATH=$(pwd)'
 alias vim='NO_AI=Y nvim'
+alias weather='clear && curl -s wttr.in?3nQ'
 alias y=yazi
 
 # Interactive DB connections
@@ -98,15 +100,12 @@ alias redshift='ssh ubuntu@52.39.136.106'
 
 # SSH shortcuts
 alias ada-prod='ssh ubuntu@instance.ada.seiu.org'
-alias ada-grav-prod='ssh ubuntu@34.212.87.14'
 alias ada-test='ssh ubuntu@instance.test.ada.dsa.seiu.org'
 alias ada-staging='ssh ubuntu@instance.staging.ada.dsa.seiu.org'
-alias ada-runner='ssh ubuntu@ec2-35-166-221-187.us-west-2.compute.amazonaws.com'
 alias dsa-runner='ssh ubuntu@ec2-52-26-78-240.us-west-2.compute.amazonaws.com'
 alias bitdrop='ssh ubuntu@44.228.185.80'
 alias bot-ui='ssh ec2-user@44.239.233.71'
-alias bot-infer='ssh -p443 bossbot@70.105.237.83'
-export ContractBot="70.105.237.83"
+# FIXME: alias bot-infer='ssh -p443 bossbot@70.105.237.83'
 
 # -------------------- General functions/commands -----------------------------
 gd() {
