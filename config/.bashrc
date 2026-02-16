@@ -90,7 +90,7 @@ alias v='xdg-open'
 alias view='$HOME/bin/view'
 alias venv='. .venv/bin/activate; export PYTHONPATH=$(pwd)'
 alias vim='NO_AI=Y nvim'
-alias weather='clear && curl -s wttr.in?3nQ'
+alias weather='clear && curl -s wttr.in/Portland,ME?3nQ'
 alias y=yazi
 
 # Interactive DB connections

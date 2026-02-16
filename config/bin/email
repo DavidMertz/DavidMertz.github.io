@@ -6,7 +6,7 @@ while true; do
         exit
     fi
 
-    notmuch search --limit=500 "$@" | 
+    notmuch search --limit=2000 "$@" | 
         fzf --preview-window=:hidden \
             --no-sort \
             --style=full \

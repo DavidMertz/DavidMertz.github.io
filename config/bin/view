@@ -11,30 +11,30 @@ elif [[ $1 == *.csv ]]; then
 elif [[ $1 == *.tsv ]]; then
     csvlens -t "$1"
 elif [[ $1 == *.png ]]; then
-    TERM=xterm-kitty viu "$1"
+    chafa "$1"
 elif [[ $1 == *.gif ]]; then
-    TERM=xterm-kitty viu "$1"
+    chafa "$1"
 elif [[ $1 == *.jpg ]]; then
-    TERM=xterm-kitty viu "$1"
+     chafa "$1"
 elif [[ $1 == *.jpeg ]]; then
-    TERM=xterm-kitty viu "$1"
+    chafa "$1"
 elif [[ $1 == *.html ]]; then
     lynx "$1"
 elif [[ $1 == *.htm ]]; then
     lynx "$1"
 elif [[ $1 == *.xlsx ]]; then
-    in2csv $1 | csvlens --
+    in2csv "$1" | csvlens --
 elif [[ $1 == *.xls ]]; then
-    in2csv $1 | csvlens --
+    in2csv "$1" | csvlens --
 elif [[ $1 == *.png ]]; then
     xdg-open "$1"
 elif [[ $1 == *.jpg ]]; then
     xdg-open icat "$1"
 elif [[ $1 == *.parq ]]; then
-    parquet-tools cat -f csv $1 | csvlens    
+    parquet-tools cat -f csv "$1" | csvlens    
 elif [[ $1 == *.parquet ]]; then
-    parquet-tools cat -f csv $1 | csvlens    
+    parquet-tools cat -f csv "$1" | csvlens    
 else
-    batcat "$@"
+    bat -p "$@"
 fi
 
