@@ -1,6 +1,5 @@
 #!/bin/bash
 rsync -av --delete $HOME/.config/nvim $HOME/git/DavidMertz.github.io/config/ --exclude='*pack/*'
-rsync -av --delete $HOME/.config/zellij $HOME/git/DavidMertz.github.io/config/ 
 rsync -av --delete $HOME/.config/cloc $HOME/git/DavidMertz.github.io/config/ 
 rsync -av --delete $HOME/.config/mc $HOME/git/DavidMertz.github.io/config/ 
 rsync -av --delete $HOME/.config/htop $HOME/git/DavidMertz.github.io/config/ 
