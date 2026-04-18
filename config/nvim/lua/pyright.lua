@@ -47,6 +47,11 @@ function filter_diagnostics(diagnostic)
         return false
     end
 
+    -- More Pytests fixture issues
+    if string.match(diagnostic.message, '"make_files" is not accessed') then
+        return false
+    end
+
     -- Allow variables starting with an underscore
     if string.match(diagnostic.message, '"_.+" is not accessed') then
         return false

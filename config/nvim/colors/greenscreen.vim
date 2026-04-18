@@ -11,7 +11,7 @@ if exists("syntax_on")
 endif
 
 let g:colors_name = 'greenscreen' " Simple and limited colors
-hi Normal        guifg=green guibg=gray1
+hi ColorColumn   guibg=gray6
 hi Comment       guifg=Violet
 hi Constant      gui=italic
 hi Cursor        guifg=black guibg=white
@@ -19,6 +19,7 @@ hi CursorLine    guifg=white guibg=darkgreen
 hi Identifier    guifg=SkyBlue
 hi Keyword       guifg=LightBlue gui=italic 
 hi LineNr        guifg=lightgreen guibg=gray6
+hi Normal        guifg=green guibg=gray1
 hi StatusLine    guifg=white guibg=darkcyan 
 
 hi link Number   Constant
@@ -26,7 +27,6 @@ hi link Boolean  Constant
 hi link Float    Constant
 
 " Maybe add these back in later (2025-11-04)
-"hi ColorColumn   ctermfg=white ctermbg=black
 "hi Conceal       ctermfg=cyan
 "hi Directory     ctermfg=DarkYellow term=bold  cterm=bold  
 "hi Error         ctermbg=red ctermfg=white

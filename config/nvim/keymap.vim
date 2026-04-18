@@ -19,7 +19,7 @@ map <Leader>f :FzfLua files<CR>
 " Shortcut to force treesitter folding
 map <Leader>F :set foldmethod=expr<CR>:set foldexpr=nvim_treesitter#foldexpr()<CR>
 map <Leader>g :FzfLua git_blame<CR>
-" Warning popup
+" Warning popup (linter, etc.)
 map <Leader>i <C-w>d
 map <F10> <C-w>d
 map <Leader>I :set invlist<CR>                    " toggle visible tabs

@@ -1,4 +1,11 @@
 ====================== Apt Installed Packages ==========================
+gnome-sushi
+podman
+libreoffice-style-breeze
+chafa
+libsoup-3.0-0
+gir1.2-javascriptcoregtk-4.1
+libjavascriptcoregtk-4.1-dev
 libsixel-bin
 getmail6
 notmuch
@@ -41,54 +48,61 @@ cht.sh
 pv
 parallel
 sqlite3
-podman
-libreoffice-style-breeze
-chafa
+meld
+gum
+default-jre
 ====================== Flatpak Installed Packages ======================
-Brave                                  1.86.139
-Pinta                                  3.1.1
-PDF Arranger                           1.12.1
-PikaTorrent                            0.15.0
+Brave                                  1.89.132
+Collabora Office                       25.04.9.2-2
+Pinta                                  3.1.2
+PDF Arranger                           1.13.0
 Slack                                  4.46.99
+Vivaldi                                7.9.3970.50
 System Monitor                         0.2.7
 Tweaks                                 0.2.1
-Bodev                                  25.11
-Examine                                1.0.0
+Bodev                                  26.04
+Examine                                2.0.0
 Weather                                
-Embellish                              v0.6.0
-Freedesktop Platform                   freedesktop-sdk-24.08.28
-Freedesktop Platform                   freedesktop-sdk-25.08.6
+Embellish                              v1.0.0
+Freedesktop Platform                   freedesktop-sdk-24.08.30
+Freedesktop Platform                   freedesktop-sdk-25.08.8
 i386                                   
-Mesa                                   25.2.6
-Mesa (Extra)                           25.2.6
-Mesa                                   25.3.3
-Mesa (Extra)                           25.3.3
+Mesa                                   25.3.5
+Mesa (Extra)                           25.3.5
+Mesa                                   25.3.5
+Mesa (Extra)                           25.3.5
 Codecs Extra Extension                 
 openh264                               2.5.1
-Freedesktop SDK                        freedesktop-sdk-24.08.28
-Calculator                             49.2
+Freedesktop SDK                        freedesktop-sdk-24.08.30
+Calculator                             50.0
 GNOME Application Platform version 48  
 GNOME Application Platform version 49  
+GNOME Application Platform version 50  
 adw-gtk3 GTK Theme                     6.4
 adw-gtk3 GTK Theme                     6.4
 Font Downloader                        8.0.0
 KDE Application Platform               
 KDE Application Platform               
 KDE Application Platform               
-Konsole                                25.12.1
-Signal Desktop                         7.85.0
+KDE Application Platform               
+Konsole                                25.12.3
+KTorrent                               25.12.3
+Thunderbird                            140.9.1esr
+Signal Desktop                         8.6.0
+VLC                                    3.0.23
 ====================== Snap Installed Packages =========================
-aws-cli  2.33.22   1948   v2/sta
-core20   20251031  2686   latest
-core22   20260113  2292   latest
-core24   20260107  1349   latest
+aws-cli  2.34.32   2116   v2/sta
+core20   20260211  2769   latest
+core22   20260225  2411   latest
+core24   20260317  1587   latest
 dust     v1.1.1    19     latest
-just     1.46.0    19     latest
-pyright  1.1.408   942    latest
-snapd    2.73      25935  latest
+just     1.48.1    26     latest
+pyright  1.1.408   946    latest
+snapd    2.74.1    26382  latest
 ====================== Cargo Installed Packages ========================
 bat v0.26.0:
 csvlens v0.14.0:
+fd-find v10.3.0:
 xh v0.25.0:
 yazi-build v0.1.8:
 yazi-cli v25.5.31:

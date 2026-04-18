@@ -66,6 +66,7 @@ export BITDROP_NO_EMAIL=1
 alias cd='z'
 alias clear-scrollback="printf '\033[3J'"
 # alias clip='copyq add -'
+alias bfg='java -jar /usr/share/bfg-1.15.0.jar'
 alias cloc='cloc --exclude-list-file=.clocignore'
 alias egrep='egrep --color=auto'
 alias fd='fdfind'
@@ -105,7 +106,8 @@ alias ada-staging='ssh ubuntu@instance.staging.ada.dsa.seiu.org'
 alias dsa-runner='ssh ubuntu@ec2-52-26-78-240.us-west-2.compute.amazonaws.com'
 alias bitdrop='ssh ubuntu@44.228.185.80'
 alias bot-ui='ssh ec2-user@44.239.233.71'
-# FIXME: alias bot-infer='ssh -p443 bossbot@70.105.237.83'
+alias bot-infer='ssh bossbot@192.168.0.16'
+alias bot-dmertz='ssh dmertz@192.168.0.16'
 
 # -------------------- General functions/commands -----------------------------
 gd() {
@@ -130,8 +132,8 @@ catalist-rds-ada() {
     _DB=${ADACAT_DATABASE:-ada}
     _PW=${ADACAT_PASSWORD:-$(pass ada:app-ada-db-test.c7efsggzq3du.us-west-2.rds.amazonaws.com)}
     _OPT='--search_path=catalist_periodic_install'
-    psql='uvx --with pgcli pgcli'
-    PGOPTIONS=$_OPT PGPASSWORD=$_PW $psql -h $_HOST -p $_PORT -d $_DB -U $_USER $@
+    pgcli='uvx --with pgcli pgcli'
+    PGOPTIONS=$_OPT PGPASSWORD=$_PW ${pgcli} -h $_HOST -p $_PORT -d $_DB -U $_USER $@
 }
 catalist-rds-postgres() {
     local psql
@@ -141,8 +143,8 @@ catalist-rds-postgres() {
     _DB=${ADACAT_DATABASE:-ada}
     _PW=${ADACAT_PASSWORD:-$(pass postgres:app-ada-db-test.c7efsggzq3du.us-west-2.rds.amazonaws.com)}
     _OPT='--search_path=catalist_periodic_install'
-    psql='uvx --with pgcli pgcli'
-    PGOPTIONS=$_OPT PGPASSWORD=$_PW $psql -h $_HOST -p $_PORT -d $_DB -U $_USER $@
+    pgcli='uvx --with pgcli pgcli'
+    PGOPTIONS=$_OPT PGPASSWORD=$_PW ${pgcli} -h $_HOST -p $_PORT -d $_DB -U $_USER $@
 }
 ada-env() {
     source $HOME/.bashrc
@@ -312,3 +314,7 @@ fi
 # <<< mamba initialize <<<
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
