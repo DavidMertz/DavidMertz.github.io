@@ -14,7 +14,24 @@ vim.cmd("source /home/dmertz/.config/nvim/plugins.vim")
 vim.cmd("silent! colorscheme greenscreen")
 
 -- Pyright to check types (using LSP)
-require("pyright")
+-- require("pyright")
+--
+-- Install the LSP config package
+vim.pack.add{
+  { src = 'https://github.com/neovim/nvim-lspconfig' },
+}
+
+-- Optional: Only required if you need to update the language server settings
+vim.lsp.config('ty', {
+  settings = {
+    ty = {
+      -- ty language server settings go here
+    }
+  }
+})
+
+-- Required: Enable the language server
+vim.lsp.enable('ty')
 
 -- Tabnine configuration
 if os.getenv("NO_AI") == nil then require("tabnine-setup") end

@@ -97,6 +97,7 @@ core22   20260225  2411   latest
 core24   20260317  1587   latest
 dust     v1.1.1    19     latest
 just     1.48.1    26     latest
+nvim     v0.12.1   4759   latest
 pyright  1.1.408   946    latest
 snapd    2.74.1    26382  latest
 ====================== Cargo Installed Packages ========================
