@@ -9,7 +9,4 @@ Plug 'ibhagwan/fzf-lua', {'branch': 'main'}
 " Tabnine AI code assistant
 Plug 'codota/tabnine-nvim', { 'do': './dl_binaries.sh' }
 
-" Add treesitter for prettier highlighting
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-
 call plug#end()

@@ -51,6 +51,7 @@ sqlite3
 meld
 gum
 default-jre
+tree-sitter-cli
 ====================== Flatpak Installed Packages ======================
 Brave                                  1.89.132
 Collabora Office                       25.04.9.2-2
@@ -104,6 +105,7 @@ snapd    2.74.1    26382  latest
 bat v0.26.0:
 csvlens v0.14.0:
 fd-find v10.3.0:
+stylua v2.4.1:
 xh v0.25.0:
 yazi-build v0.1.8:
 yazi-cli v25.5.31:

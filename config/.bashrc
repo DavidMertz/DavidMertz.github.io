@@ -14,7 +14,7 @@ export CLICOLOR=1
 export PS1="\[\e]2; \w (\u)\a\]\!-\[\e[1;38m\]\W\[\e[0m\e[1;37m\] %\[\e[0m\] "
 
 # A bit of sanity in tool preferences
-export EDITOR=nvim-dev
+export EDITOR=nvim
 export MANPAGER="less -R --use-color -Dd+r -Du+b"
 
 # F12 for clipboard selection
@@ -76,7 +76,7 @@ alias ls='exa'
 alias lh='exa -laGh --time-style=long-iso --no-user'
 alias ll='exa -laB'
 alias mc='mc --nosubshell'
-alias nv='nvim-dev'
+alias nv='nvim'
 alias nvs='nv -S'
 alias public-ip='dig +short myip.opendns.com @resolver1.opendns.com'
 alias py='ipython --classic'
@@ -87,7 +87,7 @@ alias tree='exa -T -L2'
 alias v='xdg-open'
 alias view='$HOME/bin/view'
 alias venv='. .venv/bin/activate; export PYTHONPATH=$(pwd)'
-alias vim='NO_AI=Y nvim-dev'
+alias vim='NO_AI=Y nvim'
 alias weather='clear && curl -s wttr.in/Portland,ME?3nQ'
 alias y=yazi
 

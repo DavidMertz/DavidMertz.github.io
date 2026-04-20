@@ -1,9 +1,6 @@
 function Config()
     edit ~/.config/nvim/init.lua
     edit ~/.config/nvim/keymap.vim
-    edit ~/.config/nvim/lua/pyright.lua
-    edit ~/.config/nvim/lua/tabnine-setup.lua
-    edit ~/.config/nvim/lua/treesitter.lua
     edit ~/.config/nvim/plugins.vim
     edit ~/.config/nvim/scripts.vim
 endfunction

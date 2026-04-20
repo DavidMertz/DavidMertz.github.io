@@ -7,44 +7,89 @@ vim.g.mapleader = ","
 -- Load keymaps from convenient (and prior) vim format
 vim.cmd("source /home/dmertz/.config/nvim/keymap.vim")
 
--- Load plugings using vim-plug
+-- Load plugins using vim-plug
 vim.cmd("source /home/dmertz/.config/nvim/plugins.vim")
 
 -- 'silent!' to ignore errors if not yet installed.
-vim.cmd("silent! colorscheme greenscreen")
+vim.cmd("silent! colorscheme lucider")
 
--- Pyright to check types (using LSP)
--- require("pyright")
---
 -- Install the LSP config package
-vim.pack.add{
-  { src = 'https://github.com/neovim/nvim-lspconfig' },
-}
+vim.pack.add({
+	{ src = "https://github.com/neovim/nvim-lspconfig" },
+})
 
 -- Optional: Only required if you need to update the language server settings
-vim.lsp.config('ty', {
-  settings = {
-    ty = {
-      -- ty language server settings go here
-    }
-  }
+vim.lsp.config("ty", {
+	settings = {
+		ty = {
+			-- ty language server settings go here
+		},
+	},
 })
 
 -- Required: Enable the language server
-vim.lsp.enable('ty')
+vim.lsp.enable("ty")
 
 -- Tabnine configuration
-if os.getenv("NO_AI") == nil then require("tabnine-setup") end
+if os.getenv("NO_AI") == nil then
+	require("tabnine").setup({
+		disable_auto_comment = false,
+		accept_keymap = "<END>",
+		dismiss_keymap = "<C-]>",
+		debounce_ms = 800,
+		suggestion_color = { gui = "#808080", cterm = 244 },
+		exclude_filetypes = { "TelescopePrompt", "NvimTree" },
+		log_file_path = nil, -- absolute path to Tabnine log file
+		ignore_certificate_errors = false,
+	})
+end
 
--- Treesitter configuration
-require("treesitter")
+-- Treesitter installer and configuration
+vim.pack.add({
+	{
+		src = "https://github.com/nvim-treesitter/nvim-treesitter",
+		branch = "main",
+		config = {
+			ensure_installed = {
+				"c",
+				"cpp",
+				"go",
+				"haskell",
+				"javascript",
+				"julia",
+				"lua",
+				"markdown",
+				"markdown_inline",
+				"perl",
+				"php",
+				"python",
+				"query",
+				"rust",
+				"sql",
+				"typescript",
+				"vim",
+				"vimdoc",
+			},
+			highlight = { enable = true, additional_vim_regex_highlighting = false },
+			indent = { enable = true },
+			incremental_selection = {
+				enable = true,
+				keymaps = {
+					init_selection = "<C-n>",
+					node_incremental = "<C-n>",
+					scope_incremental = "<C-s>",
+				},
+			},
+		},
+	},
+})
 
 -- Fzf-lua configuration (https://github.com/ibhagwan/fzf-lua)
 require("fzf-lua").setup({
-    file_icons = false,
-    winopts = { -- UI Options
-        backdrop = 30
-    },
+	file_icons = false,
+	winopts = { -- UI Options
+		backdrop = 30,
+	},
 })
 
 -- Share clipboard with system
@@ -56,12 +101,12 @@ vim.opt.autowrite = true -- auto saves changes when quitting and swiching buffer
 vim.opt.cindent = true -- cindent
 vim.opt.cursorline = true
 vim.opt.expandtab = true -- tabs are converted to spaces, use only when required
-vim.opt.foldmethod = 'indent'
+vim.opt.foldmethod = "indent"
 vim.opt.hlsearch = true -- highlight searches
 vim.opt.incsearch = true -- do incremental searching
 vim.opt.modeline = true -- document can set vim mode
 vim.opt.modelines = 3 -- number lines checked for modelines
-vim.opt.mouse = 'a' -- enable mouse movement
+vim.opt.mouse = "a" -- enable mouse movement
 vim.opt.backup = false -- do not keep aebackup file
 vim.opt.ignorecase = false -- don't ignore case
 vim.opt.linebreak = false -- Visual break at window width not tw setting
@@ -70,30 +115,29 @@ vim.opt.startofline = false -- don't jump to first character when paging
 vim.opt.ruler = true -- show the cursor position all the time
 vim.opt.scrolloff = 3 -- keep 3 lines when scrolling
 vim.opt.shiftwidth = 4 -- numbers of spaces to (auto)indent
-vim.opt.shortmess = 'atI' -- Abbreviate messages
-vim.opt.showbreak = '››› ' -- Continuation line indicator
+vim.opt.shortmess = "atI" -- Abbreviate messages
+vim.opt.showbreak = "››› " -- Continuation line indicator
 vim.opt.showcmd = true -- display incomplete commands
 vim.opt.smartindent = true -- smart indent
 vim.opt.sm = true -- show matching braces
 vim.opt.synmaxcol = 0 -- highlight very long lines
 vim.opt.tabstop = 4 -- numbers of spaces of tab character
 vim.opt.visualbell = true -- turn on visual bell
-vim.opt.whichwrap = 'b,s,h,l,<,>,[,]' -- move freely between files
+vim.opt.whichwrap = "b,s,h,l,<,>,[,]" -- move freely between files
 
--- TODO: this is an experiment (should go in some other file)
+-- Configure the diagnostics display and add keybindings
 vim.diagnostic.config({
-    virtual_text = {
-        -- source = "always",  -- Or "if_many"
-        prefix = '×' -- Could be '●', '■', '▎', 'x'
-    },
-    severity_sort = true,
-    float = {
-        source = "always" -- Or "if_many"
-    }
+	virtual_text = {
+		-- source = "always",  -- Or "if_many"
+		prefix = "×", -- Could be '●', '■', '▎', 'x'
+	},
+	severity_sort = true,
+	float = {
+		source = "always", -- Or "if_many"
+	},
 })
+-- Most keybindings are in keymap.vim, but we'll transition to lua
 vim.keymap.set("n", "<leader>dv", "<cmd>lua vim.diagnostic.show()<cr>")
 vim.keymap.set("n", "<leader>dh", "<cmd>lua vim.diagnostic.hide()<cr>")
-vim.keymap.set("n", "<leader>dn",
-               "<cmd>lua vim.diagnostic.jump({count = 1})<cr>")
-vim.keymap.set("n", "<leader>dp",
-               "<cmd>lua vim.diagnostic.jump({count = -1})<cr>")
+vim.keymap.set("n", "<leader>dn", "<cmd>lua vim.diagnostic.jump({count = 1})<cr>")
+vim.keymap.set("n", "<leader>dp", "<cmd>lua vim.diagnostic.jump({count = -1})<cr>")
