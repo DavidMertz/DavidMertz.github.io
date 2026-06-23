@@ -1,2 +1,3 @@
 #!/bin/sh
-ponysay -b round $(fortune)
+fortune='nix shell nixpkgs#fortune --command fortune'
+ponysay -b round $($fortune)

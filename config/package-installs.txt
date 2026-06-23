@@ -1,115 +1,80 @@
 ====================== Apt Installed Packages ==========================
-gnome-sushi
+tree-sitter-cli
+graphviz
 podman
 libreoffice-style-breeze
-chafa
 libsoup-3.0-0
-gir1.2-javascriptcoregtk-4.1
-libjavascriptcoregtk-4.1-dev
-libsixel-bin
 getmail6
 notmuch
 mailutils
 mutt
-elinks
 uuid
 fastfetch
 speedtest-cli
 universal-ctags
 gh
 mc
-ruby
-zoxide
 cargo
-python3-dev
-golang
 silversearcher-ag
-cloc
-pandoc
 pass
-fortune-mod
-lynx
-links
-toilet
 tig
-eza
-snapd
 ffmpeg
-ueberzugpp
 luarocks
-cmake
 htop
-libxkbcommon-dev
 cpuinfo
 csvkit
 postgresql
-tealdeer
-cht.sh
 pv
-parallel
 sqlite3
-meld
-gum
-default-jre
-tree-sitter-cli
+libarchive-tools
+rustup
+snapd
+zoxide
 ====================== Flatpak Installed Packages ======================
-Brave                                  1.89.132
-Collabora Office                       25.04.9.2-2
+Zen                                    1.21.3b
+Brave                                  1.91.175
 Pinta                                  3.1.2
-PDF Arranger                           1.13.0
-Slack                                  4.46.99
-Vivaldi                                7.9.3970.50
-System Monitor                         0.2.7
-Tweaks                                 0.2.1
-Bodev                                  26.04
+Slack                                  4.50.136
+Vivaldi                                8.0.4033.50
+System Monitor                         0.2.9
+Tweaks                                 0.2.3
 Examine                                2.0.0
-Weather                                
-Embellish                              v1.0.0
-Freedesktop Platform                   freedesktop-sdk-24.08.30
-Freedesktop Platform                   freedesktop-sdk-25.08.8
+Weather                                0.2.0
+Delineate                              0.1.1
+Freedesktop Platform                   freedesktop-sdk-24.08.33
+Freedesktop Platform                   freedesktop-sdk-25.08.13
 i386                                   
-Mesa                                   25.3.5
-Mesa (Extra)                           25.3.5
-Mesa                                   25.3.5
-Mesa (Extra)                           25.3.5
+Mesa                                   26.0.6
+Mesa (Extra)                           26.0.6
+Mesa                                   26.0.8
+Mesa (Extra)                           26.0.8
 Codecs Extra Extension                 
 openh264                               2.5.1
-Freedesktop SDK                        freedesktop-sdk-24.08.30
+Freedesktop SDK                        freedesktop-sdk-24.08.33
 Calculator                             50.0
 GNOME Application Platform version 48  
 GNOME Application Platform version 49  
 GNOME Application Platform version 50  
-adw-gtk3 GTK Theme                     6.4
-adw-gtk3 GTK Theme                     6.4
-Font Downloader                        8.0.0
+adw-gtk3 GTK Theme                     6.5
+adw-gtk3 GTK Theme                     6.5
 KDE Application Platform               
 KDE Application Platform               
 KDE Application Platform               
 KDE Application Platform               
-Konsole                                25.12.3
-KTorrent                               25.12.3
-Thunderbird                            140.9.1esr
-Signal Desktop                         8.6.0
+Konsole                                26.04.2
+KTorrent                               26.04.2
+Thunderbird ESR                        140.12.0esr
+Signal Desktop                         8.15.0
 VLC                                    3.0.23
 ====================== Snap Installed Packages =========================
-aws-cli  2.34.32   2116   v2/sta
-core20   20260211  2769   latest
-core22   20260225  2411   latest
-core24   20260317  1587   latest
-dust     v1.1.1    19     latest
-just     1.48.1    26     latest
-nvim     v0.12.1   4759   latest
-pyright  1.1.408   946    latest
-snapd    2.74.1    26382  latest
+core24   20260410  1643   latest
+ponysay  3.0.3     136    latest
+snapd    2.75.2    26865  latest
 ====================== Cargo Installed Packages ========================
-bat v0.26.0:
 csvlens v0.14.0:
 fd-find v10.3.0:
-stylua v2.4.1:
-xh v0.25.0:
 yazi-build v0.1.8:
 yazi-cli v25.5.31:
 yazi-fm v25.5.31:
 ====================== Podman Installed Images =========================
 ====================== AppImages and Git Repos =========================
-Neovim                https://github.com/neovim/neovim/releases 

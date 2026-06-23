@@ -1,4 +1,5 @@
 #!/bin/bash
+chafa='nix shell nixpkgs#chafa --command chafa'
 
 if [[ $1 == *.md ]]; then
     glow -t "$1"
@@ -11,13 +12,13 @@ elif [[ $1 == *.csv ]]; then
 elif [[ $1 == *.tsv ]]; then
     csvlens -t "$1"
 elif [[ $1 == *.png ]]; then
-    chafa "$1"
+    $chafa "$1"
 elif [[ $1 == *.gif ]]; then
-    chafa "$1"
+    $chafa "$1"
 elif [[ $1 == *.jpg ]]; then
-     chafa "$1"
+     $chafa "$1"
 elif [[ $1 == *.jpeg ]]; then
-    chafa "$1"
+    $chafa "$1"
 elif [[ $1 == *.html ]]; then
     lynx "$1"
 elif [[ $1 == *.htm ]]; then

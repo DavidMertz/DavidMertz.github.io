@@ -23,8 +23,8 @@ def uncompress_to_io(enc):
 
 
 def show():
-    if len(sys.argv) < 1:
-        print(f"USAGE {basename(__file__)} <name>")
+    if len(sys.argv) < 2:
+        print(f"USAGE {basename(__file__)} <name> [name [...]]")
         sys.exit()
 
     names = [n.upper() for n in sys.argv[1:]]

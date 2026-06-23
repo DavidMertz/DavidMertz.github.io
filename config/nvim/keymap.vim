@@ -10,7 +10,7 @@ endfunction
 " allow unshifted colon
 nmap ; :
 map <Leader>b :FzfLua buffers<CR>
-map <Leader>c +y                                  " copy to system clipboard
+map <Leader>c \"+y                                " copy to system clipboard
 map <Leader>e :call Config()<CR>                  " edit initialization files
 map <Leader>f :FzfLua files<CR>
 " Shortcut to force treesitter folding
