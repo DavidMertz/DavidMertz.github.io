@@ -77,7 +77,7 @@ alias ls='nix shell nixpkgs#eza --command eza'
 alias lh='nix shell nixpkgs#eza --command eza -laGh --time-style=long-iso --no-user'
 alias ll='nix shell nixpkgs#eza --command eza -laB'
 alias lynx='nix shell nixpkgs#lynx --command lynx'
-alias nv='nix shell nixpkgs#neovim --command nvim'
+alias nv='nix shell nixpkgs#neovim nixpkgs#ruff --command nvim'
 alias nvim=nv
 alias nvs='nv -S'
 alias pandoc='nix shell nixpkgs#pandoc --command pandoc'
@@ -110,6 +110,7 @@ alias venv='. .venv/bin/activate; export PYTHONPATH=$(pwd)'
 alias vim='NO_AI=Y nvim'
 alias weather='clear && curl -s wttr.in/Portland,ME?3nQ'
 alias y=yazi
+alias zig='/home/dmertz/Downloads/zig-x86_64-linux-0.17.0-dev.1252+e4b325c19/zig'
 
 # Interactive DB connections
 alias adacat='catalist-rds-ada'

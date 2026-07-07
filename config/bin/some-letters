@@ -1,0 +1,112 @@
+#!/usr/bin/env -S uvx python@3.15
+
+"""
+Program from 2008 rewritten in 2026-style modern Python
+"""
+from collections import defaultdict
+from compression import zstd
+from glob import glob
+from itertools import chain, combinations
+from json import dumps, load
+from os.path import basename
+from pathlib import Path
+from string import ascii_lowercase
+from sys import argv, exit, stderr
+
+
+def subseq(seq, minlen=1, wildcards=0):
+    """
+    Return iterable of all combinations of length>==minlen from letter sequence.
+
+    For example:
+
+    >>> list(subseq("abcc", minlen=3))
+    ['abcc', 'bcc', 'bcc', 'acc', 'acc', 'abc', 'abc']
+    """
+    seq = "".join(sorted(seq))  # Assure alphabetical order of letters
+    seqs = []
+    for n in range(len(seq), minlen - 1, -1):
+        seqs.append(combinations(seq, n))
+    subseqs = set("".join(s) for s in chain(*seqs))
+
+    # Deal with zero-or-more wildcards by expanding `subseqs`
+    for _ in range(wildcards):
+        for seq in list(subseqs):  # Don't mutate set during iteration
+            for c in ascii_lowercase:
+                # Arrange characters alphabetically in new subseq
+                subseqs.add("".join(sorted(seq + c)))
+
+    return subseqs
+
+
+def get_histograms():
+    """
+    Create a storage structure for the word list.
+
+    We use histograms divided by word length, where a histogram is represented
+    as a sorted character string allowing repetitions. Each histogram maps to
+    one or more words. E.g.
+
+    [
+        {}  # length 0
+        {}  # length 1
+        ...
+        {  # length 5
+            "aeelt": ["elate", "telae"],
+            "aeert": ["arete", "eater", "reate"],
+            ...
+        },
+        {...} # length 6
+        ...
+    }
+    """
+    hist_path = Path.home() / "bin" / "sowpods.hist.zst"
+    try:
+        with zstd.open(hist_path, "rt") as f:
+            hist = load(f)
+    except (IOError, EOFError) as err:
+        print("Re-generating sized histogram map", file=stderr)
+        words = open(Path.home() / "bin" / "sowpods").read().split()
+
+        # Longest word in SOWPODS is 15 characters (space for different wordlist)
+        hist = [defaultdict(list) for size in range(20)]
+        for word in words:
+            word = word.lower()
+            size = len(word)
+            word_hist = "".join(sorted(word))
+            hist[size][word_hist].append(word)
+
+        with zstd.open(hist_path, "wt", level=16) as f:
+            f.write(dumps(hist))
+    return hist
+
+
+if __name__ == "__main__":
+    if len(argv) < 2:
+        print(f"USAGE: {basename(__file__)} <letters> [min_len]", file=stderr)
+        exit()
+    elif len(argv) < 3:
+        argv.append(0)
+    elif len(argv) > 3:
+        print(f"USAGE: {basename(__file__)} <letters> [min_len]", file=stderr)
+        print()
+        print("Error: Too many arguments passed")
+        exit()
+
+    letters = argv[1]
+    wildcards = letters.count(".")
+    letters = "".join(sorted(letters.replace(".", "").lower()))
+    minlen = int(argv[2])
+    if not letters.isalpha():
+        print(f"USAGE: {basename(__file__)} <letters> [min_len]", file=stderr)
+        print()
+        print("Error: Non-letters were given as an argument")
+        exit()
+
+    hist = get_histograms()
+    words = []
+    subseqs = subseq(letters, minlen=minlen, wildcards=wildcards)
+    for seq in subseqs:
+        if new := hist[len(seq)].get(seq):
+            words.extend(new)
+    print("\n".join(sorted(words, key=len, reverse=True)))

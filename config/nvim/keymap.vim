@@ -10,7 +10,8 @@ endfunction
 " allow unshifted colon
 nmap ; :
 map <Leader>b :FzfLua buffers<CR>
-map <Leader>c \"+y                                " copy to system clipboard
+" sending visual selection to shared clipboard
+map <Leader>c :!clip add<CR>:undo<CR>
 map <Leader>e :call Config()<CR>                  " edit initialization files
 map <Leader>f :FzfLua files<CR>
 " Shortcut to force treesitter folding
@@ -44,6 +45,5 @@ digraph ^r 8969
 digraph _l 8970
 digraph _r 8971
 
-" Some elements of appearance and behavior to someday implement in Lua
 set listchars=tab:\ \ ·,nbsp:¦,eol:↲,space:␣
 set statusline=[%n:%Y]\ %f%m%r%h%w%=(%v:0x%02.2B)\ %l/%L

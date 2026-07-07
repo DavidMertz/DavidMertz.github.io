@@ -1,47 +1,79 @@
 ====================== Apt Installed Packages ==========================
+libarchive-tools
+rustup
+snapd
+zoxide
+xsltproc
+docbook-xsl
+meld
+gum
+default-jre
 tree-sitter-cli
 graphviz
+gnome-sushi
 podman
 libreoffice-style-breeze
+chafa
 libsoup-3.0-0
+gir1.2-javascriptcoregtk-4.1
+libjavascriptcoregtk-4.1-dev
+libsixel-bin
 getmail6
 notmuch
 mailutils
 mutt
+elinks
 uuid
 fastfetch
 speedtest-cli
 universal-ctags
 gh
 mc
+ruby
+zoxide
 cargo
+python3-dev
+golang
 silversearcher-ag
+cloc
+pandoc
 pass
+fortune-mod
+lynx
+links
+toilet
 tig
+eza
+snapd
 ffmpeg
+ueberzugpp
 luarocks
+cmake
 htop
+libxkbcommon-dev
 cpuinfo
 csvkit
 postgresql
+tealdeer
+cht.sh
 pv
+parallel
 sqlite3
-libarchive-tools
-rustup
-snapd
-zoxide
+cloc
+nasm
 ====================== Flatpak Installed Packages ======================
-Zen                                    1.21.3b
-Brave                                  1.91.175
+Zen                                    1.21.5b
+Brave                                  1.92.134
 Pinta                                  3.1.2
 Slack                                  4.50.136
-Vivaldi                                8.0.4033.50
+Vivaldi                                8.0.4033.54
 System Monitor                         0.2.9
 Tweaks                                 0.2.3
+Clippy                                 1.5.8
 Examine                                2.0.0
 Weather                                0.2.0
 Delineate                              0.1.1
-Freedesktop Platform                   freedesktop-sdk-24.08.33
+Freedesktop Platform                   freedesktop-sdk-24.08.34
 Freedesktop Platform                   freedesktop-sdk-25.08.13
 i386                                   
 Mesa                                   26.0.6
@@ -50,7 +82,7 @@ Mesa                                   26.0.8
 Mesa (Extra)                           26.0.8
 Codecs Extra Extension                 
 openh264                               2.5.1
-Freedesktop SDK                        freedesktop-sdk-24.08.33
+Freedesktop SDK                        freedesktop-sdk-24.08.34
 Calculator                             50.0
 GNOME Application Platform version 48  
 GNOME Application Platform version 49  
@@ -63,13 +95,13 @@ KDE Application Platform
 KDE Application Platform               
 Konsole                                26.04.2
 KTorrent                               26.04.2
-Thunderbird ESR                        140.12.0esr
-Signal Desktop                         8.15.0
+Thunderbird ESR                        140.12.1esr
+Signal Desktop                         8.17.0
 VLC                                    3.0.23
 ====================== Snap Installed Packages =========================
 core24   20260410  1643   latest
 ponysay  3.0.3     136    latest
-snapd    2.75.2    26865  latest
+snapd    2.76      27406  latest
 ====================== Cargo Installed Packages ========================
 csvlens v0.14.0:
 fd-find v10.3.0:

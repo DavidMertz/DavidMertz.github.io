@@ -30,20 +30,6 @@ vim.lsp.config("ty", {
 -- Required: Enable the language server
 vim.lsp.enable("ty")
 
--- Tabnine configuration
-if os.getenv("NO_AI") == nil then
-	require("tabnine").setup({
-		disable_auto_comment = false,
-		accept_keymap = "<END>",
-		dismiss_keymap = "<C-]>",
-		debounce_ms = 800,
-		suggestion_color = { gui = "#808080", cterm = 244 },
-		exclude_filetypes = { "TelescopePrompt", "NvimTree" },
-		log_file_path = nil, -- absolute path to Tabnine log file
-		ignore_certificate_errors = false,
-	})
-end
-
 -- Treesitter installer and configuration
 vim.pack.add({
 	{
@@ -141,3 +127,5 @@ vim.keymap.set("n", "<leader>dv", "<cmd>lua vim.diagnostic.show()<cr>")
 vim.keymap.set("n", "<leader>dh", "<cmd>lua vim.diagnostic.hide()<cr>")
 vim.keymap.set("n", "<leader>dn", "<cmd>lua vim.diagnostic.jump({count = 1})<cr>")
 vim.keymap.set("n", "<leader>dp", "<cmd>lua vim.diagnostic.jump({count = -1})<cr>")
+--vim.keymap.set("n", "<leader>c"", "<C-w>h")
+--vim.opt.clipboard = "unnamedplus" 
