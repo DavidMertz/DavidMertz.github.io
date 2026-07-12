@@ -1,5 +1,17 @@
 {
   "plugins": {
+    "fzf-lua": {
+      "rev": "532d463f5c83595192fe740572d8fd6902b2217a",
+      "src": "https://github.com/ibhagwan/fzf-lua"
+    },
+    "nvim-colorizer": {
+      "rev": "a065833f35a3a7cc3ef137ac88b5381da2ba302e",
+      "src": "https://github.com/norcalli/nvim-colorizer.lua"
+    },
+    "nvim-colorizer.lua": {
+      "rev": "664c0b7cea1de71f8b65dfe951b7996fc3e6ccde",
+      "src": "https://github.com/catgoose/nvim-colorizer.lua"
+    },
     "nvim-lspconfig": {
       "rev": "4b7fbaa239c5db6b36f424a4521ca9f1a401be33",
       "src": "https://github.com/neovim/nvim-lspconfig"
@@ -7,6 +19,18 @@
     "nvim-treesitter": {
       "rev": "4916d6592ede8c07973490d9322f187e07dfefac",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter"
+    },
+    "plenary.nvim": {
+      "rev": "74b06c6c75e4eeb3108ec01852001636d85a932b",
+      "src": "https://github.com/nvim-lua/plenary.nvim"
+    },
+    "vim-sensible": {
+      "rev": "0ce2d843d6f588bb0c8c7eec6449171615dc56d9",
+      "src": "http://github.com/tpope/vim-sensible"
+    },
+    "yazi.nvim": {
+      "rev": "bba4c0579e4247729bf71b4104471eb131516922",
+      "src": "https://github.com/mikavilpas/yazi.nvim"
     }
   }
 }

@@ -8,7 +8,6 @@ docbook-xsl
 meld
 gum
 default-jre
-tree-sitter-cli
 graphviz
 gnome-sushi
 podman
@@ -61,6 +60,7 @@ parallel
 sqlite3
 cloc
 nasm
+boxes
 ====================== Flatpak Installed Packages ======================
 Zen                                    1.21.5b
 Brave                                  1.92.134
@@ -105,6 +105,7 @@ snapd    2.76      27406  latest
 ====================== Cargo Installed Packages ========================
 csvlens v0.14.0:
 fd-find v10.3.0:
+tree-sitter-cli v0.26.10:
 yazi-build v0.1.8:
 yazi-cli v25.5.31:
 yazi-fm v25.5.31:

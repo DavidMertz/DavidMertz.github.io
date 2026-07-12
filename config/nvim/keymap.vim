@@ -1,12 +1,10 @@
 function Config()
     edit ~/.config/nvim/init.lua
     edit ~/.config/nvim/keymap.vim
-    edit ~/.config/nvim/plugins.vim
     edit ~/.config/nvim/scripts.vim
 endfunction
 
 " Keyboard mappings
-
 " allow unshifted colon
 nmap ; :
 map <Leader>b :FzfLua buffers<CR>
@@ -31,6 +29,7 @@ map <Leader>p :set syntax=python<CR>              " hack when Python syntax not 
 map <Leader>r :FzfLua live_grep<CR>
 map <Leader>u :source ~/.config/nvim/init.lua<CR> " update the settings from init.lua
 map <Leader>w :wa!<CR>                            " write all buffers (force)
+map <Leader>y :Yazi<CR>                           " launch yazi plugin
 
 " text width for current wrap
 map <C-j> :set tw=

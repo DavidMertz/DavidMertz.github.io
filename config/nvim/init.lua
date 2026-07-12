@@ -1,93 +1,56 @@
 local vim = vim
-local Plug = vim.fn["plug#"]
-
--- Set the Leader key to comma
-vim.g.mapleader = ","
-
--- Load keymaps from convenient (and prior) vim format
-vim.cmd("source /home/dmertz/.config/nvim/keymap.vim")
-
--- Load plugins using vim-plug
-vim.cmd("source /home/dmertz/.config/nvim/plugins.vim")
-
--- 'silent!' to ignore errors if not yet installed.
-vim.cmd("silent! colorscheme lucider")
-
--- Install the LSP config package
+-- Add packages using built-in manager
 vim.pack.add({
-	{ src = "https://github.com/neovim/nvim-lspconfig" },
+    "https://github.com/neovim/nvim-lspconfig",
+    "http://github.com/tpope/vim-sensible",
+    "https://github.com/ibhagwan/fzf-lua",
+    "https://github.com/catgoose/nvim-colorizer.lua",
+    "https://github.com/ibhagwan/fzf-lua",
+    "https://github.com/nvim-treesitter/nvim-treesitter",
+    "https://github.com/nvim-lua/plenary.nvim",
+    "https://github.com/mikavilpas/yazi.nvim",
 })
 
--- Optional: Only required if you need to update the language server settings
-vim.lsp.config("ty", {
-	settings = {
-		ty = {
-			-- ty language server settings go here
-		},
-	},
-})
-
--- Required: Enable the language server
+-- Ty LSP settings, if we want them
+vim.lsp.config("ty", {settings = {ty = {}}}) -- ty lsp settings
 vim.lsp.enable("ty")
 
+-- Fzf-lua setup
+require("fzf-lua").setup({file_icons = false, winopts = {backdrop = 30}})
+
+-- Nvim-colorizer setup
+vim.o.termguicolors = true
+require("colorizer").setup()
+
 -- Treesitter installer and configuration
-vim.pack.add({
-	{
-		src = "https://github.com/nvim-treesitter/nvim-treesitter",
-		branch = "main",
-		config = {
-			ensure_installed = {
-				"c",
-				"cpp",
-				"go",
-				"haskell",
-				"javascript",
-				"julia",
-				"lua",
-				"markdown",
-				"markdown_inline",
-				"perl",
-				"php",
-				"python",
-				"query",
-				"rust",
-				"sql",
-				"typescript",
-				"vim",
-				"vimdoc",
-			},
-			highlight = { enable = true, additional_vim_regex_highlighting = false },
-			indent = { enable = true },
-			incremental_selection = {
-				enable = true,
-				keymaps = {
-					init_selection = "<C-n>",
-					node_incremental = "<C-n>",
-					scope_incremental = "<C-s>",
-				},
-			},
-		},
-	},
+require("nvim-treesitter").setup({
+    config = {
+        ensure_installed = {
+            "c", "cpp", "go", "haskell", "javascript", "julia", "lua",
+            "markdown", "markdown_inline", "perl", "php", "python", "query",
+            "rust", "sql", "typescript", "vim", "vimdoc"
+        },
+        highlight = {enable = true, additional_vim_regex_highlighting = false},
+        indent = {enable = true},
+        incremental_selection = {
+            enable = true,
+            keymaps = {
+                init_selection = "<C-n>",
+                node_incremental = "<C-n>",
+                scope_incremental = "<C-s>"
+            }
+        }
+    }
 })
-
--- Fzf-lua configuration (https://github.com/ibhagwan/fzf-lua)
-require("fzf-lua").setup({
-	file_icons = false,
-	winopts = { -- UI Options
-		backdrop = 30,
-	},
-})
-
--- Share clipboard with system
-vim.api.nvim_set_option("clipboard", "unnamed")
 
 --  Some elements of appearance and behavior
 vim.opt.autoindent = true -- always set autoindenting on
 vim.opt.autowrite = true -- auto saves changes when quitting and swiching buffer
 vim.opt.cindent = true -- cindent
 vim.opt.cursorline = true
-vim.opt.expandtab = true -- tabs are converted to spaces, use only when required
+vim.opt.expandtab = true -- tabs are converted to spaces
 vim.opt.foldmethod = "indent"
+vim.opt.foldenable = false -- start in unfolded view
 vim.opt.hlsearch = true -- highlight searches
 vim.opt.incsearch = true -- do incremental searching
 vim.opt.modeline = true -- document can set vim mode
@@ -113,19 +76,29 @@ vim.opt.whichwrap = "b,s,h,l,<,>,[,]" -- move freely between files
 
 -- Configure the diagnostics display and add keybindings
 vim.diagnostic.config({
-	virtual_text = {
-		-- source = "always",  -- Or "if_many"
-		prefix = "×", -- Could be '●', '■', '▎', 'x'
-	},
-	severity_sort = true,
-	float = {
-		source = "always", -- Or "if_many"
-	},
+    virtual_text = {
+        -- source = "always",  -- Or "if_many"
+        prefix = "×" -- Could be '●', '■', '▎', 'x'
+    },
+    severity_sort = true,
+    float = {
+        source = "always" -- Or "if_many"
+    }
 })
+
+-- Set the Leader key to comma
+vim.g.mapleader = ","
+
+-- Load keymaps from convenient (and prior) vim format
+vim.cmd("source /home/dmertz/.config/nvim/keymap.vim")
+
+-- 'silent!' to ignore errors if not yet installed.
+vim.cmd("silent! colorscheme lucider")
+
 -- Most keybindings are in keymap.vim, but we'll transition to lua
 vim.keymap.set("n", "<leader>dv", "<cmd>lua vim.diagnostic.show()<cr>")
 vim.keymap.set("n", "<leader>dh", "<cmd>lua vim.diagnostic.hide()<cr>")
-vim.keymap.set("n", "<leader>dn", "<cmd>lua vim.diagnostic.jump({count = 1})<cr>")
-vim.keymap.set("n", "<leader>dp", "<cmd>lua vim.diagnostic.jump({count = -1})<cr>")
---vim.keymap.set("n", "<leader>c"", "<C-w>h")
---vim.opt.clipboard = "unnamedplus" 
+vim.keymap.set("n", "<leader>dn",
+               "<cmd>lua vim.diagnostic.jump({count = 1})<cr>")
+vim.keymap.set("n", "<leader>dp",
+               "<cmd>lua vim.diagnostic.jump({count = -1})<cr>")

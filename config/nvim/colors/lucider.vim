@@ -1,41 +1,25 @@
-" Vim color scheme Lucid
+" Vim color scheme Lucider
 " ----------------------------------------------------------------------
 "
 " Based on:   https://github.com/cseelus/vim-colors-lucid
 " Author:     Chris Seelus (@cseelus)
 " Modified:   David Mertz
 "
-" BLACK
-" :let _rock_dark   = '#0b0a0b'
-" :let _rock        = '#121114'
-" :let _rock_medium = '#242228'
-" non saturated grays
-" :let _rock_dark   = '#131313'
-" :let _rock        = '#191919'
-" :let _rock_medium = '#363636'
-" :let _gray_dark   = '#535557'
-" :let _gray        = '#767b86'
-" :let _gray_medium = '#cec5ce'
-" :let _gray_light  = '#d2d3d3'
-" :let _cloud       = '#e6e7e7'
-" less saturated grays
-" :let _rock_dark   = '#19171c'
-" :let _rock        = '#1f1d24'
-" saturated grays
-" :let _rock_dark   = '#221b23'
-" :let _rock        = '#27242e'
 " very saturated grays
+:let _jet_black   = '#000000'
 :let _coal        = '#060606'
 :let _rock_dark   = '#0b0b0b'
 :let _rock        = '#181320'
+:let _rock_medium = '#36323d'
+
 " normal grays
 " --------------------------
-:let _rock_medium = '#36323d'
 :let _gray_dark   = '#534d5e'
 :let _gray        = '#847d91'
 :let _gray_medium = '#beb8cc'
 :let _gray_light  = '#d2c3ef'
 :let _cloud       = '#e4e0ed'
+
 " colors
 " --------------------------
 :let _turquoise   = '#3fc997'
@@ -43,7 +27,6 @@
 :let _cyan        = '#99feff'
 :let _steel       = '#83a8d1'
 :let _powder      = '#8fc7db'
-:let _purple      = '#7470ce'
 :let _magenta     = '#CC66CC'
 :let _sky         = '#b3e4eb'
 :let _pink        = '#db0088'
@@ -52,24 +35,8 @@
 
 " Light/inverted colors (darkrock-cloud, rock-lightgrey switched)
 if &background == "light"
-  :let _rock_dark   = '#f3f4f4'
-  :let _rock        = '#dfe0e0'
-  :let _gray_dark   = '#a9aeb3'
-  :let _gray        = '#82868a'
-  :let _gray_medium = '#bcbfc0'
-  :let _gray_light  = '#2c2d2e'
-  :let _cloud       = '#101010'
-  " --------------------------
-  :let _turquoise   = '#34b56e'
-  :let _fluoric     = '#71984f'
-  :let _cyan        = '#34b9b9'
-  :let _steel       = '#1b009a'
-  :let _powder      = '#3b7e9a'
-  :let _sky         = '#2e8f9f'
-  :let _pink        = '#c6006a'
-  :let _sap         = '#fde9a2'
+    ":let ... same names with different colors
 endif
-
 
 set background=dark
 highlight clear
@@ -78,20 +45,18 @@ if exists("syntax_on")
   syntax reset
 endif
 
-set t_Co=256
+"set t_Co=256
 let colors_name = "lucider"
 let colorgroup = {}
-
 
 " Interface
 " ----------------------------------------------------------------------
 let colorgroup['Normal']       = {"GUIFG": _cloud,     "GUIBG":  _rock_dark}
-" ------------------------
 let colorgroup['Darker']       = {"GUIFG": _gray,      "GUIBG":  _rock_dark}
-let colorgroup['ColorColumn']  = {"GUIFG": _rock_dark, "GUIBG":  _pink}
-let colorgroup['Conceal']      = {"GUIFG": _sap,        "GUI": "bold"}
+let colorgroup['ColorColumn']  = {"GUIFG": _rock_dark, "GUIBG":  _steel}
+let colorgroup['Conceal']      = {"GUIFG": _sap,       "GUI": "bold"}
 let colorgroup['Cursor']       = {"GUIFG": _rock_dark, "GUIBG":  _turquoise}
-let colorgroup['CursorLine']   = {                     "GUIBG":  _rock}
+let colorgroup['CursorLine']   = {"GUIFG": _greenest,  "GUIBG":  _jet_black}
 let colorgroup['CursorLineNr'] = {"GUIFG": _gray_dark, "GUIBG":  _rock_dark}
 let colorgroup['Directory']    = {"GUIFG": _fluoric,   "GUIBG":  _rock_dark}
 let colorgroup['Error']        = {"GUIFG": _rock_dark, "GUIBG":  _pink}
@@ -99,9 +64,6 @@ let colorgroup['ErrorMsg']     = {"GUIFG": _rock_dark, "GUIBG":  _pink}
 let colorgroup['FoldColumn']   = {                     "GUIBG":  _rock_dark}
 let colorgroup['Folded']       = {"GUIFG": _cloud,     "GUIBG":  _rock}
 let colorgroup['LineNr']       = {"GUIFG": _gray_dark, "GUIBG":  _rock_dark}
-if &background == "light"
-  let colorgroup['LineNr']       = {"GUIFG": _gray_medium, "GUIBG":  _rock_dark}
-endif
 let colorgroup['MatchParen']   = {"GUIFG": _rock_dark, "GUIBG":  _greenest}
 let colorgroup['ModeMsg']      = {"GUIFG": _rock_dark, "GUIBG":  _turquoise}
 let colorgroup['Pmenu']        = {"GUIFG": _cloud,     "GUIBG":  _rock_medium}
@@ -123,7 +85,7 @@ let colorgroup['WarningMsg']   = {"GUIFG": _rock_dark, "GUIBG":  _steel}
 
 " Syntax
 " ----------------------------------------------------------------------
-let colorgroup['Access']       = {"GUIFG": _purple,    "GUI": "bold"}
+let colorgroup['Access']       = {"GUIFG": _steel,    "GUI": "bold"}
 let colorgroup['Comment']      = {"GUIFG": _magenta,   "GUI": "italic"}
 let colorgroup['Class']        = {"GUIFG": _pink,      "GUI": "italic"}
 let colorgroup['Conditional']  = {"GUIFG": _cyan}
@@ -333,7 +295,6 @@ hi link xmlEndTag             Function
 
 " Expand colorgroups
 " ----------------------------------------------------------------------
-
 let s:colors = {}
 " http://choorucode.com/2011/07/29/vim-chart-of-color-names/
 let valid_cterm_colors =
