@@ -1,4 +1,8 @@
 ====================== Apt Installed Packages ==========================
+nasm
+boxes
+lxqt
+kde-standard
 libarchive-tools
 rustup
 snapd
@@ -8,6 +12,7 @@ docbook-xsl
 meld
 gum
 default-jre
+tree-sitter-cli
 graphviz
 gnome-sushi
 podman
@@ -58,28 +63,25 @@ cht.sh
 pv
 parallel
 sqlite3
-cloc
-nasm
-boxes
 ====================== Flatpak Installed Packages ======================
-Zen                                    1.21.5b
-Brave                                  1.92.134
+Zen                                    1.21.8b
+Brave                                  1.92.141
 Pinta                                  3.1.2
-Slack                                  4.50.136
-Vivaldi                                8.0.4033.54
+Slack                                  4.50.143
+Vivaldi                                8.1.4087.55
 System Monitor                         0.2.9
-Tweaks                                 0.2.3
+Tweaks                                 0.2.5
 Clippy                                 1.5.8
 Examine                                2.0.0
 Weather                                0.2.0
 Delineate                              0.1.1
 Freedesktop Platform                   freedesktop-sdk-24.08.34
-Freedesktop Platform                   freedesktop-sdk-25.08.13
+Freedesktop Platform                   freedesktop-sdk-25.08.14
 i386                                   
 Mesa                                   26.0.6
 Mesa (Extra)                           26.0.6
-Mesa                                   26.0.8
-Mesa (Extra)                           26.0.8
+Mesa                                   26.1.4
+Mesa (Extra)                           26.1.4
 Codecs Extra Extension                 
 openh264                               2.5.1
 Freedesktop SDK                        freedesktop-sdk-24.08.34
@@ -93,15 +95,15 @@ KDE Application Platform
 KDE Application Platform               
 KDE Application Platform               
 KDE Application Platform               
-Konsole                                26.04.2
-KTorrent                               26.04.2
+Konsole                                26.04.3
+KTorrent                               26.04.3
 Thunderbird ESR                        140.12.1esr
-Signal Desktop                         8.17.0
+Signal Desktop                         8.19.0
 VLC                                    3.0.23
 ====================== Snap Installed Packages =========================
 core24   20260410  1643   latest
 ponysay  3.0.3     136    latest
-snapd    2.76      27406  latest
+snapd    2.76.1    27591  latest
 ====================== Cargo Installed Packages ========================
 csvlens v0.14.0:
 fd-find v10.3.0:
@@ -109,5 +111,6 @@ tree-sitter-cli v0.26.10:
 yazi-build v0.1.8:
 yazi-cli v25.5.31:
 yazi-fm v25.5.31:
+zellij v0.44.3:
 ====================== Podman Installed Images =========================
 ====================== AppImages and Git Repos =========================

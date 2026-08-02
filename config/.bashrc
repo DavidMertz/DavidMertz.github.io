@@ -14,7 +14,7 @@ export CLICOLOR=1
 export PS1="\[\e]2; \w (\u)\a\]\!-\[\e[1;38m\]\W\[\e[0m\e[1;37m\] %\[\e[0m\] "
 
 # A bit of sanity in tool preferences
-export EDITOR='nix shell nixpkgs#neovim --command nvim'
+export EDITOR='nix shell nixpkgs#neovim nixpkgs#ruff --command nvim'
 export MANPAGER="less -R --use-color -Dd+r -Du+b"
 
 # F12 for clipboard selection
@@ -34,16 +34,6 @@ export PATH="$PATH:$HOME/.local/bin/env"
 
 # Rust
 export PATH="$PATH:$HOME/.cargo/bin"
-
-# Configure cargo and Rust binaries
-# . "$HOME/.cargo/env"
-
-# Golang
-export PATH="$PATH:$HOME/go/bin:/usr/local/go/bin"
-
-# bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
 
 # colored GCC warnings and errors
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
@@ -77,7 +67,7 @@ alias ls='nix shell nixpkgs#eza --command eza'
 alias lh='nix shell nixpkgs#eza --command eza -laGh --time-style=long-iso --no-user'
 alias ll='nix shell nixpkgs#eza --command eza -laB'
 alias lynx='nix shell nixpkgs#lynx --command lynx'
-alias nv='nix shell nixpkgs#neovim nixpkgs#ruff --command nvim'
+alias nv='nix shell nixpkgs#neovim nixpkgs#ruff nixpkgs#stylua --command nvim'
 alias nvim=nv
 alias nvs='nv -S'
 alias pandoc='nix shell nixpkgs#pandoc --command pandoc'
@@ -95,7 +85,7 @@ alias cloc='cloc --exclude-list-file=.clocignore'
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias g='grep -P --color=always'
-alias grep='grep --color=auto'
+alias grep='grep -P --color=auto'
 alias load='source ~/.bashrc'
 alias mc='mc --nosubshell'
 alias public-ip='dig +short myip.opendns.com @resolver1.opendns.com'

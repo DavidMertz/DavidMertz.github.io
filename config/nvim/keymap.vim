@@ -4,9 +4,11 @@ function Config()
     edit ~/.config/nvim/scripts.vim
 endfunction
 
+" Fast 'jk' or 'kj' as homekey version of escape
+inoremap jk <Esc>
+inoremap kj <ESC>
+
 " Keyboard mappings
-" allow unshifted colon
-nmap ; :
 map <Leader>b :FzfLua buffers<CR>
 " sending visual selection to shared clipboard
 map <Leader>c :!clip add<CR>:undo<CR>
@@ -20,8 +22,10 @@ map <Leader>i <C-w>d
 map <F10> <C-w>d
 map <Leader>I :set invlist<CR>                    " toggle visible tabs
 map <Leader>j gqip                                " format current paragraph
-map <Leader>k :!ruff format %<CR>:e<CR>           " format current Python file
-map <Leader>K :!prettier -w %<CR>:e<CR>           " format current JS file
+map <Leader>k :!ruff format %<CR>:e<CR>           " format current Python file (after delay)
+map <Leader>kk :!ruff format %<CR>:e<CR>          " format current Python file
+map <Leader>kj :!prettier -w %<CR>:e<CR>          " format current JS file
+map <Leader>kl :!stylua %<CR>:e<CR>               " format current Lua file
 map <Leader>l :set invnumber<CR>                  " toggle line number
 map <Leader>n :bn<CR>                             " next buffer
 map <Leader>N :bp<CR>                             " previous buffer
@@ -37,12 +41,13 @@ map <C-j> :set tw=
 imap <BS> <Left><C-O>x
 map <BS> <Left>x
 
-digraph in 8712
-digraph ni 8713
-digraph ^l 8968
-digraph ^r 8969
-digraph _l 8970
-digraph _r 8971
+" A few math digraphs
+digraph in 8712  " ∈
+digraph ni 8713  " ∉
+digraph ^l 8968  " ⌈
+digraph ^r 8969  " ⌉
+digraph _l 8970  " ⌊
+digraph _r 8971  " ⌋
 
 set listchars=tab:\ \ ·,nbsp:¦,eol:↲,space:␣
 set statusline=[%n:%Y]\ %f%m%r%h%w%=(%v:0x%02.2B)\ %l/%L

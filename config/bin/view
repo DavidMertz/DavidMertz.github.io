@@ -1,5 +1,6 @@
 #!/bin/bash
 chafa='nix shell nixpkgs#chafa --command chafa'
+bat='nix shell nixpkgs#bat --command bat'
 
 if [[ $1 == *.md ]]; then
     glow -t "$1"
@@ -8,9 +9,9 @@ elif [[ $1 == *.pdf ]]; then
 elif [[ $1 == *.zip ]]; then
     unzip -l "$1" | command less
 elif [[ $1 == *.csv ]]; then
-    csvlens "$1"
+    csvlens --color-columns "$1"
 elif [[ $1 == *.tsv ]]; then
-    csvlens -t "$1"
+    csvlens --color-columns -t "$1"
 elif [[ $1 == *.png ]]; then
     $chafa "$1"
 elif [[ $1 == *.gif ]]; then
@@ -24,18 +25,18 @@ elif [[ $1 == *.html ]]; then
 elif [[ $1 == *.htm ]]; then
     lynx "$1"
 elif [[ $1 == *.xlsx ]]; then
-    in2csv "$1" | csvlens --
+    in2csv "$1" | csvlens --color-columns --
 elif [[ $1 == *.xls ]]; then
-    in2csv "$1" | csvlens --
+    in2csv "$1" | csvlens --color-columns --
 elif [[ $1 == *.png ]]; then
     xdg-open "$1"
 elif [[ $1 == *.jpg ]]; then
     xdg-open icat "$1"
 elif [[ $1 == *.parq ]]; then
-    parquet-tools cat -f csv "$1" | csvlens    
+    parquet-tools cat -f csv "$1" | csvlens --color-columns
 elif [[ $1 == *.parquet ]]; then
-    parquet-tools cat -f csv "$1" | csvlens    
+    parquet-tools cat -f csv "$1" | csvlens --color-columns
 else
-    bat -p "$@"
+    nix shell nixpkgs#bat --command bat -p "$@"
 fi
 

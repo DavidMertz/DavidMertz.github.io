@@ -32,6 +32,8 @@
 :let _pink        = '#db0088'
 :let _sap         = '#fde9a2'
 :let _greenest    = '#00ff00'
+:let _purple      = '#550055'
+:let _darksteel   = '#4368a1'
 
 " Light/inverted colors (darkrock-cloud, rock-lightgrey switched)
 if &background == "light"
@@ -66,9 +68,10 @@ let colorgroup['Folded']       = {"GUIFG": _cloud,     "GUIBG":  _rock}
 let colorgroup['LineNr']       = {"GUIFG": _gray_dark, "GUIBG":  _rock_dark}
 let colorgroup['MatchParen']   = {"GUIFG": _rock_dark, "GUIBG":  _greenest}
 let colorgroup['ModeMsg']      = {"GUIFG": _rock_dark, "GUIBG":  _turquoise}
+let colorgroup['NormalFloat']  = {"GUIFG": _cloud,     "GUIBG":  _darksteel}
 let colorgroup['Pmenu']        = {"GUIFG": _cloud,     "GUIBG":  _rock_medium}
-let colorgroup['PmenuSel']     = {"GUIFG": _rock_dark, "GUIBG":  _turquoise}
 let colorgroup['PmenuSbar']    = {                     "GUIBG":  _rock_dark}
+let colorgroup['PmenuSel']     = {"GUIFG": _rock_dark, "GUIBG":  _turquoise}
 let colorgroup['Search']       = {"GUIFG": _greenest,  "GUIBG":  _rock_dark, "GUI": "underline"}
 let colorgroup['SignColumn']   = {                     "GUIBG":  _rock_dark}
 let colorgroup['StatusLine']   = {"GUIFG": _greenest,  "GUIBG":  _coal}
@@ -81,7 +84,6 @@ if &background == "light"
   let colorgroup['Visual']       = {"GUIFG": _cloud,     "GUIBG":  _sap}
 endif
 let colorgroup['WarningMsg']   = {"GUIFG": _rock_dark, "GUIBG":  _steel}
-
 
 " Syntax
 " ----------------------------------------------------------------------
