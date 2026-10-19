@@ -21,9 +21,10 @@ vim.keymap.set("", "<leader>f", ":FzfLua files<CR>")
 -- Shortcut to force treesitter folding
 vim.keymap.set("", "<leader>F", ":set foldmethod=expr<CR>:set foldexpr=v:lua.vim.treesitter.foldexpr()<CR>")
 vim.keymap.set("", "<leader>g", ":FzfLua git_blame<CR>")
--- Warning popup (linter, etc.)
-vim.keymap.set("", "<leader>i", "<C-w>d")
-vim.keymap.set("", "<F10>", "<C-w>d")
+-- Warning popup (linter, etc.): <C-w>d is Neovim's default "show
+-- diagnostics under the cursor" *mapping*, so these must remap to reach it
+vim.keymap.set("", "<leader>i", "<C-w>d", { remap = true })
+vim.keymap.set("", "<F10>", "<C-w>d", { remap = true })
 vim.keymap.set("", "<leader>I", ":set invlist<CR>") -- toggle visible tabs
 vim.keymap.set("", "<leader>j", "gqip") -- format current paragraph
 vim.keymap.set("", "<leader>k", ":!ruff format %<CR>:e<CR>") -- format current Python file (after delay)

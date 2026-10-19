@@ -101,7 +101,10 @@ vim.diagnostic.config({
 	},
 	severity_sort = true,
 	float = {
-		source = "always", -- Or "if_many"
+		source = "always",
+		border = "rounded", -- frame for the <C-w>d diagnostics popup
+		title = " Diagnostics ",
+		title_pos = "center",
 	},
 })
 

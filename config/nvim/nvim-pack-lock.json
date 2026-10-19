@@ -16,10 +16,6 @@
       "rev": "c67fadd9a24230417267e4f9068227e093c0be2b",
       "src": "https://github.com/ibhagwan/fzf-lua"
     },
-    "nvim-colorizer": {
-      "rev": "a065833f35a3a7cc3ef137ac88b5381da2ba302e",
-      "src": "https://github.com/norcalli/nvim-colorizer.lua"
-    },
     "nvim-colorizer.lua": {
       "rev": "72a05f62c52241bc7441c820eb53946f92b2e6a4",
       "src": "https://github.com/catgoose/nvim-colorizer.lua"
@@ -27,10 +23,6 @@
     "nvim-lspconfig": {
       "rev": "45a3a444b710511c39abca3b60bb6e23a21e3de5",
       "src": "https://github.com/neovim/nvim-lspconfig"
-    },
-    "nvim-peekup": {
-      "rev": "82251c54cd60f8504dfd9acd853eae57fe832447",
-      "src": "https://github.com/gennaro-tedesco/nvim-peekup"
     },
     "nvim-treesitter": {
       "rev": "d3e4a28b63961ba972b0945d66c73b6eec969953",
@@ -47,10 +39,6 @@
     "smartcolumn.nvim": {
       "rev": "3a760dc239de71264072f829a184aafcf7d4d3e7",
       "src": "https://github.com/m4xshen/smartcolumn.nvim"
-    },
-    "tiny-cmdline.nvim": {
-      "rev": "d83700b48d8ff5625dbef4029af071db559544e5",
-      "src": "https://github.com/rachartier/tiny-cmdline.nvim"
     },
     "vim-sensible": {
       "rev": "0ce2d843d6f588bb0c8c7eec6449171615dc56d9",
