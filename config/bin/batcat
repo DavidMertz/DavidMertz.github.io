@@ -1,4 +1,4 @@
-#!/bin/sh
-# TODO: This shouldn't be needed, temporarily fixing git
-nix shell nixpkgs#bat --command bat "$@"
+#!/bin/bash
+
+bat --paging=always --pager="less -R" "$@"
 

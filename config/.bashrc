@@ -8,13 +8,59 @@ case $- in
       *) return;;
 esac
 
+# ------------ Enable `nix` commands for environment isolation ----------------
+# Install nix if not present
+if ! command -v nix &> /dev/null; then
+    curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install | sh -s -- --no-daemon
+fi
+# Setup nix paths and whatnot
+. /home/dmertz/.nix-profile/etc/profile.d/nix.sh
+# Alias a bunch of commands
+if command -v nix &> /dev/null; then
+    . /home/dmertz/.nix-profile/etc/profile.d/nix.sh
+    export EDITOR='nix shell nixpkgs#neovim nixpkgs#ruff --command nvim'
+    export GIT_PAGER='nix shell nixpkgs#bat --command bat -p'
+    # Nix shell aliases
+    alias bat='nix shell nixpkgs#bat --command bat'
+    alias betterleaks='nix shell nixpkgs#betterleaks --command betterleaks'
+    alias chafa='nix shell nixpkgs#chafa --command chafa'
+    alias cloc='nix shell nixpkgs#cloc --command cloc'
+    alias dust='nix shell nixpkgs#dust --command dust'
+    alias dunix='dust /nix/'
+    alias fetch='nix shell nixpkgs#fastfetch --command fastfetch'
+    alias go='nix shell nixpkgs#go --command go'
+    alias gum='nix shell nixpkgs#gum --command gum'
+    alias java='nix shell nixpkgs#jre --command java'
+    alias lazygit='nix shell nixpkgs#lazygit --command lazygit'
+    alias links='nix shell nixpkgs#links2 --command links'
+    alias ls='nix shell nixpkgs#eza --command eza'
+    alias lh='nix shell nixpkgs#eza --command eza -laGh --time-style=long-iso --no-user'
+    alias ll='nix shell nixpkgs#eza --command eza -laB'
+    alias lynx='nix shell nixpkgs#lynx --command lynx'
+    alias nv='nix shell nixpkgs#neovim nixpkgs#ruff nixpkgs#stylua --command nvim'
+    alias nvim='nv'
+    alias nvs='nv -S'
+    alias pandoc='nix shell nixpkgs#pandoc --command pandoc'
+    alias ruby='nix shell nixpkgs#ruby --command ruby'
+    alias shellcheck='nix shell nixpkgs#shellcheck --command shellcheck'
+    alias stylua='nix shell nixpkgs#stylua --command stylua'
+    alias tldr='nix shell nixpkgs#tealdeer --command tldr'
+    alias tree='nix shell nixpkgs#eza --command eza -T -L2'
+    alias zig='nix shell nixpkgs#zig --command zig'
+# If we still failed to install nix, set a couple usable vars/aliases    
+else
+    export EDITOR=vim
+    export GIT_PAGER=less
+    alias ll='ls -laB'
+    alias lh='ls -laGh'
+fi	
+
 # -------------------- Configure prompt ---------------------------------------
 export LS_COLORS='di=1:fi=0:ln=31:pi=5:so=5:bd=5:cd=5:or=31:mi=0:ex=35:*.rpm=90'
 export CLICOLOR=1
 export PS1="\[\e]2; \w (\u)\a\]\!-\[\e[1;38m\]\W\[\e[0m\e[1;37m\] %\[\e[0m\] "
 
 # A bit of sanity in tool preferences
-export EDITOR='nix shell nixpkgs#neovim nixpkgs#ruff --command nvim'
 export MANPAGER="less -R --use-color -Dd+r -Du+b"
 
 # F12 for clipboard selection
@@ -35,6 +81,9 @@ export PATH="$PATH:$HOME/.local/bin/env"
 # Rust
 export PATH="$PATH:$HOME/.cargo/bin"
 
+# Golang
+export PATH="$PATH:$HOME/go/bin"
+
 # colored GCC warnings and errors
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
@@ -54,33 +103,11 @@ export PYTHONPATH="$PYTHONPATH:$HOME/SEIU/ada-unified/server"
 export BITDROP_NO_EMAIL=1
 
 # -------------------- Aliases ------------------------------------------------
-# Use isolated and auto-updated nix packages
-alias bat='nix shell nixpkgs#bat --command bat'
-alias chafa='nix shell nixpkgs#chafa --command chafa'
-alias cloc='nix shell nixpkgs#cloc --command cloc'
-alias dust='nix shell nixpkgs#dust --command dust'
-alias fetch='nix shell nixpkgs#fastfetch --command fastfetch'
-alias gum='nix shell nixpkgs#gum --command gum'
-alias java='nix shell nixpkgs#jre --command java'
-alias links='nix shell nixpkgs#links2 --command links'
-alias ls='nix shell nixpkgs#eza --command eza'
-alias lh='nix shell nixpkgs#eza --command eza -laGh --time-style=long-iso --no-user'
-alias ll='nix shell nixpkgs#eza --command eza -laB'
-alias lynx='nix shell nixpkgs#lynx --command lynx'
-alias nv='nix shell nixpkgs#neovim nixpkgs#ruff nixpkgs#stylua --command nvim'
-alias nvim=nv
-alias nvs='nv -S'
-alias pandoc='nix shell nixpkgs#pandoc --command pandoc'
-alias ruby='nix shell nixpkgs#ruby --command ruby'
-alias stylua='nix shell nixpkgs#stylua --command stylua'
-alias tldr='nix shell nixpkgs#tealdeer --command tldr'
-alias tree='nix shell nixpkgs#eza --command eza -T -L2'
-
 # Add switches or use substitute executables
 alias cd='z'
 alias clear-scrollback="printf '\033[3J'"
 alias bfg='java -jar /usr/share/bfg-1.15.0.jar'
-alias chbash="nvim $HOME/.bashrc"
+alias chbash="vim $HOME/.bashrc"
 alias cloc='cloc --exclude-list-file=.clocignore'
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
@@ -97,10 +124,8 @@ alias tree-bin='/usr/bin/tree'
 alias v='xdg-open'
 alias view='$HOME/bin/view'
 alias venv='. .venv/bin/activate; export PYTHONPATH=$(pwd)'
-alias vim='NO_AI=Y nvim'
 alias weather='clear && curl -s wttr.in/Portland,ME?3nQ'
 alias y=yazi
-alias zig='/home/dmertz/Downloads/zig-x86_64-linux-0.17.0-dev.1252+e4b325c19/zig'
 
 # Interactive DB connections
 alias adacat='catalist-rds-ada'
@@ -118,21 +143,22 @@ alias bitdrop='ssh ubuntu@44.228.185.80'
 alias bot-ui='ssh ec2-user@44.239.233.71'
 alias bot-infer="ssh bossbot@$BOT_LOCAL"
 alias bot-dmertz="ssh dmertz@$BOT_LOCAL"
+alias gitea="ssh ubuntu@35.166.221.187"
 
 # -------------------- General functions/commands -----------------------------
+# Often we wish to exit nix shell --offline or other nested shell. 
+# Avoid accidentally exiting entire terminal if we are at top level
 exit() {
-    # Often we wish to exit nix shell or other nested shell. 
-    # Avoid exiting entire terminal if we are at top level
-    if [[ $SHLVL != 1 ]]; then
-        echo "Exiting shell (level $SHLVL; name: $name)"
-        builtin exit 2> /dev/null
-    else
-        read -p "Exit the terminal? (yes/no) " yn
-        case $yn in 
-            y | Y | yes | Yes | YES) builtin exit 2> /dev/null;;
-            *) echo "Remaining in shell (level $SHLVL)";;
-        esac
-    fi
+if [[ $SHLVL != 1 ]]; then
+    echo "Exiting shell (level $SHLVL; name: $name)"
+    builtin exit 2> /dev/null
+else
+    read -p "Exit the terminal? (yes/no) " yn
+    case $yn in 
+        y | Y | yes | Yes | YES) builtin exit 2> /dev/null;;
+        *) echo "Remaining in shell (level $SHLVL)";;
+    esac
+fi
 }
 header() { 
   clear; toilet -f future --filter border " $1 "; echo; sleep 3; 
@@ -174,6 +200,7 @@ ada-env() {
     source .venv/bin/activate
     set -a; source .env; set +a
     export PYTHONPATH="$PYTHONPATH:$PWD/server"
+    export PATH=$(ruby -e "print ARGV[0].split(':').uniq.join(':')" $PATH)
     export PYTHONPATH=$(ruby -e "print ARGV[0].split(':').uniq.join(':')" $PYTHONPATH)
     mkdir -p /tmp/ada
     mkdir -p /tmp/ada-events
@@ -183,9 +210,6 @@ ada-env() {
     export ADA_PERSISTENT="/tmp/local"
     export ADA_HOME="$HOME/SEIU/ada-unified/server"
 }
-
-# git stuff
-export GIT_PAGER='nix shell nixpkgs#bat --command bat -p'
 
 # Bash-git-prompt
 if [ -f "$HOME/.bash-git-prompt/gitprompt.sh" ]; then
@@ -265,9 +289,6 @@ color_prompt=yes
 # FZF (especially ctrl-R being usable)
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
-# ------------ Enable `nix` commands for environment isolation ----------------
-. /home/dmertz/.nix-profile/etc/profile.d/nix.sh
-
 # -------------------- Remove duplicate path entries --------------------------
 # The Ruby version is much more concise, but leave the longer awk as comment
 # in case someone wants to use this on a system without Ruby installed.
@@ -275,4 +296,12 @@ export PATH=$(ruby -e "print ARGV[0].split(':').uniq.join(':')" $PATH)
 export PYTHONPATH=$(ruby -e "print ARGV[0].split(':').uniq.join(':')" $PYTHONPATH)
 # export PATH=$(echo -n $PATH | awk -v RS=: '!($0 in a) {a[$0]; printf("%s%s", length(a) > 1 ? ":" : "", $0)}')
 # export PYTHONPATH=$(echo -n $PYTHONPATH | awk -v RS=: '!($0 in a) {a[$0]; printf("%s%s", length(a) > 1 ? ":" : "", $0)}')
+
+
+# Automatically added by the Guix install script.
+if [ -n "$GUIX_ENVIRONMENT" ]; then
+    if [[ $PS1 =~ (.*)"\\$" ]]; then
+        PS1="${BASH_REMATCH[1]} [env]\\\$ "
+    fi
+fi
 

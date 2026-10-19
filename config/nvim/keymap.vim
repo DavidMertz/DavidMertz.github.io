@@ -2,6 +2,7 @@ function Config()
     edit ~/.config/nvim/init.lua
     edit ~/.config/nvim/keymap.vim
     edit ~/.config/nvim/scripts.vim
+    edit ~/.config/nvim/lua/utils.lua
 endfunction
 
 " Fast 'jk' or 'kj' as homekey version of escape
@@ -11,7 +12,6 @@ inoremap kj <ESC>
 " Keyboard mappings
 map <Leader>b :FzfLua buffers<CR>
 " sending visual selection to shared clipboard
-map <Leader>c :!clip add<CR>:undo<CR>
 map <Leader>e :call Config()<CR>                  " edit initialization files
 map <Leader>f :FzfLua files<CR>
 " Shortcut to force treesitter folding
@@ -51,3 +51,4 @@ digraph _r 8971  " ⌋
 
 set listchars=tab:\ \ ·,nbsp:¦,eol:↲,space:␣
 set statusline=[%n:%Y]\ %f%m%r%h%w%=(%v:0x%02.2B)\ %l/%L
+

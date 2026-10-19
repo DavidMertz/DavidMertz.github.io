@@ -1,7 +1,6 @@
 #!/bin/bash
 toilet='nix shell nixpkgs#toilet --command toilet'
-while true; do 
-    clear
-    echo "$((($(date +%s) - $(date --date="211102" +%s) )/(60*60*24))) days" | $toilet -f future
-    sleep 3600
-done
+totaldays=$(( ($(date +%s) - $(date --date="211102" +%s) )/(60*60*24) ))
+years=$(( $totaldays / 365 ))
+days=$(( $totaldays % 365 ))
+echo "$years years + $days days" | $toilet -f future

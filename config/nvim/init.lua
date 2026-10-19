@@ -5,14 +5,14 @@ vim.pack.add({
 	"http://github.com/tpope/vim-sensible",
 	"https://github.com/ibhagwan/fzf-lua",
 	"https://github.com/catgoose/nvim-colorizer.lua",
-	"https://github.com/ibhagwan/fzf-lua",
-	"https://github.com/neovim-treesitter/nvim-treesitter",
+	"https://github.com/nvim-treesitter/nvim-treesitter",
 	"https://github.com/nvim-lua/plenary.nvim",
 	"https://github.com/mikavilpas/yazi.nvim",
 	"https://github.com/mplusp/pack-manager.nvim",
 	"https://github.com/chenyu76/draftsman.nvim",
 	"https://github.com/saghen/blink.lib",
 	"https://github.com/saghen/blink.cmp",
+	"https://github.com/m4xshen/smartcolumn.nvim",
 })
 
 -- Ty LSP settings, if we want them
@@ -26,7 +26,7 @@ require("fzf-lua").setup({ file_icons = false, winopts = { backdrop = 30 } })
 vim.o.termguicolors = true
 require("colorizer").setup()
 
--- -- Blink setup
+-- Blink setup
 local cmp = require("blink.cmp")
 cmp.build():pwait()
 cmp.setup({
@@ -39,7 +39,7 @@ cmp.setup({
 		},
 		menu = {
 			enabled = true,
-			auto_show = false,
+			auto_show = true,
 			scrollbar = false,
 			border = "double", -- Defaults to `vim.o.winborder` on nvim 0.11+
 			draw = {
@@ -47,10 +47,19 @@ cmp.setup({
 				treesitter = { "lsp" },
 			},
 		},
-		ghost_text = { enabled = true },
+		ghost_text = { enabled = false },
 	},
 	sources = { default = { "lsp", "path", "snippets", "buffer" } },
 	fuzzy = { implementation = "rust" },
+})
+
+-- Smart column
+require("smartcolumn").setup({
+	colorcolumn = "88",
+	disabled_filetypes = { "help", "text", "markdown", "vim" },
+	custom_colorcolumn = {},
+	scope = "file",
+	editorconfig = true,
 })
 
 --  Some elements of appearance and behavior
@@ -99,14 +108,13 @@ vim.diagnostic.config({
 -- Set the Leader key to comma
 vim.g.mapleader = ","
 
--- Load keymaps from convenient (and prior) vim format
-vim.cmd("source /home/dmertz/.config/nvim/keymap.vim")
+-- Keybindings live in keymap.lua
+require("keymap")
 
 -- 'silent!' to ignore errors if not yet installed.
 vim.cmd("silent! colorscheme lucider")
 
--- Most keybindings are in keymap.vim, but we'll transition to lua
-vim.keymap.set("n", "<leader>dv", "<cmd>lua vim.diagnostic.show()<cr>")
-vim.keymap.set("n", "<leader>dh", "<cmd>lua vim.diagnostic.hide()<cr>")
-vim.keymap.set("n", "<leader>dn", "<cmd>lua vim.diagnostic.jump({count = 1})<cr>")
-vim.keymap.set("n", "<leader>dp", "<cmd>lua vim.diagnostic.jump({count = -1})<cr>")
+-- Yank history ring: new yanks shift the numbered registers down
+-- (0 -> 1 -> ... -> 9), see utils.lua
+require("utils").setup_register_ring()
+

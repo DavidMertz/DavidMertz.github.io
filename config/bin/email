@@ -15,7 +15,7 @@ while true; do
             cut -d' ' -f1 > /tmp/notmuch.thread 
 
     if [ -s /tmp/notmuch.thread ]; then
-        notmuch show --format=mbox $(cat /tmp/notmuch.thread) > /tmp/notmuch.mbox
+        notmuch show --format=mbox "$(cat /tmp/notmuch.thread)" > /tmp/notmuch.mbox
         mutt -R -f /tmp/notmuch.mbox
         rm -f /tmp/notmuch.*
     else

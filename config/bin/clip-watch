@@ -1,5 +1,6 @@
 #!/bin/bash
 # Check if another process is already running
+# shellcheck disable=SC2009
 procs=$(ps ax | grep clip-watch | grep bash | sed 's/.* //')
 nprocs=$(echo "$procs" | wc -l)
 

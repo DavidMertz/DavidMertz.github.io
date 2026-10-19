@@ -1,21 +1,21 @@
 #!/bin/bash
-rsync -av --delete $HOME/.config/nvim $HOME/git/DavidMertz.github.io/config/ --exclude='*pack/*'
-rsync -av --delete $HOME/.config/cloc $HOME/git/DavidMertz.github.io/config/ 
-rsync -av --delete $HOME/.config/mc $HOME/git/DavidMertz.github.io/config/ 
-rsync -av --delete $HOME/.config/htop $HOME/git/DavidMertz.github.io/config/ 
-rsync -av --delete $HOME/bin $HOME/git/DavidMertz.github.io/config/
-rsync -av --delete $HOME/.bash-git-prompt $HOME/git/DavidMertz.github.io/config/
+rsync -av --delete "$HOME"/.config/nvim "$HOME"/git/DavidMertz.github.io/config/ --exclude='*pack/*'
+rsync -av --delete "$HOME"/.config/cloc "$HOME"/git/DavidMertz.github.io/config/ 
+rsync -av --delete "$HOME"/.config/mc "$HOME"/git/DavidMertz.github.io/config/ 
+rsync -av --delete "$HOME"/.config/htop "$HOME"/git/DavidMertz.github.io/config/ 
+rsync -av --delete "$HOME"/bin "$HOME"/git/DavidMertz.github.io/config/
+rsync -av --delete "$HOME"/.bash-git-prompt "$HOME"/git/DavidMertz.github.io/config/
 
-cp -v $HOME/.bashrc $HOME/git/DavidMertz.github.io/config
+cp -v "$HOME"/.bashrc "$HOME"/git/DavidMertz.github.io/config
 
-$HOME/bin/package-installs > $HOME/git/DavidMertz.github.io/config/package-installs.txt
+"$HOME"/bin/package-installs > "$HOME"/git/DavidMertz.github.io/config/package-installs.txt
 
 HERE=$PWD
-cd $HOME/git/DavidMertz.github.io
+cd "$HOME"/git/DavidMertz.github.io || exit
 git switch main
-cd config
+cd config || exit
 /usr/bin/tree -H . . > index.html
 git add -A
 git commit -m "Automated config sync $(date)"
 git push
-cd $HERE
+cd "$HERE" || exit

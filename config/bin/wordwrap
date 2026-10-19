@@ -1,0 +1,13 @@
+#!/bin/bash
+case $1 in
+    ""|-) tr '\n' ' ' | awk '{$1=$1};1'; exit 0 ;;
+    -h|--help)
+        echo "Usage: $0 [FILE]..."
+        echo "Wrap FILE(s) with normalized spacing to standard output."
+        echo
+        echo "With no FILE, or when file is -, read standard input."
+        exit
+        ;;
+    *) cat "$@" | tr '\n' ' ' | awk '{$1=$1};1'; exit 0 ;;
+esac        
+        

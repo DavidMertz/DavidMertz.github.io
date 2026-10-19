@@ -1,6 +1,6 @@
 #!/bin/bash
+bat='nix shell --offline nixpkgs#bat --command bat'
 chafa='nix shell nixpkgs#chafa --command chafa'
-bat='nix shell nixpkgs#bat --command bat'
 
 if [[ $1 == *.md ]]; then
     glow -t "$1"
@@ -17,7 +17,7 @@ elif [[ $1 == *.png ]]; then
 elif [[ $1 == *.gif ]]; then
     $chafa "$1"
 elif [[ $1 == *.jpg ]]; then
-     $chafa "$1"
+    $chafa "$1"
 elif [[ $1 == *.jpeg ]]; then
     $chafa "$1"
 elif [[ $1 == *.html ]]; then
@@ -36,7 +36,9 @@ elif [[ $1 == *.parq ]]; then
     parquet-tools cat -f csv "$1" | csvlens --color-columns
 elif [[ $1 == *.parquet ]]; then
     parquet-tools cat -f csv "$1" | csvlens --color-columns
+elif [[ $1 == *.json ]]; then
+    $bat --language json --style=plain <(cat "$1" | jq)
 else
-    nix shell nixpkgs#bat --command bat -p "$@"
+    $bat -p "$@"
 fi
 

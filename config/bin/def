@@ -1,4 +1,0 @@
-#!/bin/bash
-
-word=${1:-word}
-curl -s dict://dict.org/d:${word} | grep -Pv '^[12]\d+'

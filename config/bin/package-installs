@@ -1,5 +1,4 @@
 #!/bin/bash
-declare -A REMOVED
 APT_HIST=$(mktemp)
 RAW_APT_HIST=""
 SEARCH='apt [install|remove]'
@@ -10,11 +9,12 @@ SEARCH='apt [install|remove]'
 # Side effect: Prints each installed packages, one per line
 apt_still_installed () {
     for f in /var/log/apt/history.log.*.gz; do
-        zcat $f | grep "$SEARCH" | cut -d' ' -f3- >> $APT_HIST
+        zcat "$f" | grep "$SEARCH" | cut -d' ' -f3- >> "$APT_HIST"
     done
-    grep "$SEARCH" /var/log/apt/history.log | cut -d' ' -f3- >> $APT_HIST
+    grep "$SEARCH" /var/log/apt/history.log | cut -d' ' -f3- >> "$APT_HIST"
 
     while read -r line; do
+        # shellcheck disable=SC2206 # Unlike suggestions, this actually creates array
         cmd=($line)
         verb=${cmd[0]}
 
@@ -32,12 +32,12 @@ apt_still_installed () {
         if [[ "$verb" == "install" ]]; then
             RAW_APT_HIST="${RAW_APT_HIST}\n${package}"
         elif [[ "$verb" == "remove" ]]; then
-            RAW_APT_HIST=$(printf "$RAW_APT_HIST" | grep -v "$package")
+            RAW_APT_HIST=$(echo -e "$RAW_APT_HIST" | grep -v "$package")
         fi
 
-    done < <(cat $APT_HIST)
-    printf "${RAW_APT_HIST}\n" | sed '/^$/d' 
-    rm $APT_HIST
+    done < <(cat "$APT_HIST")
+    echo -e "${RAW_APT_HIST}\n" | sed '/^$/d' 
+    rm "$APT_HIST"
 }
 
 echo "====================== Apt Installed Packages =========================="
